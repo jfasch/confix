@@ -1,0 +1,2 @@
+PACKAGE_NAME('no-depinfo')
+PACKAGE_VERSION('6.6.6')

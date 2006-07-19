@@ -1,0 +1,1 @@
+// CONFIX:FILE_PROPERTIES({'MAIN': 1, 'EXENAME': 'nixbeitl'})

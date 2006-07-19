@@ -1,0 +1,6 @@
+// CONFIX:FILE_PROPERTIES(
+// CONFIX:{
+// CONFIX:    'INSTALL_PATH': 'y',
+// CONFIX:    'PROVIDE_MODE': 'public'
+// CONFIX:}
+// CONFIX:)

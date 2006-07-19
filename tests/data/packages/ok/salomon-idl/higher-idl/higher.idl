@@ -1,0 +1,10 @@
+#ifndef salomon_idl_higher_idl_higher_idl
+#define salomon_idl_higher_idl_higher_idl
+
+#include <basic.idl>
+
+struct Higher {
+    string the_string;
+};
+
+#endif

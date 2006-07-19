@@ -1,0 +1,11 @@
+#include <A/B/struct.idl>
+
+module C {
+module D {
+
+interface LocalInterface {
+    long method(in ::A::B::MyStruct s);
+};
+
+}; // /module
+}; // /module

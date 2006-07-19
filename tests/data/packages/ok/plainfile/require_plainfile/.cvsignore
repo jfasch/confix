@@ -1,0 +1,3 @@
+Makefile.am
+Makefile.in
+plainfile_require_plainfile.py

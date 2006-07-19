@@ -1,0 +1,28 @@
+include libconfix/*.py
+include scripts/*.py
+include ChangeLog.1.3
+include ChangeLog.1.4
+
+recursive-include share *.m4
+
+#recursive-include samples *
+
+recursive-include tests *
+recursive-exclude tests Makefile.am Makefile.in .cvsignore *.~*~
+
+include doc/Makefile
+
+include doc/index.html
+include doc/RELEASE*
+
+include doc/confix.texi
+include doc/*.fig
+include doc/*.png
+include doc/confix.ps
+include doc/confix.html
+
+include README
+include INSTALL
+include LICENSE
+include COPYING
+include ChangeLog

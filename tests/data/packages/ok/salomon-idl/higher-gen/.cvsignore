@@ -1,0 +1,3 @@
+Makefile.am
+Makefile.in
+salomon-idl_higher-gen.py

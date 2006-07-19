@@ -1,0 +1,2 @@
+PACKAGE_NAME('basic')
+PACKAGE_VERSION('6.6.6')
