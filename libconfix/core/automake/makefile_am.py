@@ -165,14 +165,18 @@ class Makefile_am:
 
         self.dir_primary_ = {}
 
-        # different scheme here. in the future all methods
-        # (define_directory() etc) will only act as a factory for
-        # lines which are added explicitly *by the user* (this is so
-        # that the user can wrap them into automake conditionals of
-        # his choice, for example).
+        # directories where files will be installed to
+        # {symbolicname -> (dirname, {family -> filelist})}
 
-        # symbolicname -> dirname
-        self.defined_directories_ = {}
+        # for example:
+
+        # {'publicheader_WXUtils': ('$(includedir)/WX/Utils',
+        #                           {'HEADERS': ['error.h',
+        #                                        'errortrace.h',
+        #                                        'error_impl.h',
+        #                                        'error_macros.h']})}
+        
+        self.install_directories_ = {}
 
         # TESTS_ENVIRONMENT. a dictionary (string->string) that
         # contains the environment for test programs.
@@ -296,13 +300,21 @@ class Makefile_am:
         self.cmdlinemacros_[m] = value
         pass
 
-    def define_directory(self, symbolicname, dirname):
+    def define_install_directory(self, symbolicname, dirname):
         assert len(dirname)
-        if self.defined_directories_.has_key(symbolicname):
-            assert self.defined_directories_[symbolicname] == dirname
-            return []
-        self.defined_directories_[symbolicname] = dirname
-        return helper_automake.format_dir(name=symbolicname+'dir', value=dirname)
+        assert not self.install_directories_.has_key(symbolicname), symbolicname+' already defined'
+        self.install_directories_[symbolicname] = (dirname, {})
+        pass
+    def add_to_install_directory(self, symbolicname, family, files):
+        dirdef = self.install_directories_.get(symbolicname)
+        assert dirdef is not None, symbolicname+' is not defined'
+        familyfiles = dirdef[1].get(family)
+        if familyfiles is None:
+            familyfiles = []
+            dirdef[1][family] = familyfiles
+            pass
+        familyfiles.extend(files)
+        pass
 
     def set_dir_dirname(self, dir, dirname):
         debug.warn(self.dir_+': Makefile_am.set_dir_dirname() is deprecated; use Makefile_am.define_directory() instead')
@@ -512,6 +524,14 @@ class Makefile_am:
         lines.extend(self.compound_libadd_.lines())
         lines.extend(self.compound_ldadd_.lines())
 
+        # install directories
+        for symbolicname, dirdef in self.install_directories_.iteritems():
+            lines.extend(helper_automake.format_make_macro(name=symbolicname+'dir', values=[dirdef[0]]))
+            for family, files in dirdef[1].iteritems():
+                lines.extend(helper_automake.format_make_macro(name=symbolicname+'_'+family, values=files))
+                pass
+            pass
+        
         # register automatic tests and set their environment
 
         tests = self.dir_primary('check', 'PROGRAMS') + \
