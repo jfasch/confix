@@ -49,6 +49,7 @@ class HeaderBuilder(CBaseBuilder):
 
         installpath = file.get_property(HeaderBuilder.PROPERTY_INSTALLPATH)
         if installpath is not None:
+            self.check_installpath_(installpath)
             self.set_install_path(installpath)
             pass
         
@@ -90,25 +91,21 @@ class HeaderBuilder(CBaseBuilder):
             raise HeaderBuilder.InstallPathConflict(old=self.install_path_, new=path)
         self.install_path_ = path
         pass
-
+    
     def iface_pieces(self):
         return CBaseBuilder.iface_pieces(self) + \
                [InterfacePiece(globals={'CHEADERBUILDER_': self},
                                lines=[code_])]
 
-    def output(self):
-        CBaseBuilder.output(self)
-        # install into $(includedir) (or a subdirectory thereof)
-        self.parentbuilder().makefile_am().add_public_header(
-            filename=self.file().name(),
-            dir=self.install_path_)
-        # install into package's confix_include directory
-        self.parentbuilder().makefile_am().add_private_header(
-            filename=self.file().name(),
-            dir=self.install_path_)
+    def check_installpath_(self, path):
+        for d in path:
+            if len(d) == 0:
+                raise Error(os.sep.join(self.file().relpath())+': '
+                            'empty path component in install path '+str(path))
+            pass
         pass
-    
     pass
+
 
 code_ = """
 def INSTALLPATH(path):

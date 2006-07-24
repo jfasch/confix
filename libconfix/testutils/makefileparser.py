@@ -1,4 +1,4 @@
-# $Id: suite.py,v 1.1 2006/07/12 08:42:22 jfasch Exp $
+# $Id: FILE-HEADER,v 1.4 2006/02/06 21:07:44 jfasch Exp $
 
 # Copyright (C) 2002-2006 Salomon Automation
 
@@ -17,25 +17,11 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 # USA
 
-from makefile_utils import MakefileUtilsSuite
-from makefile_am import MakefileAmSuite
-from configure_ac import ConfigureACSuite
-from output import AutomakeOutputSuite
+import makefileutils
 
-import unittest
-
-class AutomakeSuite(unittest.TestSuite):
-    def __init__(self):
-        unittest.TestSuite.__init__(self)
-
-        self.addTest(MakefileUtilsSuite())
-        self.addTest(MakefileAmSuite())
-        self.addTest(ConfigureACSuite())
-        self.addTest(AutomakeOutputSuite())
-        pass
+def parse_makefile(lines):
+    my_lines = makefileutils.collapse_continuations(lines)
+    
 
     pass
 
-if __name__ == '__main__':
-    unittest.TextTestRunner().run(AutomakeSuite())
-    pass

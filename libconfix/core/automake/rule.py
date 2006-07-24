@@ -19,30 +19,14 @@
 
 import helper_automake
 
+import types
+
 class Rule:
-
-    """ A Makefile rule. A rule consists of one or more targets, zero
-    or more prerequisites (or dependencies), and zero or more
-    commands.
-
-    @param targets: the rule's targets
-
-    @type targets: list of strings
-
-    @param prerequisites: the rule's prerequisites (dependencies)
-
-    @type prerequisites: list of strings
-
-    @param commands: the rule's commands.
-
-    @type commands: list of strings and lists. The latter form must
-    still be a shell-executable commandline, and the fact the a
-    command is a list of strings is merely used for line wrapping."""
-
-    def __init__(self, targets, prerequisites=None, commands=None):
-        self.targets_ = targets
-        self.prerequisites_ = prerequisites
-        self.commands_ = commands
+    def __init__(self, targets, prerequisites=[], commands=[]):
+        assert len(targets)
+        self.targets_ = targets[:]
+        self.prerequisites_ = prerequisites[:]
+        self.commands_ = commands[:]
         pass
 
     def targets(self):
@@ -50,41 +34,29 @@ class Rule:
 
     def prerequisites(self):
         return self.prerequisites_
+    def add_prerequisite(self, p):
+        self.prerequisites_.append(p)
+        pass
 
     def commands(self):
         return self.commands_
 
     def lines(self):
 
-        """ Compose a list of lines that constitute the rule as it is
-        written in a Makefile(.am). Breaks the targets and
-        prerequisites into multiple lines, with line continuations
-        ('\\'), if necessary.
+        targ_prereqlist = self.targets_[:]
+        targ_prereqlist[-1] = targ_prereqlist[-1] + ':'
+        targ_prereqlist.extend(self.prerequisites_)
 
-        @return: a list of lines suitable for Makefile.am
-
-        @rtype: list of strings
-
-        """
-
-        assert len(self.targets_)
-        targs = self.targets_[:]
-        targs[-1] = targs[-1] + ':'
-
-        list = targs[:]
-        if self.prerequisites_ is not None:
-            list.extend(self.prerequisites_)
-        retlist = helper_automake.format_word_list(list)
-
-        if commands is not None:
-            for c in commands:
+        commandlist = []
+        if self.commands_ is not None:
+            for c in self.commands_:
                 if type(c) is types.StringType:
-                    retlist.append('\t'+c)
+                    commandlist.append('\t'+c)
                 elif (type(c) is types.ListType) or (type(c) is types.TupleType):
-                    retlist.extend(['\t'+l for l in __format_word_list(c)])
+                    commandlist.extend(['\t'+l for l in __format_word_list(c)])
                 else: assert 0
                 pass
             pass
         
-        return retlist
-        
+        return targ_prereqlist + commandlist
+    pass

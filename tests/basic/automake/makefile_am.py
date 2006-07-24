@@ -19,20 +19,19 @@
 
 from libconfix.core.automake.makefile_am import Makefile_am
 from libconfix.core.utils.error import Error
+from libconfix.testutils import makefileutils
 
-import unittest, re
+import unittest
 
 class MakefileAmSuite(unittest.TestSuite):
     def __init__(self):
         unittest.TestSuite.__init__(self)
         self.addTest(MakefileAmTest('test_standard_lists'))
         self.addTest(MakefileAmTest('test_errors'))
-        self.addTest(MakefileAmTest('test_defined_install_directories'))
+        self.addTest(MakefileAmTest('test_default_install_directories'))
+        self.addTest(MakefileAmTest('test_nondefault_install_directories'))
         pass
     pass
-
-rex_macro = re.compile(r'^([\w_\.]+)\s*=\s(.*)$')
-rex_listsep = re.compile(r'\s+')
 
 class MakefileAmTest(unittest.TestCase):
     def test_standard_lists(self):
@@ -91,49 +90,48 @@ class MakefileAmTest(unittest.TestCase):
 
         ##########################
         lines = mf_am.lines()
-        lines = self.collapse_continuations_(lines)
 
-        self.failUnlessEqual(self.find_list_('the_program_SOURCES', lines),
+        self.failUnlessEqual(makefileutils.find_list(name='the_program_SOURCES', lines=lines),
                              ['source.h', 'source.c'])
-        self.failUnlessEqual(self.find_list_('the_program_LDFLAGS', lines),
+        self.failUnlessEqual(makefileutils.find_list(name='the_program_LDFLAGS', lines=lines),
                              ['-some-flag', '-some-other-flag'])
-        self.failUnlessEqual(self.find_list_('libsome_ltlibrary_la_LIBADD', lines),
+        self.failUnlessEqual(makefileutils.find_list(name='libsome_ltlibrary_la_LIBADD', lines=lines),
                              ['some_library', 'some_other_library'])
-        self.failUnlessEqual(self.find_list_('the_program_LDADD', lines),
+        self.failUnlessEqual(makefileutils.find_list(name='the_program_LDADD', lines=lines),
                              ['some_library', 'some_other_library'])
-        self.failUnlessEqual(self.find_list_('AM_CFLAGS', lines),
+        self.failUnlessEqual(makefileutils.find_list(name='AM_CFLAGS', lines=lines),
                              ['-some-cflag', '-some-other-cflag'])
-        self.failUnlessEqual(self.find_list_('AM_CXXFLAGS', lines),
+        self.failUnlessEqual(makefileutils.find_list(name='AM_CXXFLAGS', lines=lines),
                              ['-some-cxxflag', '-some-other-cxxflag'])
-        self.failUnlessEqual(self.find_list_('AM_LFLAGS', lines),
+        self.failUnlessEqual(makefileutils.find_list(name='AM_LFLAGS', lines=lines),
                              ['-some-lflag', '-some-other-lflag'])
-        self.failUnlessEqual(self.find_list_('AM_YFLAGS', lines),
+        self.failUnlessEqual(makefileutils.find_list(name='AM_YFLAGS', lines=lines),
                              ['-some-yflag', '-some-other-yflag'])
-        self.failUnlessEqual(self.find_list_('EXTRA_DIST', lines),
+        self.failUnlessEqual(makefileutils.find_list(name='EXTRA_DIST', lines=lines),
                              ['some-extra-dist-file', 'some-other-extra-dist-file'])
-        self.failUnlessEqual(self.find_list_('MOSTLYCLEANFILES', lines),
+        self.failUnlessEqual(makefileutils.find_list(name='MOSTLYCLEANFILES', lines=lines),
                              ['some-mostlycleanfile', 'some-other-mostlycleanfile'])
-        self.failUnlessEqual(self.find_list_('CLEANFILES', lines),
+        self.failUnlessEqual(makefileutils.find_list(name='CLEANFILES', lines=lines),
                              ['some-cleanfile', 'some-other-cleanfile'])
-        self.failUnlessEqual(self.find_list_('DISTCLEANFILES', lines),
+        self.failUnlessEqual(makefileutils.find_list(name='DISTCLEANFILES', lines=lines),
                              ['some-distcleanfile', 'some-other-distcleanfile'])
-        self.failUnlessEqual(self.find_list_('MAINTAINERCLEANFILES', lines),
+        self.failUnlessEqual(makefileutils.find_list(name='MAINTAINERCLEANFILES', lines=lines),
                              ['some-maintainercleanfiles', 'some-other-maintainercleanfiles'])
-        self.failUnlessEqual(self.find_list_('lib_LTLIBRARIES', lines),
+        self.failUnlessEqual(makefileutils.find_list(name='lib_LTLIBRARIES', lines=lines),
                              ['libsome-ltlibrary.la', 'libsome-other-ltlibrary.la'])
-        self.failUnlessEqual(self.find_list_('lib_LIBRARIES', lines),
+        self.failUnlessEqual(makefileutils.find_list(name='lib_LIBRARIES', lines=lines),
                              ['libsome-library.a', 'libsome-other-library.a'])
-        self.failUnlessEqual(self.find_list_('bin_PROGRAMS', lines),
+        self.failUnlessEqual(makefileutils.find_list(name='bin_PROGRAMS', lines=lines),
                              ['some-program', 'some-other-program'])
-        self.failUnlessEqual(self.find_list_('bin_SCRIPTS', lines),
+        self.failUnlessEqual(makefileutils.find_list(name='bin_SCRIPTS', lines=lines),
                              ['some-script', 'some-other-script'])
-        self.failUnlessEqual(self.find_list_('check_PROGRAMS', lines),
+        self.failUnlessEqual(makefileutils.find_list(name='check_PROGRAMS', lines=lines),
                              ['some-check-program', 'some-other-check-program'])
-        self.failUnlessEqual(self.find_list_('xxx_YYY', lines),
+        self.failUnlessEqual(makefileutils.find_list(name='xxx_YYY', lines=lines),
                              ['some-xxx-YYY-thing', 'some-other-xxx-YYY-thing'])
-        self.failUnlessEqual(self.find_list_('aaa_YYY', lines),
+        self.failUnlessEqual(makefileutils.find_list(name='aaa_YYY', lines=lines),
                              ['some-aaa-YYY-thing', 'some-other-aaa-YYY-thing'])
-        self.failUnlessEqual(self.find_list_('BUILT_SOURCES', lines),
+        self.failUnlessEqual(makefileutils.find_list(name='BUILT_SOURCES', lines=lines),
                              ['some-built-source', 'some-other-built-source'])
 
         pass
@@ -149,66 +147,48 @@ class MakefileAmTest(unittest.TestCase):
         
         pass
 
-    def test_defined_install_directories(self):
+    def test_default_install_directories(self):
         mf_am = Makefile_am()
-        mf_am.define_install_directory(symbolicname='publicheaders_blah', dirname='$(includedir)/blah')
-        mf_am.add_to_install_directory(symbolicname='publicheaders_blah', family='HEADERS', files=['file1.h', 'file2.h'])
-        mf_am.add_to_install_directory(symbolicname='publicheaders_blah', family='HEADERS', files=['file0.h'])
+        # default directory
+        mf_am.add_to_install_directory(symbolicname='',
+                                       family='HEADERS',
+                                       files=['defaultfile1.h', 'defaultfile2.h'])
+        mf_am.add_to_install_directory(symbolicname='',
+                                       family='HEADERS',
+                                       files=['defaultfile0.h'])
 
         lines = mf_am.lines()
-        lines = self.collapse_continuations_(lines)
+        
+        headerlist = makefileutils.find_list(name='include_HEADERS', lines=lines)
+        self.failIf(headerlist is None)
+        self.failUnless(headerlist == ['defaultfile1.h', 'defaultfile2.h', 'defaultfile0.h'])
+        
+        pass
 
-        dirdefinition = self.find_list_(name='publicheaders_blahdir', lines=lines)
+    def test_nondefault_install_directories(self):
+        mf_am = Makefile_am()
+
+        mf_am.define_install_directory(symbolicname='publicheaders_blah',
+                                       dirname='$(includedir)/blah')
+        mf_am.add_to_install_directory(symbolicname='publicheaders_blah',
+                                       family='HEADERS',
+                                       files=['nondefaultfile1.h', 'nondefaultfile2.h'])
+        mf_am.add_to_install_directory(symbolicname='publicheaders_blah',
+                                       family='HEADERS',
+                                       files=['nondefaultfile0.h'])
+
+        lines = mf_am.lines()
+
+        dirdefinition = makefileutils.find_list(name='publicheaders_blahdir', lines=lines)
         self.failIf(dirdefinition is None)
         self.failUnless(len(dirdefinition) == 1)
         self.failUnless(dirdefinition[0] == '$(includedir)/blah')
 
-        headerlist = self.find_list_(name='publicheaders_blah_HEADERS', lines=lines)
+        headerlist = makefileutils.find_list(name='publicheaders_blah_HEADERS', lines=lines)
         self.failIf(headerlist is None)
-        self.failUnless(headerlist == ['file1.h', 'file2.h', 'file0.h'])
+        self.failUnless(headerlist == ['nondefaultfile1.h', 'nondefaultfile2.h', 'nondefaultfile0.h'])
         
         pass
-
-    def collapse_continuations_(self, lines):
-        ret = []
-        cur_line = None
-        for l in lines:
-            if cur_line:
-                cur_line += l
-            else:
-                cur_line = l
-                pass
-            if not cur_line.endswith('\\'):
-                ret.append(cur_line)
-                cur_line = None
-            else:
-                cur_line = cur_line[0:-1]
-                pass
-            pass
-        self.failUnless(cur_line is None)
-        return ret
-
-    def find_macro_(self, name, lines):
-        for l in lines:
-            match = rex_macro.search(l)
-            if not match:
-                continue
-            if match.group(1) == name:
-                return match.group(2)
-            continue
-        return None
-
-    def find_list_(self, name, lines):
-        value = self.find_macro_(name, lines)
-        if value:
-            values = rex_listsep.split(value)
-            # some lists are terminated by
-            # $(CONFIX_BACKSLASH_MITIGATOR). eliminate that.
-            if len(values) > 0 and values[-1] == '$(CONFIX_BACKSLASH_MITIGATOR)':
-                del values[-1]
-                pass
-            return values
-        return None
 
     pass
 

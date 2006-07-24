@@ -17,6 +17,8 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 # USA
 
+from rule import Rule
+from list import List
 import helper_automake
 
 from libconfix.core.utils import helper, const
@@ -26,67 +28,24 @@ import os
 import re
 import types
 
-class CompoundList:
-    def __init__(self, unique):
-        self.list_ = []
-        if unique:
-            self.have_ = set()
-        else:
-            self.have_ = None
-            pass
-        pass
-    def add(self, member):
-        if self.have_ is not None:
-            if member in self.have_:
-                raise Error('Duplicate addition of "'+member+'"')
-            self.have_.add(member)
-            pass
-        self.list_.append(member)
-        pass
-    def list(self):
-        return self.list_
-    pass
-
-class CompoundListManager:
-    def __init__(self,
-                 unique, # complain about duplicates?
-                 extension, # e.g. SOURCES, or LIBADD, and such
-                 ):
-        self.compounds_ = {}
-        self.unique_ = unique
-        self.extension_ = extension
-        pass
-    def add(self, compound_name, member):
-        canonic_name = helper_automake.automake_name(compound_name)
-        compound_list = self.compounds_.get(canonic_name)
-        if compound_list is None:
-            compound_list = CompoundList(self.unique_)
-            self.compounds_[canonic_name] = compound_list
-            pass
-        try:
-            compound_list.add(member)
-        except Error, e:
-            raise Error('Cannot add member "'+member+'" to "'+compound_name+'_'+self.extension_+'"')
-        pass
-    def list(self, compound_name):
-        canonic_name = helper_automake.automake_name(compound_name)
-        list = self.compounds_.get(canonic_name)
-        if list:
-            return list.list()
-        else:
-            return []
-        pass
-    def lines(self):
-        ret = []
-        for compound_name, list in self.compounds_.iteritems():
-            assert len(list.list()) > 0
-            ret.extend(helper_automake.format_make_macro(name=compound_name+'_'+self.extension_,
-                                                         values=list.list()))
-            pass
-        return ret
-    pass
-
 class Makefile_am:
+
+    class DirectoryDefinition:
+        def __init__(self, dirname):
+            self.dirname_ = dirname
+            self.family_files_ = {}
+            pass
+        def dirname(self):
+            return self.dirname_
+        def families(self):
+            return self.family_files_.keys()
+        def files(self, family):
+            return self.family_files_.get(family)
+        def add(self, family, files):
+            ffiles = self.family_files_.setdefault(family, [])
+            ffiles.extend(files)
+            pass
+        pass
 
     def __init__(self):
         # free lines to be output.
@@ -95,11 +54,11 @@ class Makefile_am:
 
         # AUTOMAKE_OPTIONS.
 
-        self.automake_options_ = []
+        self.automake_options_ = List(name='AUTOMAKE_OPTIONS', values=[], mitigate=False)
 
         # SUBDIRS.
 
-        self.subdirs_ = []
+        self.subdirs_ = List(name='SUBDIRS', values=[], mitigate=True)
 
         # Rule objects.
 
@@ -109,20 +68,20 @@ class Makefile_am:
         # MOSTLYCLEANFILES, CLEANFILES, DISTCLEANFILES, and
         # MAINTAINERCLEANFILES, respectively.
 
-        self.extra_dist_ = []
-        self.mostlycleanfiles_ = []
-        self.cleanfiles_ = []
-        self.distcleanfiles_ = []
-        self.maintainercleanfiles_ = []
+        self.extra_dist_ = List(name='EXTRA_DIST', values=[], mitigate=True)
+        self.mostlycleanfiles_ = List(name='MOSTLYCLEANFILES', values=[], mitigate=True)
+        self.cleanfiles_ = List(name='CLEANFILES', values=[], mitigate=True)
+        self.distcleanfiles_ = List(name='DISTCLEANFILES', values=[], mitigate=True)
+        self.maintainercleanfiles_ = List(name='MAINTAINERCLEANFILES', values=[], mitigate=True)
 
         # AM_CFLAGS, AM_CXXFLAGS, AM_LFLAGS, AM_YFLAGS. we collect
         # them in a dictionary to keep them unique. (keys are the
         # flags themselves, data is irrelevant.)
 
-        self.am_cflags_ = []
-        self.am_cxxflags_ = []
-        self.am_lflags_ = []
-        self.am_yflags_ = []
+        self.am_cflags_ = List(name='AM_CFLAGS', values=[], mitigate=True)
+        self.am_cxxflags_ = List(name='AM_CXXFLAGS', values=[], mitigate=True)
+        self.am_lflags_ = List(name='AM_LFLAGS', values=[], mitigate=True)
+        self.am_yflags_ = List(name='AM_YFLAGS', values=[], mitigate=True)
 
         # source files (_SOURCES) of compound objects (i.e. libraries
         # and executables).
@@ -175,8 +134,12 @@ class Makefile_am:
         #                                        'errortrace.h',
         #                                        'error_impl.h',
         #                                        'error_macros.h']})}
+
+        # note that we predefine the default directories (for
+        # include_HEADERS, or data_DATA, for example) -- these must
+        # not be explicitly defined in Makefile.am.
         
-        self.install_directories_ = {}
+        self.install_directories_ = {'': Makefile_am.DirectoryDefinition(dirname=None)}
 
         # TESTS_ENVIRONMENT. a dictionary (string->string) that
         # contains the environment for test programs.
@@ -186,15 +149,18 @@ class Makefile_am:
         # BUILT_SOURCES. list of files that must be built before
         # everything else is built.
 
-        self.built_sources_ = []
+        self.built_sources_ = List(name='BUILT_SOURCES', values=[], mitigate=True)
 
         # hook-targets to be made after the local (module) thing is
         # over. see the "all-local:" and "clean-local:" hook target
         # documentation in the automake manual.
 
-        self.all_local_ = []
-        self.clean_local_ = []
-        self.install_data_local_ = []
+        self.all_local_ = Rule(targets=['all-local'])
+        self.clean_local_ = Rule(targets=['clean-local'])
+        self.install_data_local_ = Rule(targets=['install-data-local'])
+        self.distclean_local_ = Rule(targets=['distclean-local'])
+        self.mostlyclean_local_  = Rule(targets=['mostlyclean-local'])
+        self.maintainer_clean_local_ = Rule(targets=['maintainer-clean-local'])
 
         pass
 
@@ -204,33 +170,33 @@ class Makefile_am:
 
     
     def automake_options(self): return self.automake_options_
-    def add_automake_options(self, option): self.automake_options_.append(option)
+    def add_automake_options(self, option): self.automake_options_.add_value(option)
 
     def subdirs(self): return self.subdirs_
-    def add_subdir(self, subdir): self.subdirs_.append(subdir)
+    def add_subdir(self, subdir): self.subdirs_.add_value(subdir)
 
     def rules(self): return self.rules_
     def add_rule(self, rule): self.rules_.append(rule)
 
     def extra_dist(self): return self.extra_dist_
-    def add_extra_dist(self, name): self.extra_dist_.append(name)
+    def add_extra_dist(self, name): self.extra_dist_.add_value(name)
 
-    def add_mostlycleanfiles(self, name): self.mostlycleanfiles_.append(name)
+    def add_mostlycleanfiles(self, name): self.mostlycleanfiles_.add_value(name)
 
-    def add_cleanfiles(self, name): self.cleanfiles_.append(name)
+    def add_cleanfiles(self, name): self.cleanfiles_.add_value(name)
 
-    def add_distcleanfiles(self, name): self.distcleanfiles_.append(name)
+    def add_distcleanfiles(self, name): self.distcleanfiles_.add_value(name)
 
     def maintainercleanfiles(self): return self.maintainercleanfiles_
-    def add_maintainercleanfiles(self, name): self.maintainercleanfiles_.append(name)
+    def add_maintainercleanfiles(self, name): self.maintainercleanfiles_.add_value(name)
 
-    def add_am_cflags(self, f): self.am_cflags_.append(f)
+    def add_am_cflags(self, f): self.am_cflags_.add_value(f)
 
-    def add_am_cxxflags(self, f): self.am_cxxflags_.append(f)
+    def add_am_cxxflags(self, f): self.am_cxxflags_.add_value(f)
 
-    def add_am_lflags(self, f): self.am_lflags_.append(f)
+    def add_am_lflags(self, f): self.am_lflags_.add_value(f)
 
-    def add_am_yflags(self, f): self.am_yflags_.append(f)
+    def add_am_yflags(self, f): self.am_yflags_.add_value(f)
 
     def compound_sources(self, compound_name):
         return self.compound_sources_.list(compound_name)
@@ -300,20 +266,16 @@ class Makefile_am:
         self.cmdlinemacros_[m] = value
         pass
 
+    def install_directories(self):
+        return self.install_directories_
     def define_install_directory(self, symbolicname, dirname):
-        assert len(dirname)
         assert not self.install_directories_.has_key(symbolicname), symbolicname+' already defined'
-        self.install_directories_[symbolicname] = (dirname, {})
+        self.install_directories_[symbolicname] = Makefile_am.DirectoryDefinition(dirname=dirname)
         pass
     def add_to_install_directory(self, symbolicname, family, files):
         dirdef = self.install_directories_.get(symbolicname)
         assert dirdef is not None, symbolicname+' is not defined'
-        familyfiles = dirdef[1].get(family)
-        if familyfiles is None:
-            familyfiles = []
-            dirdef[1][family] = familyfiles
-            pass
-        familyfiles.extend(files)
+        dirdef.add(family=family, files=files)
         pass
 
     def set_dir_dirname(self, dir, dirname):
@@ -400,19 +362,26 @@ class Makefile_am:
         pass
 
     def add_built_sources(self, filename):
-        self.built_sources_.append(filename)
+        self.built_sources_.add_value(filename)
         pass
 
     def add_all_local(self, hook):
-        self.all_local_.append(hook)
+        self.all_local_.add_prerequisite(hook)
         pass
-
     def add_clean_local(self, hook):
-        self.clean_local_.append(hook)
+        self.clean_local_.add_prerequisite(hook)
         pass
-
     def add_install_data_local(self, hook):
-        self.install_data_local_.append(hook)
+        self.install_data_local_.add_prerequisite(hook)
+        pass
+    def add_distclean_local(self, hook):
+        self.distclean_local_.add_prerequisite(hook)
+        pass
+    def add_mostlyclean_local(self, hook):
+        self.mostlyclean_local_.add_prerequisite(hook)
+        pass
+    def add_maintainer_clean_local(self, hook):
+        self.maintainer_clean_local_.add_prerequisite(hook)
         pass
 
     def lines(self):
@@ -421,16 +390,11 @@ class Makefile_am:
                  '']
 
         # AUTOMAKE_OPTIONS
-
-        if len(self.automake_options_):
-            lines.extend(helper_automake.format_list(
-                name='AUTOMAKE_OPTIONS',
-                values=self.automake_options_))
-            pass
+        lines.extend(self.automake_options_.lines())
 
         # SUBDIRS
 
-        lines.extend(helper_automake.format_make_macro(name='SUBDIRS', values=self.subdirs_))
+        lines.extend(self.subdirs_.lines())
 
         # Rules
 
@@ -441,81 +405,38 @@ class Makefile_am:
         # EXTRA_DIST, MOSTLYCLEANFILES, CLEANFILES, DISTCLEANFILES,
         # and MAINTAINERCLEANFILES
 
-        if len(self.extra_dist_):
-            lines.extend(helper_automake.format_make_macro(
-                name='EXTRA_DIST',
-                values=self.extra_dist_))
-            pass
-        if len(self.mostlycleanfiles_):
-            lines.extend(helper_automake.format_make_macro(
-                name='MOSTLYCLEANFILES',
-                values=self.mostlycleanfiles_))
-            pass
-        if len(self.cleanfiles_):
-            lines.extend(helper_automake.format_make_macro(
-                name='CLEANFILES',
-                values=self.cleanfiles_))
-            pass
-        if len(self.distcleanfiles_):
-            lines.extend(helper_automake.format_make_macro(
-                name='DISTCLEANFILES',
-                values=self.distcleanfiles_))
-            pass
-        if len(self.maintainercleanfiles_):
-            lines.extend(helper_automake.format_make_macro(
-                name='MAINTAINERCLEANFILES',
-                values=self.maintainercleanfiles_))
-            pass
+        lines.extend(self.extra_dist_.lines())
+        lines.extend(self.mostlycleanfiles_.lines())
+        lines.extend(self.cleanfiles_.lines())
+        lines.extend(self.distcleanfiles_.lines())
+        lines.extend(self.maintainercleanfiles_.lines())
         lines.append('')
 
         # AM_{C,CXX,L,Y}FLAGS, straightforwardly.
 
-        if len(self.am_cflags_):
-            lines.extend(helper_automake.format_make_macro(
-                name='AM_CFLAGS',
-                values=self.am_cflags_))
-            pass
-        if len(self.am_cxxflags_):
-            lines.extend(helper_automake.format_make_macro(
-                name='AM_CXXFLAGS',
-                values=self.am_cxxflags_))
-            pass
-        if len(self.am_lflags_):
-            lines.extend(helper_automake.format_make_macro(
-                name='AM_LFLAGS',
-                values=self.am_lflags_))
-            pass
-        if len(self.am_yflags_):
-            lines.extend(helper_automake.format_make_macro(
-                name='AM_YFLAGS',
-                values=self.am_yflags_))
-            pass
+        lines.extend(self.am_cflags_.lines())
+        lines.extend(self.am_cxxflags_.lines())
+        lines.extend(self.am_lflags_.lines())
+        lines.extend(self.am_yflags_.lines())
 
         # AM_CPPFLAGS. it is supposed to contain include paths and
         # macros.
 
-        am_cppflags = self.includepath_[:]
-
+        am_cppflags = List(name='AM_CPPFLAGS', values=self.includepath_, mitigate=True)
         for m in self.cmdlinemacros_.keys():
             macro = '-D' + m
             if self.cmdlinemacros_[m] is not None:
                 macro = macro + '=' + self.cmdlinemacros_[m]
-            am_cppflags.append(macro)
+                pass
+            am_cppflags.add_value(macro)
             pass
-
-        if len(am_cppflags):
-            lines.extend(helper_automake.format_make_macro(
-                name='AM_CPPFLAGS',
-                values=am_cppflags))
-            pass
+        lines.extend(am_cppflags.lines())
  
         # primaries
 
         for dp in self.dir_primary_.keys():
             assert len(self.dir_primary_[dp])
-            lines.extend(helper_automake.format_list(
-                name=dp,
-                values=self.dir_primary_[dp]))
+            lines.extend(List(name=dp, values=self.dir_primary_[dp], mitigate=False).lines())
             pass
 
         # compound-sources and such
@@ -526,9 +447,29 @@ class Makefile_am:
 
         # install directories
         for symbolicname, dirdef in self.install_directories_.iteritems():
-            lines.extend(helper_automake.format_make_macro(name=symbolicname+'dir', values=[dirdef[0]]))
-            for family, files in dirdef[1].iteritems():
-                lines.extend(helper_automake.format_make_macro(name=symbolicname+'_'+family, values=files))
+            if symbolicname != '':
+                lines.extend(List(name=symbolicname+'dir',
+                                  values=[dirdef.dirname()],
+                                  mitigate=False)
+                             .lines())
+                pass
+            for family in dirdef.families():
+                if symbolicname == '':
+                    if family == 'HEADERS':
+                        the_symname = 'include'
+                    elif family == 'DATA':
+                        the_symname = 'data'
+                    else:
+                        assert 0, 'unknown family "'+family+'"'
+                        pass
+                    pass
+                else:
+                    the_symname = symbolicname
+                    pass
+                lines.extend(List(name=the_symname+'_'+family,
+                                  values=dirdef.files(family),
+                                  mitigate=True)
+                             .lines())
                 pass
             pass
         
@@ -537,40 +478,27 @@ class Makefile_am:
         tests = self.dir_primary('check', 'PROGRAMS') + \
                 self.dir_primary('check', 'SCRIPTS')
         if len(tests):
-            lines.extend(helper_automake.format_make_macro(
-                name='TESTS',
-                values=tests))
+            lines.extend(List(name='TESTS', values=tests, mitigate=True).lines())
             if len(self.tests_environment_):
-                lines.extend(helper_automake.format_make_macro(
-                    name='TESTS_ENVIRONMENT',
-                    values=[k+'='+self.tests_environment_[k] \
-                            for k in self.tests_environment_.keys()]))
+                lines.extend(List(name='TESTS_ENVIRONMENT',
+                                  values=[k+'='+self.tests_environment_[k] \
+                                          for k in self.tests_environment_.keys()],
+                                  mitigate=True)
+                             .lines())
                 pass
             pass
 
         # BUILT_SOURCES
-
-        if len(self.built_sources_):
-            lines.append('')
-            lines.extend(helper_automake.format_make_macro(
-                name='BUILT_SOURCES',
-                values=self.built_sources_))
+        lines.extend(self.built_sources_.lines())
 
         # the registered local-hooks.
 
-        if len(self.all_local_):
-            lines.extend(helper_automake.format_rule(targets=['all-local'],
-                                                     prerequisites=self.all_local_,
-                                                     commands=[]))
-        if len(self.clean_local_):
-            lines.extend(helper_automake.format_rule(targets=['clean-local'],
-                                                     prerequisites=self.clean_local_,
-                                                     commands=[]))
-            
-        if len(self.install_data_local_):
-            lines.extend(helper_automake.format_rule(targets=['install-data-local'],
-                                                     prerequisites=self.install_data_local_,
-                                                     commands=[]))
+        lines.extend(self.all_local_.lines())
+        lines.extend(self.clean_local_.lines())
+        lines.extend(self.install_data_local_.lines())
+        lines.extend(self.distclean_local_.lines())
+        lines.extend(self.mostlyclean_local_.lines())
+        lines.extend(self.maintainer_clean_local_.lines())
 
         # code directly contributed by my files.
 
@@ -579,4 +507,66 @@ class Makefile_am:
 
         return lines
 
+    pass
+
+class CompoundList:
+    def __init__(self, unique):
+        self.list_ = []
+        if unique:
+            self.have_ = set()
+        else:
+            self.have_ = None
+            pass
+        pass
+    def add(self, member):
+        if self.have_ is not None:
+            if member in self.have_:
+                raise Error('Duplicate addition of "'+member+'"')
+            self.have_.add(member)
+            pass
+        self.list_.append(member)
+        pass
+    def list(self):
+        return self.list_
+    pass
+
+class CompoundListManager:
+    def __init__(self,
+                 unique, # complain about duplicates?
+                 extension, # e.g. SOURCES, or LIBADD, and such
+                 ):
+        self.compounds_ = {}
+        self.unique_ = unique
+        self.extension_ = extension
+        pass
+    def add(self, compound_name, member):
+        canonic_name = helper_automake.automake_name(compound_name)
+        compound_list = self.compounds_.get(canonic_name)
+        if compound_list is None:
+            compound_list = CompoundList(self.unique_)
+            self.compounds_[canonic_name] = compound_list
+            pass
+        try:
+            compound_list.add(member)
+        except Error, e:
+            raise Error('Cannot add member "'+member+'" to "'+compound_name+'_'+self.extension_+'"')
+        pass
+    def list(self, compound_name):
+        canonic_name = helper_automake.automake_name(compound_name)
+        list = self.compounds_.get(canonic_name)
+        if list:
+            return list.list()
+        else:
+            return []
+        pass
+    def lines(self):
+        ret = []
+        for compound_name, list in self.compounds_.iteritems():
+            assert len(list.list()) > 0
+            ret.extend(List(name=compound_name+'_'+self.extension_,
+                            values=list.list(),
+                            mitigate=True)
+                       .lines())
+            pass
+        return ret
     pass

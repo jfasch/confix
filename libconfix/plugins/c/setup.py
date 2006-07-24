@@ -19,6 +19,7 @@
 
 from creator import Creator
 from clusterer import CClusterer
+from installer import Installer
 from namefinder import LongNameFinder, ShortNameFinder
 
 from libconfix.core.setup import SetupFactory, Setup
@@ -97,6 +98,9 @@ class CSetup(Setup):
                        namefinder=self.namefinder_,
                        use_libtool=self.use_libtool_,
                        libtool_version_info=self.libtool_version_info_))
+        self.parentbuilder().add_builder(
+            Installer(parentbuilder=self.parentbuilder(),
+                      coordinator=self.coordinator()))
         
         return 1 + Setup.enlarge(self)
 

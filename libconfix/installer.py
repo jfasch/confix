@@ -239,24 +239,24 @@ class FileInstaller:
 
         pass
 
-    def automake_install_public_headers_(self, buildmod):
-        for reldir, filelist in self.dir2filedict_(file2dirdict=self.public_headers_).iteritems():
-            if len(reldir):
-                # define subdirectory
-                symbolicname = self.compute_install_dirname_('publicheader_'+reldir)
-                buildmod.makefile_am().add_lines(
-                    buildmod.makefile_am().define_directory(symbolicname=symbolicname,
-                                                            dirname='$(includedir)/'+reldir))
-                pass
-            else:
-                # no need to define subdirectory; take predefined
-                symbolicname = 'include'
-                pass
-            buildmod.makefile_am().add_lines(helper_automake.format_list(
-                name=symbolicname+'_HEADERS',
-                values=filelist))
-            pass
-        pass
+    def automake_install_public_headers_(self, buildmod): # in confix2
+        for reldir, filelist in self.dir2filedict_(file2dirdict=self.public_headers_).iteritems(): # in confix2
+            if len(reldir): # in confix2
+                # define subdirectory # in confix2
+                symbolicname = self.compute_install_dirname_('publicheader_'+reldir) # in confix2
+                buildmod.makefile_am().add_lines( # in confix2
+                    buildmod.makefile_am().define_directory(symbolicname=symbolicname, # in confix2
+                                                            dirname='$(includedir)/'+reldir)) # in confix2
+                pass # in confix2
+            else: # in confix2
+                # no need to define subdirectory; take predefined # in confix2
+                symbolicname = 'include' # in confix2
+                pass # in confix2
+            buildmod.makefile_am().add_lines(helper_automake.format_list( # in confix2
+                name=symbolicname+'_HEADERS', # in confix2
+                values=filelist)) # in confix2
+            pass # in confix2
+        pass # in confix2
     
     def automake_install_datafiles_(self, buildmod):
         for dirname, filelist in self.dir2filedict_(file2dirdict=self.datafiles_).iteritems():

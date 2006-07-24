@@ -26,7 +26,7 @@ from libconfix.core.automake import bootstrap, configure, make
 from libconfix.plugins.c.setup import CSetupFactory
 from libconfix.testutils import packages
 
-import unittest, os, shutil
+import unittest, os, sys, shutil
 
 class IntraPackageBuildSuite(unittest.TestSuite):
     def __init__(self):
@@ -61,16 +61,18 @@ class IntraPackageBuildTest(unittest.TestCase):
         pass
 
     def tearDown(self):
-        dir = os.sep.join(self.rootpath_)
-        if os.path.isdir(dir):
-            shutil.rmtree(dir)
-            pass
+##         dir = os.sep.join(self.rootpath_)
+##         if os.path.isdir(dir):
+##             shutil.rmtree(dir)
+##             pass
         pass
 
     def test(self):
         try:
             packageroot = os.sep.join(self.sourcerootpath_)
             buildroot = os.sep.join(self.buildrootpath_)
+            print packageroot
+            print buildroot
             bootstrap.bootstrap(packageroot=packageroot, aclocal_includedirs=[])
             os.makedirs(buildroot)
             configure.configure(packageroot=packageroot, buildroot=buildroot, prefix='/dev/null')
