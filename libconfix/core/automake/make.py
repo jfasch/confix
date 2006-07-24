@@ -1,4 +1,4 @@
-# $Id: 00all.py,v 1.2 2006/02/28 14:00:29 jfasch Exp $
+# $Id: FILE-HEADER,v 1.4 2006/02/06 21:07:44 jfasch Exp $
 
 # Copyright (C) 2002-2006 Salomon Automation
 
@@ -17,17 +17,8 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 # USA
 
-import unittest
+from libconfix.core.utils import external_cmd
 
-from basic.suite import BasicTestSuite
-from c.suite import CTestSuite
-
-if __name__ == '__main__':
-
-    suite = unittest.TestSuite()
-
-    suite.addTest(BasicTestSuite())
-    suite.addTest(CTestSuite())
-
-    runner = unittest.TextTestRunner()
-    runner.run(suite)
+def make(dir, args):
+    external_cmd.exec_program(program='make', dir=dir, args=args)
+    pass

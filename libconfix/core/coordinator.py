@@ -26,12 +26,13 @@ from filebuilder import FileBuilder
 from libconfix.core.digraph.digraph import DirectedGraph
 from libconfix.core import digraph
 from libconfix.core.automake.configure_ac import Configure_ac 
-from libconfix.core.automake.subdirs import SubDir 
 from libconfix.core.automake.auxdir import AutoconfAuxDir
 from libconfix.core.filesys.file import File
 from libconfix.core.filesys.directory import Directory
 from libconfix.core.utils.error import Error
 from libconfix.core.utils import const
+
+import os
 
 class BuildCoordinator:
 
@@ -39,7 +40,6 @@ class BuildCoordinator:
         self.name_ = None
         self.version_ = None
         self.rootdirectory_ = root
-
 
         self.digraph_ = None
 
@@ -59,9 +59,9 @@ class BuildCoordinator:
         try:
             mfpyfile = root.get(const.MAKEFILE_PY)
             if mfpyfile is None:
-                raise Error(const.MAKEFILE_PY+' missing in '+root.abspath())
+                raise Error(const.MAKEFILE_PY+' missing in '+os.sep.join(root.abspath()))
             if not isinstance(mfpyfile, File):
-                raise Error(mfpyfile.abspath()+' is not a file')
+                raise Error(os.sep.join(mfpyfile.abspath())+' is not a file')
 
             mfpy = CoordinatorMakefile_py(file=mfpyfile, parentbuilder=self.rootbuilder_, coordinator=self)
             self.rootbuilder_.add_configurator(mfpy)
@@ -179,6 +179,9 @@ class BuildCoordinator:
 
     def output_subdirs_(self):
 
+        # there is mention of our subdirectories in both the toplevel
+        # Makefile.am and configure.ac.
+
         # arrange to compose the SUBDIRS variable of the package root
         # directory ('.') and all the other directories in the
         # package.
@@ -186,7 +189,7 @@ class BuildCoordinator:
         # SUBDIRS has to be topologically correct. sort out all nodes
         # that correspond to subdirectories of the package. from the
         # global digraph, make a subgraph with those nodes. compute
-        # the topological order, and form that list, generate the
+        # the topological order, and from that list, generate the
         # output.
 
         dirbuilders = self.collect_dirbuilders_()
@@ -202,9 +205,15 @@ class BuildCoordinator:
                                        nodes=subdir_nodes)
         for n in digraph.toposort.toposort(digraph=graph, nodes=subdir_nodes):
             dirbuilder = n.responsible_builder()
-            # assertion makes for a dynamic_cast :-)
             assert isinstance(dirbuilder, DirectoryBuilder)
-            self.rootbuilder_.makefile_am().add_subdir(SubDir(directory=dirbuilder.directory()))
+            relpath = dirbuilder.directory().relpath()
+            if len(relpath):
+                dirstr = '/'.join(relpath)
+            else:
+                dirstr = '.'
+                pass
+            self.rootbuilder_.makefile_am().add_subdir(dirstr)
+            self.configure_ac().add_ac_config_files('/'.join([dirstr, 'Makefile']))
             pass
 
         pass

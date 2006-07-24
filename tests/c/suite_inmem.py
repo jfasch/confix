@@ -1,4 +1,4 @@
-# $Id: suite.py,v 1.2 2006/07/12 08:42:21 jfasch Exp $
+# $Id: suite.py,v 1.9 2006/07/07 15:29:18 jfasch Exp $
 
 # Copyright (C) 2002-2006 Salomon Automation
 
@@ -17,21 +17,32 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 # USA
 
-from c import CSuite
-from library import LibrarySuite
-from exe import ExecutableSuite
+from setup_library import LibrarySetupSuite
+from setup_exe import ExecutableSetupTest
+from main_search import MainSearch
+from requires import RequireTestSuite
+from install_path import InstallPathSuite
+from relate import RelateSuite
+from header_install import HeaderInstallSuite
+from automake.suite import AutomakeCSuiteInMemory
 
 import unittest
 
-class AutomakeCSuiteInMemory(unittest.TestSuite):
+class CTestSuiteInMemory(unittest.TestSuite):
     def __init__(self):
         unittest.TestSuite.__init__(self)
-        self.addTest(CSuite())
-        self.addTest(LibrarySuite())
-        self.addTest(ExecutableSuite())
+
+        self.addTest(LibrarySetupSuite())
+        self.addTest(ExecutableSetupTest('test'))
+        self.addTest(MainSearch('test'))
+        self.addTest(RequireTestSuite())
+        self.addTest(InstallPathSuite())
+        self.addTest(RelateSuite())
+        self.addTest(HeaderInstallSuite())
+        self.addTest(AutomakeCSuiteInMemory())
         pass
     pass
 
 if __name__ == '__main__':
-    unittest.TextTestRunner().run(AutomakeCSuiteInMemory())
+    unittest.TextTestRunner().run(CTestSuiteInMemory())
     pass

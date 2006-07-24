@@ -34,6 +34,7 @@ class LibrarySuite(unittest.TestSuite):
         self.addTest(LibtoolLibrary('test_library_alone'))
         self.addTest(LibtoolLibrary('test_version'))
         self.addTest(ArchiveLibrary('test_library_alone'))
+        self.addTest(ArchiveLibrary('test_AC_PROG_RANLIB'))
         pass
     pass
 
@@ -116,6 +117,18 @@ class ArchiveLibrary(LibraryBase):
     def libname(self): return 'libblah_lo.a'
     def amlibname(self): return 'libblah_lo_a'
     def primary(self): return 'LIBRARIES'
+
+    def test_AC_PROG_RANLIB(self):
+        conf_ac = self.fs_.rootdirectory().find(['configure.ac'])
+        self.failIf(conf_ac is None)
+        found_AC_PROG_RANLIB = False
+        for l in conf_ac.lines():
+            if l == 'AC_PROG_RANLIB':
+                found_AC_PROG_RANLIB = True
+                continue
+            pass
+        self.failUnless(found_AC_PROG_RANLIB)
+        pass
     pass
 
 if __name__ == '__main__':

@@ -16,26 +16,31 @@
 # License along with this library; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 # USA
-
+assert 0
 import helper_automake
 
 class SubDir:
 
-    def __init__(self, directory):
+    def __init__(self, directory, conditional):
+        self.conditional_ = conditional
         self.directory_ = directory
         pass
 
     def makefile_am_lines(self):
-        dir = self.dirname()
-        cond = self.conditional()
-        macro = self.make_macro()
-        return ['if '+cond,
-                macro+' = '+dir,
-                'else',
-                macro+' = ',
-                'endif',
-                '#kdevelop: '+macro+' = '+dir]
-
+        if self.conditional_:
+            dir = self.dirname()
+            cond = self.conditional()
+            macro = self.make_macro_()
+            return ['if '+cond,
+                    macro+' = '+dir,
+                    'else',
+                    macro+' = ',
+                    'endif',
+                    '#kdevelop: '+macro+' = '+dir]
+        else:
+            return []
+        pass
+        
     def dirname(self):
         if len(self.directory_.relpath()):
             return '/'.join(self.directory_.relpath())
@@ -43,24 +48,27 @@ class SubDir:
             return '.'
         pass
 
-    def make_macro(self):
+    def make_macro_(self):
 
         """ Return a make macro that is supposed to be listed in the
-        SUBDIRS variable."""
+        SUBDIRS variable. Only applicable if the directory is built
+        conditionally."""
 
         return 'confix_subdir_'+helper_automake.automake_name('/'.join(self.directory_.relpath()))
 
-    def enabled_shell_variable(self):
+    def enabled_shell_variable_(self):
 
         """ Return a shell variable that signals whether the subdir is
-        enabled or not."""
+        enabled or not. Only applicable if the directory is built
+        conditionally."""
 
         return 'confix_subdir_enabled_'+helper_automake.automake_name(self.relpath_)
 
-    def conditional(self):
+    def conditional_(self):
 
         """ The automake conditional that signals whether the
-        subdirectory is enabled or not."""
+        subdirectory is enabled or not. Only applicable if the
+        directory is built conditionally."""
 
         return 'CONFIX_COND_SUBDIR_'+helper_automake.automake_name('/'.join(self.directory_.relpath())).upper()
 
@@ -77,7 +85,7 @@ class SubDirList:
         if len(self.subdirs_):
             ret = helper_automake.format_make_macro(
                 name='SUBDIRS',
-                values=['$('+subdir.make_macro()+')' for subdir in self.subdirs_])
+                values=['$('+subdir.make_macro_()+')' for subdir in self.subdirs_])
             ret.append('')
             for subdir in self.subdirs_:
                 ret.extend(subdir.makefile_am_lines())

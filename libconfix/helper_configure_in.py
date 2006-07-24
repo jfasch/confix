@@ -19,32 +19,11 @@
 
 from paragraph import OrderedParagraphSet, Paragraph
 
-# rough ordering scheme according to the recommendations in the
-# autotools book , p.31
-
-ORDER_BOILERPLATE = 0
-ORDER_OPTIONS = 1000
-ORDER_PROGRAMS = 2000
-ORDER_LIBRARIES = 3000
-ORDER_HEADERS = 4000
-ORDER_TYPEDEFS_AND_STRUCTURES = 5000
-ORDER_FUNCTIONS = 6000
-ORDER_OUTPUT = 7000
-
-AC_PROG_CC = OrderedParagraphSet()
-AC_PROG_CC.add(
-    paragraph=Paragraph(['AC_PROG_CC']),
-    order=ORDER_PROGRAMS)
-
 AC_PROG_CXX = OrderedParagraphSet()
 AC_PROG_CXX.add(
     paragraph=Paragraph(['AC_PROG_CXX']),
     order=ORDER_PROGRAMS)
 
-AC_PROG_RANLIB = OrderedParagraphSet()
-AC_PROG_RANLIB.add(
-    paragraph=Paragraph(['AC_PROG_RANLIB']),
-    order=ORDER_PROGRAMS)
 
 AC_PROG_LIBTOOL = OrderedParagraphSet()
 AC_PROG_LIBTOOL.add(

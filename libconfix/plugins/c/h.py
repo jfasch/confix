@@ -96,6 +96,18 @@ class HeaderBuilder(CBaseBuilder):
                [InterfacePiece(globals={'CHEADERBUILDER_': self},
                                lines=[code_])]
 
+    def output(self):
+        CBaseBuilder.output(self)
+        # install into $(includedir) (or a subdirectory thereof)
+        self.parentbuilder().makefile_am().add_public_header(
+            filename=self.file().name(),
+            dir=self.install_path_)
+        # install into package's confix_include directory
+        self.parentbuilder().makefile_am().add_private_header(
+            filename=self.file().name(),
+            dir=self.install_path_)
+        pass
+    
     pass
 
 code_ = """

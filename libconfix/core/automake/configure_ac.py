@@ -37,14 +37,19 @@ class Configure_ac:
 
         self.minimum_autoconf_version_ = None
 
-        # arguments to AC_CONFIG_FILES. dictionary { filename: 1 }, to
-        # maintain uniqueness.
+        # arguments to AC_CONFIG_FILES.
 
-        self.ac_config_files_ = {}
+        self.ac_config_files_ = set()
 
         # same with AC_CONFIG_HEADERS.
 
         self.ac_config_headers_ = {}
+
+        # the package's subdirectories that will be built. we are
+        # getting this list, and put the subdirectories' Makefiles
+        # into self.ac_config_files_.
+
+        self.subdirs_ = []
 
         # everything else
 
@@ -79,10 +84,11 @@ class Configure_ac:
         self.minimum_autoconf_version_ = version
         pass
 
+    def ac_config_files(self): return self.ac_config_files_        
     def add_ac_config_files(self, file):
-        self.ac_config_files_[file] = 1
+        self.ac_config_files_.add(file)
         pass
-
+    
     def ac_config_headers(self): return self.ac_config_headers_
     def add_ac_config_headers(self, file):
         self.ac_config_headers_[file] = 1
@@ -141,7 +147,7 @@ class Configure_ac:
             pass
 
         if len(self.ac_config_files_):
-            lines.append('AC_CONFIG_FILES('+' '.join(self.ac_config_files_.keys())+')')
+            lines.append('AC_CONFIG_FILES('+' '.join(self.ac_config_files_)+')')
             pass
 
         # serialize our paragraphs, and output the lines.

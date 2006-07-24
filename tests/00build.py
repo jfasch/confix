@@ -1,4 +1,4 @@
-# $Id: suite.py,v 1.2 2006/07/12 08:42:21 jfasch Exp $
+# $Id: 00all.py,v 1.2 2006/02/28 14:00:29 jfasch Exp $
 
 # Copyright (C) 2002-2006 Salomon Automation
 
@@ -17,21 +17,15 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 # USA
 
-from c import CSuite
-from library import LibrarySuite
-from exe import ExecutableSuite
-
 import unittest
 
-class AutomakeCSuiteInMemory(unittest.TestSuite):
-    def __init__(self):
-        unittest.TestSuite.__init__(self)
-        self.addTest(CSuite())
-        self.addTest(LibrarySuite())
-        self.addTest(ExecutableSuite())
-        pass
-    pass
+from c.suite_build import CTestSuiteBuild
 
 if __name__ == '__main__':
-    unittest.TextTestRunner().run(AutomakeCSuiteInMemory())
-    pass
+
+    suite = unittest.TestSuite()
+
+    suite.addTest(CTestSuiteBuild())
+
+    runner = unittest.TextTestRunner()
+    runner.run(suite)

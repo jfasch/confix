@@ -80,28 +80,29 @@ class AutomakeOutputTest(unittest.TestCase):
         self.failIfEqual(self.fs_.rootdirectory().find(['Makefile.am']), None)
         self.failUnless(const.MAKEFILE_PY in self.coordinator_.rootbuilder().makefile_am().extra_dist())
 
-        # relative positions of subdir1, subdir2, subdir3 in SUBDIRS
-        # must be subdir1 < subdir2 < subdir3. (we cannot count on
-        # absolute positions because the topological range of '.' is
-        # random - '.' has no dependencies. (same hold for aux.))
+        # relative positions of subdir1, subdir2, subdir3 in toplevel
+        # Makefile.am's SUBDIRS must be subdir1 < subdir2 <
+        # subdir3. (we cannot count on absolute positions because the
+        # topological range of '.' is random - '.' has no
+        # dependencies. (same hold for aux.))
 
         aux = dot = subdir1 = subdir2 = subdir3 = None
 
         for i in range(len(self.coordinator_.rootbuilder().makefile_am().subdirs())):
-            if self.coordinator_.rootbuilder().makefile_am().subdirs()[i].dirname() == 'confix-admin':
+            if self.coordinator_.rootbuilder().makefile_am().subdirs()[i] == 'confix-admin':
                 self.failUnless(aux is None)
                 aux = i
-            elif self.coordinator_.rootbuilder().makefile_am().subdirs()[i].dirname() == 'subdir1':
+            elif self.coordinator_.rootbuilder().makefile_am().subdirs()[i] == 'subdir1':
                 self.failUnless(subdir1 is None)
                 subdir1 = i
-            elif self.coordinator_.rootbuilder().makefile_am().subdirs()[i].dirname() == 'subdir2':
+            elif self.coordinator_.rootbuilder().makefile_am().subdirs()[i] == 'subdir2':
                 self.failUnless(subdir2 is None)
                 subdir2 = i
-            elif self.coordinator_.rootbuilder().makefile_am().subdirs()[i].dirname() == 'subdir3':
+            elif self.coordinator_.rootbuilder().makefile_am().subdirs()[i] == 'subdir3':
                 self.failUnless(subdir3 is None)
                 subdir3 = i
                 pass
-            elif self.coordinator_.rootbuilder().makefile_am().subdirs()[i].dirname() == '.':
+            elif self.coordinator_.rootbuilder().makefile_am().subdirs()[i] == '.':
                 self.failUnless(dot is None)
                 dot = i
                 pass
@@ -117,6 +118,13 @@ class AutomakeOutputTest(unittest.TestCase):
         self.failIf(subdir3 is None)
 
         self.failUnless(subdir1 < subdir2 < subdir3)
+
+        # see if we have our subdir's Makefiles registered for output
+        self.failUnless('Makefile' in self.coordinator_.configure_ac().ac_config_files() or \
+                        './Makefile' in self.coordinator_.configure_ac().ac_config_files())
+        self.failUnless('subdir1/Makefile' in self.coordinator_.configure_ac().ac_config_files())
+        self.failUnless('subdir2/Makefile' in self.coordinator_.configure_ac().ac_config_files())
+        self.failUnless('subdir3/Makefile' in self.coordinator_.configure_ac().ac_config_files())
         
         pass
 
@@ -133,15 +141,7 @@ class AutomakeOutputTest(unittest.TestCase):
         mf_am = auxdir.find(['Makefile.am'])
         self.failIf(mf_am is None)
         self.failUnlessEqual(self.coordinator_.configure_ac().ac_config_aux_dir(), 'confix-admin')
-        config_ac = self.fs_.rootdirectory().find(['configure.ac'])
-        self.failIf(config_ac is None)
-        for line in config_ac.lines():
-            if line.find('AC_CONFIG_AUX_DIR') != -1 and line.find('confix-admin') != -1:
-                break
-            pass
-        else:
-            self.fail()
-            pass        
+        self.failUnless('confix-admin/Makefile' in self.coordinator_.configure_ac().ac_config_files())
         pass
 
     def test_toplevel_makefile_am(self):

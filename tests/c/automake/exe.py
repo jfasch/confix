@@ -47,9 +47,10 @@ class ExecutableBase(unittest.TestCase):
         liblo.add(name=const.MAKEFILE_PY, entry=File(lines=[]))
         liblo.add(name='lo.h',
                   entry=File(lines=['#ifndef LO_H',
-                                    '#  define LO_H',
+                                    '#define LO_H',
+                                    'void lo();',
                                     '#endif',
-                                    'void lo();']))
+                                    ]))
         liblo.add(name='lo.c',
                   entry=File(lines=['void lo() {}']))
         

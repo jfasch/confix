@@ -18,6 +18,7 @@
 # USA
 
 from makefile_am import MakefileAmSuite
+from configure_ac import ConfigureACSuite
 from output import AutomakeOutputSuite
 
 import unittest
@@ -27,6 +28,7 @@ class AutomakeSuite(unittest.TestSuite):
         unittest.TestSuite.__init__(self)
 
         self.addTest(MakefileAmSuite())
+        self.addTest(ConfigureACSuite())
         self.addTest(AutomakeOutputSuite())
         pass
 

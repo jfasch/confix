@@ -19,6 +19,13 @@
 
 from compiled import CompiledCBuilder
 
+from libconfix.core.utils.paragraph import Paragraph, OrderedParagraphSet
+
+AC_PROG_CC = OrderedParagraphSet()
+AC_PROG_CC.add(
+    paragraph=Paragraph(['AC_PROG_CC']),
+    order=OrderedParagraphSet.PROGRAMS)
+
 class CBuilder(CompiledCBuilder):
     def __init__(self, file, parentbuilder, coordinator):
         CompiledCBuilder.__init__(
@@ -26,6 +33,11 @@ class CBuilder(CompiledCBuilder):
             file=file,
             parentbuilder=parentbuilder,
             coordinator=coordinator)
+        pass
+
+    def output(self):
+        CompiledCBuilder.output(self)
+        self.coordinator().configure_ac().add_paragraphs(AC_PROG_CC)
         pass
     
     pass

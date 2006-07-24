@@ -18,7 +18,6 @@
 # USA
 
 import helper_automake
-from subdirs import SubDirList
 
 from libconfix.core.utils import helper, const
 from libconfix.core.utils.error import Error
@@ -100,7 +99,7 @@ class Makefile_am:
 
         # SUBDIRS.
 
-        self.subdirs_ = SubDirList()
+        self.subdirs_ = []
 
         # Rule objects.
 
@@ -193,28 +192,6 @@ class Makefile_am:
         self.clean_local_ = []
         self.install_data_local_ = []
 
-        # FIXME: bad hack, should be removed ASAP. files are not
-        # anymore installed by Makefile_am; rather, we use a file
-        # installer object to handle bulk installs
-        # transparently. however, some plugins out there still use
-        # Makefile_am for it - redirect their calls from there to the
-        # file installer.
-        self.file_installer_ = None
-
-        pass
-
-    def set_file_installer(self, fi):
-        self.file_installer_ = fi
-        pass
-    def install_header_public(self, filename, install_path):
-        debug.warn(self.dir_+': Makefile_am.install_header_public() is deprecated; '
-                   'use BuildableModule.file_installer().add_public_header() instead')
-        self.file_installer_.add_public_header(filename=filename, dir=install_path)
-        pass
-    def install_header_private(self, filename, install_path):
-        debug.warn(self.dir_+': Makefile_am.install_header_private() is deprecated; '
-                   'use BuildableModule.file_installer().add_private_header() instead')
-        self.file_installer_.add_private_header(filename=filename, dir=install_path)
         pass
 
     def add_line(self, line): self.lines_.append(line)
@@ -382,61 +359,51 @@ class Makefile_am:
     def bin_programs(self): return self.dir_primary('bin', 'PROGRAMS')
     def add_bin_program(self, progname):
         self.add_dir_primary('bin', 'PROGRAMS', progname)
+        pass
 
     def add_bin_script(self, scriptname):
-
         self.add_dir_primary('bin', 'SCRIPTS', scriptname)
+        pass
 
     def add_check_program(self, progname):
-        
         self.add_dir_primary('check', 'PROGRAMS', progname)
+        pass
 
     def add_check_script(self, scriptname):
-
         self.add_dir_primary('check', 'SCRIPTS', scriptname)
+        pass
 
     def add_noinst_program(self, progname):
-
         self.add_dir_primary('noinst', 'PROGRAMS', progname)
+        pass
 
     def add_noinst_script(self, scriptname):
-
         self.add_dir_primary('noinst', 'SCRIPTS', scriptname)
+        pass
 
     def add_tests_environment(self, key, value):
-
         assert type(key) is types.StringType
         assert type(value) is types.StringType
-
         self.tests_environment_[key] = value
+        pass
 
     def add_built_sources(self, filename):
-
         self.built_sources_.append(filename)
+        pass
 
     def add_all_local(self, hook):
-
-        """ Interface for L{libconfix.buildable.Buildable} objects. Add a target to the
-        C{all-local:} hook. """
-
         self.all_local_.append(hook)
+        pass
 
     def add_clean_local(self, hook):
-
-        """ Interface for L{libconfix.buildable.Buildable} objects. Add a target to the
-        C{clean-local:} hook. """
-
         self.clean_local_.append(hook)
+        pass
 
     def add_install_data_local(self, hook):
-
-        """ Interface for L{libconfix.buildable.Buildable} objects. Add a target to the
-        C{install-data-local:} hook. """
-
         self.install_data_local_.append(hook)
+        pass
 
     def lines(self):
-
         lines = ['# DO NOT EDIT! This file was automatically generated',
                  '# by Confix version '+const.CONFIX_VERSION,
                  '']
@@ -451,7 +418,7 @@ class Makefile_am:
 
         # SUBDIRS
 
-        lines.extend(self.subdirs_.makefile_am_lines())
+        lines.extend(helper_automake.format_make_macro(name='SUBDIRS', values=self.subdirs_))
 
         # Rules
 

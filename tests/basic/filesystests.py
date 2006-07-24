@@ -35,6 +35,7 @@ class FileSystemTestSuite(unittest.TestSuite):
         self.addTest(Sync('test_file_clear_on_sync_false'))
         self.addTest(Sync('test_file_clear_on_sync_true'))
         self.addTest(Sync('test_file_truncate_persistent'))
+        self.addTest(Sync_RootMoreThanOneDirectoryDeep('test'))
         pass
     pass
 
@@ -185,6 +186,22 @@ class Sync(unittest.TestCase):
         pass
 
     pass
+
+class Sync_RootMoreThanOneDirectoryDeep(unittest.TestCase):
+
+    # the above tests only test syncing an in-memory filesystem whose
+    # root is only one directory apart from a pysical directory. here
+    # we test whether it work with two directory entries in the air as
+    # well.
+    
+    def test(self):
+        path = ['', 'tmp', 'confix.synctest.'+str(os.getpid()), str(self.__class__)]
+        fs = FileSystem(path=path)
+        fs.sync()
+        self.failUnless(os.path.isdir(os.sep.join(path)))
+        pass
+    pass
+        
 
 if __name__ == '__main__':
     unittest.main()

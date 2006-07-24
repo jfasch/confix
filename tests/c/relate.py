@@ -19,8 +19,10 @@
 
 from libconfix.testutils import dirhier
 from libconfix.testutils import find
+from libconfix.testutils import packages
 from libconfix.core.filesys.directory import Directory
 from libconfix.core.filesys.file import File
+from libconfix.core.filesys.filesys import FileSystem
 from libconfix.core.coordinator import BuildCoordinator
 from libconfix.core.hierarchy import DirectorySetupFactory
 from libconfix.plugins.c.setup import CSetupFactory
@@ -62,61 +64,8 @@ class InternalRequires(unittest.TestCase):
 
 class RelateBasic(unittest.TestCase):
     def setUp(self):
-        fs = dirhier.packageroot()
-        liblo = fs.rootdirectory().add(name='lo', entry=Directory())
-        liblo.add(name='Makefile.py', entry=File(lines=[]))
-        liblo.add(name='lo.h',
-                  entry=File(lines=['#ifndef LO_H',
-                                    '#  define LO_H',
-                                    '#endif',
-                                    'void lo();']))
-        liblo.add(name='lo.c',
-                  entry=File(lines=['void lo() {}']))
-        
-        libhi1 = fs.rootdirectory().add(name='hi1', entry=Directory())
-        libhi1.add(name='Makefile.py', entry=File(lines={}))
-        libhi1.add(name='hi1.h',
-                   entry=File(lines=['#ifndef HI1_H',
-                                     '#  define HI1_H',
-                                     '#endif',
-                                     'void hi1();']))
-        libhi1.add(name='hi1.c',
-                   entry=File(lines=['#include <hi1.h>',
-                                     '#include <lo.h>',
-                                     'void hi1() { lo(); }']))
-        
-        libhi2 = fs.rootdirectory().add(name='hi2', entry=Directory())
-        libhi2.add(name='Makefile.py', entry=File(lines=[]))
-        libhi2.add(name='hi2.h',
-                   entry=File(lines=['#ifndef HI2_H',
-                                     '#  define HI2_H',
-                                     '#endif',
-                                     'void hi2();']))
-        libhi2.add(name='hi2.c',
-                   entry=File(lines=['#include <hi2.h>',
-                                     '#include <lo.h>',
-                                     'void hi2() { lo(); }']))
-
-        highest = fs.rootdirectory().add(name='highest', entry=Directory())
-        highest.add(name='Makefile.py', entry=File(lines=[]))
-        highest.add(name='highest.c',
-                    entry=File(lines=['#include <hi1.h>',
-                                      '#include <hi2.h>',
-                                      'void highest() {',
-                                      '    hi1();',                                    
-                                      '    hi2();',
-                                      '}']))
-        
-        exe = fs.rootdirectory().add(name='exe', entry=Directory())
-        exe.add(name='Makefile.py', entry=File(lines=[]))
-        exe.add(name='main.c',
-                entry=File(lines=['#include <hi1.h>',
-                                  '#include <hi2.h>',
-                                  'int main(void) {',
-                                  '    hi1();',
-                                  '    hi2();',
-                                  '    return 0;',
-                                  '}']))
+        fs = FileSystem(path=[''],
+                        rootdirectory=packages.lo_hi1_hi2_highest_exe(name='xxx', version='1.2.3'))
         
         self.coordinator_ = BuildCoordinator(root=fs.rootdirectory(),
                                              setups=[DirectorySetupFactory(),

@@ -17,30 +17,17 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 # USA
 
-from setup_library import LibrarySetupSuite
-from setup_exe import ExecutableSetupTest
-from main_search import MainSearch
-from requires import RequireTestSuite
-from install_path import InstallPathSuite
-from relate import RelateSuite
-from automake.suite import AutomakeCSuite
+from automake.suite_build import AutomakeCSuiteBuild
 
 import unittest
 
-class CTestSuite(unittest.TestSuite):
+class CTestSuiteBuild(unittest.TestSuite):
     def __init__(self):
         unittest.TestSuite.__init__(self)
-
-        self.addTest(LibrarySetupSuite())
-        self.addTest(ExecutableSetupTest('test'))
-        self.addTest(MainSearch('test'))
-        self.addTest(RequireTestSuite())
-        self.addTest(InstallPathSuite())
-        self.addTest(RelateSuite())
-        self.addTest(AutomakeCSuite())
+        self.addTest(AutomakeCSuiteBuild())
         pass
     pass
 
 if __name__ == '__main__':
-    unittest.TextTestRunner().run(CTestSuite())
+    unittest.TextTestRunner().run(CTestSuiteInMemory())
     pass

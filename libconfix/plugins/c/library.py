@@ -20,7 +20,13 @@
 from linked import LinkedBuilder
 from buildinfo import BuildInfo_CIncludePath_NativeLocal, BuildInfo_CLibrary_NativeLocal
 
-from libconfix.core.automake import helper_automake, helper_optmod
+from libconfix.core.utils.paragraph import Paragraph, OrderedParagraphSet
+from libconfix.core.automake import helper_automake
+
+AC_PROG_RANLIB = OrderedParagraphSet()
+AC_PROG_RANLIB.add(
+    paragraph=Paragraph(['AC_PROG_RANLIB']),
+    order=OrderedParagraphSet.PROGRAMS)
 
 class LibraryBuilder(LinkedBuilder):
     def __init__(self,
@@ -55,6 +61,10 @@ class LibraryBuilder(LinkedBuilder):
         pass
 
     def output(self):
+        LinkedBuilder.output(self)
+
+        self.coordinator().configure_ac().add_paragraphs(AC_PROG_RANLIB)
+        
         mf_am = self.parentbuilder().makefile_am()
         am_basename = helper_automake.automake_name(self.basename())
         am_libname = helper_automake.automake_name(self.libname())

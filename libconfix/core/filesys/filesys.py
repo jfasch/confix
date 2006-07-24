@@ -19,6 +19,8 @@
 
 from directory import Directory
 
+import os
+
 class FileSystem:
 
     CLEAR_ON_SYNC = 0
@@ -50,6 +52,23 @@ class FileSystem:
         return self.rootdirectory_
 
     def sync(self):
+        # ensure that the directory containing the root directory exists.
+        containing_dir = self.path_[0:-1]
+        if len(containing_dir) > 0:
+            path = os.sep.join(containing_dir)
+            if os.path.exists(path):
+                if not os.path.isdir(path):
+                    raise Error('Directory "'+path+'" exists but is not a directory')
+                pass
+            else:
+                try:
+                    os.makedirs(path)
+                except OSError, e:
+                    raise Error('Could not create directory "'+path+'"', [e])
+                pass
+            pass
+
+        # now finally, sync our rootdirectory
         self.rootdirectory_.sync()
         pass
 

@@ -288,9 +288,10 @@ def BOOTSTRAP():
         aclocal_args = aclocal_args + ' -I ' + libtooldir + '/../share/aclocal'
 
     if len(am_prefix): aclocal = os.path.join(am_prefix, 'bin', aclocal)
-    aclocal = aclocal + aclocal_args
-    debug.message(aclocal + '...')
-    if os.system(aclocal):
+
+    aclocal = aclocal + aclocal_args # in confix2
+    debug.message(aclocal + '...') # in confix2
+    if os.system(aclocal): # in confix2
         return -1
 
     if ARGS[const.ARG_USELIBTOOL]:
@@ -302,16 +303,16 @@ def BOOTSTRAP():
             return -1
 
     if len(ac_prefix): autoheader = os.path.join(ac_prefix, 'bin', autoheader)
-    autoheader = autoheader + autoheader_args
-    debug.message(autoheader + '...')
-    if os.system(autoheader):
-        return -1
+    autoheader = autoheader + autoheader_args # in confix2
+    debug.message(autoheader + '...') # in confix2
+    if os.system(autoheader): # in confix2
+        return -1 # in confix2
 
     if len(am_prefix): automake = os.path.join(am_prefix, 'bin', automake)
-    automake = automake + automake_args
-    debug.message(automake + '...')
-    if os.system(automake):
-        return -1
+    automake = automake + automake_args # in confix2
+    debug.message(automake + '...') # in confix2
+    if os.system(automake): # in confix2
+        return -1 # in confix2
 
     if ARGS[const.ARG_USE_KDE_HACK]:
         # somehow autoconf will not create a new configure script when
@@ -328,10 +329,10 @@ def BOOTSTRAP():
         pass
 
     if len(ac_prefix): autoconf = os.path.join(ac_prefix, 'bin', autoconf)
-    autoconf = autoconf + autoconf_args
-    debug.message(autoconf + '...')
-    if os.system(autoconf):
-        return -1
+    autoconf = autoconf + autoconf_args # in confix2
+    debug.message(autoconf + '...') # in confix2
+    if os.system(autoconf): # in confix2
+        return -1 # in confix2
 
     if ARGS[const.ARG_USE_KDE_HACK]:
         debug.message('KDE hack: patching configure script...')            

@@ -17,21 +17,19 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 # USA
 
-from c import CSuite
-from library import LibrarySuite
-from exe import ExecutableSuite
+from simple_build import SimpleBuildSuite
+from intra_package_build import IntraPackageBuildSuite
 
 import unittest
 
-class AutomakeCSuiteInMemory(unittest.TestSuite):
+class AutomakeCSuiteBuild(unittest.TestSuite):
     def __init__(self):
         unittest.TestSuite.__init__(self)
-        self.addTest(CSuite())
-        self.addTest(LibrarySuite())
-        self.addTest(ExecutableSuite())
+        self.addTest(SimpleBuildSuite())
+        self.addTest(IntraPackageBuildSuite())
         pass
     pass
 
 if __name__ == '__main__':
-    unittest.TextTestRunner().run(AutomakeCSuiteInMemory())
+    unittest.TextTestRunner().run(AutomakeCSuiteBuild())
     pass
