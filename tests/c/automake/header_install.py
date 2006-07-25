@@ -21,7 +21,7 @@ from libconfix.core.filesys.file import File
 from libconfix.core.coordinator import BuildCoordinator
 from libconfix.plugins.c.setup import CSetupFactory
 from libconfix.plugins.c.installer import Installer
-from libconfix.testutils import dirhier
+from libconfix.testutils import dirhier, makefileparser
 
 import unittest
 
@@ -51,6 +51,40 @@ class HeaderInstallTest(unittest.TestCase):
         self.failUnless(directory_definition.dirname() is None)
         self.failIf(directory_definition.files('HEADERS') is None)
         self.failUnless(directory_definition.files('HEADERS') == ['file.h'])
+
+        # check rules and their dependencies:
+        
+        # all-local -> confix-install-local -> $(top_builddir)/confix_include/file.h -> $(top_builddir)/confix_include
+
+        confix_install_local = makefileparser.find_rule(
+            targets=['confix-install-local'],
+            elements=coordinator.rootbuilder().makefile_am().rules())
+        install_file_h = makefileparser.find_rule(
+            targets=['$(top_builddir)/confix_include/file.h'],
+            elements=coordinator.rootbuilder().makefile_am().rules())
+        mkdir = makefileparser.find_rule(
+            targets=['$(top_builddir)/confix_include'],
+            elements=coordinator.rootbuilder().makefile_am().rules())
+        self.failIf(confix_install_local is None)
+        self.failIf(install_file_h is None)
+        self.failIf(mkdir is None)
+        self.failUnless('confix-install-local' in coordinator.rootbuilder().makefile_am().all_local().prerequisites())
+        self.failUnless('$(top_builddir)/confix_include/file.h' in confix_install_local.prerequisites())
+        self.failUnless('$(top_builddir)/confix_include' in install_file_h.prerequisites())
+
+        # clean-local -> confix-clean-local -> $(top_builddir)/confix_include/file.h-clean
+
+        confix_clean_local = makefileparser.find_rule(
+            targets=['confix-clean-local'],
+            elements=coordinator.rootbuilder().makefile_am().rules())
+        clean_file_h = makefileparser.find_rule(
+            targets=['$(top_builddir)/confix_include/file.h-clean'],
+            elements=coordinator.rootbuilder().makefile_am().rules())
+        self.failIf(confix_clean_local is None)
+        self.failIf(clean_file_h is None)
+        self.failUnless('confix-clean-local' in coordinator.rootbuilder().makefile_am().clean_local().prerequisites())
+        self.failUnless('$(top_builddir)/confix_include/file.h-clean' in confix_clean_local.prerequisites())
+        
         pass
 
     def test_onedeep(self):

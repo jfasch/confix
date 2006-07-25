@@ -82,12 +82,17 @@ class Installer(Builder):
         # hook.
 
         self.parentbuilder().makefile_am().add_all_local('confix-install-local')
-        self.parentbuilder().makefile_am().add_all_local('confix-clean-local')
+        self.parentbuilder().makefile_am().add_clean_local('confix-clean-local')
 
-        # add rules for every subdirectory
+        install_local_rule = Rule(targets=['confix-install-local'], prerequisites=[], commands=[])
+        clean_local_rule = Rule(targets=['confix-clean-local'], prerequisites=[], commands=[])
+        self.parentbuilder().makefile_am().add_element(install_local_rule)        
+        self.parentbuilder().makefile_am().add_element(clean_local_rule)
+
+        # add mkdir rules for every subdirectory
         for (installpath, files) in self.install_directories_.values():
             targetdir = '/'.join(['$(top_builddir)', const.LOCAL_INCLUDE_DIR] + installpath)
-            self.parentbuilder().makefile_am().add_rule(
+            self.parentbuilder().makefile_am().add_element(
                 Rule(targets=[targetdir],
                      prerequisites=[],
                      commands=['-$(mkinstalldirs) '+targetdir]))
@@ -98,11 +103,17 @@ class Installer(Builder):
             targetdir = '/'.join(['$(top_builddir)', const.LOCAL_INCLUDE_DIR] + installpath)
             for f in files:
                 targetfile = '/'.join([targetdir, f])
-                self.parentbuilder().makefile_am().add_rule(
+                self.parentbuilder().makefile_am().add_element(
                     Rule(targets=[targetfile],
                          prerequisites=[targetdir, f],
-                         commands=['@cp -fp $? '+' '+targetdir,
-                                   '@chmod 0444 '+targetfile]))
+                         commands=['cp -fp $(srcdir)/'+f+' '+targetdir,
+                                   'chmod 0444 '+targetfile]))
+                self.parentbuilder().makefile_am().add_element(
+                    Rule(targets=[targetfile+'-clean'],
+                         prerequisites=[],
+                         commands=['rm -f '+targetfile]))
+                install_local_rule.add_prerequisite(targetfile)
+                clean_local_rule.add_prerequisite(targetfile+'-clean')
                 pass
             pass
         pass

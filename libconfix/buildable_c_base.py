@@ -161,12 +161,12 @@ class BuildableCBase(BuildableSingle):
         for m in modules:
             for bi in m.buildinfos():
 
-                if isinstance(bi, BuildInfo_CIncludePath_NativeLocal):
-                    # remember to set the include path to our artificial
-                    # local include directory,
-                    # $(top_builddir)/confix_include
-                    self.using_native_local_module_ = True
-                    continue
+                if isinstance(bi, BuildInfo_CIncludePath_NativeLocal): # in confix2
+                    # remember to set the include path to our artificial # in confix2
+                    # local include directory, # in confix2
+                    # $(top_builddir)/confix_include # in confix2
+                    self.using_native_local_module_ = True # in confix2
+                    continue # in confix2
 
                 if isinstance(bi, BuildInfo_CIncludePath_NativeInstalled):
                     # remember to add $(includedir) and the readonly

@@ -19,7 +19,7 @@
 
 from libconfix.core.automake.makefile_am import Makefile_am
 from libconfix.core.utils.error import Error
-from libconfix.testutils import makefileutils
+from libconfix.testutils import makefileparser
 
 import unittest
 
@@ -88,51 +88,60 @@ class MakefileAmTest(unittest.TestCase):
         mf_am.add_built_sources('some-built-source')
         mf_am.add_built_sources('some-other-built-source')
 
+        mf_am.add_includepath('-Isome_path')
+        mf_am.add_includepath('-Isome_other_path')
+
         ##########################
         lines = mf_am.lines()
+        elements = makefileparser.parse_makefile(lines=lines)
 
-        self.failUnlessEqual(makefileutils.find_list(name='the_program_SOURCES', lines=lines),
+        self.failUnlessEqual(makefileparser.find_list(name='the_program_SOURCES', elements=elements).values(),
                              ['source.h', 'source.c'])
-        self.failUnlessEqual(makefileutils.find_list(name='the_program_LDFLAGS', lines=lines),
+        self.failUnlessEqual(makefileparser.find_list(name='the_program_LDFLAGS', elements=elements).values(),
                              ['-some-flag', '-some-other-flag'])
-        self.failUnlessEqual(makefileutils.find_list(name='libsome_ltlibrary_la_LIBADD', lines=lines),
+        self.failUnlessEqual(makefileparser.find_list(name='libsome_ltlibrary_la_LIBADD', elements=elements).values(),
                              ['some_library', 'some_other_library'])
-        self.failUnlessEqual(makefileutils.find_list(name='the_program_LDADD', lines=lines),
+        self.failUnlessEqual(makefileparser.find_list(name='the_program_LDADD', elements=elements).values(),
                              ['some_library', 'some_other_library'])
-        self.failUnlessEqual(makefileutils.find_list(name='AM_CFLAGS', lines=lines),
+        self.failUnlessEqual(makefileparser.find_list(name='AM_CFLAGS', elements=elements).values(),
                              ['-some-cflag', '-some-other-cflag'])
-        self.failUnlessEqual(makefileutils.find_list(name='AM_CXXFLAGS', lines=lines),
+        self.failUnlessEqual(makefileparser.find_list(name='AM_CXXFLAGS', elements=elements).values(),
                              ['-some-cxxflag', '-some-other-cxxflag'])
-        self.failUnlessEqual(makefileutils.find_list(name='AM_LFLAGS', lines=lines),
+        self.failUnlessEqual(makefileparser.find_list(name='AM_LFLAGS', elements=elements).values(),
                              ['-some-lflag', '-some-other-lflag'])
-        self.failUnlessEqual(makefileutils.find_list(name='AM_YFLAGS', lines=lines),
+        self.failUnlessEqual(makefileparser.find_list(name='AM_YFLAGS', elements=elements).values(),
                              ['-some-yflag', '-some-other-yflag'])
-        self.failUnlessEqual(makefileutils.find_list(name='EXTRA_DIST', lines=lines),
+        self.failUnlessEqual(makefileparser.find_list(name='EXTRA_DIST', elements=elements).values(),
                              ['some-extra-dist-file', 'some-other-extra-dist-file'])
-        self.failUnlessEqual(makefileutils.find_list(name='MOSTLYCLEANFILES', lines=lines),
+        self.failUnlessEqual(makefileparser.find_list(name='MOSTLYCLEANFILES', elements=elements).values(),
                              ['some-mostlycleanfile', 'some-other-mostlycleanfile'])
-        self.failUnlessEqual(makefileutils.find_list(name='CLEANFILES', lines=lines),
+        self.failUnlessEqual(makefileparser.find_list(name='CLEANFILES', elements=elements).values(),
                              ['some-cleanfile', 'some-other-cleanfile'])
-        self.failUnlessEqual(makefileutils.find_list(name='DISTCLEANFILES', lines=lines),
+        self.failUnlessEqual(makefileparser.find_list(name='DISTCLEANFILES', elements=elements).values(),
                              ['some-distcleanfile', 'some-other-distcleanfile'])
-        self.failUnlessEqual(makefileutils.find_list(name='MAINTAINERCLEANFILES', lines=lines),
+        self.failUnlessEqual(makefileparser.find_list(name='MAINTAINERCLEANFILES', elements=elements).values(),
                              ['some-maintainercleanfiles', 'some-other-maintainercleanfiles'])
-        self.failUnlessEqual(makefileutils.find_list(name='lib_LTLIBRARIES', lines=lines),
+        self.failUnlessEqual(makefileparser.find_list(name='lib_LTLIBRARIES', elements=elements).values(),
                              ['libsome-ltlibrary.la', 'libsome-other-ltlibrary.la'])
-        self.failUnlessEqual(makefileutils.find_list(name='lib_LIBRARIES', lines=lines),
+        self.failUnlessEqual(makefileparser.find_list(name='lib_LIBRARIES', elements=elements).values(),
                              ['libsome-library.a', 'libsome-other-library.a'])
-        self.failUnlessEqual(makefileutils.find_list(name='bin_PROGRAMS', lines=lines),
+        self.failUnlessEqual(makefileparser.find_list(name='bin_PROGRAMS', elements=elements).values(),
                              ['some-program', 'some-other-program'])
-        self.failUnlessEqual(makefileutils.find_list(name='bin_SCRIPTS', lines=lines),
+        self.failUnlessEqual(makefileparser.find_list(name='bin_SCRIPTS', elements=elements).values(),
                              ['some-script', 'some-other-script'])
-        self.failUnlessEqual(makefileutils.find_list(name='check_PROGRAMS', lines=lines),
+        self.failUnlessEqual(makefileparser.find_list(name='check_PROGRAMS', elements=elements).values(),
                              ['some-check-program', 'some-other-check-program'])
-        self.failUnlessEqual(makefileutils.find_list(name='xxx_YYY', lines=lines),
+        self.failUnlessEqual(makefileparser.find_list(name='xxx_YYY', elements=elements).values(),
                              ['some-xxx-YYY-thing', 'some-other-xxx-YYY-thing'])
-        self.failUnlessEqual(makefileutils.find_list(name='aaa_YYY', lines=lines),
+        self.failUnlessEqual(makefileparser.find_list(name='aaa_YYY', elements=elements).values(),
                              ['some-aaa-YYY-thing', 'some-other-aaa-YYY-thing'])
-        self.failUnlessEqual(makefileutils.find_list(name='BUILT_SOURCES', lines=lines),
+        self.failUnlessEqual(makefileparser.find_list(name='BUILT_SOURCES', elements=elements).values(),
                              ['some-built-source', 'some-other-built-source'])
+
+        # mf_am.add_includepath() goes into AM_CPPFLAGS
+        am_cppflags = makefileparser.find_list(name='AM_CPPFLAGS', elements=elements).values()
+        self.failUnless('-Isome_path' in am_cppflags)
+        self.failUnless('-Isome_other_path' in am_cppflags)
 
         pass
 
@@ -158,10 +167,11 @@ class MakefileAmTest(unittest.TestCase):
                                        files=['defaultfile0.h'])
 
         lines = mf_am.lines()
+        elements = makefileparser.parse_makefile(lines=lines)
         
-        headerlist = makefileutils.find_list(name='include_HEADERS', lines=lines)
+        headerlist = makefileparser.find_list(name='include_HEADERS', elements=elements)
         self.failIf(headerlist is None)
-        self.failUnless(headerlist == ['defaultfile1.h', 'defaultfile2.h', 'defaultfile0.h'])
+        self.failUnless(headerlist.values() == ['defaultfile1.h', 'defaultfile2.h', 'defaultfile0.h'])
         
         pass
 
@@ -179,14 +189,16 @@ class MakefileAmTest(unittest.TestCase):
 
         lines = mf_am.lines()
 
-        dirdefinition = makefileutils.find_list(name='publicheaders_blahdir', lines=lines)
+        elements = makefileparser.parse_makefile(lines=lines)
+
+        dirdefinition = makefileparser.find_list(name='publicheaders_blahdir', elements=elements)
         self.failIf(dirdefinition is None)
         self.failUnless(len(dirdefinition) == 1)
         self.failUnless(dirdefinition[0] == '$(includedir)/blah')
 
-        headerlist = makefileutils.find_list(name='publicheaders_blah_HEADERS', lines=lines)
+        headerlist = makefileparser.find_list(name='publicheaders_blah_HEADERS', elements=elements)
         self.failIf(headerlist is None)
-        self.failUnless(headerlist == ['nondefaultfile1.h', 'nondefaultfile2.h', 'nondefaultfile0.h'])
+        self.failUnless(headerlist.values() == ['nondefaultfile1.h', 'nondefaultfile2.h', 'nondefaultfile0.h'])
         
         pass
 

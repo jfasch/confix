@@ -80,8 +80,13 @@ class IntraPackageBuildTest(unittest.TestCase):
         except Error, e:
             sys.stderr.write(`e`+'\n')
             raise
-
-        self.failUnless(os.path.isfile(os.sep.join(self.buildrootpath_+['file.o'])))
+        
+        self.failUnless(os.path.isfile(os.sep.join(self.buildrootpath_+['lo', 'lo.o'])))
+        self.failUnless(os.path.isfile(os.sep.join(self.buildrootpath_+['hi1', 'hi1.o'])))
+        self.failUnless(os.path.isfile(os.sep.join(self.buildrootpath_+['hi2', 'hi2.o'])))
+        self.failUnless(os.path.isfile(os.sep.join(self.buildrootpath_+['highest', 'highest.o'])))
+        self.failUnless(os.path.isfile(os.sep.join(self.buildrootpath_+['exe', 'main.o'])))
+        self.failUnless(os.path.isfile(os.sep.join(self.buildrootpath_+['exe', 'intrapackagebuildtest_exe_main'])))
         pass
 
     pass

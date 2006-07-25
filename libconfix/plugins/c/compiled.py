@@ -20,6 +20,8 @@
 from base import CBaseBuilder
 from buildinfo import BuildInfo_CIncludePath_NativeLocal
 
+from libconfix.core.utils import const
+
 class CompiledCBuilder(CBaseBuilder):
     def __init__(self, file, parentbuilder, coordinator):
         CBaseBuilder.__init__(
@@ -39,14 +41,21 @@ class CompiledCBuilder(CBaseBuilder):
         for n in topolist:
             for bi in n.buildinfos():
                 if isinstance(bi, BuildInfo_CIncludePath_NativeLocal):
-                    self.buildinfo_includepath_.insert(0, bi)
+                    self.using_native_local_module_ = True
                     continue
                 pass
             pass
         pass
 
+    def output(self):
+        CBaseBuilder.output(self)
+        self.parentbuilder().makefile_am().add_includepath(
+            '-I$(top_builddir)/'+const.LOCAL_INCLUDE_DIR)
+        pass
+
     def init_buildinfo_(self):
         self.buildinfo_includepath_ = []
+        self.using_native_local_module_ = False
         pass
     pass
 

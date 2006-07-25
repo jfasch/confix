@@ -41,6 +41,43 @@ def automake_name(name):
     clean = clean.replace('+', '_')
     return clean.replace('%', '_')
 
+def format_word_list(words):
+    bare_lines = []
+
+    line = ''
+    for w in words:
+        if len(line) + len(w) + 1 < 70:
+            # word won't overflow the current line; consume word
+            if len(line): line = line + ' ' + w
+            else: line = w
+        else:
+            if len(line) > 0:
+                # line is already full; flush it and consume word
+                bare_lines.append(line)
+                line = w
+            else:
+                # word is longer than max line length. make a single
+                # line of it.
+                line = w
+
+    if len(line):
+        bare_lines.append(line)
+
+    # prepend spaces to all but the first line. append '\' to all but
+    # the last line. add line to return value.
+
+    ret_lines = []
+
+    for i in range(len(bare_lines)):
+        line = bare_lines[i]
+        if i != 0: line = '    ' + line
+        if i < len(bare_lines)-1:
+            line = line + ' \\'
+        ret_lines.append(line)
+
+    return ret_lines
+
+
 ## def format_rule(targets, prerequisites=None, commands=None):
 
 ##     """ Format a Makefile rule. A rule consists of one or more

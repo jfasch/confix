@@ -1,4 +1,4 @@
-# $Id: suite.py,v 1.2 2006/07/12 08:42:21 jfasch Exp $
+# $Id: FILE-HEADER,v 1.4 2006/02/06 21:07:44 jfasch Exp $
 
 # Copyright (C) 2002-2006 Salomon Automation
 
@@ -17,24 +17,13 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 # USA
 
-from c import CSuite
-from library import LibrarySuite
-from exe import ExecutableSuite
-from header_install import HeaderInstallSuite
+from element import MakefileElement
 
-import unittest
-
-class AutomakeCSuiteInMemory(unittest.TestSuite):
-    def __init__(self):
-        unittest.TestSuite.__init__(self)
-        self.addTest(CSuite())
-        self.addTest(LibrarySuite())
-        self.addTest(ExecutableSuite())
-        self.addTest(HeaderInstallSuite())
-        self.addTest(IntraPackageInMemorySuite())
+class White(MakefileElement):
+    def __init__(self, lines):
+        MakefileElement.__init__(self)
+        self.lines_ = lines
         pass
-    pass
-
-if __name__ == '__main__':
-    unittest.TextTestRunner().run(AutomakeCSuiteInMemory())
+    def lines(self):
+        return self.lines_
     pass

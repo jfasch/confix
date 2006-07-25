@@ -17,11 +17,12 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 # USA
 
+from element import MakefileElement
 import helper_automake
 
 import types
 
-class Rule:
+class Rule(MakefileElement):
     def __init__(self, targets, prerequisites=[], commands=[]):
         assert len(targets)
         self.targets_ = targets[:]
@@ -40,9 +41,11 @@ class Rule:
 
     def commands(self):
         return self.commands_
-
+    def add_command(self, c):
+        self.commands_.append(c)
+        pass
+        
     def lines(self):
-
         targ_prereqlist = self.targets_[:]
         targ_prereqlist[-1] = targ_prereqlist[-1] + ':'
         targ_prereqlist.extend(self.prerequisites_)
@@ -58,5 +61,5 @@ class Rule:
                 pass
             pass
         
-        return targ_prereqlist + commandlist
+        return helper_automake.format_word_list(targ_prereqlist) + commandlist
     pass

@@ -17,25 +17,127 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 # USA
 
+from libconfix.core.utils.error import Error
 from libconfix.core.automake.rule import Rule
+from libconfix.core.automake.list import List
+from libconfix.core.automake.white import White
+from libconfix.testutils import makefileparser
 
 import unittest
 
 class MakefileUtilsSuite(unittest.TestSuite):
     def __init__(self):
         unittest.TestSuite.__init__(self)
-        self.addTest(RuleTest('test'))
+        self.addTest(RuleTest('test_ok1'))
+        self.addTest(RuleTest('test_ok2'))
+        self.addTest(RuleTest('test_error'))
         pass
     pass
 
 class RuleTest(unittest.TestCase):
-    def test(self):
-        rule = Rule(targets=['target'],
-                    prerequisites=['prereq1', 'prereq2'],
-                    commands=['command1', 'command2'])
-        lines = rule.lines()
-        self.fail('makefileparser implementieren')
+    def test_ok1(self):
+        lines = []
+        for element in [Rule(targets=['target'],
+                             prerequisites=['prereq1', 'prereq2'],
+                             commands=['command1', 'command2']),
+                        White(lines=['# some comment',
+                                     '# even more comment']),
+                        List(name='list1', values=['list1value1', 'list1value2', 'list1value3'], mitigate=True),
+                        List(name='list2', values=['list2value1'], mitigate=True),
+                        Rule(targets=['target1', 'target2'],
+                             prerequisites=[],
+                             commands=['command3', 'command4']),
+                        Rule(targets=['target3', 'target4'],
+                             prerequisites=[],
+                             commands=[]),
+                        Rule(targets=['target5', 'target6'],
+                             prerequisites=['prereq1', 'prereq2'],
+                             commands=[])]:
+            lines.extend(element.lines())
+            pass
+
+        elements = makefileparser.parse_makefile(lines=lines)
+
+        self.failIf(makefileparser.find_list(name='list1', elements=elements).values() != \
+                    ['list1value1', 'list1value2', 'list1value3'])
+        self.failIf(makefileparser.find_list(name='list2', elements=elements).values() != \
+                    ['list2value1'])
+
+        rule = makefileparser.find_rule(targets=['target'], elements=elements)
+        self.failIf(rule.prerequisites() != ['prereq1', 'prereq2'])
+        self.failIf(rule.commands() != ['command1', 'command2'])
+
+        rule = makefileparser.find_rule(targets=['target1', 'target2'], elements=elements)
+        self.failIf(rule.prerequisites() != [])
+        self.failIf(rule.commands() != ['command3', 'command4'])
+
+        rule = makefileparser.find_rule(targets=['target3', 'target4'], elements=elements)
+        self.failIf(rule.prerequisites() != [])
+        self.failIf(rule.commands() != [])
+
+        rule = makefileparser.find_rule(targets=['target5', 'target6'], elements=elements)
+        self.failIf(rule.prerequisites() != ['prereq1', 'prereq2'])
+        self.failIf(rule.commands() != [])
         pass
+
+    def test_ok2(self):
+        elements = makefileparser.parse_makefile(
+            ['',
+             'target1: prereq1 prereq2',
+             '\tcommand1',
+             '\tcommand2',
+             '',
+             '',
+             'list1 = value1 value2',
+             'list2 = value3 \\',
+             '  value4 \\',
+             '  value5',
+             '',
+             'target2 target3: \\',
+             '  prereq3 \\',
+             '  prereq4',
+             '',
+             'list3 =',
+             'target4 target5: \\',
+             '  prereq3 \\',
+             '  prereq4',
+             '\tcommand3',
+             ])
+        rule = makefileparser.find_rule(targets=['target1'], elements=elements)
+        self.failIf(rule.prerequisites() != ['prereq1', 'prereq2'])
+        self.failIf(rule.commands() != ['command1', 'command2'])
+
+        list = makefileparser.find_list(name='list1', elements=elements)
+        self.failIf(list.values() != ['value1', 'value2'])
+
+        list = makefileparser.find_list(name='list2', elements=elements)
+        self.failIf(list.values() != ['value3', 'value4', 'value5'])
+
+        list = makefileparser.find_list(name='list3', elements=elements)
+        self.failIf(list.values() != [])
+
+        rule = makefileparser.find_rule(targets=['target2', 'target3'], elements=elements)
+        self.failIf(rule.prerequisites() != ['prereq3', 'prereq4'])
+        self.failIf(rule.commands() != [])
+
+        rule = makefileparser.find_rule(targets=['target4', 'target5'], elements=elements)
+        self.failIf(rule.prerequisites() != ['prereq3', 'prereq4'])
+        self.failIf(rule.commands() != ['command3'])
+        pass
+        
+    def test_error(self):
+        self.failUnlessRaises(Error,
+                              makefileparser.parse_makefile,
+                              lines=['xxx'])
+        self.failUnlessRaises(Error,
+                              makefileparser.parse_makefile,
+                              lines=['xxx yyy zzz'])
+        self.failUnlessRaises(Error,
+                              makefileparser.parse_makefile,
+                              lines=['xxx: yyy',
+                                     'zzz'])
+        pass
+
     pass
 
 

@@ -60,9 +60,9 @@ class Makefile_am:
 
         self.subdirs_ = List(name='SUBDIRS', values=[], mitigate=True)
 
-        # Rule objects.
+        # "Makefile elements": Rule and List objects.
 
-        self.rules_ = []
+        self.elements_ = []
 
         # sets of filenames that will come to rest in EXTRA_DIST,
         # MOSTLYCLEANFILES, CLEANFILES, DISTCLEANFILES, and
@@ -175,8 +175,8 @@ class Makefile_am:
     def subdirs(self): return self.subdirs_
     def add_subdir(self, subdir): self.subdirs_.add_value(subdir)
 
-    def rules(self): return self.rules_
-    def add_rule(self, rule): self.rules_.append(rule)
+    def elements(self): return self.elements_
+    def add_element(self, e): self.elements_.append(e)
 
     def extra_dist(self): return self.extra_dist_
     def add_extra_dist(self, name): self.extra_dist_.add_value(name)
@@ -190,6 +190,7 @@ class Makefile_am:
     def maintainercleanfiles(self): return self.maintainercleanfiles_
     def add_maintainercleanfiles(self, name): self.maintainercleanfiles_.add_value(name)
 
+    def am_cflags(self): return self.am_cflags_
     def add_am_cflags(self, f): self.am_cflags_.add_value(f)
 
     def add_am_cxxflags(self, f): self.am_cxxflags_.add_value(f)
@@ -222,35 +223,8 @@ class Makefile_am:
         self.compound_ldadd_.add(compound_name, lib)
         pass
 
+    def includepath(self): return self.includepath_
     def add_includepath(self, d):
-
-        """ Interface for L{libconfix.buildable.Buildable} objects. Add an include path to
-        the module's C{AM_CPPFLAGS}. The include path is not added
-        immediately, but it is rather collected and kept small/unique
-        until it makes its way into C{AM_CPPFLAGS}.
-
-        If you add an include directory to the search list twice, only the first
-        occurrence takes effect. In fact, if we passed all paths on to the
-        output (the compile command line, finally), the command line could
-        become quite large, although it would be correct. To make the command
-        line shorter, we apply some checks to make the search directories appear
-        on the command line only once, namely the first time that they appear.
-
-        Note that generally the include path is composed of autoconf
-        substitutions, such as
-        "E{@}some_include_dir_of_some_sortE{@}", and it is not the
-        responsibility of this class to take care that the '-I' flag
-        is present in the final output. Rather, the added string is
-        completely opaque, and it is the responsibility of the adder
-        to ensure that it is present.
-
-        @type d: string
-
-        @param d: A whitespace-delimited list of directories to add to
-        the include path.
-
-        """
-
         dirs = d.split()
         for dir in dirs:
             if not self.have_includedir_.has_key(dir):
@@ -365,21 +339,27 @@ class Makefile_am:
         self.built_sources_.add_value(filename)
         pass
 
+    def all_local(self): return self.all_local_
     def add_all_local(self, hook):
         self.all_local_.add_prerequisite(hook)
         pass
+    def clean_local(self): return self.clean_local_
     def add_clean_local(self, hook):
         self.clean_local_.add_prerequisite(hook)
         pass
+    def install_data_local(self): return self.install_data_local_
     def add_install_data_local(self, hook):
         self.install_data_local_.add_prerequisite(hook)
         pass
+    def distclean_local(self): return self.distclean_local_
     def add_distclean_local(self, hook):
         self.distclean_local_.add_prerequisite(hook)
         pass
+    def mostlyclean_local(self): return self.mostlyclean_local_
     def add_mostlyclean_local(self, hook):
         self.mostlyclean_local_.add_prerequisite(hook)
         pass
+    def maintainer_clean_local(self): return self.maintainer_clean_local_
     def add_maintainer_clean_local(self, hook):
         self.maintainer_clean_local_.add_prerequisite(hook)
         pass
@@ -396,10 +376,10 @@ class Makefile_am:
 
         lines.extend(self.subdirs_.lines())
 
-        # Rules
+        # Free Makefile elements
 
-        for r in self.rules_:
-            lines.extend(r.lines())
+        for e in self.elements_:
+            lines.extend(e.lines())
             pass
 
         # EXTRA_DIST, MOSTLYCLEANFILES, CLEANFILES, DISTCLEANFILES,

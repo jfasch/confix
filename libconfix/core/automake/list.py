@@ -17,7 +17,10 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 # USA
 
-class List:
+from element import MakefileElement
+import helper_automake
+
+class List(MakefileElement):
 
     # BACKSLASH_MITIGATOR: we wrap long lines with backslashes, so
     # that various tools are happy. for example, config.status scans
@@ -63,42 +66,7 @@ class List:
         if self.mitigate_:
             list.append('$(CONFIX_BACKSLASH_MITIGATOR)')
             pass
-        return format_word_list_(list)
+        return helper_automake.format_word_list(list)
     pass
 
-def format_word_list_(words):
-    bare_lines = []
-
-    line = ''
-    for w in words:
-        if len(line) + len(w) + 1 < 70:
-            # word won't overflow the current line; consume word
-            if len(line): line = line + ' ' + w
-            else: line = w
-        else:
-            if len(line) > 0:
-                # line is already full; flush it and consume word
-                bare_lines.append(line)
-                line = w
-            else:
-                # word is longer than max line length. make a single
-                # line of it.
-                line = w
-
-    if len(line):
-        bare_lines.append(line)
-
-    # prepend spaces to all but the first line. append '\' to all but
-    # the last line. add line to return value.
-
-    ret_lines = []
-
-    for i in range(len(bare_lines)):
-        line = bare_lines[i]
-        if i != 0: line = '    ' + line
-        if i < len(bare_lines)-1:
-            line = line + ' \\'
-        ret_lines.append(line)
-
-    return ret_lines
 
