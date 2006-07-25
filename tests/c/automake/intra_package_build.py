@@ -61,10 +61,10 @@ class IntraPackageBuildTest(unittest.TestCase):
         pass
 
     def tearDown(self):
-##         dir = os.sep.join(self.rootpath_)
-##         if os.path.isdir(dir):
-##             shutil.rmtree(dir)
-##             pass
+        dir = os.sep.join(self.rootpath_)
+        if os.path.isdir(dir):
+            shutil.rmtree(dir)
+            pass
         pass
 
     def test(self):

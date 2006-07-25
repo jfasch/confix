@@ -21,6 +21,7 @@ from c import CSuite
 from library import LibrarySuite
 from exe import ExecutableSuite
 from header_install import HeaderInstallSuite
+from intra_package_inmem import IntraPackageInMemorySuite
 
 import unittest
 

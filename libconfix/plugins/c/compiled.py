@@ -32,8 +32,8 @@ class CompiledCBuilder(CBaseBuilder):
         self.init_buildinfo_()
         pass
 
-    def buildinfo_includepath(self):
-        return self.buildinfo_includepath_
+    def native_local_modules_used(self):
+        return self.native_local_modules_used_
 
     def relate(self, node, digraph, topolist):
         CBaseBuilder.relate(self, node, digraph, topolist)
@@ -41,7 +41,7 @@ class CompiledCBuilder(CBaseBuilder):
         for n in topolist:
             for bi in n.buildinfos():
                 if isinstance(bi, BuildInfo_CIncludePath_NativeLocal):
-                    self.using_native_local_module_ = True
+                    self.native_local_modules_used_.insert(0, bi)
                     continue
                 pass
             pass
@@ -49,13 +49,14 @@ class CompiledCBuilder(CBaseBuilder):
 
     def output(self):
         CBaseBuilder.output(self)
-        self.parentbuilder().makefile_am().add_includepath(
-            '-I$(top_builddir)/'+const.LOCAL_INCLUDE_DIR)
+        if len(self.native_local_modules_used_) > 0:
+            self.parentbuilder().makefile_am().add_includepath(
+                '-I$(top_builddir)/'+const.LOCAL_INCLUDE_DIR)
+            pass
         pass
 
     def init_buildinfo_(self):
-        self.buildinfo_includepath_ = []
-        self.using_native_local_module_ = False
+        self.native_local_modules_used_ = []
         pass
     pass
 

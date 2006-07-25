@@ -58,13 +58,13 @@ class HeaderInstallTest(unittest.TestCase):
 
         confix_install_local = makefileparser.find_rule(
             targets=['confix-install-local'],
-            elements=coordinator.rootbuilder().makefile_am().rules())
+            elements=coordinator.rootbuilder().makefile_am().elements())
         install_file_h = makefileparser.find_rule(
             targets=['$(top_builddir)/confix_include/file.h'],
-            elements=coordinator.rootbuilder().makefile_am().rules())
+            elements=coordinator.rootbuilder().makefile_am().elements())
         mkdir = makefileparser.find_rule(
             targets=['$(top_builddir)/confix_include'],
-            elements=coordinator.rootbuilder().makefile_am().rules())
+            elements=coordinator.rootbuilder().makefile_am().elements())
         self.failIf(confix_install_local is None)
         self.failIf(install_file_h is None)
         self.failIf(mkdir is None)
@@ -76,10 +76,10 @@ class HeaderInstallTest(unittest.TestCase):
 
         confix_clean_local = makefileparser.find_rule(
             targets=['confix-clean-local'],
-            elements=coordinator.rootbuilder().makefile_am().rules())
+            elements=coordinator.rootbuilder().makefile_am().elements())
         clean_file_h = makefileparser.find_rule(
             targets=['$(top_builddir)/confix_include/file.h-clean'],
-            elements=coordinator.rootbuilder().makefile_am().rules())
+            elements=coordinator.rootbuilder().makefile_am().elements())
         self.failIf(confix_clean_local is None)
         self.failIf(clean_file_h is None)
         self.failUnless('confix-clean-local' in coordinator.rootbuilder().makefile_am().clean_local().prerequisites())
