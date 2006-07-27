@@ -33,12 +33,12 @@ import re
 _re_confix = re.compile('//\s*CONFIX:([^\r\n]*)')
 
 class CBaseBuilder(FileBuilder):
-    def __init__(self, file, parentbuilder, coordinator):
+    def __init__(self, file, parentbuilder, package):
         FileBuilder.__init__(
             self,
             file=file,
             parentbuilder=parentbuilder,
-            coordinator=coordinator)
+            package=package)
 
         for h_file in helper.extract_requires(file.lines()):
             self.add_require(

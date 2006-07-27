@@ -23,7 +23,7 @@ from libconfix.plugins.c.setup import CSetupFactory
 from libconfix.core.filesys.file import File
 from libconfix.core.filesys.directory import Directory
 from libconfix.core.filesys.filesys import FileSystem
-from libconfix.core.coordinator import BuildCoordinator
+from libconfix.core.local_package import LocalPackage
 from libconfix.testutils import find
 
 import unittest
@@ -48,7 +48,7 @@ class FilePropertyOnly(unittest.TestCase):
         fs = FileSystem(path=[])
         file = fs.rootdirectory().add(name='some_file', entry=File(lines=[]))
         file.set_property(name='INSTALLPATH_CINCLUDE', value=['xxx'])
-        builder = HeaderBuilder(file=file, parentbuilder=None, coordinator=None)
+        builder = HeaderBuilder(file=file, parentbuilder=None, package=None)
         self.failUnlessEqual(builder.install_path(), ['xxx'])
         pass
     pass
@@ -57,7 +57,7 @@ class IfaceOnly(unittest.TestCase):
     def test(self):
         fs = FileSystem(path=[])
         file = fs.rootdirectory().add(name='some_file', entry=File(lines=["// CONFIX:INSTALLPATH(['xxx'])"]))
-        builder = HeaderBuilder(file=file, parentbuilder=None, coordinator=None)
+        builder = HeaderBuilder(file=file, parentbuilder=None, package=None)
         self.failUnlessEqual(builder.install_path(), ['xxx'])
         pass
     pass
@@ -68,7 +68,7 @@ class Namespace(unittest.TestCase):
         file = fs.rootdirectory().add(name='some_file',
                                       entry=File(lines=['namespace A {',
                                                         '}; // /namespace']))
-        builder = HeaderBuilder(file=file, parentbuilder=None,  coordinator=None)
+        builder = HeaderBuilder(file=file, parentbuilder=None,  package=None)
         self.failUnlessEqual(builder.install_path(), ['A'])
         pass
     def testNested(self):
@@ -79,13 +79,13 @@ class Namespace(unittest.TestCase):
                                                         '}; // /namespace',
                                                         '}; // /namespace'
                                                         ]))
-        builder = HeaderBuilder(file=file, parentbuilder=None,  coordinator=None)
+        builder = HeaderBuilder(file=file, parentbuilder=None,  package=None)
         self.failUnlessEqual(builder.install_path(), ['A', 'B'])
         pass
     def testGlobal(self):
         fs = FileSystem(path=[])
         file = fs.rootdirectory().add(name='some_file', entry=File(lines=[]))
-        builder = HeaderBuilder(file=file, parentbuilder=None,  coordinator=None)
+        builder = HeaderBuilder(file=file, parentbuilder=None,  package=None)
         self.failUnlessEqual(builder.install_path(), [])
         pass
     def testAmbiguousFlat(self):
@@ -95,7 +95,7 @@ class Namespace(unittest.TestCase):
                            '}; // /namespace'
                            ])
         try:
-            HeaderBuilder(file=file, parentbuilder=None,  coordinator=None)
+            HeaderBuilder(file=file, parentbuilder=None,  package=None)
         except libconfix.plugins.c.namespace.AmbiguousNamespace:
             return
         self.fail()
@@ -111,7 +111,7 @@ class Namespace(unittest.TestCase):
                            '}; // /namespace'
                            ])
         try:
-            HeaderBuilder(file=file, parentbuilder=None,  coordinator=None)
+            HeaderBuilder(file=file, parentbuilder=None,  package=None)
         except libconfix.plugins.c.namespace.AmbiguousNamespace:
             return
         self.fail()
@@ -126,11 +126,11 @@ class Namespace(unittest.TestCase):
                                                  "    name='INSTALLPATH_CINCLUDE',",
                                                  "    value=['xxx'])"]))
         fs.rootdirectory().add(name='file.h', entry=File(lines=[]))
-        coordinator = BuildCoordinator(root=fs.rootdirectory(),
-                                       setups=[CSetupFactory(short_libnames=False,
-                                                             use_libtool=False)])
-        coordinator.enlarge()
-        filebuilder = find.find_entrybuilder(coordinator.rootbuilder(), ['file.h'])
+        package = LocalPackage(root=fs.rootdirectory(),
+                                   setups=[CSetupFactory(short_libnames=False,
+                                                         use_libtool=False)])
+        package.enlarge(external_nodes=[])
+        filebuilder = find.find_entrybuilder(package.rootbuilder(), ['file.h'])
         assert filebuilder is not None
         self.failUnlessEqual(filebuilder.install_path(), ['xxx'])
         pass
@@ -142,7 +142,7 @@ class IfaceFilePropertyConflict(unittest.TestCase):
         file = File(lines=["// CONFIX:INSTALLPATH(['xxx'])"])
         file.set_property(name='INSTALLPATH_CINCLUDE', value=['xxx'])
         try:
-            builder = HeaderBuilder(file=file, parentbuilder=None, coordinator=None)
+            builder = HeaderBuilder(file=file, parentbuilder=None, package=None)
         except HeaderBuilder.InstallPathConflict, e:
             return
         self.fail()

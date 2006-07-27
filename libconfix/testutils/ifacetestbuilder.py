@@ -28,38 +28,38 @@ class FileInterfaceTestSetupFactory(SetupFactory):
     def __init__(self):
         SetupFactory.__init__(self)
         pass
-    def create(self, parentbuilder, coordinator):
-        return FileInterfaceTestSetup(parentbuilder=parentbuilder, coordinator=coordinator)
+    def create(self, parentbuilder, package):
+        return FileInterfaceTestSetup(parentbuilder=parentbuilder, package=package)
     pass
 
 class FileInterfaceTestSetup(Setup):
-    def __init__(self, parentbuilder, coordinator):
+    def __init__(self, parentbuilder, package):
         Setup.__init__(self,
                        id=str(self.__class__)+'('+str(parentbuilder)+')',
                        parentbuilder=parentbuilder,
-                       coordinator=coordinator)
+                       package=package)
         self.bursted_ = False
         pass
-    def clone(self, parentbuilder, coordinator):
-        return FileInterfaceTestSetup(parentbuilder=parentbuilder, coordinator=coordinator)
+    def clone(self, parentbuilder, package):
+        return FileInterfaceTestSetup(parentbuilder=parentbuilder, package=package)
     def enlarge(self):
         if self.bursted_:
             return 0
         self.bursted_ = True
         self.parentbuilder().add_builder(FileInterfaceTestCreator(
             parentbuilder=self.parentbuilder(),
-            coordinator=self.coordinator()))
+            package=self.package()))
         return 1 + Setup.enlarge(self)
         pass
     pass
 
 class FileInterfaceTestCreator(Builder):
-    def __init__(self, parentbuilder, coordinator):
+    def __init__(self, parentbuilder, package):
         Builder.__init__(
             self,
             id=str(self.__class__)+'('+str(parentbuilder)+')',
             parentbuilder=parentbuilder,
-            coordinator=coordinator)
+            package=package)
         self.handled_entries_ = set()
         pass
 
@@ -74,7 +74,7 @@ class FileInterfaceTestCreator(Builder):
                 newbuilders.append((entry,
                                     FileInterfaceTestBuilder(file=entry,
                                                              parentbuilder=self.parentbuilder(),
-                                                             coordinator=self.coordinator())))
+                                                             package=self.package())))
                 continue
             pass
         for entry, b in newbuilders:
@@ -85,8 +85,8 @@ class FileInterfaceTestCreator(Builder):
     pass
 
 class FileInterfaceTestBuilder(FileBuilder):
-    def __init__(self, parentbuilder, coordinator, file):
-        FileBuilder.__init__(self, parentbuilder=parentbuilder, coordinator=coordinator, file=file)
+    def __init__(self, parentbuilder, package, file):
+        FileBuilder.__init__(self, parentbuilder=parentbuilder, package=package, file=file)
         lines=file.lines()
         if len(lines):
             execer = InterfaceExecutor(iface_pieces=self.iface_pieces())

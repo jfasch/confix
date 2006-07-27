@@ -36,7 +36,7 @@ class HeaderBuilder(CBaseBuilder):
             pass
         pass
                            
-    def __init__(self, file, parentbuilder, coordinator):
+    def __init__(self, file, parentbuilder, package):
         # we exec the iface in the ctor, so the relevant members have
         # to be available before this.
         self.install_path_ = None
@@ -45,7 +45,7 @@ class HeaderBuilder(CBaseBuilder):
             self,
             file=file,
             parentbuilder=parentbuilder,
-            coordinator=coordinator)
+            package=package)
 
         installpath = file.get_property(HeaderBuilder.PROPERTY_INSTALLPATH)
         if installpath is not None:

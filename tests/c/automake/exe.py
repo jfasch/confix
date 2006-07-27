@@ -21,7 +21,7 @@ from libconfix.testutils import dirhier, find
 from libconfix.core.filesys.directory import Directory
 from libconfix.core.filesys.file import File
 from libconfix.core.utils import const
-from libconfix.core.coordinator import BuildCoordinator
+from libconfix.core.local_package import LocalPackage
 from libconfix.core.hierarchy import DirectorySetupFactory
 from libconfix.plugins.c.setup import CSetupFactory
 from libconfix.plugins.c.executable import ExecutableBuilder
@@ -76,15 +76,15 @@ class ExecutableBase(unittest.TestCase):
                                   '}']))
         exe.add(name='something.c', entry=File())
         
-        self.coordinator_ = BuildCoordinator(root=self.fs_.rootdirectory(),
-                                             setups=[DirectorySetupFactory(),
-                                                     CSetupFactory(short_libnames=False, use_libtool=self.use_libtool())])
-        self.coordinator_.enlarge()
-        self.coordinator_.output()
+        self.package_ = LocalPackage(root=self.fs_.rootdirectory(),
+                                     setups=[DirectorySetupFactory(),
+                                             CSetupFactory(short_libnames=False, use_libtool=self.use_libtool())])
+        self.package_.enlarge(external_nodes=[])
+        self.package_.output()
 
-        self.lodir_builder_ = find.find_entrybuilder(self.coordinator_.rootbuilder(), ['lo'])
-        self.hidir_builder_ = find.find_entrybuilder(self.coordinator_.rootbuilder(), ['hi'])
-        self.exedir_builder_ = find.find_entrybuilder(self.coordinator_.rootbuilder(), ['exe'])
+        self.lodir_builder_ = find.find_entrybuilder(self.package_.rootbuilder(), ['lo'])
+        self.hidir_builder_ = find.find_entrybuilder(self.package_.rootbuilder(), ['hi'])
+        self.exedir_builder_ = find.find_entrybuilder(self.package_.rootbuilder(), ['exe'])
         assert self.lodir_builder_
         assert self.hidir_builder_
         assert self.exedir_builder_
@@ -112,7 +112,7 @@ class ExecutableBase(unittest.TestCase):
 
     def tearDown(self):
         self.fs_ = None
-        self.coordinator_ = None
+        self.package_ = None
         pass
 
     def common_test(self):

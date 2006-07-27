@@ -28,10 +28,10 @@ from libconfix.core.utils.error import Error
 import os
 
 class Builder:
-    def __init__(self, id, parentbuilder, coordinator):
+    def __init__(self, id, parentbuilder, package):
         self.id_ = id
         self.parentbuilder_ = parentbuilder
-        self.coordinator_ = coordinator
+        self.package_ = package
 
         self.dep_info_ = DependencyInformation()
         self.num_announced_dep_info_ = 0
@@ -51,8 +51,8 @@ class Builder:
 
     def parentbuilder(self):
         return self.parentbuilder_
-    def coordinator(self):
-        return self.coordinator_
+    def package(self):
+        return self.package_
 
     def add_require(self, r):
         self.dep_info_.add_require(r)

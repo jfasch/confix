@@ -1,5 +1,3 @@
-# $Id: coordinator.py,v 1.13 2006/07/07 15:29:19 jfasch Exp $
-
 # Copyright (C) 2002-2006 Salomon Automation
 
 # This library is free software; you can redistribute it and/or modify
@@ -17,6 +15,8 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 # USA
 
+from package import Package
+from installed_package import InstalledPackage
 from makefile_py import Makefile_py
 from iface import InterfacePiece
 from hierarchy import DirectoryBuilder
@@ -34,7 +34,7 @@ from libconfix.core.utils import const
 
 import os
 
-class BuildCoordinator:
+class LocalPackage(Package):
 
     def __init__(self, root, setups):
         self.name_ = None
@@ -42,6 +42,7 @@ class BuildCoordinator:
         self.rootdirectory_ = root
 
         self.digraph_ = None
+        self.local_nodes_ = None
 
         # the (contents of the) configure.ac we will be writing
         self.configure_ac_ = Configure_ac()
@@ -50,9 +51,9 @@ class BuildCoordinator:
         self.rootbuilder_ = DirectoryBuilder(
             directory=root,
             parentbuilder=None,
-            coordinator=self)
+            package=self)
         for s in setups:
-            self.rootbuilder_.add_setup(s.create(parentbuilder=self.rootbuilder_, coordinator=self))
+            self.rootbuilder_.add_setup(s.create(parentbuilder=self.rootbuilder_, package=self))
             pass
 
         # slurp in Makefile.py
@@ -63,7 +64,7 @@ class BuildCoordinator:
             if not isinstance(mfpyfile, File):
                 raise Error(os.sep.join(mfpyfile.abspath())+' is not a file')
 
-            mfpy = CoordinatorMakefile_py(file=mfpyfile, parentbuilder=self.rootbuilder_, coordinator=self)
+            mfpy = PackageMakefile_py(file=mfpyfile, parentbuilder=self.rootbuilder_, package=self)
             self.rootbuilder_.add_configurator(mfpy)
 
             pass
@@ -78,7 +79,7 @@ class BuildCoordinator:
             dir = Directory()
             self.rootdirectory_.add(name=const.AUXDIR, entry=dir)
             pass
-        self.auxdir_ = AutoconfAuxDir(directory=dir, parentbuilder=self.rootbuilder_, coordinator=self)
+        self.auxdir_ = AutoconfAuxDir(directory=dir, parentbuilder=self.rootbuilder_, package=self)
         self.rootbuilder_.add_builder(self.auxdir_)
         pass
     
@@ -102,16 +103,25 @@ class BuildCoordinator:
         return self.rootbuilder_
 
     def digraph(self):
+        assert self.digraph_ is not None, 'FIXME: nothing enlarged'
         return self.digraph_
 
-    def enlarge(self):
+    def nodes(self):
+        assert self.digraph_ is not None, 'FIXME: nothing enlarged'
+        return self.local_nodes_
+
+    def enlarge(self, external_nodes):
         while True:
             num_enlarged = self.rootbuilder_.enlarge()
             if num_enlarged == 0:
                 break
-            nodes = self.rootbuilder_.nodes()
-            self.digraph_ = DirectedGraph(nodes=nodes, edgefinder=EdgeFinder(nodes))
-            for n in nodes:
+            self.local_nodes_ = self.rootbuilder_.nodes()
+            all_nodes = set(self.local_nodes_)
+            for n in external_nodes:
+                all_nodes.add(n)
+                pass
+            self.digraph_ = DirectedGraph(nodes=all_nodes, edgefinder=EdgeFinder(all_nodes))
+            for n in self.local_nodes_:
                 n.relate(digraph=self.digraph_)
                 pass
             pass
@@ -119,7 +129,7 @@ class BuildCoordinator:
 
     def output(self):
 
-        # CoordinatorMakefile_py is supposed to have set package name and version
+        # PackageMakefile_py is supposed to have set package name and version
         if self.name_ is None:
             raise Error(mfpyfile.abspath()+': package name not set')
         if self.version_ is None:
@@ -152,6 +162,12 @@ class BuildCoordinator:
         cfg_ac.add_lines(self.configure_ac_.lines())
         pass
 
+    def install(self):
+        return InstalledPackage(
+            name=self.name(),
+            version=self.version(),
+            nodes=[n.install() for n in self.nodes()])
+    
     def output_stock_autoconf_(self):
         self.configure_ac_.set_packagename(self.name())
         self.configure_ac_.set_packageversion(self.version())
@@ -294,13 +310,13 @@ class BuildCoordinator:
 
     pass
 
-class CoordinatorMakefile_py(Makefile_py):
-    def __init__(self, file, parentbuilder, coordinator):
-        Makefile_py.__init__(self, file=file, parentbuilder=parentbuilder, coordinator=coordinator)
+class PackageMakefile_py(Makefile_py):
+    def __init__(self, file, parentbuilder, package):
+        Makefile_py.__init__(self, file=file, parentbuilder=parentbuilder, package=package)
         pass
 
     def iface_pieces(self):
-        return Makefile_py.iface_pieces(self) + [InterfacePiece(globals={'BUILDCOORDINATOR_': self.coordinator()},
+        return Makefile_py.iface_pieces(self) + [InterfacePiece(globals={'PACKAGE_': self.package()},
                                                                 lines=[code_])]
     pass
 
@@ -309,20 +325,20 @@ from libconfix.core.utils.error import Error
 import types
 
 def PACKAGE_NAME(name):
-    global BUILDCOORDINATOR_
-    if BUILDCOORDINATOR_ is None:
+    global PACKAGE_
+    if PACKAGE_ is None:
         raise Error('PACKAGE_NAME() is only available in the toplevel Makefile.py')
     if type(name) is not types.StringType:
         raise Error('PACKAGE_NAME(): argument must be a string')
-    BUILDCOORDINATOR_.set_name(name)
+    PACKAGE_.set_name(name)
     pass
 
 def PACKAGE_VERSION(version):
-    global BUILDCOORDINATOR_
-    if BUILDCOORDINATOR_ is None:
+    global PACKAGE_
+    if PACKAGE_ is None:
         raise Error('PACKAGE_VERSION() is only available in the toplevel Makefile.py')
     if type(version) is not types.StringType:
         raise Error('PACKAGE_VERSION(): argument must be a string')
-    BUILDCOORDINATOR_.set_version(version)
+    PACKAGE_.set_version(version)
     pass
 """

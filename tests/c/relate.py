@@ -23,7 +23,7 @@ from libconfix.testutils import packages
 from libconfix.core.filesys.directory import Directory
 from libconfix.core.filesys.file import File
 from libconfix.core.filesys.filesys import FileSystem
-from libconfix.core.coordinator import BuildCoordinator
+from libconfix.core.local_package import LocalPackage
 from libconfix.core.hierarchy import DirectorySetupFactory
 from libconfix.plugins.c.setup import CSetupFactory
 from libconfix.plugins.c.library import LibraryBuilder
@@ -52,12 +52,12 @@ class InternalRequires(unittest.TestCase):
                                entry=File(lines=[]))
         fs.rootdirectory().add(name='file.c',
                                entry=File(lines=['#include "file.h"']))
-        coordinator = BuildCoordinator(root=fs.rootdirectory(),
-                                       setups=[CSetupFactory(short_libnames=False,
-                                                             use_libtool=False)])
-        coordinator.enlarge()
-        rootnode = find.find_managing_node_of_builder(nodes=coordinator.digraph().nodes(),
-                                                      builder=coordinator.rootbuilder())
+        package = LocalPackage(root=fs.rootdirectory(),
+                                   setups=[CSetupFactory(short_libnames=False,
+                                                         use_libtool=False)])
+        package.enlarge(external_nodes=[])
+        rootnode = find.find_managing_node_of_builder(nodes=package.digraph().nodes(),
+                                                      builder=package.rootbuilder())
         self.failUnlessEqual(len(rootnode.requires()), 0)
         pass
     pass        
@@ -67,35 +67,35 @@ class RelateBasic(unittest.TestCase):
         fs = FileSystem(path=[''],
                         rootdirectory=packages.lo_hi1_hi2_highest_exe(name='xxx', version='1.2.3'))
         
-        self.coordinator_ = BuildCoordinator(root=fs.rootdirectory(),
-                                             setups=[DirectorySetupFactory(),
-                                                     CSetupFactory(short_libnames=False,
-                                                                   use_libtool=False)])
-        self.coordinator_.enlarge()
+        self.package_ = LocalPackage(root=fs.rootdirectory(),
+                                         setups=[DirectorySetupFactory(),
+                                                 CSetupFactory(short_libnames=False,
+                                                               use_libtool=False)])
+        self.package_.enlarge(external_nodes=[])
 
         # from here on, we collect things that we will need in the
         # test cases.
 
         # directory and file builder instances
 
-        self.lodir_builder_ = find.find_entrybuilder(self.coordinator_.rootbuilder(), ['lo'])
-        self.lodir_lo_h_builder_ = find.find_entrybuilder(self.coordinator_.rootbuilder(), ['lo', 'lo.h'])
-        self.lodir_lo_c_builder_ = find.find_entrybuilder(self.coordinator_.rootbuilder(), ['lo', 'lo.c'])
+        self.lodir_builder_ = find.find_entrybuilder(self.package_.rootbuilder(), ['lo'])
+        self.lodir_lo_h_builder_ = find.find_entrybuilder(self.package_.rootbuilder(), ['lo', 'lo.h'])
+        self.lodir_lo_c_builder_ = find.find_entrybuilder(self.package_.rootbuilder(), ['lo', 'lo.c'])
         
-        self.hi1dir_builder_ = find.find_entrybuilder(self.coordinator_.rootbuilder(), ['hi1'])
-        self.hi1dir_hi1_h_builder_ = find.find_entrybuilder(self.coordinator_.rootbuilder(), ['hi1', 'hi1.h'])
-        self.hi1dir_hi1_c_builder_ = find.find_entrybuilder(self.coordinator_.rootbuilder(), ['hi1', 'hi1.c'])
+        self.hi1dir_builder_ = find.find_entrybuilder(self.package_.rootbuilder(), ['hi1'])
+        self.hi1dir_hi1_h_builder_ = find.find_entrybuilder(self.package_.rootbuilder(), ['hi1', 'hi1.h'])
+        self.hi1dir_hi1_c_builder_ = find.find_entrybuilder(self.package_.rootbuilder(), ['hi1', 'hi1.c'])
         
-        self.hi2dir_builder_ = find.find_entrybuilder(self.coordinator_.rootbuilder(), ['hi2'])
-        self.hi2dir_hi2_h_builder_ = find.find_entrybuilder(self.coordinator_.rootbuilder(), ['hi2', 'hi2.h'])
-        self.hi2dir_hi2_c_builder_ = find.find_entrybuilder(self.coordinator_.rootbuilder(), ['hi2', 'hi2.c'])
+        self.hi2dir_builder_ = find.find_entrybuilder(self.package_.rootbuilder(), ['hi2'])
+        self.hi2dir_hi2_h_builder_ = find.find_entrybuilder(self.package_.rootbuilder(), ['hi2', 'hi2.h'])
+        self.hi2dir_hi2_c_builder_ = find.find_entrybuilder(self.package_.rootbuilder(), ['hi2', 'hi2.c'])
 
-        self.highestdir_builder_ = find.find_entrybuilder(self.coordinator_.rootbuilder(), ['highest'])
-        self.highestdir_highest_c_builder_ = find.find_entrybuilder(self.coordinator_.rootbuilder(),
+        self.highestdir_builder_ = find.find_entrybuilder(self.package_.rootbuilder(), ['highest'])
+        self.highestdir_highest_c_builder_ = find.find_entrybuilder(self.package_.rootbuilder(),
                                                                ['highest', 'highest.c'])
 
-        self.exedir_builder_ = find.find_entrybuilder(self.coordinator_.rootbuilder(), ['exe'])
-        self.exedir_main_c_builder_ = find.find_entrybuilder(self.coordinator_.rootbuilder(), ['exe', 'main.c'])
+        self.exedir_builder_ = find.find_entrybuilder(self.package_.rootbuilder(), ['exe'])
+        self.exedir_main_c_builder_ = find.find_entrybuilder(self.package_.rootbuilder(), ['exe', 'main.c'])
 
         # library and executable builder instances
         
@@ -143,15 +143,15 @@ class RelateBasic(unittest.TestCase):
         # nodes
 
         self.lodir_node_ = find.find_managing_node_of_builder(
-            self.coordinator_.digraph().nodes(), self.lodir_builder_)
+            self.package_.digraph().nodes(), self.lodir_builder_)
         self.hi1dir_node_ = find.find_managing_node_of_builder(
-            self.coordinator_.digraph().nodes(), self.hi1dir_builder_)
+            self.package_.digraph().nodes(), self.hi1dir_builder_)
         self.hi2dir_node_ = find.find_managing_node_of_builder(
-            self.coordinator_.digraph().nodes(), self.hi2dir_builder_)
+            self.package_.digraph().nodes(), self.hi2dir_builder_)
         self.highestdir_node_ = find.find_managing_node_of_builder(
-            self.coordinator_.digraph().nodes(), self.highestdir_builder_)
+            self.package_.digraph().nodes(), self.highestdir_builder_)
         self.exedir_node_ = find.find_managing_node_of_builder(
-            self.coordinator_.digraph().nodes(), self.exedir_builder_)
+            self.package_.digraph().nodes(), self.exedir_builder_)
 
         self.failIf(self.lodir_node_ is None)
         self.failIf(self.hi1dir_node_ is None)
@@ -220,12 +220,12 @@ class RelateBasic(unittest.TestCase):
         pass
                                     
     def testGraph(self):
-        self.failUnless(self.lodir_node_ in self.coordinator_.digraph().successors(self.hi1dir_node_))
-        self.failUnless(self.lodir_node_ in self.coordinator_.digraph().successors(self.hi2dir_node_))
-        self.failUnless(self.hi1dir_node_ in self.coordinator_.digraph().successors(self.highestdir_node_))
-        self.failUnless(self.hi2dir_node_ in self.coordinator_.digraph().successors(self.highestdir_node_))
-        self.failUnless(self.hi1dir_node_ in self.coordinator_.digraph().successors(self.exedir_node_))
-        self.failUnless(self.hi2dir_node_ in self.coordinator_.digraph().successors(self.exedir_node_))
+        self.failUnless(self.lodir_node_ in self.package_.digraph().successors(self.hi1dir_node_))
+        self.failUnless(self.lodir_node_ in self.package_.digraph().successors(self.hi2dir_node_))
+        self.failUnless(self.hi1dir_node_ in self.package_.digraph().successors(self.highestdir_node_))
+        self.failUnless(self.hi2dir_node_ in self.package_.digraph().successors(self.highestdir_node_))
+        self.failUnless(self.hi1dir_node_ in self.package_.digraph().successors(self.exedir_node_))
+        self.failUnless(self.hi2dir_node_ in self.package_.digraph().successors(self.exedir_node_))
         pass
 
     def testLocalBuildInfo(self):

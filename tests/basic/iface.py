@@ -20,7 +20,6 @@
 from libconfix.testutils import dirhier
 from libconfix.testutils.ifacetestbuilder import FileInterfaceTestBuilder
 from libconfix.core.filesys.file import File
-from libconfix.core.coordinator import BuildCoordinator
 from libconfix.core.filebuilder import FileBuilder
 from libconfix.core.require import Require
 from libconfix.core.require_symbol import Require_Symbol
@@ -47,7 +46,7 @@ class BuilderInterface(unittest.TestCase):
             ])
         builder = FileInterfaceTestBuilder(file=file,
                                            parentbuilder=None,
-                                           coordinator=None)
+                                           package=None)
 
         self.assertNotEqual(file.get_property(name='XXX'), None)
         self.assertEqual(file.get_property(name='XXX'), 666)
@@ -66,7 +65,7 @@ class BuilderInterface(unittest.TestCase):
             ])
         builder = FileInterfaceTestBuilder(file=file,
                                            parentbuilder=None,
-                                           coordinator=None)
+                                           package=None)
         self.assertEqual(len(builder.requires()), 5)
         sym1 = None
         sym2 = None
@@ -114,7 +113,7 @@ class BuilderInterface(unittest.TestCase):
             ])
         builder = FileInterfaceTestBuilder(file=file,
                                            parentbuilder=None,
-                                           coordinator=None)
+                                           package=None)
         self.assertEqual(len(builder.provides()), 5)
         sym1 = None
         sym2 = None

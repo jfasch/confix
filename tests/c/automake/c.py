@@ -19,7 +19,7 @@
 
 from libconfix.testutils import dirhier
 from libconfix.core.filesys.file import File
-from libconfix.core.coordinator import BuildCoordinator
+from libconfix.core.local_package import LocalPackage
 from libconfix.core.hierarchy import DirectorySetupFactory
 from libconfix.plugins.c.setup import CSetupFactory
 
@@ -46,13 +46,13 @@ class CTest(unittest.TestCase):
                                                  'int i;',
                                                  ]))
 
-        coordinator = BuildCoordinator(
+        package = LocalPackage(
             root=fs.rootdirectory(),
             setups=[DirectorySetupFactory(),
                     CSetupFactory(short_libnames=False,
                                   use_libtool=False)])
-        coordinator.enlarge()
-        coordinator.output()
+        package.enlarge(external_nodes=[])
+        package.output()
 
         conf_ac = fs.rootdirectory().find(['configure.ac'])
         self.failIf(conf_ac is None)

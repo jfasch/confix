@@ -22,7 +22,7 @@ from libconfix.testutils import find
 from libconfix.testutils.ifacetestbuilder import FileInterfaceTestSetupFactory
 
 from libconfix.core.filesys.file import File
-from libconfix.core.coordinator import BuildCoordinator
+from libconfix.core.local_package import LocalPackage
 from libconfix.core.hierarchy import DirectorySetupFactory
 
 import unittest
@@ -52,19 +52,19 @@ class RelateBasic(unittest.TestCase):
             name='hi.iface',
             entry=File(lines=['REQUIRE_SYMBOL(symbol="lo", urgency=URGENCY_ERROR)']))
 
-        coordinator = BuildCoordinator(root=fs.rootdirectory(),
+        package = LocalPackage(root=fs.rootdirectory(),
                                        setups=[DirectorySetupFactory(),
                                                FileInterfaceTestSetupFactory()])
-        coordinator.enlarge()
+        package.enlarge(external_nodes=[])
 
-        lodirbuilder = find.find_entrybuilder(coordinator.rootbuilder(), ['lo'])
-        hidirbuilder = find.find_entrybuilder(coordinator.rootbuilder(), ['hi'])
-        lofilebuilder = find.find_entrybuilder(coordinator.rootbuilder(), ['lo', 'lo.iface'])
-        hifilebuilder = find.find_entrybuilder(coordinator.rootbuilder(), ['hi', 'hi.iface'])
+        lodirbuilder = find.find_entrybuilder(package.rootbuilder(), ['lo'])
+        hidirbuilder = find.find_entrybuilder(package.rootbuilder(), ['hi'])
+        lofilebuilder = find.find_entrybuilder(package.rootbuilder(), ['lo', 'lo.iface'])
+        hifilebuilder = find.find_entrybuilder(package.rootbuilder(), ['hi', 'hi.iface'])
 
-        rootnode = find.find_managing_node_of_builder(coordinator.digraph().nodes(), coordinator.rootbuilder())
-        lonode = find.find_managing_node_of_builder(coordinator.digraph().nodes(), lodirbuilder)
-        hinode = find.find_managing_node_of_builder(coordinator.digraph().nodes(), hidirbuilder)
+        rootnode = find.find_managing_node_of_builder(package.digraph().nodes(), package.rootbuilder())
+        lonode = find.find_managing_node_of_builder(package.digraph().nodes(), lodirbuilder)
+        hinode = find.find_managing_node_of_builder(package.digraph().nodes(), hidirbuilder)
 
         self.failIf(lofilebuilder.successors() is None)
         self.failUnlessEqual(len(lofilebuilder.successors()), 0)
@@ -93,13 +93,13 @@ class InternalRequires(unittest.TestCase):
             entry=File(lines=['REQUIRE_SYMBOL(symbol="the_symbol_which_it_is_all_about",',
                               '               urgency=URGENCY_ERROR)']))
 
-        coordinator = BuildCoordinator(root=fs.rootdirectory(),
-                                       setups=[DirectorySetupFactory(),
-                                               FileInterfaceTestSetupFactory()])
-        coordinator.enlarge()
+        package = LocalPackage(root=fs.rootdirectory(),
+                                   setups=[DirectorySetupFactory(),
+                                           FileInterfaceTestSetupFactory()])
+        package.enlarge(external_nodes=[])
 
-        rootnode = find.find_managing_node_of_builder(nodes=coordinator.digraph().nodes(),
-                                                      builder=coordinator.rootbuilder())
+        rootnode = find.find_managing_node_of_builder(nodes=package.digraph().nodes(),
+                                                      builder=package.rootbuilder())
         self.failUnlessEqual(len(rootnode.requires()), 0)
         pass
     pass

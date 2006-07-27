@@ -23,12 +23,12 @@ from buildinfo import BuildInfo_CIncludePath_NativeLocal
 from libconfix.core.utils import const
 
 class CompiledCBuilder(CBaseBuilder):
-    def __init__(self, file, parentbuilder, coordinator):
+    def __init__(self, file, parentbuilder, package):
         CBaseBuilder.__init__(
             self,
             file=file,
             parentbuilder=parentbuilder,
-            coordinator=coordinator)
+            package=package)
         self.init_buildinfo_()
         pass
 

@@ -26,16 +26,16 @@ class Setup(Builder):
     behaviours. When a L{<DirectoryBuilder>} creates a child
     L{<DirectoryBuilder>} object of itself, it copies (clones) all its
     setup objects there. This makes the child directory builder behave
-    much like it parent. """
+    much like it parent."""
     
-    def __init__(self, id, parentbuilder, coordinator):
+    def __init__(self, id, parentbuilder, package):
         Builder.__init__(
             self,
             id=id,
             parentbuilder=parentbuilder,
-            coordinator=coordinator)
+            package=package)
         pass
-    def clone(self, parentbuilder, coordinator):
+    def clone(self, parentbuilder, package):
         assert 0, 'abstract'
         pass
 
@@ -45,6 +45,6 @@ class Setup(Builder):
 
 class SetupFactory:
     def __init__(self): pass
-    def create(self, parentbuilder, coordinator):
+    def create(self, parentbuilder, package):
         assert 0, 'abstract'
         pass

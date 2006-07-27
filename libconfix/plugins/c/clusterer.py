@@ -28,12 +28,12 @@ from libconfix.core.builder import Builder
 import os
 
 class CClusterer(Builder):
-    def __init__(self, parentbuilder, coordinator, namefinder, use_libtool, libtool_version_info):
+    def __init__(self, parentbuilder, package, namefinder, use_libtool, libtool_version_info):
         Builder.__init__(
             self,
             id=str(self.__class__)+'('+str(parentbuilder)+')',
             parentbuilder=parentbuilder,
-            coordinator=coordinator)
+            package=package)
         self.namefinder_ = namefinder
         self.use_libtool_ = use_libtool
         self.libtool_version_info_ = libtool_version_info
@@ -56,9 +56,9 @@ class CClusterer(Builder):
                 center_stem, center_ext = os.path.splitext(b.file().name())
                 exe = ExecutableBuilder(
                     parentbuilder=self.parentbuilder(),
-                    coordinator=self.coordinator(),
+                    package=self.package(),
                     center=b,
-                    exename=self.namefinder_.find_exename(packagename=self.coordinator().name(),
+                    exename=self.namefinder_.find_exename(packagename=self.package().name(),
                                                           path=self.parentbuilder().directory().relpath(),
                                                           centername=center_stem),
                     use_libtool=self.use_libtool_)
@@ -78,8 +78,8 @@ class CClusterer(Builder):
                 if not self.library_ and len(self.executables_) == 0:
                     self.library_ = LibraryBuilder(
                         parentbuilder=self.parentbuilder(),
-                        coordinator=self.coordinator(),
-                        basename=self.namefinder_.find_libname(packagename=self.coordinator().name(),
+                        package=self.package(),
+                        basename=self.namefinder_.find_libname(packagename=self.package().name(),
                                                                path=self.parentbuilder().directory().relpath()),
                         use_libtool=self.use_libtool_,
                         libtool_version_info=self.libtool_version_info_)

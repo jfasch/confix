@@ -31,7 +31,7 @@ AC_PROG_RANLIB.add(
 class LibraryBuilder(LinkedBuilder):
     def __init__(self,
                  parentbuilder,
-                 coordinator,
+                 package,
                  basename,
                  use_libtool,
                  libtool_version_info):
@@ -39,7 +39,7 @@ class LibraryBuilder(LinkedBuilder):
             self,
             id=str(self.__class__)+'('+str(parentbuilder)+','+basename+')',
             parentbuilder=parentbuilder,
-            coordinator=coordinator,
+            package=package,
             use_libtool=use_libtool)
 
         self.basename_ = basename
@@ -63,7 +63,7 @@ class LibraryBuilder(LinkedBuilder):
     def output(self):
         LinkedBuilder.output(self)
 
-        self.coordinator().configure_ac().add_paragraphs(AC_PROG_RANLIB)
+        self.package().configure_ac().add_paragraphs(AC_PROG_RANLIB)
         
         mf_am = self.parentbuilder().makefile_am()
         am_basename = helper_automake.automake_name(self.basename())

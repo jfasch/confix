@@ -18,7 +18,7 @@
 # USA
 
 from libconfix.core.filesys.filesys import FileSystem
-from libconfix.core.coordinator import BuildCoordinator
+from libconfix.core.local_package import LocalPackage
 from libconfix.core.hierarchy import DirectorySetupFactory
 from libconfix.core.utils.error import Error
 from libconfix.core.automake import bootstrap, configure, make
@@ -41,16 +41,16 @@ class IntraPackageInMemoryTest(unittest.TestCase):
                               rootdirectory=packages.lo_hi1_hi2_highest_exe(name='self.__class__.__name__',
                                                                             version='1.2.3'))
         
-        self.coordinator_ = BuildCoordinator(root=self.fs_.rootdirectory(),
-                                             setups=[DirectorySetupFactory(),
-                                                     CSetupFactory(short_libnames=False,
-                                                                   use_libtool=False)])
-        self.coordinator_.enlarge()
-        self.coordinator_.output()
+        self.package_ = LocalPackage(root=self.fs_.rootdirectory(),
+                                     setups=[DirectorySetupFactory(),
+                                             CSetupFactory(short_libnames=False,
+                                                           use_libtool=False)])
+        self.package_.enlarge(external_nodes=[])
+        self.package_.output()
         pass
 
     def test_includepath(self):
-        hi1 = find.find_entrybuilder(root=self.coordinator_.rootbuilder(), path=['hi1'])
+        hi1 = find.find_entrybuilder(root=self.package_.rootbuilder(), path=['hi1'])
         self.failUnless('-I$(top_builddir)/confix_include' in hi1.makefile_am().includepath())
         pass
 

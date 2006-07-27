@@ -39,25 +39,25 @@ class DirectorySetupFactory(SetupFactory):
     def __init__(self):
         SetupFactory.__init__(self)
         pass
-    def create(self, parentbuilder, coordinator):
-        return DirectorySetup(parentbuilder=parentbuilder, coordinator=coordinator)
+    def create(self, parentbuilder, package):
+        return DirectorySetup(parentbuilder=parentbuilder, package=package)
     pass
 
 class DirectorySetup(Setup):
-    def __init__(self, parentbuilder, coordinator):
+    def __init__(self, parentbuilder, package):
         assert isinstance(parentbuilder, DirectoryBuilder)
         Setup.__init__(
             self,
             id=str(self.__class__)+'('+str(parentbuilder)+')',
             parentbuilder=parentbuilder,
-            coordinator=coordinator)
+            package=package)
         self.handled_directories_ = set()
         pass
 
-    def clone(self, parentbuilder, coordinator):
+    def clone(self, parentbuilder, package):
         return DirectorySetup(
             parentbuilder=parentbuilder,
-            coordinator=coordinator)
+            package=package)
 
     def enlarge(self):
         newbuilders = []
@@ -77,14 +77,14 @@ class DirectorySetup(Setup):
                 dirbuilder = DirectoryBuilder(
                     directory=entry,
                     parentbuilder=self.parentbuilder(),
-                    coordinator=self.coordinator())
+                    package=self.package())
                 for b in self.parentbuilder().setups():
                     dirbuilder.add_setup(b.clone(parentbuilder=dirbuilder,
-                                                 coordinator=self.coordinator()))
+                                                 package=self.package()))
                     pass
                 mfpy = Makefile_py(file=mfpyfile,
                                    parentbuilder=dirbuilder,
-                                   coordinator=self.coordinator())
+                                   package=self.package())
                 dirbuilder.add_configurator(mfpy)
                 newbuilders.append((entry, dirbuilder))
             except Error, e:
@@ -106,7 +106,7 @@ class DirectoryBuilder(EntryBuilder):
     def __init__(self,
                  directory,
                  parentbuilder,
-                 coordinator):
+                 package):
         assert isinstance(directory, Directory)
 
         EntryBuilder.__init__(
@@ -114,7 +114,7 @@ class DirectoryBuilder(EntryBuilder):
             id=str(self.__class__) + '(' + '/'.join(directory.relpath()) + ')',
             entry=directory,
             parentbuilder=parentbuilder,
-            coordinator=coordinator)
+            package=package)
         
         self.directory_ = directory
         self.configurators_ = []

@@ -27,12 +27,12 @@ from libconfix.core.utils import helper
 import os
 
 class AutoconfAuxDir(DirectoryBuilder):
-    def __init__(self, directory, parentbuilder, coordinator):
+    def __init__(self, directory, parentbuilder, package):
         DirectoryBuilder.__init__(
             self,
             directory=directory,
             parentbuilder=parentbuilder,
-            coordinator=coordinator)
+            package=package)
 
         mf_am = self.directory().find(['Makefile.am'])
         if mf_am:
@@ -45,7 +45,7 @@ class AutoconfAuxDir(DirectoryBuilder):
         pass
 
     def output(self):
-        self.coordinator().configure_ac().set_ac_config_aux_dir('/'.join(self.directory().relpath()))
+        self.package().configure_ac().set_ac_config_aux_dir('/'.join(self.directory().relpath()))
         pass
 
     def eat_file(self, sourcename, mode):

@@ -17,7 +17,7 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 # USA
 
-from libconfix.core.coordinator import BuildCoordinator
+from libconfix.core.local_package import LocalPackage
 from libconfix.core.filebuilder import FileBuilder
 from libconfix.core.hierarchy import DirectorySetupFactory, DirectoryBuilder
 
@@ -34,16 +34,16 @@ class BasicDirectorySetup(unittest.TestCase):
         subdir = dirhier.subdir(parent=fs.rootdirectory(), name='a')
         subsubdir = dirhier.subdir(parent=subdir, name='a')
         
-        coordinator = BuildCoordinator(
+        package = LocalPackage(
             root=fs.rootdirectory(),
             setups=[DirectorySetupFactory()])
-        coordinator.enlarge()
+        package.enlarge(external_nodes=[])
 
-        self.assertEqual(coordinator.rootbuilder().directory().find(['a']), subdir)
-        self.assertEqual(coordinator.rootbuilder().directory().find(['a', 'a']), subsubdir)
+        self.assertEqual(package.rootbuilder().directory().find(['a']), subdir)
+        self.assertEqual(package.rootbuilder().directory().find(['a', 'a']), subsubdir)
         
-        subdir_builder = find.find_entrybuilder(coordinator.rootbuilder(), ['a'])
-        subsubdir_builder = find.find_entrybuilder(coordinator.rootbuilder(), ['a','a'])
+        subdir_builder = find.find_entrybuilder(package.rootbuilder(), ['a'])
+        subsubdir_builder = find.find_entrybuilder(package.rootbuilder(), ['a','a'])
 
         self.assertEqual(subdir_builder.directory(), subdir)
         self.assertEqual(subsubdir_builder.directory(), subsubdir)

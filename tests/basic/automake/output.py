@@ -21,7 +21,7 @@ from libconfix.testutils import dirhier, find
 from libconfix.core.utils import const
 from libconfix.core.filesys.directory import Directory
 from libconfix.core.filesys.file import File
-from libconfix.core.coordinator import BuildCoordinator
+from libconfix.core.local_package import LocalPackage
 from libconfix.core.hierarchy import DirectorySetupFactory
 from libconfix.plugins.c.setup import CSetupFactory
 from libconfix.plugins.c.library import LibraryBuilder
@@ -57,14 +57,14 @@ class AutomakeOutputTest(unittest.TestCase):
         subdir3.add(name=const.MAKEFILE_PY,
                     entry=File(lines=['REQUIRE_SYMBOL("subdir2")']))
         
-        self.coordinator_ = BuildCoordinator(root=self.fs_.rootdirectory(),
+        self.package_ = LocalPackage(root=self.fs_.rootdirectory(),
                                              setups=[DirectorySetupFactory()])
-        self.coordinator_.enlarge()
-        self.coordinator_.output()
+        self.package_.enlarge(external_nodes=[])
+        self.package_.output()
 
-        self.subdir1_builder_ = find.find_entrybuilder(self.coordinator_.rootbuilder(), ['subdir1'])
-        self.subdir2_builder_ = find.find_entrybuilder(self.coordinator_.rootbuilder(), ['subdir2'])
-        self.subdir3_builder_ = find.find_entrybuilder(self.coordinator_.rootbuilder(), ['subdir3'])
+        self.subdir1_builder_ = find.find_entrybuilder(self.package_.rootbuilder(), ['subdir1'])
+        self.subdir2_builder_ = find.find_entrybuilder(self.package_.rootbuilder(), ['subdir2'])
+        self.subdir3_builder_ = find.find_entrybuilder(self.package_.rootbuilder(), ['subdir3'])
         assert self.subdir1_builder_
         assert self.subdir2_builder_
         assert self.subdir3_builder_
@@ -73,12 +73,12 @@ class AutomakeOutputTest(unittest.TestCase):
 
     def tearDown(self):
         self.fs_ = None
-        self.coordinator_ = None
+        self.package_ = None
         pass
 
     def test_subdirs(self):
         self.failIfEqual(self.fs_.rootdirectory().find(['Makefile.am']), None)
-        self.failUnless(const.MAKEFILE_PY in self.coordinator_.rootbuilder().makefile_am().extra_dist())
+        self.failUnless(const.MAKEFILE_PY in self.package_.rootbuilder().makefile_am().extra_dist())
 
         # relative positions of subdir1, subdir2, subdir3 in toplevel
         # Makefile.am's SUBDIRS must be subdir1 < subdir2 <
@@ -88,21 +88,21 @@ class AutomakeOutputTest(unittest.TestCase):
 
         aux = dot = subdir1 = subdir2 = subdir3 = None
 
-        for i in range(len(self.coordinator_.rootbuilder().makefile_am().subdirs())):
-            if self.coordinator_.rootbuilder().makefile_am().subdirs()[i] == 'confix-admin':
+        for i in range(len(self.package_.rootbuilder().makefile_am().subdirs())):
+            if self.package_.rootbuilder().makefile_am().subdirs()[i] == 'confix-admin':
                 self.failUnless(aux is None)
                 aux = i
-            elif self.coordinator_.rootbuilder().makefile_am().subdirs()[i] == 'subdir1':
+            elif self.package_.rootbuilder().makefile_am().subdirs()[i] == 'subdir1':
                 self.failUnless(subdir1 is None)
                 subdir1 = i
-            elif self.coordinator_.rootbuilder().makefile_am().subdirs()[i] == 'subdir2':
+            elif self.package_.rootbuilder().makefile_am().subdirs()[i] == 'subdir2':
                 self.failUnless(subdir2 is None)
                 subdir2 = i
-            elif self.coordinator_.rootbuilder().makefile_am().subdirs()[i] == 'subdir3':
+            elif self.package_.rootbuilder().makefile_am().subdirs()[i] == 'subdir3':
                 self.failUnless(subdir3 is None)
                 subdir3 = i
                 pass
-            elif self.coordinator_.rootbuilder().makefile_am().subdirs()[i] == '.':
+            elif self.package_.rootbuilder().makefile_am().subdirs()[i] == '.':
                 self.failUnless(dot is None)
                 dot = i
                 pass
@@ -120,38 +120,38 @@ class AutomakeOutputTest(unittest.TestCase):
         self.failUnless(subdir1 < subdir2 < subdir3)
 
         # see if we have our subdir's Makefiles registered for output
-        self.failUnless('Makefile' in self.coordinator_.configure_ac().ac_config_files() or \
-                        './Makefile' in self.coordinator_.configure_ac().ac_config_files())
-        self.failUnless('subdir1/Makefile' in self.coordinator_.configure_ac().ac_config_files())
-        self.failUnless('subdir2/Makefile' in self.coordinator_.configure_ac().ac_config_files())
-        self.failUnless('subdir3/Makefile' in self.coordinator_.configure_ac().ac_config_files())
+        self.failUnless('Makefile' in self.package_.configure_ac().ac_config_files() or \
+                        './Makefile' in self.package_.configure_ac().ac_config_files())
+        self.failUnless('subdir1/Makefile' in self.package_.configure_ac().ac_config_files())
+        self.failUnless('subdir2/Makefile' in self.package_.configure_ac().ac_config_files())
+        self.failUnless('subdir3/Makefile' in self.package_.configure_ac().ac_config_files())
         
         pass
 
     def test_configure_ac(self):
         self.failIfEqual(self.fs_.rootdirectory().find(['configure.ac']), None)
-        self.failUnless('config.h' in self.coordinator_.configure_ac().ac_config_headers())
-        self.failIf(self.coordinator_.configure_ac().packagename() is None)
-        self.failIf(self.coordinator_.configure_ac().packageversion() is None)
+        self.failUnless('config.h' in self.package_.configure_ac().ac_config_headers())
+        self.failIf(self.package_.configure_ac().packagename() is None)
+        self.failIf(self.package_.configure_ac().packageversion() is None)
         pass
 
     def test_auxdir(self):
-        auxdir = self.coordinator_.rootbuilder().directory().find(['confix-admin'])
+        auxdir = self.package_.rootbuilder().directory().find(['confix-admin'])
         self.failIf(auxdir is None)
         mf_am = auxdir.find(['Makefile.am'])
         self.failIf(mf_am is None)
-        self.failUnlessEqual(self.coordinator_.configure_ac().ac_config_aux_dir(), 'confix-admin')
-        self.failUnless('confix-admin/Makefile' in self.coordinator_.configure_ac().ac_config_files())
+        self.failUnlessEqual(self.package_.configure_ac().ac_config_aux_dir(), 'confix-admin')
+        self.failUnless('confix-admin/Makefile' in self.package_.configure_ac().ac_config_files())
         pass
 
     def test_toplevel_makefile_am(self):
-        mf_am = self.coordinator_.rootbuilder().makefile_am()
+        mf_am = self.package_.rootbuilder().makefile_am()
         self.failUnless('1.9' in mf_am.automake_options())
         self.failUnless('dist-bzip2' in mf_am.automake_options())
         self.failUnless('dist-shar' in mf_am.automake_options())
         self.failUnless('dist-zip' in mf_am.automake_options())
         self.failUnless(const.MAKEFILE_PY in mf_am.extra_dist())
-        self.failUnless(self.coordinator_.name()+'.repo' in mf_am.extra_dist())
+        self.failUnless(self.package_.name()+'.repo' in mf_am.extra_dist())
         self.failUnless('Makefile.in' in mf_am.maintainercleanfiles())
         self.failUnless('Makefile.am' in mf_am.maintainercleanfiles())
         pass

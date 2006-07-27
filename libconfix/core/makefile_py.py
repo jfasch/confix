@@ -22,11 +22,11 @@ from iface import InterfaceExecutor, InterfacePiece
 from libconfix.core.utils.error import Error
 
 class Makefile_py(FileBuilder):
-    def __init__(self, file, parentbuilder, coordinator):
+    def __init__(self, file, parentbuilder, package):
         FileBuilder.__init__(self,
                              file=file,
                              parentbuilder=parentbuilder,
-                             coordinator=coordinator)
+                             package=package)
         self.executed_ = False
         pass
 

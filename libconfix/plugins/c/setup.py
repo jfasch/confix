@@ -33,14 +33,14 @@ class CSetupFactory(SetupFactory):
         self.short_libnames_ = short_libnames
         self.use_libtool_ = use_libtool
         pass
-    def create(self, parentbuilder, coordinator):
+    def create(self, parentbuilder, package):
         if self.short_libnames_ == True:
             namefinder = ShortNameFinder()
         else:
             namefinder = LongNameFinder()
             pass
         return CSetup(parentbuilder=parentbuilder,
-                      coordinator=coordinator,
+                      package=package,
                       namefinder=namefinder,
                       use_libtool=self.use_libtool_)
     pass
@@ -48,14 +48,14 @@ class CSetupFactory(SetupFactory):
 class CSetup(Setup):
     def __init__(self,
                  parentbuilder,
-                 coordinator,
+                 package,
                  namefinder,
                  use_libtool):
         Setup.__init__(
             self,
             id=str(self.__class__)+'('+str(parentbuilder)+')',
             parentbuilder=parentbuilder,
-            coordinator=coordinator)
+            package=package)
         self.namefinder_ = namefinder
         self.use_libtool_ = use_libtool
 
@@ -79,9 +79,9 @@ class CSetup(Setup):
         self.libtool_version_info_ = v
         pass
 
-    def clone(self, parentbuilder, coordinator):
+    def clone(self, parentbuilder, package):
         return CSetup(parentbuilder=parentbuilder,
-                      coordinator=coordinator,
+                      package=package,
                       namefinder=self.namefinder_,
                       use_libtool=self.use_libtool_)
 
@@ -91,16 +91,16 @@ class CSetup(Setup):
         self.bursted_ = True
         self.parentbuilder().add_builder(
             Creator(parentbuilder=self.parentbuilder(),
-                    coordinator=self.coordinator()))
+                    package=self.package()))
         self.parentbuilder().add_builder(
             CClusterer(parentbuilder=self.parentbuilder(),
-                       coordinator=self.coordinator(),
+                       package=self.package(),
                        namefinder=self.namefinder_,
                        use_libtool=self.use_libtool_,
                        libtool_version_info=self.libtool_version_info_))
         self.parentbuilder().add_builder(
             Installer(parentbuilder=self.parentbuilder(),
-                      coordinator=self.coordinator()))
+                      package=self.package()))
         
         return 1 + Setup.enlarge(self)
 

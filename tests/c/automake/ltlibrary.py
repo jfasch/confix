@@ -17,7 +17,7 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 # USA
 
-from libconfix.core.coordinator import BuildCoordinator
+from libconfix.core.local_package import LocalPackage
 from libconfix.core.hierarchy import DirectorySetupFactory
 from libconfix.testutils import dirhier, find
 from libconfix.core.filesys.directory import Directory
@@ -71,15 +71,15 @@ class LibtoolLibrary_LIBADD(unittest.TestCase):
         dirhiest.add(name='hiest.h', entry=File(lines=['#include <hi1.h>', '#include <hi2.h>']))
         dirhiest.add(name='hiest.c', entry=File())
         
-        coordinator = BuildCoordinator(
+        package = LocalPackage(
             root=fs.rootdirectory(),
             setups=[DirectorySetupFactory(),
                     CSetupFactory(short_libnames=False, # don't care
                                   use_libtool=True)])
-        coordinator.enlarge()
-        coordinator.output()
+        package.enlarge(external_nodes=[])
+        package.output()
 
-        hiestdir_builder = find.find_entrybuilder(coordinator.rootbuilder(), ['hiest'])
+        hiestdir_builder = find.find_entrybuilder(package.rootbuilder(), ['hiest'])
         self.failIf(hiestdir_builder is None)
 
         self.failUnlessEqual(len(hiestdir_builder.makefile_am().compound_libadd('libblah_hiest_la')), 2)

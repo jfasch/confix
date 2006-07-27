@@ -1,5 +1,3 @@
-# $Id: entrybuilder.py,v 1.1 2006/03/26 20:47:55 jfasch Exp $
-
 # Copyright (C) 2002-2006 Salomon Automation
 
 # This library is free software; you can redistribute it and/or modify
@@ -17,14 +15,21 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 # USA
 
-from builder import Builder
+from package import Package
 
-class EntryBuilder(Builder):
-    def __init__(self, id, entry, parentbuilder, package):
-        Builder.__init__(self, id=id, parentbuilder=parentbuilder, package=package)
-        self.entry_ = entry
+class InstalledPackage(Package):
+    def __init__(self, name, version, nodes):
+        Package.__init__(self)
+        self.name_ = name
+        self.version_ = version
+        self.nodes_ = nodes
         pass
-    def entry(self):
-        return self.entry_
-    pass
 
+    def name(self):
+        return self.name_
+    def version(self):
+        return self.version_
+    def nodes(self):
+        return self.nodes_
+
+    pass

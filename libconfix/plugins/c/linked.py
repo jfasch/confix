@@ -23,12 +23,12 @@ from libconfix.core.filebuilder import FileBuilder
 from libconfix.core.builder import Builder, BuilderSet
 
 class LinkedBuilder(Builder):
-    def __init__(self, id, parentbuilder, coordinator, use_libtool):
+    def __init__(self, id, parentbuilder, package, use_libtool):
         Builder.__init__(
             self,
             id=id,
             parentbuilder=parentbuilder,
-            coordinator=coordinator)
+            package=package)
 
         self.init_buildinfo_()
         self.members_ = BuilderSet()

@@ -24,7 +24,7 @@ from libconfix.testutils.ifacetestbuilder import FileInterfaceTestSetupFactory
 from libconfix.core.edgefinder import EdgeFinder
 from libconfix.core.require_symbol import Require_Symbol
 from libconfix.core.filesys.file import File
-from libconfix.core.coordinator import BuildCoordinator
+from libconfix.core.local_package import LocalPackage
 from libconfix.core.hierarchy import DirectorySetupFactory
 from libconfix.core.digraph.cycle import CycleError
 import unittest
@@ -50,22 +50,22 @@ class BasicResolveTest(unittest.TestCase):
         hifile = hidir.add(name='hi.iface',
                            entry=File(lines=['REQUIRE_SYMBOL(symbol="lo", urgency=URGENCY_ERROR)']))
 
-        coordinator = BuildCoordinator(root=fs.rootdirectory(),
+        package = LocalPackage(root=fs.rootdirectory(),
                                        setups=[DirectorySetupFactory(),
                                                FileInterfaceTestSetupFactory()])
-        coordinator.enlarge()
+        package.enlarge(external_nodes=[])
 
-        lodirbuilder = find.find_entrybuilder(coordinator.rootbuilder(), ['lo'])
-        hidirbuilder = find.find_entrybuilder(coordinator.rootbuilder(), ['hi'])
+        lodirbuilder = find.find_entrybuilder(package.rootbuilder(), ['lo'])
+        hidirbuilder = find.find_entrybuilder(package.rootbuilder(), ['hi'])
 
-        self.assertEqual(len(coordinator.digraph().nodes()), 3 \
+        self.assertEqual(len(package.digraph().nodes()), 3 \
                          # plus 1 for confix-admin which is a full-fledged node
                          +1)
         rootnode = None
         lonode = None
         hinode = None
-        for n in coordinator.digraph().nodes():
-            if n.responsible_builder() is coordinator.rootbuilder():
+        for n in package.digraph().nodes():
+            if n.responsible_builder() is package.rootbuilder():
                 rootnode = n
                 continue
             if n.responsible_builder() is lodirbuilder:
@@ -76,9 +76,9 @@ class BasicResolveTest(unittest.TestCase):
                 continue
             pass
 
-        self.assertEqual(len(coordinator.digraph().successors(hinode)), 1)
-        self.assertEqual(len(coordinator.digraph().successors(lonode)), 0)
-        self.assert_(lonode in coordinator.digraph().successors(hinode))
+        self.assertEqual(len(package.digraph().successors(hinode)), 1)
+        self.assertEqual(len(package.digraph().successors(lonode)), 0)
+        self.assert_(lonode in package.digraph().successors(hinode))
             
         pass
     
@@ -91,14 +91,14 @@ class NotResolvedTest(unittest.TestCase):
         file = fs.rootdirectory().add(name='x.iface',
                                       entry=File(lines=['REQUIRE_SYMBOL(symbol="unknown_symbol", urgency=URGENCY_ERROR)']))
 
-        coordinator = BuildCoordinator(root=fs.rootdirectory(),
+        package = LocalPackage(root=fs.rootdirectory(),
                                        setups=[FileInterfaceTestSetupFactory()])
 
         try:
-            coordinator.enlarge()
+            package.enlarge(external_nodes=[])
             pass
         except EdgeFinder.SuccessorNotFound, e:
-            self.assert_(e.node().responsible_builder() is coordinator.rootbuilder())
+            self.assert_(e.node().responsible_builder() is package.rootbuilder())
             self.assert_(isinstance(e.errors()[0], EdgeFinder.RequireNotResolved))
             self.assert_(isinstance(e.errors()[0].require(), Require_Symbol))
             self.assert_(e.errors()[0].require().symbol() == 'unknown_symbol')
@@ -124,11 +124,11 @@ class CycleTest(unittest.TestCase):
                          entry=File(lines=['PROVIDE_SYMBOL(symbol="B")',
                                            'REQUIRE_SYMBOL(symbol="A")']))
 
-        coordinator = BuildCoordinator(root=fs.rootdirectory(),
+        package = LocalPackage(root=fs.rootdirectory(),
                                        setups=[DirectorySetupFactory(),
                                                FileInterfaceTestSetupFactory()])
         try:
-            coordinator.enlarge()
+            package.enlarge(external_nodes=[])
         except CycleError:
             return
         self.fail()

@@ -1,5 +1,3 @@
-# $Id: creator.py,v 1.8 2006/06/23 08:14:36 jfasch Exp $
-
 # Copyright (C) 2002-2006 Salomon Automation
 
 # This library is free software; you can redistribute it and/or modify
@@ -24,12 +22,12 @@ from libconfix.core.builder import Builder
 import libconfix.core.filesys
 
 class Creator(Builder):
-    def __init__(self, parentbuilder, coordinator):
+    def __init__(self, parentbuilder, package):
         Builder.__init__(
             self,
             id=str(self.__class__)+'('+str(parentbuilder)+')',
             parentbuilder=parentbuilder,
-            coordinator=coordinator)
+            package=package)
         self.handled_entries_ = set()
         pass
     
@@ -46,13 +44,13 @@ class Creator(Builder):
                 newbuilders.append((entry,
                                     HeaderBuilder(file=entry,
                                                   parentbuilder=self.parentbuilder(),
-                                                  coordinator=self.coordinator())))
+                                                  package=self.package())))
                 continue
             if entry.name().endswith('.c'):
                 newbuilders.append((entry,
                                     CBuilder(file=entry,
                                              parentbuilder=self.parentbuilder(),
-                                             coordinator=self.coordinator())))
+                                             package=self.package())))
                 continue
             pass
         for entry, b in newbuilders:

@@ -19,7 +19,7 @@
 
 from libconfix.core.filesys.file import File
 from libconfix.core.filesys.directory import Directory
-from libconfix.core.coordinator import BuildCoordinator
+from libconfix.core.local_package import LocalPackage
 from libconfix.core.filebuilder import FileBuilder
 from libconfix.core.hierarchy import DirectorySetupFactory
 from libconfix.plugins.c.setup import CSetupFactory
@@ -44,14 +44,14 @@ class LibrarySetupBasic(unittest.TestCase):
         fs.rootdirectory().add(name='file.h', entry=File(lines=[]))
         fs.rootdirectory().add(name='file.c', entry=File(lines=[]))
 
-        coordinator = BuildCoordinator(root=fs.rootdirectory(),
-                                       setups=[CSetupFactory(short_libnames=False, use_libtool=False)])
-        coordinator.enlarge()
+        package = LocalPackage(root=fs.rootdirectory(),
+                               setups=[CSetupFactory(short_libnames=False, use_libtool=False)])
+        package.enlarge(external_nodes=[])
 
         file_h_builder = None
         file_c_builder = None
         library_builder = None
-        for b in coordinator.rootbuilder().builders():
+        for b in package.rootbuilder().builders():
             if isinstance(b, FileBuilder):
                 if b.file().name() == 'file.h' and isinstance(b, HeaderBuilder):
                     file_h_builder = b
@@ -88,14 +88,14 @@ class LibraryNames(unittest.TestCase):
 
     def testLongName(self):
         
-        coordinator = BuildCoordinator(root=self.fs_.rootdirectory(),
-                                       setups=[DirectorySetupFactory(),
-                                               CSetupFactory(short_libnames=False,
-                                                             use_libtool=False)])
-        coordinator.enlarge()
+        package = LocalPackage(root=self.fs_.rootdirectory(),
+                               setups=[DirectorySetupFactory(),
+                                       CSetupFactory(short_libnames=False,
+                                                     use_libtool=False)])
+        package.enlarge(external_nodes=[])
 
         dir3lib_builder = None
-        for b in find.find_entrybuilder(coordinator.rootbuilder(), ['dir1', 'dir2', 'dir3']).builders():
+        for b in find.find_entrybuilder(package.rootbuilder(), ['dir1', 'dir2', 'dir3']).builders():
             if isinstance(b, LibraryBuilder):
                 self.failIf(dir3lib_builder is not None)
                 dir3lib_builder = b
@@ -103,19 +103,19 @@ class LibraryNames(unittest.TestCase):
             pass
 
         self.failUnlessEqual(dir3lib_builder.basename(),
-                             '_'.join([coordinator.name()]+self.dir3_.relpath()))
+                             '_'.join([package.name()]+self.dir3_.relpath()))
         pass
     
     def testShortName(self):
         
-        coordinator = BuildCoordinator(root=self.fs_.rootdirectory(),
-                                       setups=[DirectorySetupFactory(),
-                                               CSetupFactory(short_libnames=True,
-                                                             use_libtool=False)])
-        coordinator.enlarge()
+        package = LocalPackage(root=self.fs_.rootdirectory(),
+                               setups=[DirectorySetupFactory(),
+                                       CSetupFactory(short_libnames=True,
+                                                    use_libtool=False)])
+        package.enlarge(external_nodes=[])
 
         dir3lib_builder = None
-        for b in find.find_entrybuilder(coordinator.rootbuilder(), ['dir1', 'dir2', 'dir3']).builders():
+        for b in find.find_entrybuilder(package.rootbuilder(), ['dir1', 'dir2', 'dir3']).builders():
             if isinstance(b, LibraryBuilder):
                 self.failIf(dir3lib_builder is not None)
                 dir3lib_builder = b
@@ -123,7 +123,7 @@ class LibraryNames(unittest.TestCase):
             pass
 
         self.failUnlessEqual(dir3lib_builder.basename(),
-                             '_'.join([coordinator.name(), self.dir3_.name()]))
+                             '_'.join([package.name(), self.dir3_.name()]))
         pass
     pass
     

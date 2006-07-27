@@ -28,12 +28,12 @@ import re
 class Installer(Builder):
     def __init__(self,
                  parentbuilder,
-                 coordinator):
+                 package):
         Builder.__init__(
             self,
             id=str(self.__class__)+'('+str(parentbuilder)+')',
             parentbuilder=parentbuilder,
-            coordinator=coordinator)            
+            package=package)            
         
         self.install_directories_ = {}
         pass

@@ -27,17 +27,17 @@ AC_PROG_CC.add(
     order=OrderedParagraphSet.PROGRAMS)
 
 class CBuilder(CompiledCBuilder):
-    def __init__(self, file, parentbuilder, coordinator):
+    def __init__(self, file, parentbuilder, package):
         CompiledCBuilder.__init__(
             self,
             file=file,
             parentbuilder=parentbuilder,
-            coordinator=coordinator)
+            package=package)
         pass
 
     def output(self):
         CompiledCBuilder.output(self)
-        self.coordinator().configure_ac().add_paragraphs(AC_PROG_CC)
+        self.package().configure_ac().add_paragraphs(AC_PROG_CC)
         pass
     
     pass

@@ -21,18 +21,18 @@ from libconfix.core.builder import Builder
 from libconfix.core.filesys.file import File
 from libconfix.core.filesys.directory import Directory
 from libconfix.core.filesys.filesys import FileSystem
-from libconfix.core.coordinator import BuildCoordinator
+from libconfix.core.local_package import LocalPackage
 from libconfix.testutils import dirhier
 
 import unittest
 
 class FileWatcher(Builder):
-    def __init__(self, parentbuilder, coordinator):
+    def __init__(self, parentbuilder, package):
         Builder.__init__(
             self,
             id=str(self.__class__)+'('+str(parentbuilder)+')',
             parentbuilder=parentbuilder,
-            coordinator=coordinator)
+            package=package)
         self.seen_names_ = set()
         pass
 
@@ -57,13 +57,13 @@ class IgnoredEntries(unittest.TestCase):
         fs.rootdirectory().add(name='file',
                                entry=File())
         
-        coordinator = BuildCoordinator(
+        package = LocalPackage(
             root=fs.rootdirectory(),
             setups=[])
-        filewatcher = FileWatcher(parentbuilder=coordinator.rootbuilder(),
-                                  coordinator=coordinator)
-        coordinator.rootbuilder().add_builder(filewatcher)
-        coordinator.enlarge()
+        filewatcher = FileWatcher(parentbuilder=package.rootbuilder(),
+                                  package=package)
+        package.rootbuilder().add_builder(filewatcher)
+        package.enlarge(external_nodes=[])
 
         self.failIf('file' in filewatcher.seen_names())
 

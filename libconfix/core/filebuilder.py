@@ -22,12 +22,12 @@ from entrybuilder import EntryBuilder
 from iface import InterfacePiece
 
 class FileBuilder(EntryBuilder):
-    def __init__(self, file, parentbuilder, coordinator):
+    def __init__(self, file, parentbuilder, package):
         EntryBuilder.__init__(self,
                               id=str(self.__class__)+'('+'/'.join(file.relpath())+')',
                               entry=file,
                               parentbuilder=parentbuilder,
-                              coordinator=coordinator)
+                              package=package)
         pass
     def file(self):
         return self.entry()

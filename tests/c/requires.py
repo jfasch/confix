@@ -40,7 +40,7 @@ class ScanTest(unittest.TestCase):
                            '#   include <inc4>   ',
                            '   #include <inc5>',
                            ])
-        builder = CBuilder(file=file, parentbuilder=None, coordinator=None)
+        builder = CBuilder(file=file, parentbuilder=None, package=None)
         self.assertEqual(len(builder.requires()), 5)
         inc1 = None
         inc2 = None
@@ -88,7 +88,7 @@ class IfaceTest(unittest.TestCase):
             "// CONFIX:REQUIRE_H(filename='inc3', urgency=Require.URGENCY_WARN)",
             "// CONFIX:REQUIRE_H(filename='inc4', urgency=Require.URGENCY_ERROR)",
             ])
-        builder = CBuilder(file=file, parentbuilder=None, coordinator=None)
+        builder = CBuilder(file=file, parentbuilder=None, package=None)
         self.assertEqual(len(builder.requires()), 4)
         inc1 = None
         inc2 = None

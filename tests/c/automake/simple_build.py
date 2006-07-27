@@ -23,7 +23,7 @@ from libconfix.core.automake import bootstrap, configure, make
 from libconfix.core.filesys.filesys import FileSystem
 from libconfix.core.filesys.file import File
 from libconfix.core.filesys.directory import Directory
-from libconfix.core.coordinator import BuildCoordinator
+from libconfix.core.local_package import LocalPackage
 from libconfix.core.hierarchy import DirectorySetupFactory
 
 from libconfix.plugins.c.setup import CSetupFactory
@@ -65,11 +65,10 @@ class SimpleBuildTest(unittest.TestCase):
                                                            'int i;',
                                                            ]))
             
-            self.coordinator_ = BuildCoordinator(root=self.fs_.rootdirectory(),
-                                                 setups=[DirectorySetupFactory(),
-                                                         CSetupFactory(short_libnames=False, use_libtool=False)])
-            self.coordinator_.enlarge()
-            self.coordinator_.output()
+            self.package_ = LocalPackage(root=self.fs_.rootdirectory(),
+                                         setups=[CSetupFactory(short_libnames=False, use_libtool=False)])
+            self.package_.enlarge(external_nodes=[])
+            self.package_.output()
             self.fs_.sync()
         except Error, e:
             sys.stderr.write(`e`+'\n')

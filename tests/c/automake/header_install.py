@@ -18,7 +18,7 @@
 # USA
 
 from libconfix.core.filesys.file import File
-from libconfix.core.coordinator import BuildCoordinator
+from libconfix.core.local_package import LocalPackage
 from libconfix.plugins.c.setup import CSetupFactory
 from libconfix.plugins.c.installer import Installer
 from libconfix.testutils import dirhier, makefileparser
@@ -40,13 +40,13 @@ class HeaderInstallTest(unittest.TestCase):
         file_h = fs.rootdirectory().add(name='file.h',
                                         entry=File())
         file_h.set_property(name='INSTALLPATH_CINCLUDE', value=[])
-        coordinator = BuildCoordinator(root=fs.rootdirectory(),
-                                       setups=[CSetupFactory(short_libnames=False,
-                                                             use_libtool=False)])
-        coordinator.enlarge()
-        coordinator.output()
+        package = LocalPackage(root=fs.rootdirectory(),
+                               setups=[CSetupFactory(short_libnames=False,
+                                                     use_libtool=False)])
+        package.enlarge(external_nodes=[])
+        package.output()
 
-        directory_definition = coordinator.rootbuilder().makefile_am().install_directories().get('')
+        directory_definition = package.rootbuilder().makefile_am().install_directories().get('')
         self.failIf(directory_definition is None)
         self.failUnless(directory_definition.dirname() is None)
         self.failIf(directory_definition.files('HEADERS') is None)
@@ -58,17 +58,17 @@ class HeaderInstallTest(unittest.TestCase):
 
         confix_install_local = makefileparser.find_rule(
             targets=['confix-install-local'],
-            elements=coordinator.rootbuilder().makefile_am().elements())
+            elements=package.rootbuilder().makefile_am().elements())
         install_file_h = makefileparser.find_rule(
             targets=['$(top_builddir)/confix_include/file.h'],
-            elements=coordinator.rootbuilder().makefile_am().elements())
+            elements=package.rootbuilder().makefile_am().elements())
         mkdir = makefileparser.find_rule(
             targets=['$(top_builddir)/confix_include'],
-            elements=coordinator.rootbuilder().makefile_am().elements())
+            elements=package.rootbuilder().makefile_am().elements())
         self.failIf(confix_install_local is None)
         self.failIf(install_file_h is None)
         self.failIf(mkdir is None)
-        self.failUnless('confix-install-local' in coordinator.rootbuilder().makefile_am().all_local().prerequisites())
+        self.failUnless('confix-install-local' in package.rootbuilder().makefile_am().all_local().prerequisites())
         self.failUnless('$(top_builddir)/confix_include/file.h' in confix_install_local.prerequisites())
         self.failUnless('$(top_builddir)/confix_include' in install_file_h.prerequisites())
 
@@ -76,13 +76,13 @@ class HeaderInstallTest(unittest.TestCase):
 
         confix_clean_local = makefileparser.find_rule(
             targets=['confix-clean-local'],
-            elements=coordinator.rootbuilder().makefile_am().elements())
+            elements=package.rootbuilder().makefile_am().elements())
         clean_file_h = makefileparser.find_rule(
             targets=['$(top_builddir)/confix_include/file.h-clean'],
-            elements=coordinator.rootbuilder().makefile_am().elements())
+            elements=package.rootbuilder().makefile_am().elements())
         self.failIf(confix_clean_local is None)
         self.failIf(clean_file_h is None)
-        self.failUnless('confix-clean-local' in coordinator.rootbuilder().makefile_am().clean_local().prerequisites())
+        self.failUnless('confix-clean-local' in package.rootbuilder().makefile_am().clean_local().prerequisites())
         self.failUnless('$(top_builddir)/confix_include/file.h-clean' in confix_clean_local.prerequisites())
         
         pass
@@ -92,13 +92,13 @@ class HeaderInstallTest(unittest.TestCase):
         file_h = fs.rootdirectory().add(name='file.h',
                                         entry=File())
         file_h.set_property(name='INSTALLPATH_CINCLUDE', value=['xxx'])
-        coordinator = BuildCoordinator(root=fs.rootdirectory(),
-                                       setups=[CSetupFactory(short_libnames=False,
-                                                             use_libtool=False)])
-        coordinator.enlarge()
-        coordinator.output()
+        package = LocalPackage(root=fs.rootdirectory(),
+                               setups=[CSetupFactory(short_libnames=False,
+                                                     use_libtool=False)])
+        package.enlarge(external_nodes=[])
+        package.output()
 
-        directory_definition = coordinator.rootbuilder().makefile_am().install_directories().get('publicheader_xxx')
+        directory_definition = package.rootbuilder().makefile_am().install_directories().get('publicheader_xxx')
         self.failIf(directory_definition is None)
         self.failUnless(directory_definition.dirname() == '$(includedir)/xxx')
         self.failIf(directory_definition.files('HEADERS') is None)
@@ -110,13 +110,13 @@ class HeaderInstallTest(unittest.TestCase):
         file_h = fs.rootdirectory().add(name='file.h',
                                         entry=File())
         file_h.set_property(name='INSTALLPATH_CINCLUDE', value=['xxx/yyy'])
-        coordinator = BuildCoordinator(root=fs.rootdirectory(),
-                                       setups=[CSetupFactory(short_libnames=False,
-                                                             use_libtool=False)])
-        coordinator.enlarge()
-        coordinator.output()
+        package = LocalPackage(root=fs.rootdirectory(),
+                               setups=[CSetupFactory(short_libnames=False,
+                                                     use_libtool=False)])
+        package.enlarge(external_nodes=[])
+        package.output()
 
-        directory_definition = coordinator.rootbuilder().makefile_am().install_directories().get('publicheader_xxxyyy')
+        directory_definition = package.rootbuilder().makefile_am().install_directories().get('publicheader_xxxyyy')
         self.failIf(directory_definition is None)
         self.failUnless(directory_definition.dirname() == '$(includedir)/xxx/yyy')
         self.failIf(directory_definition.files('HEADERS') is None)

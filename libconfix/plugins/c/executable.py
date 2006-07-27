@@ -21,12 +21,12 @@ from linked import LinkedBuilder
 from libconfix.core.builder import BuilderSet
 
 class ExecutableBuilder(LinkedBuilder):
-    def __init__(self, parentbuilder, coordinator, center, exename, use_libtool):
+    def __init__(self, parentbuilder, package, center, exename, use_libtool):
         LinkedBuilder.__init__(
             self,
             id=str(self.__class__)+':'+str(center)+'('+str(parentbuilder)+')',
             parentbuilder=parentbuilder,
-            coordinator=coordinator,
+            package=package,
             use_libtool=use_libtool)
 
         LinkedBuilder.add_member(self, center)

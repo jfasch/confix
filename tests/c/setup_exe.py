@@ -18,7 +18,7 @@
 # USA
 
 from libconfix.core.filesys.file import File
-from libconfix.core.coordinator import BuildCoordinator
+from libconfix.core.local_package import LocalPackage
 from libconfix.core.filebuilder import FileBuilder
 from libconfix.plugins.c.setup import CSetupFactory
 from libconfix.plugins.c.h import HeaderBuilder
@@ -39,16 +39,16 @@ class ExecutableSetupTest(unittest.TestCase):
         main_c.set_property(name='MAIN', value=True)
         fs.rootdirectory().add(name='main.c', entry=main_c)
 
-        coordinator = BuildCoordinator(root=fs.rootdirectory(),
-                                       setups=[CSetupFactory(short_libnames=False,
-                                                             use_libtool=False)])
-        coordinator.enlarge()
+        package = LocalPackage(root=fs.rootdirectory(),
+                               setups=[CSetupFactory(short_libnames=False,
+                                                     use_libtool=False)])
+        package.enlarge(external_nodes=[])
 
         file_h_builder = None
         file_c_builder = None
         library_builder = None
         main_builder = None
-        for b in coordinator.rootbuilder().builders():
+        for b in package.rootbuilder().builders():
             if isinstance(b, FileBuilder):
                 if b.file().name() == 'file.h' and isinstance(b, HeaderBuilder):
                     file_h_builder = b
