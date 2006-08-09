@@ -88,7 +88,7 @@ def main():
 
     except Error, e:
         sys.stderr.write('***ERROR***\n')
-        sys.stderr.write(`e`+'\n')
+        sys.stderr.write(str(e)+'\n')
         sys.exit(1)
 
 if __name__ == "__main__":
