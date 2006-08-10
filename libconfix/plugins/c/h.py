@@ -19,7 +19,7 @@
 
 from base import CBaseBuilder
 from dependency import Provide_CInclude
-from buildinfo import BuildInfo_CIncludePath_NativeLocal
+import buildinfo
 import namespace
 
 from libconfix.core.iface import InterfacePiece
@@ -84,7 +84,7 @@ class HeaderBuilder(CBaseBuilder):
             pass
 
         # tell the one who has required me how to find me
-        self.add_buildinfo(BuildInfo_CIncludePath_NativeLocal())
+        self.add_buildinfo(buildinfo.singleton_buildinfo_cincludepath_nativelocal)
 
         pass
 

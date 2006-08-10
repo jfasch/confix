@@ -44,10 +44,10 @@ class CompiledCBuilder(CBaseBuilder):
         for n in topolist:
             for bi in n.buildinfos():
                 if isinstance(bi, BuildInfo_CIncludePath_NativeLocal):
-                    self.buildinfo_includepath_native_local_.insert(0, bi)
+                    self.buildinfo_includepath_native_local_ += 1
                     continue
                 if isinstance(bi, BuildInfo_CIncludePath_NativeInstalled):
-                    self.buildinfo_includepath_native_installed_.insert(0, bi)
+                    self.buildinfo_includepath_native_installed_ += 1
                     continue
                 pass
             pass
@@ -55,15 +55,15 @@ class CompiledCBuilder(CBaseBuilder):
 
     def output(self):
         CBaseBuilder.output(self)
-        if len(self.buildinfo_includepath_native_local_) > 0:
+        if self.buildinfo_includepath_native_local_ > 0:
             self.parentbuilder().makefile_am().add_includepath(
                 '-I$(top_builddir)/'+const.LOCAL_INCLUDE_DIR)
             pass
         pass
 
     def init_buildinfo_(self):
-        self.buildinfo_includepath_native_local_ = []
-        self.buildinfo_includepath_native_installed_ = []
+        self.buildinfo_includepath_native_local_ = 0
+        self.buildinfo_includepath_native_installed_ = 0
         pass
     pass
 

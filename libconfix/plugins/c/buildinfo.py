@@ -23,6 +23,7 @@ import types
 
 class BuildInfo_CIncludePath_NativeLocal(BuildInformation):
     def __init__(self): BuildInformation.__init__(self)
+    def __str__(self): return self.unique_key()
     def unique_key(self):
         return self.__class__.__name__
     def install(self): return singleton_buildinfo_cincludepath_nativeinstalled
@@ -32,6 +33,7 @@ singleton_buildinfo_cincludepath_nativelocal = BuildInfo_CIncludePath_NativeLoca
 class BuildInfo_CIncludePath_NativeInstalled(BuildInformation):
     def get_marshalling_data(self): assert 0
     def __init__(self): BuildInformation.__init__(self)
+    def __str__(self): return self.unique_key()
     def unique_key(self):
         return self.__class__.__name__
     def install(self): assert 0
@@ -46,6 +48,7 @@ class BuildInfo_CLibrary_NativeLocal(BuildInformation):
         self.name_ = name
         self.unique_key_ = self.__class__.__name__ + ':' + '.'.join(self.dir_) + ':' + self.name_
         pass
+    def __str__(self): return self.unique_key()
     def unique_key(self):
         return self.unique_key_
     def dir(self): return self.dir_
@@ -60,6 +63,7 @@ class BuildInfo_CLibrary_NativeInstalled(BuildInformation):
         BuildInformation.__init__(self)
         self.name_ = name
         pass
+    def __str__(self): return self.unique_key()
     def unique_key(self):
         return self.__class__.__name__ + ':' + self.name_
     def name(self): return self.name_

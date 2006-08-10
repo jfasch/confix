@@ -40,7 +40,7 @@ class RelateSuite(unittest.TestSuite):
         self.addTest(RelateBasic('testLocalBuildInfo'))
         self.addTest(RelateBasic('testPropagatedLibraryInfo'))
         self.addTest(RelateBasic('testPropagatedIncludeInfo'))
-        self.addTest(RelateBasic('testIncludeOrder'))
+        self.addTest(RelateBasic('testPropagatedIncludeInfo'))
         self.addTest(RelateBasic('testLinkOrder'))
         pass
     pass
@@ -161,56 +161,36 @@ class RelateBasic(unittest.TestCase):
 
         # relevant build information
 
-        self.lodir_lib_includeinfo_ = None
         self.lodir_lib_libinfo_ = None
 
         for bi in self.lodir_lib_builder_.buildinfos():
-            if isinstance(bi, BuildInfo_CIncludePath_NativeLocal):
-                self.failIf(self.lodir_lib_includeinfo_ is not None)
-                self.lodir_lib_includeinfo_ = bi
-                pass
             if isinstance(bi, BuildInfo_CLibrary_NativeLocal):
                 self.failIf(self.lodir_lib_libinfo_ is not None)
                 self.lodir_lib_libinfo_ = bi
                 pass
             pass
         
-        self.hi1dir_lib_includeinfo_ = None
         self.hi1dir_lib_libinfo_ = None
 
         for bi in self.hi1dir_lib_builder_.buildinfos():
-            if isinstance(bi, BuildInfo_CIncludePath_NativeLocal):
-                self.failIf(self.hi1dir_lib_includeinfo_ is not None)
-                self.hi1dir_lib_includeinfo_ = bi
-                pass
             if isinstance(bi, BuildInfo_CLibrary_NativeLocal):
                 self.failIf(self.hi1dir_lib_libinfo_ is not None)
                 self.hi1dir_lib_libinfo_ = bi
                 pass
             pass
         
-        self.hi2dir_lib_includeinfo_ = None
         self.hi2dir_lib_libinfo_ = None
 
         for bi in self.hi2dir_lib_builder_.buildinfos():
-            if isinstance(bi, BuildInfo_CIncludePath_NativeLocal):
-                self.failIf(self.hi2dir_lib_includeinfo_ is not None)
-                self.hi2dir_lib_includeinfo_ = bi
-                pass
             if isinstance(bi, BuildInfo_CLibrary_NativeLocal):
                 self.failIf(self.hi2dir_lib_libinfo_ is not None)
                 self.hi2dir_lib_libinfo_ = bi
                 pass
             pass
-        
-        self.highestdir_lib_includeinfo_ = None
+
         self.highestdir_lib_libinfo_ = None
 
         for bi in self.highestdir_lib_builder_.buildinfos():
-            if isinstance(bi, BuildInfo_CIncludePath_NativeLocal):
-                self.failIf(self.highestdir_lib_includeinfo_ is not None)
-                self.highestdir_lib_includeinfo_ = bi
-                pass
             if isinstance(bi, BuildInfo_CLibrary_NativeLocal):
                 self.failIf(self.highestdir_lib_libinfo_ is not None)
                 self.highestdir_lib_libinfo_ = bi
@@ -229,6 +209,8 @@ class RelateBasic(unittest.TestCase):
         pass
 
     def testLocalBuildInfo(self):
+        # see if everyone who is involved in the game has the right
+        # buildinfo.
         lo_include = None
         lo_lib = None
         hi1_include = None
@@ -236,27 +218,33 @@ class RelateBasic(unittest.TestCase):
         hi2_include = None
         hi2_lib = None
         for bi in self.lodir_lib_builder_.buildinfos():
-            if isinstance(bi, BuildInfo_CIncludePath_NativeLocal):
-                lo_include = bi
-                continue
             if isinstance(bi, BuildInfo_CLibrary_NativeLocal):
                 lo_lib = bi
                 continue
             pass
-        for bi in self.hi1dir_lib_builder_.buildinfos():
+        for bi in self.lodir_lo_h_builder_.buildinfos():
             if isinstance(bi, BuildInfo_CIncludePath_NativeLocal):
-                hi1_include = bi
+                lo_include = bi
                 continue
+            pass
+        for bi in self.hi1dir_lib_builder_.buildinfos():
             if isinstance(bi, BuildInfo_CLibrary_NativeLocal):
                 hi1_lib = bi
                 continue
             pass
-        for bi in self.hi2dir_lib_builder_.buildinfos():
+        for bi in self.hi1dir_hi1_h_builder_.buildinfos():
             if isinstance(bi, BuildInfo_CIncludePath_NativeLocal):
-                hi2_include = bi
+                hi1_include = bi
                 continue
+            pass
+        for bi in self.hi2dir_lib_builder_.buildinfos():
             if isinstance(bi, BuildInfo_CLibrary_NativeLocal):
                 hi2_lib = bi
+                continue
+            pass
+        for bi in self.hi2dir_hi2_h_builder_.buildinfos():
+            if isinstance(bi, BuildInfo_CIncludePath_NativeLocal):
+                hi2_include = bi
                 continue
             pass
         self.failIf(lo_include is None)
@@ -308,40 +296,20 @@ class RelateBasic(unittest.TestCase):
         pass
 
     def testPropagatedIncludeInfo(self):
-        # lo.c must not get lodir's include-buildinfo (includes are
-        # done locally)
-        self.failIf(self.lodir_lib_includeinfo_ in self.lodir_lo_c_builder_.buildinfo_includepath_native_local())
+        # lo.c has no native includes
+        self.failIf(self.lodir_lo_c_builder_.buildinfo_includepath_native_local())
 
-        # same with the others
-        self.failIf(self.hi1dir_lib_includeinfo_ in self.hi1dir_hi1_c_builder_.buildinfo_includepath_native_local())
-        self.failIf(self.hi2dir_lib_includeinfo_ in self.hi2dir_hi2_c_builder_.buildinfo_includepath_native_local())
-        self.failIf(self.highestdir_lib_includeinfo_ in self.highestdir_highest_c_builder_.buildinfo_includepath_native_local())
-
-        # lo's include-buildinfo must have got through to the others
-        self.failUnless(self.lodir_lib_includeinfo_ in self.hi1dir_hi1_c_builder_.buildinfo_includepath_native_local())
-        self.failUnless(self.lodir_lib_includeinfo_ in self.hi2dir_hi2_c_builder_.buildinfo_includepath_native_local())
-        self.failUnless(self.lodir_lib_includeinfo_ in self.highestdir_highest_c_builder_.buildinfo_includepath_native_local())
-        self.failUnless(self.lodir_lib_includeinfo_ in self.exedir_main_c_builder_.buildinfo_includepath_native_local())
-
-        # same with the others
-        self.failUnless(self.hi1dir_lib_includeinfo_ in self.exedir_main_c_builder_.buildinfo_includepath_native_local())
-        self.failUnless(self.hi2dir_lib_includeinfo_ in self.exedir_main_c_builder_.buildinfo_includepath_native_local())
+        # whereas all the others have
+        self.failUnless(self.hi1dir_hi1_c_builder_.buildinfo_includepath_native_local())
+        self.failUnless(self.hi2dir_hi2_c_builder_.buildinfo_includepath_native_local())
+        self.failUnless(self.highestdir_highest_c_builder_.buildinfo_includepath_native_local())
+        self.failUnless(self.exedir_main_c_builder_.buildinfo_includepath_native_local())
         
         pass
     
-    def testIncludeOrder(self):
-        # suffice it to check the include order of one file (don't
-        # care for all of them, heck)
-
+    def testPropagatedIncludeInfo(self):
         # highest depends on hi1, hi2, lo
-        self.failUnlessEqual(len(self.highestdir_highest_c_builder_.buildinfo_includepath_native_local()), 3)
-
-        # lo is the lowest in the dependency list, so it must come at the end
-        self.failUnless(self.lodir_lib_includeinfo_ is self.highestdir_highest_c_builder_.buildinfo_includepath_native_local()[2])
-
-        # hi1 and hi2 are equal orders, so they must come either first or second
-        self.failUnless(self.hi1dir_lib_includeinfo_ in self.highestdir_highest_c_builder_.buildinfo_includepath_native_local()[0:2])
-        self.failUnless(self.hi2dir_lib_includeinfo_ in self.highestdir_highest_c_builder_.buildinfo_includepath_native_local()[0:2])
+        self.failUnless(self.highestdir_highest_c_builder_.buildinfo_includepath_native_local() == 3)
         pass
 
     def testLinkOrder(self):

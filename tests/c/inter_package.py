@@ -75,8 +75,8 @@ class InterPackageRelate(unittest.TestCase):
 
         # hi.c includes lo.h, so it must have a BuildInfo for
         # installed header files, but none for local header files.
-        self.failUnless(len(hi_c_builder.buildinfo_includepath_native_installed()) == 1)
-        self.failUnless(len(hi_c_builder.buildinfo_includepath_native_local()) == 0)
+        self.failUnless(hi_c_builder.buildinfo_includepath_native_installed() == 1)
+        self.failUnless(hi_c_builder.buildinfo_includepath_native_local() == 0)
         self.failUnless(len(libhi_builder.buildinfo_direct_dependent_libs()) == 1)
         self.failUnless(len(libhi_builder.buildinfo_topo_dependent_libs()) == 1)
         self.failUnless(isinstance(libhi_builder.buildinfo_direct_dependent_libs()[0],
