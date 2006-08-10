@@ -19,6 +19,7 @@
 
 from base import CBaseBuilder
 from dependency import Provide_CInclude
+from buildinfo import BuildInfo_CIncludePath_NativeLocal
 import namespace
 
 from libconfix.core.iface import InterfacePiece
@@ -81,7 +82,10 @@ class HeaderBuilder(CBaseBuilder):
         if outside_name != filename:
             self.add_internal_provide(Provide_CInclude(filename))
             pass
-        
+
+        # tell the one who has required me how to find me
+        self.add_buildinfo(BuildInfo_CIncludePath_NativeLocal())
+
         pass
 
     def install_path(self):

@@ -25,10 +25,18 @@ class BuildInfo_CIncludePath_NativeLocal(BuildInformation):
     def __init__(self): BuildInformation.__init__(self)
     def unique_key(self):
         return self.__class__.__name__
-    def install(self): return buildinfo_cincludepath_nativeinstalled
+    def install(self): return singleton_buildinfo_cincludepath_nativeinstalled
     pass
+singleton_buildinfo_cincludepath_nativelocal = BuildInfo_CIncludePath_NativeLocal()
 
-buildinfo_cincludepath_nativelocal_singleton = BuildInfo_CIncludePath_NativeLocal()
+class BuildInfo_CIncludePath_NativeInstalled(BuildInformation):
+    def get_marshalling_data(self): assert 0
+    def __init__(self): BuildInformation.__init__(self)
+    def unique_key(self):
+        return self.__class__.__name__
+    def install(self): assert 0
+    pass
+singleton_buildinfo_cincludepath_nativeinstalled = BuildInfo_CIncludePath_NativeInstalled()
 
 class BuildInfo_CLibrary_NativeLocal(BuildInformation):
     def __init__(self, dir, name):
@@ -44,4 +52,16 @@ class BuildInfo_CLibrary_NativeLocal(BuildInformation):
     def name(self): return self.name_
     def install(self):
         return BuildInfo_CLibrary_NativeInstalled(self.name())
+    pass
+
+class BuildInfo_CLibrary_NativeInstalled(BuildInformation):
+    def get_marshalling_data(self): assert 0
+    def __init__(self, name):
+        BuildInformation.__init__(self)
+        self.name_ = name
+        pass
+    def unique_key(self):
+        return self.__class__.__name__ + ':' + self.name_
+    def name(self): return self.name_
+    def install(self): assert 0
     pass

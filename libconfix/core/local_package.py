@@ -82,6 +82,9 @@ class LocalPackage(Package):
         self.auxdir_ = AutoconfAuxDir(directory=dir, parentbuilder=self.rootbuilder_, package=self)
         self.rootbuilder_.add_builder(self.auxdir_)
         pass
+
+    def __str__(self):
+        return 'LocalPackage:'+str(self.name_)
     
     def name(self):
         return self.name_

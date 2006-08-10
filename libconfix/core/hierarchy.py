@@ -22,7 +22,7 @@ from entrybuilder import EntryBuilder
 from setup import SetupFactory, Setup
 from makefile_py import Makefile_py
 from depindex import ProvideMap
-from node import Node
+from local_node import LocalNode
 
 from libconfix.core.filesys.file import File
 from libconfix.core.filesys.directory import Directory
@@ -217,8 +217,8 @@ class DirectoryBuilder(EntryBuilder):
         # compose our own node that will manage our builders which
         # don't have their own node.
 
-        ret_nodes.add(Node(responsible_builder=self,
-                           managed_builders=all_builders-builders_with_nodes))
+        ret_nodes.add(LocalNode(responsible_builder=self,
+                                managed_builders=all_builders-builders_with_nodes))
 
         return ret_nodes
 

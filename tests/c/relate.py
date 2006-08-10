@@ -310,22 +310,22 @@ class RelateBasic(unittest.TestCase):
     def testPropagatedIncludeInfo(self):
         # lo.c must not get lodir's include-buildinfo (includes are
         # done locally)
-        self.failIf(self.lodir_lib_includeinfo_ in self.lodir_lo_c_builder_.native_local_modules_used())
+        self.failIf(self.lodir_lib_includeinfo_ in self.lodir_lo_c_builder_.buildinfo_includepath_native_local())
 
         # same with the others
-        self.failIf(self.hi1dir_lib_includeinfo_ in self.hi1dir_hi1_c_builder_.native_local_modules_used())
-        self.failIf(self.hi2dir_lib_includeinfo_ in self.hi2dir_hi2_c_builder_.native_local_modules_used())
-        self.failIf(self.highestdir_lib_includeinfo_ in self.highestdir_highest_c_builder_.native_local_modules_used())
+        self.failIf(self.hi1dir_lib_includeinfo_ in self.hi1dir_hi1_c_builder_.buildinfo_includepath_native_local())
+        self.failIf(self.hi2dir_lib_includeinfo_ in self.hi2dir_hi2_c_builder_.buildinfo_includepath_native_local())
+        self.failIf(self.highestdir_lib_includeinfo_ in self.highestdir_highest_c_builder_.buildinfo_includepath_native_local())
 
         # lo's include-buildinfo must have got through to the others
-        self.failUnless(self.lodir_lib_includeinfo_ in self.hi1dir_hi1_c_builder_.native_local_modules_used())
-        self.failUnless(self.lodir_lib_includeinfo_ in self.hi2dir_hi2_c_builder_.native_local_modules_used())
-        self.failUnless(self.lodir_lib_includeinfo_ in self.highestdir_highest_c_builder_.native_local_modules_used())
-        self.failUnless(self.lodir_lib_includeinfo_ in self.exedir_main_c_builder_.native_local_modules_used())
+        self.failUnless(self.lodir_lib_includeinfo_ in self.hi1dir_hi1_c_builder_.buildinfo_includepath_native_local())
+        self.failUnless(self.lodir_lib_includeinfo_ in self.hi2dir_hi2_c_builder_.buildinfo_includepath_native_local())
+        self.failUnless(self.lodir_lib_includeinfo_ in self.highestdir_highest_c_builder_.buildinfo_includepath_native_local())
+        self.failUnless(self.lodir_lib_includeinfo_ in self.exedir_main_c_builder_.buildinfo_includepath_native_local())
 
         # same with the others
-        self.failUnless(self.hi1dir_lib_includeinfo_ in self.exedir_main_c_builder_.native_local_modules_used())
-        self.failUnless(self.hi2dir_lib_includeinfo_ in self.exedir_main_c_builder_.native_local_modules_used())
+        self.failUnless(self.hi1dir_lib_includeinfo_ in self.exedir_main_c_builder_.buildinfo_includepath_native_local())
+        self.failUnless(self.hi2dir_lib_includeinfo_ in self.exedir_main_c_builder_.buildinfo_includepath_native_local())
         
         pass
     
@@ -334,14 +334,14 @@ class RelateBasic(unittest.TestCase):
         # care for all of them, heck)
 
         # highest depends on hi1, hi2, lo
-        self.failUnlessEqual(len(self.highestdir_highest_c_builder_.native_local_modules_used()), 3)
+        self.failUnlessEqual(len(self.highestdir_highest_c_builder_.buildinfo_includepath_native_local()), 3)
 
         # lo is the lowest in the dependency list, so it must come at the end
-        self.failUnless(self.lodir_lib_includeinfo_ is self.highestdir_highest_c_builder_.native_local_modules_used()[2])
+        self.failUnless(self.lodir_lib_includeinfo_ is self.highestdir_highest_c_builder_.buildinfo_includepath_native_local()[2])
 
         # hi1 and hi2 are equal orders, so they must come either first or second
-        self.failUnless(self.hi1dir_lib_includeinfo_ in self.highestdir_highest_c_builder_.native_local_modules_used()[0:2])
-        self.failUnless(self.hi2dir_lib_includeinfo_ in self.highestdir_highest_c_builder_.native_local_modules_used()[0:2])
+        self.failUnless(self.hi1dir_lib_includeinfo_ in self.highestdir_highest_c_builder_.buildinfo_includepath_native_local()[0:2])
+        self.failUnless(self.hi2dir_lib_includeinfo_ in self.highestdir_highest_c_builder_.buildinfo_includepath_native_local()[0:2])
         pass
 
     def testLinkOrder(self):

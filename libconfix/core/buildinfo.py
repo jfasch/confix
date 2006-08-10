@@ -34,7 +34,7 @@ class BuildInformation(Marshallable):
         pass
     
     def __init__(self): pass
-    def install(self): return self
+    def install(self): assert 0
 
     def unique_key(self):
         

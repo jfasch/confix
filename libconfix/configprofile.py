@@ -165,7 +165,14 @@ class ConfigExternal:
             if append_flags and \
                    (k.lower().endswith('flags') or k.lower().endswith('libs')):
                 if k not in self.env_.keys(): self.env_[k] = ''
-                self.env_[k] = self.env_[k] + ' ' + dict[k]
+                envs = []
+                if len(self.env_[k]):
+                    envs.append(self.env_[k])
+                    pass
+                if len(dict[k]):
+                    envs.append(dict[k])
+                    pass
+                self.env_[k] = ' '.join(envs)
             else:
                 self.env_[k] = dict[k]
 

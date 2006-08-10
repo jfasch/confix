@@ -18,7 +18,7 @@
 # USA
 
 from linked import LinkedBuilder
-from buildinfo import BuildInfo_CIncludePath_NativeLocal, BuildInfo_CLibrary_NativeLocal
+from buildinfo import BuildInfo_CLibrary_NativeLocal
 
 from libconfix.core.utils.paragraph import Paragraph, OrderedParagraphSet
 from libconfix.core.automake import helper_automake
@@ -45,7 +45,6 @@ class LibraryBuilder(LinkedBuilder):
         self.basename_ = basename
         self.libtool_version_info_ = libtool_version_info
         
-        self.add_buildinfo(BuildInfo_CIncludePath_NativeLocal())
         self.add_buildinfo(BuildInfo_CLibrary_NativeLocal(dir=self.parentbuilder().directory().relpath(),
                                                           name=self.basename_))
         pass

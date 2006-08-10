@@ -17,7 +17,7 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 # USA
 
-from buildinfo import BuildInfo_CLibrary_NativeLocal
+from buildinfo import BuildInfo_CLibrary_NativeLocal, BuildInfo_CLibrary_NativeInstalled
 
 from libconfix.core.filebuilder import FileBuilder
 from libconfix.core.builder import Builder, BuilderSet
@@ -45,7 +45,7 @@ class LinkedBuilder(Builder):
 
     def use_libtool(self):
         return self.use_libtool_
-
+    
     def buildinfo_direct_dependent_libs(self):
         return self.buildinfo_direct_dependent_libs_
     def buildinfo_topo_dependent_libs(self):
@@ -59,11 +59,17 @@ class LinkedBuilder(Builder):
                 if isinstance(bi, BuildInfo_CLibrary_NativeLocal):
                     self.buildinfo_direct_dependent_libs_.append(bi)
                     continue
+                if isinstance(bi, BuildInfo_CLibrary_NativeInstalled):
+                    self.buildinfo_direct_dependent_libs_.append(bi)
+                    continue
                 pass
             pass
         for n in topolist:
             for bi in n.buildinfos():
                 if isinstance(bi, BuildInfo_CLibrary_NativeLocal):
+                    self.buildinfo_topo_dependent_libs_.insert(0, bi)
+                    continue
+                if isinstance(bi, BuildInfo_CLibrary_NativeInstalled):
                     self.buildinfo_topo_dependent_libs_.insert(0, bi)
                     continue
                 pass
