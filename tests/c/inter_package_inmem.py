@@ -90,6 +90,6 @@ class InterPackageRelate(unittest.TestCase):
     pass
 
 if __name__ == '__main__':
-    unittest.TextTestRunner().run(InterPackageSuite())
+    unittest.TextTestRunner().run(InterPackageInMemorySuite())
     pass
         
