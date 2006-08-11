@@ -23,7 +23,7 @@ from main_search import MainSearch
 from requires import RequireTestSuite
 from install_path import InstallPathSuite
 from relate import RelateSuite
-from inter_package import InterPackageSuite
+from inter_package_inmem import InterPackageInMemorySuite
 from automake.suite_inmem import AutomakeCSuiteInMemory
 
 import unittest
@@ -38,7 +38,7 @@ class CTestSuiteInMemory(unittest.TestSuite):
         self.addTest(RequireTestSuite())
         self.addTest(InstallPathSuite())
         self.addTest(RelateSuite())
-        self.addTest(InterPackageSuite())
+        self.addTest(InterPackageInMemorySuite())
 
         self.addTest(AutomakeCSuiteInMemory())
         pass

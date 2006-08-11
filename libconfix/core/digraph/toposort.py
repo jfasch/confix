@@ -1,5 +1,3 @@
-# $Id: toposort.py,v 1.2 2006/07/04 14:36:48 jfasch Exp $
-
 # Copyright (C) 2005 Salomon Automation
 
 # This library is free software; you can redistribute it and/or modify
@@ -36,7 +34,6 @@ def toposort(digraph, nodes):
     return ret
 
 def toposort_node(digraph, node):
-
     v = TopoVisitor()
     try:
         dfs.dfs(digraph=digraph, node=node, visitor=v)

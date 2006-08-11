@@ -26,7 +26,7 @@ from libconfix.plugins.c.buildinfo import BuildInfo_CLibrary_NativeInstalled
 
 import unittest
 
-class InterPackageSuite(unittest.TestSuite):
+class InterPackageInMemorySuite(unittest.TestSuite):
     def __init__(self):
         unittest.TestSuite.__init__(self)
         self.addTest(InterPackageRelate('test'))
