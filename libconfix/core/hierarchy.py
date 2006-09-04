@@ -223,6 +223,7 @@ class DirectoryBuilder(EntryBuilder):
         return ret_nodes
 
     def output(self):
+        EntryBuilder.output(self)
 
         # 'make maintainer-clean' should remove the file we generate
 
@@ -232,6 +233,7 @@ class DirectoryBuilder(EntryBuilder):
         # let our builders write their output, recursively
         for b in self.builders_:
             b.output()
+            assert b.base_output_called() == True, str(b)
             pass
         pass
 

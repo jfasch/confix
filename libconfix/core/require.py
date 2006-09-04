@@ -16,11 +16,11 @@
 # License along with this library; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-import debug
 from marshalling import \
      Marshallable, \
      MarshalledVersionUnknownError
 from libconfix.core.utils.error import Error
+import libconfix.core.utils.debug
 
 class Require(Marshallable):
     def get_marshalling_data(self):

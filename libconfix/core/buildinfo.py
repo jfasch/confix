@@ -19,7 +19,6 @@
 from marshalling import Marshallable
 
 class BuildInformation(Marshallable):
-
     def get_marshalling_data(self):
         return {Marshallable.GENERATING_CLASS: BuildInformation,
                 Marshallable.VERSIONS: {'BuildInformation': 1},

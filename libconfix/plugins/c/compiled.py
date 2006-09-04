@@ -59,6 +59,9 @@ class CompiledCBuilder(CBaseBuilder):
             self.parentbuilder().makefile_am().add_includepath(
                 '-I$(top_builddir)/'+const.LOCAL_INCLUDE_DIR)
             pass
+        if self.buildinfo_includepath_native_installed_ > 0:
+            self.parentbuilder().makefile_am().add_includepath(
+                '-I$(includedir)')
         pass
 
     def init_buildinfo_(self):

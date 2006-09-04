@@ -24,6 +24,7 @@ from property import Property
 from iface import BuilderInterfaceTestSuite
 from resolve import ResolveTestSuite
 from relate import RelateTestSuite
+from repofile import RepoFileSuite
 from automake.suite import AutomakeSuite
 
 import unittest
@@ -40,6 +41,7 @@ class BasicTestSuite(unittest.TestSuite):
         self.addTest(BuilderInterfaceTestSuite())
         self.addTest(ResolveTestSuite())
         self.addTest(RelateTestSuite())
+        self.addTest(RepoFileSuite())
         self.addTest(AutomakeSuite())
         pass
     pass

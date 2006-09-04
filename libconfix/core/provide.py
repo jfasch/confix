@@ -19,7 +19,7 @@
 from marshalling import \
      Marshallable, \
      MarshalledVersionUnknownError
-import debug
+import libconfix.core.utils.debug
 
 class Provide(Marshallable):
     def get_marshalling_data(self):

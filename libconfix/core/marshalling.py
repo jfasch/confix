@@ -89,8 +89,9 @@ class Marshallable:
         # the marshallling phase, and thus need not be marshalled.
 
         assert md[Marshallable.GENERATING_CLASS] is self.__class__, \
-               'Generating class: '+md.generating_class().__name__+\
-               ', self\'s class: '+self.__class__.__name__
+               'Generating class: '+str(md[Marshallable.GENERATING_CLASS])+\
+               ', self\'s class: '+str(self.__class__)+\
+               ' (maybe the latter forgot to overload get_marshalling_data()?)'
         del md[Marshallable.GENERATING_CLASS]
 
         return md

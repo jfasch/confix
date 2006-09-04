@@ -16,15 +16,44 @@
 # USA
 
 from package import Package
+from marshalling import Marshallable, update_marshalling_data
+
+import types
 
 class InstalledPackage(Package):
+    def get_marshalling_data(self):
+        assert self.name_ is not None
+        return update_marshalling_data(
+            marshalling_data=Package.get_marshalling_data(self),
+            generating_class=InstalledPackage,
+            attributes={'name': self.name_,
+                        'version': self.version_,
+                        'nodes': self.nodes_},
+            version={'core.InstalledPackage': 1})
+    def set_marshalling_data(self, data):
+        version = data[Marshallable.VERSIONS]['core.InstalledPackage']
+        if version != 1:
+            raise MarshalledVersionUnknownError(
+                klass=self.__class__,
+                marshalled_version=version,
+                current_version=1)
+        self.name_ = data[Marshallable.ATTRIBUTES]['name']
+        self.version_ = data[Marshallable.ATTRIBUTES]['version']
+        self.nodes_ = data[Marshallable.ATTRIBUTES]['nodes']
+        Package.set_marshalling_data(self, data)
+        pass
+    
     def __init__(self, name, version, nodes):
         Package.__init__(self)
         self.name_ = name
         self.version_ = version
         self.nodes_ = nodes
-        pass
 
+        # <paranoia>
+        assert type(name) is types.StringType
+        assert type(version) is types.StringType
+        # </paranoia>
+        pass
     def name(self):
         return self.name_
     def version(self):

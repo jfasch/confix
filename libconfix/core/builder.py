@@ -43,6 +43,7 @@ class Builder:
         # and that the chain did reach the base of all builders.
         self.base_enlarge_called_ = False
         self.base_relate_called_ = False
+        self.base_output_called_ = False
         
         pass
     
@@ -104,12 +105,15 @@ class Builder:
         pass
 
     def output(self):
+        self.base_output_called_ = True
         pass
 
 
-    # these are mainly for use by test programs
+    # these are mainly for use by test programs, and serve no real
+    # functionality
     def base_enlarge_called(self): return self.base_enlarge_called_
     def base_relate_called(self): return self.base_relate_called_
+    def base_output_called(self): return self.base_output_called_
     
     pass
 

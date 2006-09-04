@@ -1,5 +1,3 @@
-# $Id: 00all.py,v 1.2 2006/02/28 14:00:29 jfasch Exp $
-
 # Copyright (C) 2002-2006 Salomon Automation
 
 # This library is free software; you can redistribute it and/or modify
@@ -29,3 +27,4 @@ if __name__ == '__main__':
 
     runner = unittest.TextTestRunner()
     runner.run(suite)
+    pass

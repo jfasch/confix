@@ -16,48 +16,54 @@
 # License along with this library; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-from core.error import Error
-from repo import PackageRepository
-from repofile import RepositoryFile
-from modbase import ModuleBase
-import helper_pickle
-import core.debug
+from libconfix.core.repo import PackageRepository
+from libconfix.core.repofile import RepositoryFile
+from libconfix.core.filesys.file import File
+from libconfix.core.filesys.filesys import FileSystem
+from libconfix.core.filesys.scan import scan_filesystem
+from libconfix.core.utils.error import Error
+from libconfix.core.utils import helper_pickle, debug
 
-import re
-import os
+import re, os, types
 
 _re_repo = re.compile('^.*\\.repo$')
 
-def dir(prefix): return os.path.join(prefix, 'share', 'confix', 'repo')
 def dir_for_automake(): return os.path.join('$(datadir)', 'confix', 'repo')
 
 class AutomakePackageRepository(PackageRepository):
 
-    def __init__(self, dir):
+    def __init__(self, prefix):
         PackageRepository.__init__(self)
-        self.dir_ = dir
+
+        assert type(prefix) in [types.ListType, types.TupleType]
+
+        repodir = prefix+['share', 'confix', 'repo']
+        if not os.path.isdir(os.sep.join(repodir)):
+            debug.warn('No repository directory '+os.path.isdir(os.sep.join(repodir)))
+            return
+        
+        self.fs_ = scan_filesystem(path=repodir)
         self.packages_ = []
 
         errlist = []
-        if not os.path.isdir(self.dir_):
-            core.debug.warn('No repository directory '+self.dir_)
-            return
 
-        for f in os.listdir(self.dir_):
-            fullpath = os.path.join(self.dir_, f)
-            if _re_repo.match(f) and os.path.isfile(fullpath):
+        for name, entry in self.fs_.rootdirectory().entries():
+            if not isinstance(entry, File):
+                continue
+            if _re_repo.match(name):
                 try:
-                    self.packages_.append(RepositoryFile(fullpath).load())
+                    package = RepositoryFile(entry).load()
+                    self.packages_.append(package)
                 except Error, e:
-                    errlist.append(Error('Error reading file ' + fullpath, [e]))
+                    errlist.append(Error('Error reading file "'+os.sep.join(entry.abspath()), [e]))
                 except Exception, e:
-                    errlist.append(Error('Error reading file ' + fullpath, [e]))
+                    errlist.append(Error('Error reading file "'+os.sep.join(entry.abspath()), [e]))
                     pass
                 pass
             pass
-        
+
         if len(errlist):
-            raise Error('Error in repo directory ' + dir, errlist)
+            raise Error('Error in repo directory "'+os.sep.join(self.fs_.rootdirectory().abspath())+'"', errlist)
 
         pass
 

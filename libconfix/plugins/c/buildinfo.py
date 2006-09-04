@@ -18,6 +18,7 @@
 # USA
 
 from libconfix.core.buildinfo import BuildInformation
+from libconfix.core.marshalling import update_marshalling_data, Marshallable
 
 import types
 
@@ -31,7 +32,22 @@ class BuildInfo_CIncludePath_NativeLocal(BuildInformation):
 singleton_buildinfo_cincludepath_nativelocal = BuildInfo_CIncludePath_NativeLocal()
 
 class BuildInfo_CIncludePath_NativeInstalled(BuildInformation):
-    def get_marshalling_data(self): assert 0
+    def get_marshalling_data(self):
+        return update_marshalling_data(
+            marshalling_data=BuildInformation.get_marshalling_data(self),
+            generating_class=BuildInfo_CIncludePath_NativeInstalled,
+            attributes={},
+            version={'BuildInfo_CIncludePath_NativeInstalled': 1})
+    def set_marshalling_data(self, data):
+        version = data[Marshallable.VERSIONS]['BuildInfo_CIncludePath_NativeInstalled']
+        if version != 1:
+            raise MarshalledVersionUnknownError(
+                klass=self.__class__,
+                marshalled_version=version,
+                current_version=1)
+        BuildInformation.set_marshalling_data(self, data)
+        pass
+
     def __init__(self): BuildInformation.__init__(self)
     def __str__(self): return self.unique_key()
     def unique_key(self):
@@ -58,7 +74,23 @@ class BuildInfo_CLibrary_NativeLocal(BuildInformation):
     pass
 
 class BuildInfo_CLibrary_NativeInstalled(BuildInformation):
-    def get_marshalling_data(self): assert 0
+    def get_marshalling_data(self):
+        return update_marshalling_data(
+            marshalling_data=BuildInformation.get_marshalling_data(self),
+            generating_class=BuildInfo_CLibrary_NativeInstalled,
+            attributes={'name': self.name_},
+            version={'BuildInfo_CLibrary_NativeInstalled': 1})
+    def set_marshalling_data(self, data):
+        version = data[Marshallable.VERSIONS]['BuildInfo_CLibrary_NativeInstalled']
+        if version != 1:
+            raise MarshalledVersionUnknownError(
+                klass=self.__class__,
+                marshalled_version=version,
+                current_version=1)
+        self.name_ = data[Marshallable.ATTRIBUTES]['name']
+        BuildInformation.set_marshalling_data(self, data)
+        pass
+
     def __init__(self, name):
         BuildInformation.__init__(self)
         self.name_ = name

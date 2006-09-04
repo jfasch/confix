@@ -17,34 +17,43 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 # USA
 
-from core.error import Error
-import helper_pickle
+from libconfix.core.utils.error import Error
+from libconfix.core.utils import helper_pickle
+
+import os
 
 class RepositoryFile:
 
     VERSION = 1
 
-    def __init__(self, filename):
-        self.filename_ = filename
+    def __init__(self, file):
+        self.file_ = file
         pass
 
     def load(self):
         try:
-            obj = helper_pickle.load_object_from_file(self.filename_)
+            # fixme: File.lines() is currently the only method of
+            # reading the content of a file. we read the lines, join
+            # them together, and then unpickle the object from the
+            # whole buffer. to make this more efficient, we'd need
+            # something like File.content().
+            obj = helper_pickle.load_object_from_string('\n'.join(self.file_.lines()))
             if obj['version'] != RepositoryFile.VERSION:
-                raise Error('Version mismatch in repository file '+self.filename_+''
+                raise Error('Version mismatch in repository file '+os.sep.join(self.file_.abspath())+''
                             ' (file: '+str(obj['version'])+','
                             ' current: '+str(RepositoryFile.VERSION)+')')
             return obj['package']
         except Error, e:
-            raise Error('Could not read repository file '+self.filename_, [e])
+            raise Error('Could not read repository file '+os.sep.join(self.file_.abspath()), [e])
         pass
     
     def dump(self, package):
         try:
-            helper_pickle.dump_object_to_file({'version': RepositoryFile.VERSION,
-                                               'package': package},
-                                              self.filename_)
+            self.file_.truncate()
+            self.file_.add_line(helper_pickle.dump_object_to_string(
+                {'version': RepositoryFile.VERSION,
+                 'package': package}))
         except Error, e:
-            raise Error('Could not write repository file '+self.filename_, [e])
+            raise Error('Could not write repository file '+os.sep.join(self.file_.abspath()), [e])
         pass
+    

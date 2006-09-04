@@ -17,7 +17,7 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 # USA
 
-from core.error import Error, SystemError
+from libconfix.core.utils.error import Error, SystemError
 
 import sys
 
@@ -54,7 +54,7 @@ def dump_object_to_file(object, filename):
     try:
         mypickle.dump(object, file)
     except Exception, e:
-        raise Error('Cannot dump Python object to file '+filename, [SystemError(e, sys.exc_traceback)])
+        raise Error('Cannot dump Python object "'+str(object)+'" to file '+filename, [SystemError(e, sys.exc_traceback)])
 
 def load_object_from_string(string):
     try:

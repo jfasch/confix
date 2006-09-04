@@ -150,8 +150,8 @@ class BuildableExecutable(BuildableLinked, BuildableCluster):
         # add dependencies for local libraries. note that we can only
         # do this if we are not using libtool - only in this case we
         # know the name of the library that will be generated. if we
-        # ae using libtool, we cannot know what te user will choose to
-        # generate (--disble-shared, --enable-shared, or even .sl,
+        # are using libtool, we cannot know what te user will choose
+        # to generate (--disble-shared, --enable-shared, or even .sl,
         # .so, .dll, ...).
 
         # however, this whole stuff here is a bad heuristic anyway

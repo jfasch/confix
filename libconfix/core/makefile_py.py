@@ -53,6 +53,7 @@ class Makefile_py(FileBuilder):
         pass
 
     def output(self):
+        FileBuilder.output(self)
         self.parentbuilder().makefile_am().add_extra_dist(self.file().name())
         pass
     

@@ -22,7 +22,9 @@ from iface import InterfacePiece
 from hierarchy import DirectoryBuilder
 from edgefinder import EdgeFinder
 from filebuilder import FileBuilder
+from repofile import RepositoryFile
 
+from libconfix.core.automake import repo_automake
 from libconfix.core.digraph.digraph import DirectedGraph
 from libconfix.core import digraph
 from libconfix.core.automake.configure_ac import Configure_ac 
@@ -128,6 +130,12 @@ class LocalPackage(Package):
                 n.relate(digraph=self.digraph_)
                 pass
             pass
+
+        # <paranoia>
+        for b in self.collect_builders_():
+            assert b.base_relate_called() == True, str(b)
+            pass
+        # </paranoia>
         pass
 
     def output(self):
@@ -214,7 +222,7 @@ class LocalPackage(Package):
         dirbuilders = self.collect_dirbuilders_()
 
         subdir_nodes = set()
-        for n in self.digraph_.nodes():
+        for n in self.local_nodes_:
             if n.responsible_builder() in dirbuilders:
                 subdir_nodes.add(n)
                 pass
@@ -241,18 +249,21 @@ class LocalPackage(Package):
         # write package description file. add stuff to Makefile.am
         # that takes care to install it. put it into the dist-package.
 
-        repofile = self.name() + '.repo'
+        repofilename = self.name() + '.repo'
+        repofile = self.rootdirectory_.add(name=repofilename, entry=File())
 
-        # jjjj write stuff
-##         RepositoryFile(repofile).dump(self.install())
+        RepositoryFile(file=repofile).dump(package=self.install())
 
-##         reponame = 'confixrepo'
-##         self.makefile_am().add_lines(
-##             self.makefile_am().define_directory(symbolicname=reponame,
-##                                                 dirname=repo_automake.dir_for_automake()))
-##         self.makefile_am().add_dir_primary(dir=reponame, primary='DATA', filename=repofile)
-
-        self.rootbuilder_.makefile_am().add_extra_dist(repofile)
+        self.rootbuilder_.makefile_am().define_install_directory(
+            symbolicname='confixrepo',
+            dirname=repo_automake.dir_for_automake())
+        self.rootbuilder_.makefile_am().add_to_install_directory(
+            symbolicname='confixrepo',
+            family='DATA',
+            files=[repofilename])
+        self.rootbuilder_.makefile_am().add_extra_dist(
+            name=repofilename)
+        
         pass
 
     def output_unique_file_(self):
@@ -293,7 +304,7 @@ class LocalPackage(Package):
         return builders
 
     def collect_dirbuilders_(self):
-        # argh. this could be much more intelligently
+        # argh. this could be done much more intelligently
         dirbuilders = set()
         for b in self.collect_builders_():
             if isinstance(b, DirectoryBuilder):

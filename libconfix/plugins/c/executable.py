@@ -18,6 +18,8 @@
 # USA
 
 from linked import LinkedBuilder
+from buildinfo import BuildInfo_CLibrary_NativeLocal, BuildInfo_CLibrary_NativeInstalled
+
 from libconfix.core.builder import BuilderSet
 
 class ExecutableBuilder(LinkedBuilder):
@@ -39,6 +41,8 @@ class ExecutableBuilder(LinkedBuilder):
         return self.center_
 
     def output(self):
+        LinkedBuilder.output(self)
+
         mf_am = self.parentbuilder().makefile_am()
         mf_am.add_bin_program(self.exename_)
         for m in self.members():
@@ -46,14 +50,36 @@ class ExecutableBuilder(LinkedBuilder):
             pass
         if self.use_libtool():
             for bi in self.buildinfo_direct_dependent_libs():
-                mf_am.add_compound_ldadd(self.exename_,
-                                         '/'.join(['$(top_builddir)']+bi.dir()+['lib'+bi.name()+'.la']))
+                mf_am.add_compound_ldadd(
+                    compound_name=self.exename_,
+                    lib='/'.join(['$(top_builddir)']+bi.dir()+['lib'+bi.name()+'.la']))
                 pass
             pass
         else:
+            print 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
+            print 'ExecutableBuilder.output(): das da noch allgemeiner machen'
+            print 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
+            linkline_fragments = []
+            have_installed_library = False
             for bi in self.buildinfo_topo_dependent_libs():
-                mf_am.add_compound_ldadd(self.exename_,
-                                         '/'.join(['$(top_builddir)']+bi.dir()+['lib'+bi.name()+'.a']))
+                if isinstance(bi, BuildInfo_CLibrary_NativeLocal):
+                    linkline_fragments.append('/'.join(['$(top_builddir)']+bi.dir()+['lib'+bi.name()+'.a']))
+                elif isinstance(bi, BuildInfo_CLibrary_NativeInstalled):
+                    linkline_fragments.append('-l'+bi.name())
+                    have_installed_library = True
+                else:
+                    assert 0
+                    pass
+                pass
+            if have_installed_library == True:
+                mf_am.add_compound_ldadd(
+                    compound_name=self.exename_,
+                    lib='-L$(libdir)')
+                pass
+            for f in linkline_fragments:
+                mf_am.add_compound_ldadd(
+                    compound_name=self.exename_,
+                    lib=f)
                 pass
             pass
         pass

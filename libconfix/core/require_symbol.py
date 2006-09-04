@@ -20,6 +20,8 @@ from require import Require
 from require_string import Require_String
 from marshalling import Marshallable, MarshalledVersionUnknownError, update_marshalling_data
 
+import types
+
 class Require_Symbol(Require_String):
     def get_marshalling_data(self):
         return update_marshalling_data(
@@ -40,7 +42,7 @@ class Require_Symbol(Require_String):
                  symbol,
                  found_in,
                  urgency=Require.URGENCY_DEFAULT):
-
+        assert type(found_in) in [types.ListType, types.TupleType]
         Require_String.__init__(
             self,
             id=symbol,

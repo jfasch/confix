@@ -45,6 +45,7 @@ class AutoconfAuxDir(DirectoryBuilder):
         pass
 
     def output(self):
+        DirectoryBuilder.output(self)
         self.package().configure_ac().set_ac_config_aux_dir('/'.join(self.directory().relpath()))
         pass
 

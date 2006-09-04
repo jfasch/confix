@@ -16,10 +16,11 @@
 # License along with this library; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-import debug
 from provide_string import Provide_String
 from require_symbol import Require_Symbol
 from marshalling import Marshallable, MarshalledVersionUnknownError, update_marshalling_data
+
+import libconfix.core.utils.debug
 
 class Provide_Symbol(Provide_String):
     def get_marshalling_data(self):

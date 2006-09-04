@@ -71,8 +71,6 @@ class IntraPackageBuildTest(unittest.TestCase):
         try:
             packageroot = os.sep.join(self.sourcerootpath_)
             buildroot = os.sep.join(self.buildrootpath_)
-            print packageroot
-            print buildroot
             bootstrap.bootstrap(packageroot=packageroot, aclocal_includedirs=[])
             os.makedirs(buildroot)
             configure.configure(packageroot=packageroot, buildroot=buildroot, prefix='/dev/null')

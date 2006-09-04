@@ -42,6 +42,7 @@ class Makefile_am:
         def files(self, family):
             return self.family_files_.get(family)
         def add(self, family, files):
+            assert type(files) in (types.ListType, types.TupleType)
             ffiles = self.family_files_.setdefault(family, [])
             ffiles.extend(files)
             pass
@@ -250,11 +251,6 @@ class Makefile_am:
         dirdef = self.install_directories_.get(symbolicname)
         assert dirdef is not None, symbolicname+' is not defined'
         dirdef.add(family=family, files=files)
-        pass
-
-    def set_dir_dirname(self, dir, dirname):
-        debug.warn(self.dir_+': Makefile_am.set_dir_dirname() is deprecated; use Makefile_am.define_directory() instead')
-        self.add_lines(self.define_directory(symbolicname=dir, dirname=dirname))
         pass
 
     def add_dir_primary(self, dir, primary, filename):

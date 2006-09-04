@@ -40,10 +40,12 @@ class FileWatcher(Builder):
         return self.seen_names_
 
     def enlarge(self):
+        print 'FileWatcher.enlarge()'
+        rv = Builder.enlarge(self)
         for name, entry in self.parentbuilder().entries():
             self.seen_names_.add(name)
             pass
-        return Builder.enlarge(self)
+        return rv
     pass
 
 class IgnoredEntries(unittest.TestCase):

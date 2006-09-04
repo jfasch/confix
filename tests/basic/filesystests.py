@@ -170,6 +170,7 @@ class Sync(unittest.TestCase):
         pass
 
     def test_file_truncate_persistent(self):
+
         fs = FileSystem(path=self.rootpath_)
         file = File(lines=['line'])
         fs.rootdirectory().add(name='file', entry=file)
@@ -190,7 +191,7 @@ class Sync(unittest.TestCase):
 class Sync_RootMoreThanOneDirectoryDeep(unittest.TestCase):
 
     # the above tests only test syncing an in-memory filesystem whose
-    # root is only one directory apart from a pysical directory. here
+    # root is only one directory apart from a physical directory. here
     # we test whether it work with two directory entries in the air as
     # well.
     
@@ -201,8 +202,7 @@ class Sync_RootMoreThanOneDirectoryDeep(unittest.TestCase):
         self.failUnless(os.path.isdir(os.sep.join(path)))
         pass
     pass
-        
 
 if __name__ == '__main__':
-    unittest.main()
+    unittest.TextTestRunner().run(FileSystemTestSuite())
     pass
