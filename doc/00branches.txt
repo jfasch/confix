@@ -133,4 +133,5 @@
                |                   release-1_5-branch
                |
                v
-             HEAD
+             HEAD (dead; migrated to 
+             https://svn.sourceforge.net/svnroot/confix/trunks/confix)
