@@ -19,7 +19,7 @@ from libconfix.core.utils import helper
 from libconfix.core.require_string import Require_String
 from libconfix.core.provide_string import Provide_String
 from libconfix.core.require import Require
-from libconfix.core.marshalling import Marshallable, MarshalledVersionUnknownError, update_marshalling_data
+from libconfix.core.repo.marshalling import Marshallable, MarshalledVersionUnknownError, update_marshalling_data
 
 class Require_CInclude(Require_String):
     def get_marshalling_data(self):

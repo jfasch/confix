@@ -23,7 +23,7 @@ from libconfix.core.require_symbol import Require_Symbol
 from libconfix.core.installed_node import InstalledNode
 from libconfix.core.filesys.file import File
 from libconfix.core.filesys.filesys import FileSystem
-from libconfix.core.repofile import RepositoryFile
+from libconfix.core.repo.repofile import RepositoryFile
 
 import unittest
 

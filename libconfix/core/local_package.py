@@ -22,17 +22,17 @@ from iface import InterfacePiece
 from hierarchy import DirectoryBuilder
 from edgefinder import EdgeFinder
 from filebuilder import FileBuilder
-from repofile import RepositoryFile
 
-from libconfix.core.automake import repo_automake
-from libconfix.core.digraph.digraph import DirectedGraph
 from libconfix.core import digraph
-from libconfix.core.automake.configure_ac import Configure_ac 
+from libconfix.core.automake import repo_automake
 from libconfix.core.automake.auxdir import AutoconfAuxDir
-from libconfix.core.filesys.file import File
+from libconfix.core.automake.configure_ac import Configure_ac 
+from libconfix.core.digraph.digraph import DirectedGraph
 from libconfix.core.filesys.directory import Directory
-from libconfix.core.utils.error import Error
+from libconfix.core.filesys.file import File
+from libconfix.core.repo.repofile import RepositoryFile
 from libconfix.core.utils import const
+from libconfix.core.utils.error import Error
 
 import os
 

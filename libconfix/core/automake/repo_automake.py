@@ -16,13 +16,13 @@
 # License along with this library; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-from libconfix.core.repo import PackageRepository
-from libconfix.core.repofile import RepositoryFile
 from libconfix.core.filesys.file import File
 from libconfix.core.filesys.filesys import FileSystem
 from libconfix.core.filesys.scan import scan_filesystem
-from libconfix.core.utils.error import Error
+from libconfix.core.repo.repo import PackageRepository
+from libconfix.core.repo.repofile import RepositoryFile
 from libconfix.core.utils import helper_pickle, debug
+from libconfix.core.utils.error import Error
 
 import re, os, types
 

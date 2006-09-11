@@ -18,7 +18,11 @@
 
 from require import Require
 from require_string import Require_String
-from marshalling import Marshallable, MarshalledVersionUnknownError, update_marshalling_data
+
+from libconfix.core.repo.marshalling import \
+     Marshallable, \
+     MarshalledVersionUnknownError, \
+     update_marshalling_data
 
 import types
 

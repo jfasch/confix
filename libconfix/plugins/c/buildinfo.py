@@ -18,7 +18,7 @@
 # USA
 
 from libconfix.core.buildinfo import BuildInformation
-from libconfix.core.marshalling import update_marshalling_data, Marshallable
+from libconfix.core.repo.marshalling import update_marshalling_data, Marshallable
 
 import types
 

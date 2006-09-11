@@ -21,7 +21,7 @@ import fnmatch
 
 from provide import Provide
 from require import Require
-from marshalling import \
+from libconfix.core.repo.marshalling import \
      Marshallable, \
      MarshalledVersionUnknownError, \
      update_marshalling_data

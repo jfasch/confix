@@ -18,7 +18,8 @@
 # USA
 
 from provide_string import Provide_String
-from marshalling import Unmarshallable
+
+from libconfix.core.repo.marshalling import Unmarshallable
 from libconfix.core.utils.error import Error
 
 class ProvideMap(Unmarshallable):

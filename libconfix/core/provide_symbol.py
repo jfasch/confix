@@ -18,7 +18,7 @@
 
 from provide_string import Provide_String
 from require_symbol import Require_Symbol
-from marshalling import Marshallable, MarshalledVersionUnknownError, update_marshalling_data
+from libconfix.core.repo.marshalling import Marshallable, MarshalledVersionUnknownError, update_marshalling_data
 
 import libconfix.core.utils.debug
 

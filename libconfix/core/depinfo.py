@@ -22,8 +22,8 @@ from require_string import Require_String
 from provide import Provide
 from provide_string import Provide_String
 from dependencyset import DependencySet
-from marshalling import Unmarshallable
 
+from libconfix.core.repo.marshalling import Unmarshallable
 import libconfix.core.utils.debug
 
 class DependencyInformation(Unmarshallable):

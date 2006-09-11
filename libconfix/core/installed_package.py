@@ -16,7 +16,8 @@
 # USA
 
 from package import Package
-from marshalling import Marshallable, update_marshalling_data
+
+from libconfix.core.repo.marshalling import Marshallable, update_marshalling_data
 
 import types
 

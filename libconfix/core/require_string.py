@@ -17,7 +17,8 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 from require import Require
-from marshalling import Marshallable, update_marshalling_data
+
+from libconfix.core.repo.marshalling import Marshallable, update_marshalling_data
 
 from sets import Set
 import types
