@@ -1,5 +1,3 @@
-# $Id: c.py,v 1.6 2006/03/13 21:48:40 jfasch Exp $
-
 # Copyright (C) 2002-2006 Salomon Automation
 
 # This library is free software; you can redistribute it and/or modify
@@ -21,11 +19,6 @@ from compiled import CompiledCBuilder
 
 from libconfix.core.utils.paragraph import Paragraph, OrderedParagraphSet
 
-AC_PROG_CC = OrderedParagraphSet()
-AC_PROG_CC.add(
-    paragraph=Paragraph(['AC_PROG_CC']),
-    order=OrderedParagraphSet.PROGRAMS)
-
 class CBuilder(CompiledCBuilder):
     def __init__(self, file, parentbuilder, package):
         CompiledCBuilder.__init__(
@@ -37,7 +30,9 @@ class CBuilder(CompiledCBuilder):
 
     def output(self):
         CompiledCBuilder.output(self)
-        self.package().configure_ac().add_paragraphs(AC_PROG_CC)
+        self.package().configure_ac().add_paragraph(
+            paragraph=Paragraph(['AC_PROG_CC']),
+            order=OrderedParagraphSet.PROGRAMS)
         pass
     
     pass

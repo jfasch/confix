@@ -1,5 +1,3 @@
-# $Id: base.py,v 1.7 2006/06/27 15:08:59 jfasch Exp $
-
 # Copyright (C) 2002-2006 Salomon Automation
 
 # This library is free software; you can redistribute it and/or modify

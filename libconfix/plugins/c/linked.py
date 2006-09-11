@@ -19,6 +19,7 @@
 
 from buildinfo import BuildInfo_CLibrary_NativeLocal, BuildInfo_CLibrary_NativeInstalled
 
+from libconfix.core.utils.paragraph import Paragraph, OrderedParagraphSet
 from libconfix.core.filebuilder import FileBuilder
 from libconfix.core.builder import Builder, BuilderSet
 
@@ -77,6 +78,51 @@ class LinkedBuilder(Builder):
                 
         pass
 
+    def output(self):
+        Builder.output(self)
+        if self.use_libtool_:
+            self.package().configure_ac().add_paragraph(
+                paragraph=Paragraph(['AC_LIBTOOL_DLOPEN',
+                                     'AC_LIBTOOL_WIN32_DLL',
+                                     'AC_PROG_LIBTOOL']),
+                order=OrderedParagraphSet.PROGRAMS)
+            pass
+        pass
+
+    def get_linkline(self):
+        paths = []
+        libraries = []
+        using_installed_library = False
+
+        if self.use_libtool_:
+            # when linking anything with libtool, we don't need to
+            # specify the whole topologically sorted list of
+            # dependencies - libtool does that by itself. we only
+            # specify the direct dependencies.
+            libs_to_use = self.buildinfo_direct_dependent_libs_
+        else:
+            # not using libtool; have to toposort ourselves
+            libs_to_use = self.buildinfo_topo_dependent_libs_
+            pass
+
+        for bi in libs_to_use:
+            if isinstance(bi, BuildInfo_CLibrary_NativeLocal):
+                paths.append('-L'+'/'.join(['$(top_builddir)']+bi.dir()))
+                libraries.append('-l'+bi.name())
+                continue
+            if isinstance(bi, BuildInfo_CLibrary_NativeInstalled):
+                using_installed_library = True
+                libraries.append('-l'+bi.name())
+                continue
+            assert 0
+            pass
+
+        if using_installed_library:
+            paths.append('-L$(libdir)')
+            pass
+
+        return paths + libraries
+    
     def init_buildinfo_(self):
         self.buildinfo_direct_dependent_libs_ = []
         self.buildinfo_topo_dependent_libs_ = []

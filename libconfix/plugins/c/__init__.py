@@ -1,5 +1,3 @@
-# $Id: __init__.py,v 1.1 2006/02/14 07:28:31 jfasch Exp $
-
 # Copyright (C) 2002-2006 Salomon Automation
 
 # This library is free software; you can redistribute it and/or modify

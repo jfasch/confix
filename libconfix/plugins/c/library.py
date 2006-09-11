@@ -1,5 +1,3 @@
-# $Id: library.py,v 1.8 2006/07/13 20:27:24 jfasch Exp $
-
 # Copyright (C) 2002-2006 Salomon Automation
 
 # This library is free software; you can redistribute it and/or modify
@@ -22,11 +20,6 @@ from buildinfo import BuildInfo_CLibrary_NativeLocal
 
 from libconfix.core.utils.paragraph import Paragraph, OrderedParagraphSet
 from libconfix.core.automake import helper_automake
-
-AC_PROG_RANLIB = OrderedParagraphSet()
-AC_PROG_RANLIB.add(
-    paragraph=Paragraph(['AC_PROG_RANLIB']),
-    order=OrderedParagraphSet.PROGRAMS)
 
 class LibraryBuilder(LinkedBuilder):
     def __init__(self,
@@ -62,27 +55,33 @@ class LibraryBuilder(LinkedBuilder):
     def output(self):
         LinkedBuilder.output(self)
 
-        self.package().configure_ac().add_paragraphs(AC_PROG_RANLIB)
-        
         mf_am = self.parentbuilder().makefile_am()
         am_basename = helper_automake.automake_name(self.basename())
         am_libname = helper_automake.automake_name(self.libname())
-
-        for m in self.members():
-            mf_am.add_compound_sources(am_libname, m.file().name())
-            pass
 
         if self.use_libtool():
             mf_am.add_ltlibrary(self.libname())
             if self.libtool_version_info_ is not None:
                 mf_am.add_compound_ldflags(am_libname, '-version-info %d:%d:%d' % self.libtool_version_info_)
                 pass
-            for bi in self.buildinfo_direct_dependent_libs():
-                mf_am.add_compound_libadd(am_libname, '/'.join(['$(top_builddir)']+bi.dir()+['lib'+bi.name()+'.la']))
-                pass
             pass
         else:
+            self.package().configure_ac().add_paragraph(
+                paragraph=Paragraph(['AC_PROG_RANLIB']),
+                order=OrderedParagraphSet.PROGRAMS)
             mf_am.add_library(self.libname())
+            pass
+        
+        for m in self.members():
+            mf_am.add_compound_sources(am_libname, m.file().name())
+            pass
+
+        if self.use_libtool():
+            for fragment in LinkedBuilder.get_linkline(self):
+                mf_am.add_compound_libadd(
+                    compound_name=am_libname,
+                    lib=fragment)
+                pass
             pass
         pass
 

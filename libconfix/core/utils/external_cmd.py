@@ -25,17 +25,9 @@ def exec_program(program, dir, args=None, env=None, path=None):
     if os.path.isabs(program):
         the_program = program
     else:
-        if path is None:
-            env_path = os.environ.get('PATH')
-            if env_path is None:
-                the_path = []
-            else:
-                the_path = env_path.split(os.pathsep)
-                pass
-            pass
-        the_program = search_program(program=program, path=the_path)
+        the_program = search_program(program=program, path=path)
         if the_program is None:
-            raise Error('Program "'+program+'" not found in path "'+':'.join(the_path)+'"')
+            raise Error('Program "'+program+'" not found in path')
         pass
 
     if args is None:
@@ -59,13 +51,21 @@ def exec_program(program, dir, args=None, env=None, path=None):
         pass
     except Exception, e:
         os.chdir(chdirbackto)
-        raise Error("Could not execute "+the_program, [e])
+        raise Error("Could not execute '"+the_program+' '+' '.join(the_args)+"' in directory '"+dir, [e])
     os.chdir(chdirbackto)
     pass
 
 def search_program(program, path):
     ret = None
-    for dir in path:
+    if path is None:
+        env_path = os.environ.get('PATH')
+        if env_path is None:
+            the_path = []
+        else:
+            the_path = env_path.split(os.pathsep)
+            pass
+        pass
+    for dir in the_path:
         file = os.path.join(dir, program)
         if os.path.exists(file) and os.path.isfile(file) and os.access(file, os.X_OK):
             ret = file

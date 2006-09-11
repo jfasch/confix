@@ -64,12 +64,12 @@ class LibrarySetupBasic(unittest.TestCase):
                 library_builder = b
                 pass
             pass
-        self.assert_(isinstance(file_h_builder, HeaderBuilder))
-        self.assert_(isinstance(file_c_builder, CBuilder)) 
-        self.assert_(isinstance(library_builder, LibraryBuilder)) 
+        self.failUnless(isinstance(file_h_builder, HeaderBuilder))
+        self.failUnless(isinstance(file_c_builder, CBuilder)) 
+        self.failUnless(isinstance(library_builder, LibraryBuilder)) 
 
-        self.assert_(file_h_builder in library_builder.members())
-        self.assert_(file_c_builder in library_builder.members())
+        self.failUnless(file_h_builder in library_builder.members())
+        self.failUnless(file_c_builder in library_builder.members())
         pass
     pass
 

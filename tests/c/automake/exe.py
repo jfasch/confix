@@ -129,9 +129,9 @@ class LibtoolExecutable(ExecutableBase):
     # the link line.
 
     def test(self):
-        self.failUnlessEqual(len(self.exedir_builder_.makefile_am().compound_ldadd('blah_exe_main')), 1)
-        self.failUnlessEqual(self.exedir_builder_.makefile_am().compound_ldadd('blah_exe_main')[0],
-                             '$(top_builddir)/hi/libblah_hi.la')
+        self.failUnlessEqual(self.exedir_builder_.makefile_am().compound_ldadd('blah_exe_main'),
+                             ['-L$(top_builddir)/hi',
+                              '-lblah_hi'])
         pass
     pass
 
@@ -143,7 +143,10 @@ class StandardExecutable(ExecutableBase):
 
     def test(self):
         self.failUnlessEqual(self.exedir_builder_.makefile_am().compound_ldadd('blah_exe_main'),
-                             ['$(top_builddir)/hi/libblah_hi.a', '$(top_builddir)/lo/libblah_lo.a'])
+                             ['-L$(top_builddir)/hi',
+                              '-L$(top_builddir)/lo',
+                              '-lblah_hi',
+                              '-lblah_lo'])
         pass
     pass
 

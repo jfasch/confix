@@ -25,13 +25,6 @@ AC_PROG_CXX.add(
     order=ORDER_PROGRAMS)
 
 
-AC_PROG_LIBTOOL = OrderedParagraphSet()
-AC_PROG_LIBTOOL.add(
-    paragraph=Paragraph(['AC_LIBTOOL_DLOPEN',
-                         'AC_LIBTOOL_WIN32_DLL',
-                         'AC_PROG_LIBTOOL']),
-    order=ORDER_PROGRAMS)
-
 AM_PROG_LEX = OrderedParagraphSet()
 AM_PROG_LEX.add(
     paragraph=Paragraph(['AM_PROG_LEX']),

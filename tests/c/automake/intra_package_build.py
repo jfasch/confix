@@ -31,15 +31,18 @@ import unittest, os, sys, shutil
 class IntraPackageBuildSuite(unittest.TestSuite):
     def __init__(self):
         unittest.TestSuite.__init__(self)
-        self.addTest(IntraPackageBuildTest('test'))
+        self.addTest(IntraPackageBuildWithLibtool('test'))
+        self.addTest(IntraPackageBuildWithoutLibtool('test'))
         pass
     pass
 
-class IntraPackageBuildTest(unittest.TestCase):
+class IntraPackageBuildBase(unittest.TestCase):
     def __init__(self, str):
         unittest.TestCase.__init__(self, str)
         self.seqnum_ = 0
         pass
+
+    def use_libtool(self): assert 0
 
     def setUp(self):
         self.rootpath_ = ['', 'tmp', 'confix.'+self.__class__.__name__+'.'+str(self.seqnum_)+'.'+str(os.getpid())]
@@ -54,7 +57,7 @@ class IntraPackageBuildTest(unittest.TestCase):
         self.package_ = LocalPackage(root=self.fs_.rootdirectory(),
                                      setups=[DirectorySetupFactory(),
                                              CSetupFactory(short_libnames=False,
-                                                           use_libtool=False)])
+                                                           use_libtool=self.use_libtool())])
         self.package_.enlarge(external_nodes=[])
         self.package_.output()
         self.fs_.sync()
@@ -71,9 +74,16 @@ class IntraPackageBuildTest(unittest.TestCase):
         try:
             packageroot = os.sep.join(self.sourcerootpath_)
             buildroot = os.sep.join(self.buildrootpath_)
-            bootstrap.bootstrap(packageroot=packageroot, aclocal_includedirs=[])
+            bootstrap.bootstrap(
+                packageroot=packageroot,
+                aclocal_includedirs=[],
+                path=None,
+                use_libtool=self.use_libtool())
             os.makedirs(buildroot)
-            configure.configure(packageroot=packageroot, buildroot=buildroot, prefix='/dev/null')
+            configure.configure(
+                packageroot=packageroot,
+                buildroot=buildroot,
+                prefix='/dev/null')
             make.make(dir=buildroot, args=[])
         except Error, e:
             sys.stderr.write(`e`+'\n')
@@ -87,6 +97,20 @@ class IntraPackageBuildTest(unittest.TestCase):
         self.failUnless(os.path.isfile(os.sep.join(self.buildrootpath_+['exe', 'intrapackagebuildtest_exe_main'])))
         pass
 
+    pass
+
+class IntraPackageBuildWithLibtool(IntraPackageBuildBase):
+    def __init__(self, str):
+        IntraPackageBuildBase.__init__(self, str)
+        pass
+    def use_libtool(self): return True
+    pass
+
+class IntraPackageBuildWithoutLibtool(IntraPackageBuildBase):
+    def __init__(self, str):
+        IntraPackageBuildBase.__init__(self, str)
+        pass
+    def use_libtool(self): return False
     pass
 
 if __name__ == '__main__':

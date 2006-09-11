@@ -98,11 +98,11 @@ class Configure_ac:
         self.ordered_paragraphs_.add(paragraph=paragraph, order=order)
         pass
 
-    def add_paragraphs(self, paragraphs):
+##     def add_paragraphs(self, paragraphs):
 
-        """ Add an ordered paragraph set. """
+##         """ Add an ordered paragraph set. """
 
-        self.ordered_paragraphs_.update(paragraphs)
+##         self.ordered_paragraphs_.update(paragraphs)
 
     def lines(self):
 

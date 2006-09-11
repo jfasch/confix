@@ -1,5 +1,3 @@
-# $Id: reached_from.py,v 1.1 2006/06/27 15:08:59 jfasch Exp $
-
 # Copyright (C) 2005 Salomon Automation
 
 # This library is free software; you can redistribute it and/or modify

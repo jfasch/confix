@@ -1,5 +1,3 @@
-# $Id: node.py,v 1.8 2006/07/13 20:27:24 jfasch Exp $
-
 # Copyright (C) 2002-2006 Salomon Automation
 
 # This library is free software; you can redistribute it and/or modify

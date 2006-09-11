@@ -116,10 +116,8 @@ class LocalPackage(Package):
         return self.local_nodes_
 
     def enlarge(self, external_nodes):
+        self.rootbuilder_.enlarge()
         while True:
-            num_enlarged = self.rootbuilder_.enlarge()
-            if num_enlarged == 0:
-                break
             self.local_nodes_ = self.rootbuilder_.nodes()
             all_nodes = set(self.local_nodes_)
             for n in external_nodes:
@@ -129,7 +127,25 @@ class LocalPackage(Package):
             for n in self.local_nodes_:
                 n.relate(digraph=self.digraph_)
                 pass
+            if self.rootbuilder_.enlarge() == 0:
+                break
             pass
+            
+        
+##         while True:
+##             num_enlarged = self.rootbuilder_.enlarge()
+##             if num_enlarged == 0:
+##                 break
+##             self.local_nodes_ = self.rootbuilder_.nodes()
+##             all_nodes = set(self.local_nodes_)
+##             for n in external_nodes:
+##                 all_nodes.add(n)
+##                 pass
+##             self.digraph_ = DirectedGraph(nodes=all_nodes, edgefinder=EdgeFinder(all_nodes))
+##             for n in self.local_nodes_:
+##                 n.relate(digraph=self.digraph_)
+##                 pass
+##             pass
 
         # <paranoia>
         for b in self.collect_builders_():

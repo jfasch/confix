@@ -25,20 +25,23 @@ from libconfix.core.automake import bootstrap, configure, make, repo_automake
 
 from libconfix.plugins.c.setup import CSetupFactory
 
-import unittest, os, sys
+import unittest, os, sys, shutil
 
 class InterPackageBuildSuite(unittest.TestSuite):
     def __init__(self):
         unittest.TestSuite.__init__(self)
-        self.addTest(InterPackageBuildTest('test'))
+        self.addTest(InterPackageBuildWithLibtool('test'))
+        self.addTest(InterPackageBuildWithoutLibtool('test'))
         pass
     pass
 
-class InterPackageBuildTest(unittest.TestCase):
+class InterPackageBuildBase(unittest.TestCase):
     def __init__(self, str):
         unittest.TestCase.__init__(self, str)
         self.seqnum_ = 0
         pass
+
+    def use_libtool(self): assert 0
         
     def setUp(self):
         self.rootpath_ = ['', 'tmp', 'confix.'+self.__class__.__name__+'.'+str(self.seqnum_)+'.'+str(os.getpid())]
@@ -63,41 +66,65 @@ class InterPackageBuildTest(unittest.TestCase):
                                       ]))
         lo_root.add(name='lo.c',
                     entry=File(lines=['#include "lo.h"',
-                                      '',
                                       'void lo() {}']))
         self.lo_fs_ = FileSystem(path=self.lo_sourcedir_, rootdirectory=lo_root)
 
         self.lo_package_ = LocalPackage(root=self.lo_fs_.rootdirectory(),
                                         setups=[DirectorySetupFactory(),
                                                 CSetupFactory(short_libnames=False,
-                                                              use_libtool=False)])
+                                                              use_libtool=self.use_libtool())])
         
         
         hi_root = Directory()
         hi_root.add(name='Makefile.py',
                     entry=File(lines=['PACKAGE_NAME("hi")',
                                       'PACKAGE_VERSION("4.5.6")']))
-        hi_root.add(name='hi.c',
-                    entry=File(lines=['#include <lo.h>',
-                                      '// detect errors as early as possible (keeping test-and-fix cycles low)',
-                                      '// CONFIX:REQUIRE_H("lo.h", URGENCY_ERROR)',
-                                      '',
-                                      'int main() {',
-                                      '  lo();',
-                                      '}']))
+        lib = hi_root.add(name='lib',
+                          entry=Directory())
+        lib.add(name='Makefile.py',
+                entry=File())
+        lib.add(name='hilib.h',
+                entry=File(lines=['#ifndef hi_hilib_h',
+                                  '#define hi_hilib_h',
+                                  'void hilib();',
+                                  '#endif']))
+        lib.add(name='hilib.c',
+                entry=File(lines=['#include "hilib.h"',
+                                  '#include <stdio.h>',
+                                  'void hilib() {',
+                                  r'    printf("hilib();\n");',
+                                  '}']))
+        bin = hi_root.add(name='bin',
+                          entry=Directory())
+        bin.add(name='Makefile.py',
+                entry=File())
+        bin.add(name='main.c',
+                entry=File(lines=['#include <lo.h>',
+                                  '#include <hilib.h>',
+                                  '// URGENCY_ERROR: detect errors as early as possible ',
+                                  '// (keeping test-and-fix cycles low)',
+                                  '// CONFIX:REQUIRE_H("lo.h", URGENCY_ERROR)',
+                                  '// CONFIX:REQUIRE_H("hilib.h", URGENCY_ERROR)',
+                                  '',
+                                  'int main() {',
+                                  '  lo();',
+                                  '  hilib();',
+                                  '  return 0;',
+                                  '}']))
+
         self.hi_fs_ = FileSystem(path=self.hi_sourcedir_, rootdirectory=hi_root)
         self.hi_package_ = LocalPackage(root=self.hi_fs_.rootdirectory(),
                                         setups=[DirectorySetupFactory(),
                                                 CSetupFactory(short_libnames=False,
-                                                              use_libtool=False)])
+                                                              use_libtool=self.use_libtool())])
         
         pass
 
     def tearDown(self):
-##         dir = os.sep.join(self.rootpath_)
-##         if os.path.isdir(dir):
-##             shutil.rmtree(dir)
-##             pass
+        dir = os.sep.join(self.rootpath_)
+        if os.path.isdir(dir):
+            shutil.rmtree(dir)
+            pass
         pass
     
     def test(self):
@@ -110,7 +137,9 @@ class InterPackageBuildTest(unittest.TestCase):
 
             bootstrap.bootstrap(
                 packageroot=os.sep.join(self.lo_sourcedir_),
-                aclocal_includedirs=[])
+                aclocal_includedirs=[],
+                use_libtool=self.use_libtool(),
+                path=None)
             os.makedirs(os.sep.join(self.lo_builddir_))
             configure.configure(
                 packageroot=os.sep.join(self.lo_sourcedir_),
@@ -121,7 +150,7 @@ class InterPackageBuildTest(unittest.TestCase):
                 args=['install'])
 
             # read repo from prefix
-
+            
             automake_repo = repo_automake.AutomakePackageRepository(
                 prefix=self.installdir_)
             ext_nodes = []
@@ -137,7 +166,9 @@ class InterPackageBuildTest(unittest.TestCase):
 
             bootstrap.bootstrap(
                 packageroot=os.sep.join(self.hi_sourcedir_),
-                aclocal_includedirs=[])
+                aclocal_includedirs=[],
+                use_libtool=self.use_libtool(),
+                path=None)
             os.makedirs(os.sep.join(self.hi_builddir_))
             configure.configure(
                 packageroot=os.sep.join(self.hi_sourcedir_),
@@ -153,6 +184,20 @@ class InterPackageBuildTest(unittest.TestCase):
 
         pass
     pass
+
+class InterPackageBuildWithLibtool(InterPackageBuildBase):
+    def __init__(self, str):
+        InterPackageBuildBase.__init__(self, str)
+        pass
+    def use_libtool(self): return True
+    pass
+    
+class InterPackageBuildWithoutLibtool(InterPackageBuildBase):
+    def __init__(self, str):
+        InterPackageBuildBase.__init__(self, str)
+        pass
+    def use_libtool(self): return False
+    
 
 if __name__ == '__main__':
     unittest.TextTestRunner().run(InterPackageBuildSuite())

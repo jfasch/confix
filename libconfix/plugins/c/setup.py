@@ -102,7 +102,7 @@ class CSetup(Setup):
             Installer(parentbuilder=self.parentbuilder(),
                       package=self.package()))
         
-        return 1 + Setup.enlarge(self)
+        return 3 + Setup.enlarge(self)
 
     def makefile_py_iface_pieces(self):
         return Setup.makefile_py_iface_pieces(self) + \

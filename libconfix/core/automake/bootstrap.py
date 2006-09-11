@@ -1,5 +1,3 @@
-# $Id: FILE-HEADER,v 1.4 2006/02/06 21:07:44 jfasch Exp $
-
 # Copyright (C) 2002-2006 Salomon Automation
 
 # This library is free software; you can redistribute it and/or modify
@@ -22,32 +20,41 @@ from libconfix.core.utils import external_cmd
 
 import os
 
-def bootstrap(packageroot, aclocal_includedirs):
-    aclocal(packageroot=packageroot, includedirs=aclocal_includedirs)
-    autoheader(packageroot=packageroot)
-    automake(packageroot=packageroot)
-    autoconf(packageroot=packageroot)
+def bootstrap(packageroot, aclocal_includedirs, path, use_libtool):
+    aclocal_incdirs = []
+    if use_libtool:
+        libtoolize_prog = external_cmd.search_program('libtoolize', path)
+        if libtoolize_prog is None:
+            raise Error('libtoolize not found along path')
+        aclocal_incdirs.append(os.path.dirname(libtoolize_prog))
+        external_cmd.exec_program(program=libtoolize_prog, dir=packageroot, args=['--force', '--copy'], path=path)
+        pass
+    aclocal(packageroot=packageroot, includedirs=aclocal_includedirs, path=path)
+    autoheader(packageroot=packageroot, path=path)
+    automake(packageroot=packageroot, path=path)
+    autoconf(packageroot=packageroot, path=path)
     pass
 
-def aclocal(packageroot, includedirs):
+def aclocal(packageroot, includedirs, path):
     aclocal_args = []
     for d in includedirs:
         aclocal_args.extend(['-I', d])
         pass
-    external_cmd.exec_program(program='aclocal', args=aclocal_args, dir=packageroot)
+    external_cmd.exec_program(program='aclocal', args=aclocal_args, dir=packageroot, path=path)
     pass
 
-def autoheader(packageroot):
-    external_cmd.exec_program(program='autoheader', dir=packageroot)
+def autoheader(packageroot, path):
+    external_cmd.exec_program(program='autoheader', dir=packageroot, path=path)
     pass
 
-def automake(packageroot):
+def automake(packageroot, path):
     external_cmd.exec_program(program='automake',
                               args=['--foreign', '--add-missing', '--copy'],
-                              dir=packageroot)
+                              dir=packageroot,
+                              path=path)
     pass
 
-def autoconf(packageroot):
-    external_cmd.exec_program(program='autoconf', dir=packageroot)
+def autoconf(packageroot, path):
+    external_cmd.exec_program(program='autoconf', dir=packageroot, path=path)
     pass
 
