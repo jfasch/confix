@@ -1,6 +1,5 @@
-# $Id: install_path.py,v 1.7 2006/07/07 15:29:18 jfasch Exp $
-
 # Copyright (C) 2002-2006 Salomon Automation
+# Copyright (C) 2006 Joerg Faschingbauer
 
 # This library is free software; you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as
@@ -20,10 +19,13 @@
 from libconfix.plugins.c.h import HeaderBuilder
 import libconfix.plugins.c.namespace
 from libconfix.plugins.c.setup import CSetupFactory
-from libconfix.core.filesys.file import File
+
 from libconfix.core.filesys.directory import Directory
+from libconfix.core.filesys.file import File
 from libconfix.core.filesys.filesys import FileSystem
 from libconfix.core.local_package import LocalPackage
+from libconfix.core.utils import const
+
 from libconfix.testutils import find
 
 import unittest
@@ -118,7 +120,7 @@ class Namespace(unittest.TestCase):
         pass
     def testDirectory(self):
         fs = FileSystem(path=[])
-        fs.rootdirectory().add(name='Makefile.py',
+        fs.rootdirectory().add(name=const.CONFIX2_IN,
                                entry=File(lines=["PACKAGE_NAME('xxx')",
                                                  "PACKAGE_VERSION('6.6.6')",
                                                  "FILE_PROPERTY(",
@@ -150,6 +152,6 @@ class IfaceFilePropertyConflict(unittest.TestCase):
     pass
 
 if __name__ == '__main__':
-    unittest.main()
+    unittest.TextTestRunner().run(InstallPathSuite())
     pass
 

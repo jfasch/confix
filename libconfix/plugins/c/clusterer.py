@@ -54,14 +54,22 @@ class CClusterer(Builder):
                 if self.executables_.has_key(b):
                     continue
                 center_stem, center_ext = os.path.splitext(b.file().name())
+                if center_stem.startswith('_check'):
+                    what = ExecutableBuilder.CHECK
+                elif center_stem.startswith('_'):
+                    what = ExecutableBuilder.NOINST
+                else:
+                    what = ExecutableBuilder.BIN
+                    pass
                 exe = ExecutableBuilder(
                     parentbuilder=self.parentbuilder(),
                     package=self.package(),
                     center=b,
                     exename=self.namefinder_.find_exename(packagename=self.package().name(),
-                                                          path=self.parentbuilder().directory().relpath(),
+                                                          path=self.parentbuilder().directory().relpath(self.package().rootdirectory()),
                                                           centername=center_stem),
-                    use_libtool=self.use_libtool_)
+                    use_libtool=self.use_libtool_,
+                    what=what)
                 self.parentbuilder().add_builder(exe)
                 self.executables_[b] = exe
                 ret += 1
@@ -80,7 +88,7 @@ class CClusterer(Builder):
                         parentbuilder=self.parentbuilder(),
                         package=self.package(),
                         basename=self.namefinder_.find_libname(packagename=self.package().name(),
-                                                               path=self.parentbuilder().directory().relpath()),
+                                                               path=self.parentbuilder().directory().relpath(self.package().rootdirectory())),
                         use_libtool=self.use_libtool_,
                         libtool_version_info=self.libtool_version_info_)
                     self.parentbuilder().add_builder(self.library_)

@@ -38,8 +38,9 @@ class LibraryBuilder(LinkedBuilder):
         self.basename_ = basename
         self.libtool_version_info_ = libtool_version_info
         
-        self.add_buildinfo(BuildInfo_CLibrary_NativeLocal(dir=self.parentbuilder().directory().relpath(),
-                                                          name=self.basename_))
+        self.add_buildinfo(BuildInfo_CLibrary_NativeLocal(
+            dir=self.parentbuilder().directory().relpath(package.rootdirectory()),
+            name=self.basename_))
         pass
 
     def basename(self):

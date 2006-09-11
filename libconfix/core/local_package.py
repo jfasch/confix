@@ -17,7 +17,7 @@
 
 from package import Package
 from installed_package import InstalledPackage
-from makefile_py import Makefile_py
+from confix2_in import Confix2_in
 from iface import InterfacePiece
 from hierarchy import DirectoryBuilder
 from edgefinder import EdgeFinder
@@ -38,10 +38,10 @@ import os
 
 class LocalPackage(Package):
 
-    def __init__(self, root, setups):
+    def __init__(self, rootdirectory, setups):
         self.name_ = None
         self.version_ = None
-        self.rootdirectory_ = root
+        self.rootdirectory_ = rootdirectory
 
         self.digraph_ = None
         self.local_nodes_ = None
@@ -51,27 +51,27 @@ class LocalPackage(Package):
 
         # setup rootbuilder, and configure it with the setups we have.
         self.rootbuilder_ = DirectoryBuilder(
-            directory=root,
+            directory=rootdirectory,
             parentbuilder=None,
             package=self)
         for s in setups:
             self.rootbuilder_.add_setup(s.create(parentbuilder=self.rootbuilder_, package=self))
             pass
 
-        # slurp in Makefile.py
+        # slurp in Confix2.in
         try:
-            mfpyfile = root.get(const.MAKEFILE_PY)
-            if mfpyfile is None:
-                raise Error(const.MAKEFILE_PY+' missing in '+os.sep.join(root.abspath()))
-            if not isinstance(mfpyfile, File):
-                raise Error(os.sep.join(mfpyfile.abspath())+' is not a file')
+            confix2_in_file = rootdirectory.get(const.CONFIX2_IN)
+            if confix2_in_file is None:
+                raise Error(const.CONFIX2_IN+' missing in '+os.sep.join(rootdirectory.abspath()))
+            if not isinstance(confix2_in_file, File):
+                raise Error(os.sep.join(confix2_in_file.abspath())+' is not a file')
 
-            mfpy = PackageMakefile_py(file=mfpyfile, parentbuilder=self.rootbuilder_, package=self)
-            self.rootbuilder_.add_configurator(mfpy)
+            confix2_in = PackageConfix2_in(file=confix2_in_file, parentbuilder=self.rootbuilder_, package=self)
+            self.rootbuilder_.add_configurator(confix2_in)
 
             pass
         except Error, e:
-            raise Error('Cannot initialize package in '+'/'.join(root.abspath()), [e])
+            raise Error('Cannot initialize package in '+'/'.join(rootdirectory.abspath()), [e])
 
         # setup our autoconf auxiliary directory. this a regular
         # builder by itself, but plays a special role for us because
@@ -100,6 +100,9 @@ class LocalPackage(Package):
         assert self.version_ is None
         self.version_ = version
         pass
+
+    def rootdirectory(self):
+        return self.rootdirectory_
 
     def configure_ac(self):
         return self.configure_ac_
@@ -131,22 +134,6 @@ class LocalPackage(Package):
                 break
             pass
             
-        
-##         while True:
-##             num_enlarged = self.rootbuilder_.enlarge()
-##             if num_enlarged == 0:
-##                 break
-##             self.local_nodes_ = self.rootbuilder_.nodes()
-##             all_nodes = set(self.local_nodes_)
-##             for n in external_nodes:
-##                 all_nodes.add(n)
-##                 pass
-##             self.digraph_ = DirectedGraph(nodes=all_nodes, edgefinder=EdgeFinder(all_nodes))
-##             for n in self.local_nodes_:
-##                 n.relate(digraph=self.digraph_)
-##                 pass
-##             pass
-
         # <paranoia>
         for b in self.collect_builders_():
             assert b.base_relate_called() == True, str(b)
@@ -156,11 +143,11 @@ class LocalPackage(Package):
 
     def output(self):
 
-        # PackageMakefile_py is supposed to have set package name and version
+        # PackageConfix2_in is supposed to have set package name and version
         if self.name_ is None:
-            raise Error(mfpyfile.abspath()+': package name not set')
+            raise Error(confix2_in_file.abspath()+': package name not set')
         if self.version_ is None:
-            raise Error(mfpyfile.abspath()+': package version not set')
+            raise Error(confix2_in_file.abspath()+': package version not set')
 
         # we will be writing two files in the package's root
         # directory. configure.ac is our responsbility - we will have
@@ -249,7 +236,7 @@ class LocalPackage(Package):
         for n in digraph.toposort.toposort(digraph=graph, nodes=subdir_nodes):
             dirbuilder = n.responsible_builder()
             assert isinstance(dirbuilder, DirectoryBuilder)
-            relpath = dirbuilder.directory().relpath()
+            relpath = dirbuilder.directory().relpath(self.rootdirectory_)
             if len(relpath):
                 dirstr = '/'.join(relpath)
             else:
@@ -294,7 +281,7 @@ class LocalPackage(Package):
                 continue
             goodfile = None
             notsogoodfile = None
-            if b.file().name() == const.MAKEFILE_PY:
+            if b.file().name() == const.CONFIX2_IN:
                 notsogoodfile = b.file()
             else:
                 goodfile = b.file()
@@ -311,7 +298,7 @@ class LocalPackage(Package):
                         "("+os.getcwd()+") is not "
                         "the package root directory?")
 
-        self.configure_ac_.set_unique_file_in_srcdir('/'.join(unique_file.relpath()))
+        self.configure_ac_.set_unique_file_in_srcdir('/'.join(unique_file.relpath(self.rootdirectory_)))
         pass
 
     def collect_builders_(self):
@@ -340,14 +327,14 @@ class LocalPackage(Package):
 
     pass
 
-class PackageMakefile_py(Makefile_py):
+class PackageConfix2_in(Confix2_in):
     def __init__(self, file, parentbuilder, package):
-        Makefile_py.__init__(self, file=file, parentbuilder=parentbuilder, package=package)
+        Confix2_in.__init__(self, file=file, parentbuilder=parentbuilder, package=package)
         pass
 
     def iface_pieces(self):
-        return Makefile_py.iface_pieces(self) + [InterfacePiece(globals={'PACKAGE_': self.package()},
-                                                                lines=[code_])]
+        return Confix2_in.iface_pieces(self) + [InterfacePiece(globals={'PACKAGE_': self.package()},
+                                                               lines=[code_])]
     pass
 
 code_ = """
@@ -357,7 +344,7 @@ import types
 def PACKAGE_NAME(name):
     global PACKAGE_
     if PACKAGE_ is None:
-        raise Error('PACKAGE_NAME() is only available in the toplevel Makefile.py')
+        raise Error('PACKAGE_NAME() is only available in the toplevel Confix2.in')
     if type(name) is not types.StringType:
         raise Error('PACKAGE_NAME(): argument must be a string')
     PACKAGE_.set_name(name)
@@ -366,7 +353,7 @@ def PACKAGE_NAME(name):
 def PACKAGE_VERSION(version):
     global PACKAGE_
     if PACKAGE_ is None:
-        raise Error('PACKAGE_VERSION() is only available in the toplevel Makefile.py')
+        raise Error('PACKAGE_VERSION() is only available in the toplevel Confix2.in')
     if type(version) is not types.StringType:
         raise Error('PACKAGE_VERSION(): argument must be a string')
     PACKAGE_.set_version(version)

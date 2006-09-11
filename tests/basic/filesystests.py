@@ -1,6 +1,5 @@
-# $Id: filesystests.py,v 1.5 2006/06/27 15:08:59 jfasch Exp $
-
 # Copyright (C) 2002-2006 Salomon Automation
+# Copyright (C) 2006 Joerg Faschingbauer
 
 # This library is free software; you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as
@@ -29,6 +28,7 @@ class FileSystemTestSuite(unittest.TestSuite):
     def __init__(self):
         unittest.TestSuite.__init__(self)
         self.addTest(Basics('test'))
+        self.addTest(RelativePath('test'))
         self.addTest(Sync('test_mem2sync'))
         self.addTest(Sync('test_dirty2sync'))
         self.addTest(Sync('test_filechange'))
@@ -51,17 +51,28 @@ class Basics(unittest.TestCase):
         self.failUnless(isinstance(file, File))
 
         self.assertEqual(subdir.abspath(), ['a', 'b', 'subdir'])
-        self.assertEqual(subdir.relpath(), ['subdir'])
+        self.assertEqual(subdir.relpath(fs.rootdirectory()), ['subdir'])
 
         self.assertRaises(Directory.AlreadyMounted, fs.rootdirectory().add, name='subdir', entry=File())
 
         pass
+    pass
 
+class RelativePath(unittest.TestCase):
+    def test(self):
+        fs = FileSystem(path=['a', 'b'])
+        subdir = fs.rootdirectory().add(name='subdir', entry=Directory())
+        subsubdir = subdir.add(name='subsubdir', entry=Directory())
+        file = subsubdir.add(name='file', entry=File())
+
+        self.failUnless(subsubdir.relpath(fs.rootdirectory()) == ['subdir', 'subsubdir'])
+        self.failUnless(file.relpath(subdir) == ['subsubdir', 'file'])
+        pass
     pass
 
 class Sync(unittest.TestCase):
     def setUp(self):
-        self.rootpath_ = ['', 'tmp', 'confix.synctest.'+str(os.getpid())] 
+        self.rootpath_ = ['', 'tmp', 'confix.FileSystem.'+str(self.__class__.__name__)+'.'+str(os.getpid())] 
         pass
     def tearDown(self):
         dir = os.sep.join(self.rootpath_)
@@ -194,12 +205,20 @@ class Sync_RootMoreThanOneDirectoryDeep(unittest.TestCase):
     # root is only one directory apart from a physical directory. here
     # we test whether it work with two directory entries in the air as
     # well.
-    
+
+    def setUp(self):
+        self.rootpath_ = ['', 'tmp', 'confix.FileSystem.'+str(self.__class__.__name__)+'.'+str(os.getpid())]
+        pass
+    def tearDown(self):
+        dir = os.sep.join(self.rootpath_)
+        if os.path.isdir(dir):
+            shutil.rmtree(dir)
+            pass
+        pass
     def test(self):
-        path = ['', 'tmp', 'confix.synctest.'+str(os.getpid()), str(self.__class__)]
-        fs = FileSystem(path=path)
+        fs = FileSystem(path=self.rootpath_)
         fs.sync()
-        self.failUnless(os.path.isdir(os.sep.join(path)))
+        self.failUnless(os.path.isdir(os.sep.join(self.rootpath_)))
         pass
     pass
 

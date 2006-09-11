@@ -52,9 +52,9 @@ class RelateBasic(unittest.TestCase):
             name='hi.iface',
             entry=File(lines=['REQUIRE_SYMBOL(symbol="lo", urgency=URGENCY_ERROR)']))
 
-        package = LocalPackage(root=fs.rootdirectory(),
-                                       setups=[DirectorySetupFactory(),
-                                               FileInterfaceTestSetupFactory()])
+        package = LocalPackage(rootdirectory=fs.rootdirectory(),
+                               setups=[DirectorySetupFactory(),
+                                       FileInterfaceTestSetupFactory()])
         package.enlarge(external_nodes=[])
 
         lodirbuilder = find.find_entrybuilder(package.rootbuilder(), ['lo'])
@@ -93,9 +93,9 @@ class InternalRequires(unittest.TestCase):
             entry=File(lines=['REQUIRE_SYMBOL(symbol="the_symbol_which_it_is_all_about",',
                               '               urgency=URGENCY_ERROR)']))
 
-        package = LocalPackage(root=fs.rootdirectory(),
-                                   setups=[DirectorySetupFactory(),
-                                           FileInterfaceTestSetupFactory()])
+        package = LocalPackage(rootdirectory=fs.rootdirectory(),
+                               setups=[DirectorySetupFactory(),
+                                       FileInterfaceTestSetupFactory()])
         package.enlarge(external_nodes=[])
 
         rootnode = find.find_managing_node_of_builder(nodes=package.digraph().nodes(),

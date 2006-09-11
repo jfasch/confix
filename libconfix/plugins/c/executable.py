@@ -1,6 +1,5 @@
-# $Id: executable.py,v 1.5 2006/07/13 20:27:24 jfasch Exp $
-
 # Copyright (C) 2002-2006 Salomon Automation
+# Copyright (C) 2006 Joerg Faschingbauer
 
 # This library is free software; you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as
@@ -23,7 +22,23 @@ from buildinfo import BuildInfo_CLibrary_NativeLocal, BuildInfo_CLibrary_NativeI
 from libconfix.core.builder import BuilderSet
 
 class ExecutableBuilder(LinkedBuilder):
-    def __init__(self, parentbuilder, package, center, exename, use_libtool):
+
+    BIN = 0
+    CHECK = 1
+    NOINST = 2
+    
+    def __init__(self,
+                 parentbuilder,
+                 package,
+                 center,
+                 exename,
+                 what,
+                 use_libtool):
+
+        assert what in [ExecutableBuilder.BIN,
+                        ExecutableBuilder.CHECK,
+                        ExecutableBuilder.NOINST]
+
         LinkedBuilder.__init__(
             self,
             id=str(self.__class__)+':'+str(center)+'('+str(parentbuilder)+')',
@@ -35,16 +50,28 @@ class ExecutableBuilder(LinkedBuilder):
 
         self.center_ = center
         self.exename_ = exename
+        self.what_ = what
         pass
 
     def center(self):
         return self.center_
+    def exename(self):
+        return self.exename_
+    def what(self):
+        return self.what_
 
     def output(self):
         LinkedBuilder.output(self)
 
         mf_am = self.parentbuilder().makefile_am()
-        mf_am.add_bin_program(self.exename_)
+
+        if self.what_ == ExecutableBuilder.BIN:
+            mf_am.add_bin_program(self.exename_)
+        elif self.what_ == ExecutableBuilder.CHECK:
+            mf_am.add_check_program(self.exename_)
+        elif self.what_ == ExecutableBuilder.NOINST:
+            mf_am.add_noinst_program(self.exename_)
+        else: assert 0
 
         for m in self.members():
             mf_am.add_compound_sources(self.exename_, m.file().name())

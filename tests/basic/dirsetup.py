@@ -35,7 +35,7 @@ class BasicDirectorySetup(unittest.TestCase):
         subsubdir = dirhier.subdir(parent=subdir, name='a')
         
         package = LocalPackage(
-            root=fs.rootdirectory(),
+            rootdirectory=fs.rootdirectory(),
             setups=[DirectorySetupFactory()])
         package.enlarge(external_nodes=[])
 

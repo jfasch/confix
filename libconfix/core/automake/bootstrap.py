@@ -1,4 +1,5 @@
 # Copyright (C) 2002-2006 Salomon Automation
+# Copyright (C) 2006 Joerg Faschingbauer
 
 # This library is free software; you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as
@@ -20,7 +21,7 @@ from libconfix.core.utils import external_cmd
 
 import os
 
-def bootstrap(packageroot, aclocal_includedirs, path, use_libtool):
+def bootstrap(packageroot, path, use_libtool):
     aclocal_incdirs = []
     if use_libtool:
         libtoolize_prog = external_cmd.search_program('libtoolize', path)
@@ -29,7 +30,7 @@ def bootstrap(packageroot, aclocal_includedirs, path, use_libtool):
         aclocal_incdirs.append(os.path.dirname(libtoolize_prog))
         external_cmd.exec_program(program=libtoolize_prog, dir=packageroot, args=['--force', '--copy'], path=path)
         pass
-    aclocal(packageroot=packageroot, includedirs=aclocal_includedirs, path=path)
+    aclocal(packageroot=packageroot, includedirs=aclocal_incdirs, path=path)
     autoheader(packageroot=packageroot, path=path)
     automake(packageroot=packageroot, path=path)
     autoconf(packageroot=packageroot, path=path)

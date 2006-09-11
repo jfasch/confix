@@ -1,6 +1,5 @@
-# $Id: filebuilder.py,v 1.4 2006/06/27 15:08:59 jfasch Exp $
-
 # Copyright (C) 2002-2006 Salomon Automation
+# Copyright (C) 2006 Joerg Faschingbauer
 
 # This library is free software; you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as
@@ -24,7 +23,7 @@ from iface import InterfacePiece
 class FileBuilder(EntryBuilder):
     def __init__(self, file, parentbuilder, package):
         EntryBuilder.__init__(self,
-                              id=str(self.__class__)+'('+'/'.join(file.relpath())+')',
+                              id=str(self.__class__)+'('+'/'.join(file.relpath(package.rootdirectory()))+')',
                               entry=file,
                               parentbuilder=parentbuilder,
                               package=package)

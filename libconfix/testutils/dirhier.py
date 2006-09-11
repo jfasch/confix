@@ -20,6 +20,7 @@
 from libconfix.core.filesys.directory import Directory
 from libconfix.core.filesys.file import File
 from libconfix.core.filesys.filesys import FileSystem
+from libconfix.core.utils import const
 
 def packageroot(path=None, name=None, version=None):
     mypath = path
@@ -35,14 +36,15 @@ def packageroot(path=None, name=None, version=None):
         myversion = '6.6.6'
         pass
     fs = FileSystem(path=mypath)
-    fs.rootdirectory().add('Makefile.py',
-                           File(lines=['PACKAGE_NAME("'+myname+'")',
-                                       'PACKAGE_VERSION("'+myversion+'")']))
+    fs.rootdirectory().add(name=const.CONFIX2_IN,
+                           entry=File(lines=['PACKAGE_NAME("'+myname+'")',
+                                             'PACKAGE_VERSION("'+myversion+'")']))
     return fs
 
 def subdir(parent, name):
     dir = Directory()
-    dir.add(name='Makefile.py', entry=File(lines=[]))
+    dir.add(name=const.CONFIX2_IN,
+            entry=File(lines=[]))
     parent.add(name=name, entry=dir)
     return dir
 

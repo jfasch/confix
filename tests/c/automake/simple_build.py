@@ -1,6 +1,5 @@
-# $Id: FILE-HEADER,v 1.4 2006/02/06 21:07:44 jfasch Exp $
-
 # Copyright (C) 2002-2006 Salomon Automation
+# Copyright (C) 2006 Joerg Faschingbauer
 
 # This library is free software; you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as
@@ -17,14 +16,15 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 # USA
 
+from libconfix.core.automake import bootstrap, configure, make
+from libconfix.core.filesys.directory import Directory
+from libconfix.core.filesys.file import File
+from libconfix.core.filesys.filesys import FileSystem
+from libconfix.core.hierarchy import DirectorySetupFactory
+from libconfix.core.local_package import LocalPackage
+from libconfix.core.utils import const
 from libconfix.core.utils import const
 from libconfix.core.utils.error import Error
-from libconfix.core.automake import bootstrap, configure, make
-from libconfix.core.filesys.filesys import FileSystem
-from libconfix.core.filesys.file import File
-from libconfix.core.filesys.directory import Directory
-from libconfix.core.local_package import LocalPackage
-from libconfix.core.hierarchy import DirectorySetupFactory
 
 from libconfix.plugins.c.setup import CSetupFactory
 
@@ -33,11 +33,12 @@ import unittest, os, sys, shutil
 class SimpleBuildSuite(unittest.TestSuite):
     def __init__(self):
         unittest.TestSuite.__init__(self)
-        self.addTest(SimpleBuildTest('test'))
+        self.addTest(SimpleBuildWithLibtool('test'))
+        self.addTest(SimpleBuildWithoutLibtool('test'))
         pass
     pass
 
-class SimpleBuildTest(unittest.TestCase):
+class SimpleBuildBase(unittest.TestCase):
     def __init__(self, str):
         unittest.TestCase.__init__(self, str)
         self.seqnum_ = 0
@@ -51,9 +52,9 @@ class SimpleBuildTest(unittest.TestCase):
             self.buildrootpath_ = self.rootpath_ + ['build']
             self.seqnum_ += 1
 
-            self.fs_.rootdirectory().add('Makefile.py',
-                                         File(lines=['PACKAGE_NAME("simplebuildtest")',
-                                                     'PACKAGE_VERSION("6.6.6")']))
+            self.fs_.rootdirectory().add(name=const.CONFIX2_IN,
+                                         entry=File(lines=['PACKAGE_NAME("simplebuildtest")',
+                                                           'PACKAGE_VERSION("6.6.6")']))
             self.fs_.rootdirectory().add(name='file.h',
                                          entry=File(lines=['#ifndef FILE_H',
                                                            '#define FILE_H',
@@ -66,7 +67,7 @@ class SimpleBuildTest(unittest.TestCase):
                                                            ]))
             
             self.package_ = LocalPackage(root=self.fs_.rootdirectory(),
-                                         setups=[CSetupFactory(short_libnames=False, use_libtool=False)])
+                                         setups=[CSetupFactory(short_libnames=False, use_libtool=self.use_libtool())])
             self.package_.enlarge(external_nodes=[])
             self.package_.output()
             self.fs_.sync()
@@ -86,7 +87,7 @@ class SimpleBuildTest(unittest.TestCase):
         try:
             packageroot = os.sep.join(self.sourcerootpath_)
             buildroot = os.sep.join(self.buildrootpath_)
-            bootstrap.bootstrap(packageroot=packageroot, aclocal_includedirs=[])
+            bootstrap.bootstrap(packageroot=packageroot, aclocal_includedirs=[], path=None, use_libtool=self.use_libtool())
             os.makedirs(buildroot)
             configure.configure(packageroot=packageroot, buildroot=buildroot, prefix='/dev/null')
             make.make(dir=buildroot, args=[])
@@ -97,6 +98,22 @@ class SimpleBuildTest(unittest.TestCase):
         self.failUnless(os.path.isfile(os.sep.join(self.buildrootpath_+['file.o'])))
         pass
 
+    pass
+
+class SimpleBuildWithLibtool(SimpleBuildBase):
+    def __init__(self, str):
+        SimpleBuildBase.__init__(self, str)
+        pass
+    def use_libtool(self):
+        return True
+    pass
+    
+class SimpleBuildWithoutLibtool(SimpleBuildBase):
+    def __init__(self, str):
+        SimpleBuildBase.__init__(self, str)
+        pass
+    def use_libtool(self):
+        return False
     pass
     
 if __name__ == '__main__':

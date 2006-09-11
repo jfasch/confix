@@ -54,10 +54,18 @@ class DirectoryEntry:
             return self.filesystem_.path()
         return self.parent_.abspath() + [self.parent_.entryname(self)]
 
-    def relpath(self):
+    def relpath(self, dir):
+        if dir is self:
+            return []
         if self.parent_ is None:
             return []
-        return self.parent_.relpath() + [self.parent_.entryname(self)]
+        return self.parent_.relpath(dir) + [self.parent_.entryname(self)]
+        
+        
+        
+##         if self.parent_ is None:
+##             return []
+##         return self.parent_.relpath() + [self.parent_.entryname(self)]
 
     def set_property(self, name, value):
         self.properties_[name] = value

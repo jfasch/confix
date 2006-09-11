@@ -32,10 +32,11 @@ import unittest
 class ExecutableSuite(unittest.TestSuite):
     def __init__(self):
         unittest.TestSuite.__init__(self)
-        self.addTest(LibtoolExecutable('common_test'))
-        self.addTest(StandardExecutable('common_test'))
-        self.addTest(LibtoolExecutable('test'))
-        self.addTest(StandardExecutable('test'))
+##         self.addTest(LibtoolExecutable('common_test'))
+##         self.addTest(StandardExecutable('common_test'))
+##         self.addTest(LibtoolExecutable('test'))
+##         self.addTest(StandardExecutable('test'))
+        self.addTest(CheckAndNoinstProgram('test'))
         pass
     pass
 
@@ -44,7 +45,7 @@ class ExecutableBase(unittest.TestCase):
     def setUp(self):
         self.fs_ = dirhier.packageroot()
         liblo = self.fs_.rootdirectory().add(name='lo', entry=Directory())
-        liblo.add(name=const.MAKEFILE_PY, entry=File(lines=[]))
+        liblo.add(name=const.CONFIX2_IN, entry=File(lines=[]))
         liblo.add(name='lo.h',
                   entry=File(lines=['#ifndef LO_H',
                                     '#define LO_H',
@@ -55,7 +56,7 @@ class ExecutableBase(unittest.TestCase):
                   entry=File(lines=['void lo() {}']))
         
         libhi = self.fs_.rootdirectory().add(name='hi', entry=Directory())
-        libhi.add(name=const.MAKEFILE_PY, entry=File(lines={}))
+        libhi.add(name=const.CONFIX2_IN, entry=File(lines={}))
         libhi.add(name='hi.h',
                    entry=File(lines=['#ifndef HI_H',
                                      '#  define HI_H',
@@ -67,7 +68,7 @@ class ExecutableBase(unittest.TestCase):
                                      'void hi() { lo(); }']))
         
         exe = self.fs_.rootdirectory().add(name='exe', entry=Directory())
-        exe.add(name=const.MAKEFILE_PY, entry=File(lines=[]))
+        exe.add(name=const.CONFIX2_IN, entry=File(lines=[]))
         exe.add(name='main.c',
                 entry=File(lines=['#include <hi.h>',
                                   'int main(void) {',
@@ -147,6 +148,23 @@ class StandardExecutable(ExecutableBase):
                               '-L$(top_builddir)/lo',
                               '-lblah_hi',
                               '-lblah_lo'])
+        pass
+    pass
+
+class CheckAndNoinstProgram(unittest.TestCase):
+    def test(self):
+        fs = dirhier.packageroot()
+        fs.rootdirectory().add(name='_check_proggy.c',
+                               entry=File(lines=['int main(void) { return 0; }']))
+        fs.rootdirectory().add(name='_proggy.c',
+                               entry=File(lines=['int main(void) { return 0; }']))
+        package = LocalPackage(root=fs.rootdirectory(),
+                               setups=[CSetupFactory(short_libnames=False, use_libtool=False)])
+        package.enlarge(external_nodes=[])
+        package.output()
+
+        self.failUnless('blah__check_proggy' in package.rootbuilder().makefile_am().check_programs())
+        self.failUnless('blah__proggy' in package.rootbuilder().makefile_am().noinst_programs())
         pass
     pass
 

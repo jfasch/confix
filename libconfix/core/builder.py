@@ -87,7 +87,7 @@ class Builder:
                                         'PREFIX_MATCH': Provide_String.PREFIX_MATCH,
                                         'GLOB_MATCH': Provide_String.GLOB_MATCH},                               
                                lines=[builder_code_])]
-    def makefile_py_iface_pieces(self):
+    def confix2_in_iface_pieces(self):
         return []
     def enlarge(self):
         self.base_enlarge_called_ = True

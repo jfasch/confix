@@ -1,4 +1,5 @@
 # Copyright (C) 2002-2006 Salomon Automation
+# Copyright (C) 2006 Joerg Faschingbauer
 
 # This library is free software; you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as
@@ -15,13 +16,14 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 # USA
 
+from libconfix.core.automake import bootstrap, configure, make, repo_automake
 from libconfix.core.filesys.directory import Directory
 from libconfix.core.filesys.file import File
 from libconfix.core.filesys.filesys import FileSystem
-from libconfix.core.local_package import LocalPackage
 from libconfix.core.hierarchy import DirectorySetupFactory
+from libconfix.core.local_package import LocalPackage
+from libconfix.core.utils import const
 from libconfix.core.utils.error import Error
-from libconfix.core.automake import bootstrap, configure, make, repo_automake
 
 from libconfix.plugins.c.setup import CSetupFactory
 
@@ -55,7 +57,7 @@ class InterPackageBuildBase(unittest.TestCase):
         self.hi_builddir_ = self.builddir_ + ['hi']
 
         lo_root = Directory()
-        lo_root.add(name='Makefile.py',
+        lo_root.add(name=const.CONFIX2_IN,
                     entry=File(lines=['PACKAGE_NAME("lo")',
                                       'PACKAGE_VERSION("1.2.3")']))
         lo_root.add(name='lo.h',
@@ -76,12 +78,12 @@ class InterPackageBuildBase(unittest.TestCase):
         
         
         hi_root = Directory()
-        hi_root.add(name='Makefile.py',
+        hi_root.add(name=const.CONFIX2_IN,
                     entry=File(lines=['PACKAGE_NAME("hi")',
                                       'PACKAGE_VERSION("4.5.6")']))
         lib = hi_root.add(name='lib',
                           entry=Directory())
-        lib.add(name='Makefile.py',
+        lib.add(name=const.CONFIX2_IN,
                 entry=File())
         lib.add(name='hilib.h',
                 entry=File(lines=['#ifndef hi_hilib_h',
@@ -96,7 +98,7 @@ class InterPackageBuildBase(unittest.TestCase):
                                   '}']))
         bin = hi_root.add(name='bin',
                           entry=Directory())
-        bin.add(name='Makefile.py',
+        bin.add(name=const.CONFIX2_IN,
                 entry=File())
         bin.add(name='main.c',
                 entry=File(lines=['#include <lo.h>',

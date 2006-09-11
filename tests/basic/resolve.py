@@ -50,9 +50,9 @@ class BasicResolveTest(unittest.TestCase):
         hifile = hidir.add(name='hi.iface',
                            entry=File(lines=['REQUIRE_SYMBOL(symbol="lo", urgency=URGENCY_ERROR)']))
 
-        package = LocalPackage(root=fs.rootdirectory(),
-                                       setups=[DirectorySetupFactory(),
-                                               FileInterfaceTestSetupFactory()])
+        package = LocalPackage(rootdirectory=fs.rootdirectory(),
+                               setups=[DirectorySetupFactory(),
+                                       FileInterfaceTestSetupFactory()])
         package.enlarge(external_nodes=[])
 
         lodirbuilder = find.find_entrybuilder(package.rootbuilder(), ['lo'])
@@ -91,8 +91,8 @@ class NotResolvedTest(unittest.TestCase):
         file = fs.rootdirectory().add(name='x.iface',
                                       entry=File(lines=['REQUIRE_SYMBOL(symbol="unknown_symbol", urgency=URGENCY_ERROR)']))
 
-        package = LocalPackage(root=fs.rootdirectory(),
-                                       setups=[FileInterfaceTestSetupFactory()])
+        package = LocalPackage(rootdirectory=fs.rootdirectory(),
+                               setups=[FileInterfaceTestSetupFactory()])
 
         try:
             package.enlarge(external_nodes=[])
@@ -124,9 +124,9 @@ class CycleTest(unittest.TestCase):
                          entry=File(lines=['PROVIDE_SYMBOL(symbol="B")',
                                            'REQUIRE_SYMBOL(symbol="A")']))
 
-        package = LocalPackage(root=fs.rootdirectory(),
-                                       setups=[DirectorySetupFactory(),
-                                               FileInterfaceTestSetupFactory()])
+        package = LocalPackage(rootdirectory=fs.rootdirectory(),
+                               setups=[DirectorySetupFactory(),
+                                       FileInterfaceTestSetupFactory()])
         try:
             package.enlarge(external_nodes=[])
         except CycleError:

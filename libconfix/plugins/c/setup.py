@@ -1,6 +1,5 @@
-# $Id: setup.py,v 1.6 2006/07/07 15:29:19 jfasch Exp $
-
 # Copyright (C) 2002-2006 Salomon Automation
+# Copyright (C) 2006 Joerg Faschingbauer
 
 # This library is free software; you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as
@@ -104,8 +103,8 @@ class CSetup(Setup):
         
         return 3 + Setup.enlarge(self)
 
-    def makefile_py_iface_pieces(self):
-        return Setup.makefile_py_iface_pieces(self) + \
+    def confix2_in_iface_pieces(self):
+        return Setup.confix2_in_iface_pieces(self) + \
                [InterfacePiece(globals={'CSETUP_': self},
                                lines=[code_])]
         

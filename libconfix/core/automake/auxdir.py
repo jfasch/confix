@@ -46,7 +46,8 @@ class AutoconfAuxDir(DirectoryBuilder):
 
     def output(self):
         DirectoryBuilder.output(self)
-        self.package().configure_ac().set_ac_config_aux_dir('/'.join(self.directory().relpath()))
+        self.package().configure_ac().set_ac_config_aux_dir(
+            '/'.join(self.directory().relpath(self.package().rootdirectory())))
         pass
 
     def eat_file(self, sourcename, mode):

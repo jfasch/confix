@@ -1,6 +1,5 @@
-# $Id: setup_library.py,v 1.6 2006/07/07 15:29:18 jfasch Exp $
-
 # Copyright (C) 2002-2006 Salomon Automation
+# Copyright (C) 2006 Joerg Faschingbauer
 
 # This library is free software; you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as
@@ -17,11 +16,13 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 # USA
 
-from libconfix.core.filesys.file import File
-from libconfix.core.filesys.directory import Directory
-from libconfix.core.local_package import LocalPackage
 from libconfix.core.filebuilder import FileBuilder
+from libconfix.core.filesys.directory import Directory
+from libconfix.core.filesys.file import File
 from libconfix.core.hierarchy import DirectorySetupFactory
+from libconfix.core.local_package import LocalPackage
+from libconfix.core.utils import const
+
 from libconfix.plugins.c.setup import CSetupFactory
 from libconfix.plugins.c.h import HeaderBuilder
 from libconfix.plugins.c.c import CBuilder
@@ -44,7 +45,7 @@ class LibrarySetupBasic(unittest.TestCase):
         fs.rootdirectory().add(name='file.h', entry=File(lines=[]))
         fs.rootdirectory().add(name='file.c', entry=File(lines=[]))
 
-        package = LocalPackage(root=fs.rootdirectory(),
+        package = LocalPackage(rootdirectory=fs.rootdirectory(),
                                setups=[CSetupFactory(short_libnames=False, use_libtool=False)])
         package.enlarge(external_nodes=[])
 
@@ -77,18 +78,18 @@ class LibraryNames(unittest.TestCase):
     def setUp(self):
         self.fs_ = dirhier.packageroot()
         dir1 = self.fs_.rootdirectory().add(name='dir1', entry=Directory())
-        dir1.add(name='Makefile.py', entry=File(lines=[]))
+        dir1.add(name=const.CONFIX2_IN, entry=File(lines=[]))
         dir2 = dir1.add(name='dir2', entry=Directory())
-        dir2.add(name='Makefile.py', entry=File(lines=[]))
+        dir2.add(name=const.CONFIX2_IN, entry=File(lines=[]))
         dir3 = dir2.add(name='dir3', entry=Directory())
-        dir3.add(name='Makefile.py', entry=File(lines=[]))
+        dir3.add(name=const.CONFIX2_IN, entry=File(lines=[]))
         dir3.add(name='file.c', entry=File(lines=[]))
         self.dir3_ = dir3
         pass
 
     def testLongName(self):
         
-        package = LocalPackage(root=self.fs_.rootdirectory(),
+        package = LocalPackage(rootdirectory=self.fs_.rootdirectory(),
                                setups=[DirectorySetupFactory(),
                                        CSetupFactory(short_libnames=False,
                                                      use_libtool=False)])
@@ -103,15 +104,15 @@ class LibraryNames(unittest.TestCase):
             pass
 
         self.failUnlessEqual(dir3lib_builder.basename(),
-                             '_'.join([package.name()]+self.dir3_.relpath()))
+                             '_'.join([package.name()]+self.dir3_.relpath(self.fs_.rootdirectory())))
         pass
     
     def testShortName(self):
         
-        package = LocalPackage(root=self.fs_.rootdirectory(),
+        package = LocalPackage(rootdirectory=self.fs_.rootdirectory(),
                                setups=[DirectorySetupFactory(),
                                        CSetupFactory(short_libnames=True,
-                                                    use_libtool=False)])
+                                                     use_libtool=False)])
         package.enlarge(external_nodes=[])
 
         dir3lib_builder = None

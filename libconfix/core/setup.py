@@ -39,7 +39,7 @@ class Setup(Builder):
         assert 0, 'abstract'
         pass
 
-    def makefile_py_iface_pieces(self):
+    def confix2_in_iface_pieces(self):
         return []
     pass
 

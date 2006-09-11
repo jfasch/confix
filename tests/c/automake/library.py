@@ -44,7 +44,7 @@ class LibraryBase(unittest.TestCase):
     def setUp(self):
         self.fs_ = dirhier.packageroot()
         liblo = self.fs_.rootdirectory().add(name='lo', entry=Directory())
-        liblo.add(name=const.MAKEFILE_PY,
+        liblo.add(name=const.CONFIX2_IN,
                   entry=File(lines=["LIBTOOL_LIBRARY_VERSION((1,2,3))"]))
         liblo.add(name='lo.h',
                   entry=File(lines=['#ifndef LO_H',

@@ -62,12 +62,12 @@ def print_dir_contents(dir, indent):
 def build_inmem_filesys():
     fs = FileSystem(path=['', 'tmp', 'test-the-filesystem'],
                     rootdirectory=Directory())
-    fs.rootdirectory().add(name='Makefile.py',
+    fs.rootdirectory().add(name='Confix2.in',
                            entry=File(lines=['PACKAGE_NAME("basic")',
                                              'PACKAGE_VERSION("6.6.6")']))
 
     dir1 = Directory()
-    dir1.add(name='Makefile.py', entry=File(lines=['IGNORE_ENTRIES(["file1_1.h", "file1_1.c"])']))
+    dir1.add(name='Confix2.in', entry=File(lines=['IGNORE_ENTRIES(["file1_1.h", "file1_1.c"])']))
     dir1.add(name='file1_1.h', entry=File(lines=[]))
     dir1.add(name='file1_1.c', entry=File(lines=[]))
     dir1.add(name='file1_2.h', entry=File(lines=[]))

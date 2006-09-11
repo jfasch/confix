@@ -20,7 +20,7 @@
 from builder import Builder, BuilderSet
 from entrybuilder import EntryBuilder
 from setup import SetupFactory, Setup
-from makefile_py import Makefile_py
+from confix2_in import Confix2_in
 from depindex import ProvideMap
 from local_node import LocalNode
 
@@ -67,11 +67,11 @@ class DirectorySetup(Setup):
                 continue
             if entry in self.handled_directories_:
                 continue
-            mfpyfile = entry.get(const.MAKEFILE_PY)
-            if mfpyfile is None:
+            confix2_in_file = entry.get(const.CONFIX2_IN)
+            if confix2_in_file is None:
                 continue
-            if not isinstance(mfpyfile, File):
-                errors.append(Error(mfpyfile.relpath()+' is not a file'))
+            if not isinstance(confix2_in_file, File):
+                errors.append(Error(confix2_in_file.relpath()+' is not a file'))
                 continue
             try:
                 dirbuilder = DirectoryBuilder(
@@ -82,13 +82,13 @@ class DirectorySetup(Setup):
                     dirbuilder.add_setup(b.clone(parentbuilder=dirbuilder,
                                                  package=self.package()))
                     pass
-                mfpy = Makefile_py(file=mfpyfile,
-                                   parentbuilder=dirbuilder,
-                                   package=self.package())
-                dirbuilder.add_configurator(mfpy)
+                confix2_in = Confix2_in(file=confix2_in_file,
+                                        parentbuilder=dirbuilder,
+                                        package=self.package())
+                dirbuilder.add_configurator(confix2_in)
                 newbuilders.append((entry, dirbuilder))
             except Error, e:
-                errors.append(Error('Error executing '+os.sep.join(mfpyfile.relpath()), [e]))
+                errors.append(Error('Error executing '+os.sep.join(confix2_in_file.relpath()), [e]))
                 pass
             pass
         if len(errors):
@@ -111,7 +111,7 @@ class DirectoryBuilder(EntryBuilder):
 
         EntryBuilder.__init__(
             self,
-            id=str(self.__class__) + '(' + '/'.join(directory.relpath()) + ')',
+            id=str(self.__class__) + '(' + '/'.join(directory.relpath(package.rootdirectory())) + ')',
             entry=directory,
             parentbuilder=parentbuilder,
             package=package)
@@ -174,7 +174,7 @@ class DirectoryBuilder(EntryBuilder):
 
     def enlarge(self):
         # first of all, enlarge() our configurators. at the time of
-        # this writing, the only configurator I see is the Makefile.py
+        # this writing, the only configurator I see is the Confix2.in
         # object, configuring all setups.
 
         for c in self.configurators_:

@@ -309,6 +309,7 @@ class Makefile_am:
         self.add_dir_primary('bin', 'SCRIPTS', scriptname)
         pass
 
+    def check_programs(self): return self.dir_primary('check', 'PROGRAMS')
     def add_check_program(self, progname):
         self.add_dir_primary('check', 'PROGRAMS', progname)
         pass
@@ -316,7 +317,8 @@ class Makefile_am:
     def add_check_script(self, scriptname):
         self.add_dir_primary('check', 'SCRIPTS', scriptname)
         pass
-
+    
+    def noinst_programs(self): return self.dir_primary('noinst', 'PROGRAMS')
     def add_noinst_program(self, progname):
         self.add_dir_primary('noinst', 'PROGRAMS', progname)
         pass

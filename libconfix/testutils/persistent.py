@@ -16,18 +16,28 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 # USA
 
-import unittest
+import os, shutil
 
-from basic.suite import BasicTestSuite
-from c.suite_inmem import CTestSuiteInMemory
+class PersistentTest:
 
-if __name__ == '__main__':
+    sequential_number = 0
+    
+    def __init__(self):
+        pass
 
-    suite = unittest.TestSuite()
+    def rootpath(self):
+        return self.rootpath_
 
-    suite.addTest(BasicTestSuite())
-    suite.addTest(CTestSuiteInMemory())
+    def setUp(self):
+        self.rootpath_ = ['', 'tmp',
+                          'confix.'+str(os.getpid())+'.'+str(PersistentTest.sequential_number)+'.'+self.__class__.__name__]
+        PersistentTest.sequential_number += 1
+        pass
 
-    runner = unittest.TextTestRunner()
-    runner.run(suite)
-    pass
+    def tearDown(self):
+##         dir = os.sep.join(self.rootpath_)
+##         if os.path.isdir(dir):
+##             shutil.rmtree(dir)
+##             pass
+        pass
+        

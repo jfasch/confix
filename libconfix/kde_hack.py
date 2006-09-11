@@ -1,5 +1,3 @@
-# $Id: kde_hack.py,v 1.2 2006/06/21 12:20:11 jfasch Exp $
-
 # Copyright (C) 2005 Salomon Automation
 
 # This library is free software; you can redistribute it and/or modify

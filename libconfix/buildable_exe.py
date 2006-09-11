@@ -32,9 +32,9 @@ class BuildableExecutable(BuildableLinked, BuildableCluster):
 
     """ Builds an executable. """
 
-    BIN = 0
-    CHECK = 1
-    NOINST = 2
+    BIN = 0 # in confix2
+    CHECK = 1 # in confix2
+    NOINST = 2 # in confix2
 
     def __init__(
         self,
@@ -123,13 +123,13 @@ class BuildableExecutable(BuildableLinked, BuildableCluster):
         # register ourselves with the module. how we register depends
         # on our filename, as always.
 
-        if self.what_ == BuildableExecutable.BIN:
-            buildmod.makefile_am().add_bin_program(self.exename_)
-        elif self.what_ == BuildableExecutable.CHECK:
-            buildmod.makefile_am().add_check_program(self.exename_)
-        elif self.what_ == BuildableExecutable.NOINST:
-            buildmod.makefile_am().add_noinst_program(self.exename_)
-        else: assert 0
+        if self.what_ == BuildableExecutable.BIN: # in confix2
+            buildmod.makefile_am().add_bin_program(self.exename_) # in confix2
+        elif self.what_ == BuildableExecutable.CHECK: # in confix2
+            buildmod.makefile_am().add_check_program(self.exename_) # in confix2
+        elif self.what_ == BuildableExecutable.NOINST: # in confix2
+            buildmod.makefile_am().add_noinst_program(self.exename_) # in confix2
+        else: assert 0 # in confix2
 
         # register our members with the module.
 

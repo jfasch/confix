@@ -41,7 +41,7 @@ class CBaseBuilder(FileBuilder):
         for h_file in helper.extract_requires(file.lines()):
             self.add_require(
                 Require_CInclude(filename=h_file,
-                                 found_in='/'.join(self.file().relpath())))
+                                 found_in='/'.join(self.file().relpath(package.rootdirectory()))))
             pass
 
         self.eval_iface_()
@@ -96,7 +96,8 @@ class CBaseBuilder(FileBuilder):
             execer = InterfaceExecutor(iface_pieces=self.iface_pieces())
             execer.execute_pieces(pieces=codepieces)
         except Error, e:
-            raise Error('could not execute Confix code in '+'/'.join(self.file().relpath()), [e])
+            raise Error('Could not execute Confix code in '+\
+                        '/'.join(self.file().relpath(self.package().rootdirectory())), [e])
 
         pass
     pass
@@ -116,6 +117,6 @@ def REQUIRE_H(filename, urgency=Require.URGENCY_IGNORE):
         raise Error('REQUIRE_H(): urgency must be one of URGENCY_IGNORE, URGENCY_WARN, URGENCY_ERROR')
     CBASEBUILDER_.add_require(Require_CInclude(
         filename=filename,
-        found_in='/'.join(CBASEBUILDER_.file().relpath()),
+        found_in='/'.join(CBASEBUILDER_.file().relpath(CBASEBUILDER_.package().rootdirectory())),
         urgency=urgency))
 """

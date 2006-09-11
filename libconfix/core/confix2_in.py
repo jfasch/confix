@@ -1,6 +1,5 @@
-# $Id: makefile_py.py,v 1.7 2006/07/07 15:29:19 jfasch Exp $
-
 # Copyright (C) 2002-2006 Salomon Automation
+# Copyright (C) 2006 Joerg Faschingbauer
 
 # This library is free software; you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as
@@ -21,7 +20,7 @@ from filebuilder import FileBuilder
 from iface import InterfaceExecutor, InterfacePiece
 from libconfix.core.utils.error import Error
 
-class Makefile_py(FileBuilder):
+class Confix2_in(FileBuilder):
     def __init__(self, file, parentbuilder, package):
         FileBuilder.__init__(self,
                              file=file,
@@ -31,7 +30,7 @@ class Makefile_py(FileBuilder):
         pass
 
     def iface_pieces(self):
-        return FileBuilder.iface_pieces(self) + [InterfacePiece(globals={'MAKEFILE_PY_': self},
+        return FileBuilder.iface_pieces(self) + [InterfacePiece(globals={'CONFIX2_IN_': self},
                                                                 lines=[code_])]
 
     def enlarge(self):
@@ -41,9 +40,9 @@ class Makefile_py(FileBuilder):
             return 0
         self.executed_ = True
         try:
-            iface_pieces = self.iface_pieces() + self.makefile_py_iface_pieces()
+            iface_pieces = self.iface_pieces() + self.confix2_in_iface_pieces()
             for b in self.parentbuilder().setups():
-                iface_pieces.extend(b.makefile_py_iface_pieces())
+                iface_pieces.extend(b.confix2_in_iface_pieces())
                 pass
             execer = InterfaceExecutor(iface_pieces=iface_pieces)
             execer.execute_file(file=self.file())
@@ -61,6 +60,6 @@ class Makefile_py(FileBuilder):
 
 code_ = """
 def IGNORE_ENTRIES(names):
-    MAKEFILE_PY_.parentbuilder().add_ignored_entries(names)
+    CONFIX2_IN_.parentbuilder().add_ignored_entries(names)
     pass
 """

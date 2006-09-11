@@ -22,6 +22,7 @@ from libconfix.core.filesys.file import File
 from libconfix.core.filesys.directory import Directory
 from libconfix.core.filesys.filesys import FileSystem
 from libconfix.core.local_package import LocalPackage
+from libconfix.core.utils import const
 from libconfix.testutils import dirhier
 
 import unittest
@@ -51,7 +52,7 @@ class IgnoredEntries(unittest.TestCase):
 
     def test(self):
         fs = FileSystem(path=['a'])
-        fs.rootdirectory().add(name='Makefile.py',
+        fs.rootdirectory().add(name=const.CONFIX2_IN,
                                entry=File(lines=["PACKAGE_NAME('xxx')",
                                                  "PACKAGE_VERSION('6.6.6')",
                                                  'IGNORE_ENTRIES(["file"])']))
@@ -59,7 +60,7 @@ class IgnoredEntries(unittest.TestCase):
                                entry=File())
         
         package = LocalPackage(
-            root=fs.rootdirectory(),
+            rootdirectory=fs.rootdirectory(),
             setups=[])
         filewatcher = FileWatcher(parentbuilder=package.rootbuilder(),
                                   package=package)

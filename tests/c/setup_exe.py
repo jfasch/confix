@@ -39,7 +39,7 @@ class ExecutableSetupTest(unittest.TestCase):
         main_c.set_property(name='MAIN', value=True)
         fs.rootdirectory().add(name='main.c', entry=main_c)
 
-        package = LocalPackage(root=fs.rootdirectory(),
+        package = LocalPackage(rootdirectory=fs.rootdirectory(),
                                setups=[CSetupFactory(short_libnames=False,
                                                      use_libtool=False)])
         package.enlarge(external_nodes=[])

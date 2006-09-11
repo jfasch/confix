@@ -19,7 +19,10 @@
 
 from libconfix.testutils import dirhier
 from libconfix.testutils.ifacetestbuilder import FileInterfaceTestBuilder
+from libconfix.core.local_package import LocalPackage
+from libconfix.core.filesys.filesys import FileSystem
 from libconfix.core.filesys.file import File
+from libconfix.core.filesys.directory import Directory
 from libconfix.core.filebuilder import FileBuilder
 from libconfix.core.require import Require
 from libconfix.core.require_symbol import Require_Symbol
@@ -27,6 +30,7 @@ from libconfix.core.provide import Provide
 from libconfix.core.provide_string import Provide_String
 from libconfix.core.provide_symbol import Provide_Symbol
 from libconfix.core.iface import InterfaceExecutor, CodePiece
+from libconfix.core.utils import const
 
 import unittest
 
@@ -40,13 +44,19 @@ class BuilderInterfaceTestSuite(unittest.TestSuite):
 
 class BuilderInterface(unittest.TestCase):
     def testFilePropertyOK(self):
-        file = File(lines=[
-            "FILE_PROPERTY(name='XXX', value=666)",
-            "FILE_PROPERTIES({'YYY': 777})"
-            ])
+        fs = FileSystem(path=[])
+        fs.rootdirectory().add(
+            name=const.CONFIX2_IN,
+            entry=File(['PACKAGE_NAME("argh")',
+                        'PACKAGE_VERSION("1.2.3")']))
+        file = fs.rootdirectory().add(
+            name='file',
+            entry=File(lines=["FILE_PROPERTY(name='XXX', value=666)",
+                              "FILE_PROPERTIES({'YYY': 777})"]))
+        package = LocalPackage(rootdirectory=fs.rootdirectory(), setups=[])
         builder = FileInterfaceTestBuilder(file=file,
                                            parentbuilder=None,
-                                           package=None)
+                                           package=package)
 
         self.assertNotEqual(file.get_property(name='XXX'), None)
         self.assertEqual(file.get_property(name='XXX'), 666)
@@ -56,16 +66,24 @@ class BuilderInterface(unittest.TestCase):
         pass
 
     def testRequires(self):
-        file = File(lines=[
-            "REQUIRE_SYMBOL(symbol='sym1')",
-            "REQUIRE_SYMBOL(symbol='sym2', urgency=URGENCY_IGNORE)",
-            "REQUIRE_SYMBOL(symbol='sym3', urgency=URGENCY_WARN)",
-            "REQUIRE_SYMBOL(symbol='sym4', urgency=URGENCY_ERROR)",
-            "REQUIRE(Require_Symbol(symbol='sym5', found_in=['xxx'], urgency=URGENCY_ERROR))",
-            ])
+        fs = FileSystem(path=[])
+        fs.rootdirectory().add(
+            name=const.CONFIX2_IN,
+            entry=File(['PACKAGE_NAME("argh")',
+                        'PACKAGE_VERSION("1.2.3")']))
+        file = fs.rootdirectory().add(
+            name='file',
+            entry=File(lines=["REQUIRE_SYMBOL(symbol='sym1')",
+                              "REQUIRE_SYMBOL(symbol='sym2', urgency=URGENCY_IGNORE)",
+                              "REQUIRE_SYMBOL(symbol='sym3', urgency=URGENCY_WARN)",
+                              "REQUIRE_SYMBOL(symbol='sym4', urgency=URGENCY_ERROR)",
+                              "REQUIRE(Require_Symbol(symbol='sym5',",
+                              "                       found_in=['xxx'], ",
+                              "                       urgency=URGENCY_ERROR))"]))
+        package = LocalPackage(rootdirectory=fs.rootdirectory(), setups=[])
         builder = FileInterfaceTestBuilder(file=file,
                                            parentbuilder=None,
-                                           package=None)
+                                           package=package)
         self.assertEqual(len(builder.requires()), 5)
         sym1 = None
         sym2 = None
@@ -103,17 +121,23 @@ class BuilderInterface(unittest.TestCase):
         pass
 
     def testProvides(self):
-        file = File(lines=[
-            'from libconfix.core.provide_symbol import Provide_Symbol',
-            "PROVIDE_SYMBOL(symbol='sym1')",
-            "PROVIDE_SYMBOL(symbol='sym2', match=EXACT_MATCH)",
-            "PROVIDE_SYMBOL(symbol='sym3', match=PREFIX_MATCH)",
-            "PROVIDE_SYMBOL(symbol='sym4', match=GLOB_MATCH)",
-            "PROVIDE(Provide_Symbol(symbol='sym5'))",
-            ])
+        fs = FileSystem(path=[])
+        fs.rootdirectory().add(
+            name=const.CONFIX2_IN,
+            entry=File(['PACKAGE_NAME("argh")',
+                        'PACKAGE_VERSION("1.2.3")']))
+        file = fs.rootdirectory().add(
+            name='file',
+            entry=File(lines=['from libconfix.core.provide_symbol import Provide_Symbol',
+                              "PROVIDE_SYMBOL(symbol='sym1')",
+                              "PROVIDE_SYMBOL(symbol='sym2', match=EXACT_MATCH)",
+                              "PROVIDE_SYMBOL(symbol='sym3', match=PREFIX_MATCH)",
+                              "PROVIDE_SYMBOL(symbol='sym4', match=GLOB_MATCH)",
+                              "PROVIDE(Provide_Symbol(symbol='sym5'))"]))
+        package = LocalPackage(rootdirectory=fs.rootdirectory(), setups=[])
         builder = FileInterfaceTestBuilder(file=file,
                                            parentbuilder=None,
-                                           package=None)
+                                           package=package)
         self.assertEqual(len(builder.provides()), 5)
         sym1 = None
         sym2 = None

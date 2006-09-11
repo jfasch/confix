@@ -1,6 +1,5 @@
-# $Id: requires.py,v 1.4 2006/06/23 08:14:35 jfasch Exp $
-
 # Copyright (C) 2002-2006 Salomon Automation
+# Copyright (C) 2006 Joerg Faschingbauer
 
 # This library is free software; you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as
@@ -19,8 +18,11 @@
 
 from libconfix.plugins.c.c import CBuilder
 from libconfix.plugins.c.dependency import Require_CInclude
+from libconfix.core.filesys.filesys import FileSystem
 from libconfix.core.filesys.file import File
 from libconfix.core.require import Require
+from libconfix.core.utils import const
+from libconfix.core.local_package import LocalPackage
 
 import unittest
 
@@ -82,13 +84,19 @@ class ScanTest(unittest.TestCase):
 class IfaceTest(unittest.TestCase):
     def runTest(self): self.test()
     def test(self):
-        file = File(lines=[
-            "// CONFIX:REQUIRE_H(filename='inc1')",
-            "// CONFIX:REQUIRE_H(filename='inc2', urgency=Require.URGENCY_IGNORE)",
-            "// CONFIX:REQUIRE_H(filename='inc3', urgency=Require.URGENCY_WARN)",
-            "// CONFIX:REQUIRE_H(filename='inc4', urgency=Require.URGENCY_ERROR)",
-            ])
-        builder = CBuilder(file=file, parentbuilder=None, package=None)
+        fs = FileSystem(path=[])
+        fs.rootdirectory().add(
+            name=const.CONFIX2_IN,
+            entry=File(['PACKAGE_NAME("argh")',
+                        'PACKAGE_VERSION("1.2.3")']))
+        file = fs.rootdirectory().add(
+            name='file',
+            entry=File(lines=["// CONFIX:REQUIRE_H(filename='inc1')",
+                              "// CONFIX:REQUIRE_H(filename='inc2', urgency=Require.URGENCY_IGNORE)",
+                              "// CONFIX:REQUIRE_H(filename='inc3', urgency=Require.URGENCY_WARN)",
+                              "// CONFIX:REQUIRE_H(filename='inc4', urgency=Require.URGENCY_ERROR)"]))
+        package = LocalPackage(rootdirectory=fs.rootdirectory(), setups=[])
+        builder = CBuilder(file=file, parentbuilder=None, package=package)
         self.assertEqual(len(builder.requires()), 4)
         inc1 = None
         inc2 = None

@@ -22,7 +22,7 @@ CONFIX_VERSION = '1.5.2'
 
 # the default name of interface files
 
-MAKEFILE_PY = 'Makefile.py'
+CONFIX2_IN = 'Confix2.in'
 
 # the name of our auxiliary files directory
 
