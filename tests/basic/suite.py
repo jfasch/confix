@@ -26,6 +26,7 @@ from resolve import ResolveTestSuite
 from relate import RelateTestSuite
 from repofile import RepoFileSuite
 from automake.suite import AutomakeSuite
+from config.suite import ConfigSuite
 
 import unittest
 
@@ -43,6 +44,7 @@ class BasicTestSuite(unittest.TestSuite):
         self.addTest(RelateTestSuite())
         self.addTest(RepoFileSuite())
         self.addTest(AutomakeSuite())
+        self.addTest(ConfigSuite())
         pass
     pass
 
