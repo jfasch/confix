@@ -21,66 +21,6 @@ from core.buildinfo import BuildInformation
 from core.marshalling import Marshallable, MarshalledVersionUnknownError, update_marshalling_data
 import core.helper
 
-class BuildInfo_Configure_in(BuildInformation):
-    def get_marshalling_data(self):
-        return update_marshalling_data(
-            marshalling_data=BuildInformation.get_marshalling_data(self),
-            generating_class=BuildInfo_Configure_in,
-            attributes={'lines': self.lines_,
-                        'order': self.order_},
-            version={'BuildInfo_Configure_in': 1})
-    def set_marshalling_data(self, data):
-        version = data[Marshallable.VERSIONS]['BuildInfo_Configure_in']
-        if version != 1:
-            raise MarshalledVersionUnknownError(
-                klass=self.__class__,
-                marshalled_version=version,
-                current_version=1)
-        self.lines_ = data[Marshallable.ATTRIBUTES]['lines']
-        self.order_ = data[Marshallable.ATTRIBUTES]['order']
-        BuildInformation.set_marshalling_data(self, data)
-        pass
-
-    def __init__(self, lines, order):
-        BuildInformation.__init__(self)
-        self.lines_ = lines
-        self.order_ = order
-        pass
-    def unique_key(self):
-        return self.__class__.__name__ + ':' + \
-               core.helper.md5_hexdigest_from_lines(self.lines_)
-    def lines(self): return self.lines_
-    def order(self): return self.order_
-    pass
-
-class BuildInfo_ACInclude_m4(BuildInformation):
-    def get_marshalling_data(self):
-        return update_marshalling_data(
-            marshalling_data=BuildInformation.get_marshalling_data(self),
-            generating_class=BuildInfo_ACInclude_m4,
-            attributes={'lines': self.lines_},
-            version={'BuildInfo_ACInclude_m4': 1})
-    def set_marshalling_data(self, data):
-        version = data[Marshallable.VERSIONS]['BuildInfo_ACInclude_m4']
-        if version != 1:
-            raise MarshalledVersionUnknownError(
-                klass=self.__class__,
-                marshalled_version=version,
-                current_version=1)
-        self.lines_ = data[Marshallable.ATTRIBUTES]['lines']
-        BuildInformation.set_marshalling_data(self, data)
-        pass
-
-    def __init__(self, lines):
-        BuildInformation.__init__(self)
-        self.lines_ = lines
-        pass
-    def unique_key(self):
-        return self.__class__.__name__ + ':' + \
-               core.helper.md5_hexdigest_from_lines(self.lines_)
-    def lines(self): return self.lines_
-    pass
-
 class BuildInfo_CIncludePath_External(BuildInformation):
     def get_marshalling_data(self):
         return update_marshalling_data(

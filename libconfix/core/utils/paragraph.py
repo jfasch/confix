@@ -78,18 +78,6 @@ class ParagraphSet:
 
 class OrderedParagraphSet:
     
-    # rough ordering scheme according to the recommendations in the
-    # autotools book , p.31
-
-    BOILERPLATE = 0
-    OPTIONS = 1000
-    PROGRAMS = 2000
-    LIBRARIES = 3000
-    HEADERS = 4000
-    TYPEDEFS_AND_STRUCTURES = 5000
-    FUNCTIONS = 6000
-    OUTPUT = 7000
-
     def __init__(self):
         self.sets_per_order_ = {}
         pass

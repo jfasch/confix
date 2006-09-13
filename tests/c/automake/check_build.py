@@ -16,86 +16,54 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 # USA
 
-from libconfix.core.local_package import LocalPackage
-from libconfix.core.filesys.filesys import FileSystem
-from libconfix.core.filesys.file import File
-from libconfix.core.filesys.directory import Directory
-from libconfix.core.utils import const
-from libconfix.core.automake import bootstrap, configure, make
-from libconfix.testutils.persistent import PersistentTest
+from check import CheckProgramBase
 
-from libconfix.plugins.c.setup import CSetupFactory
+from libconfix.core.automake import bootstrap, configure, make
 
 import os, unittest
 
-class CheckProgramSuite(unittest.TestSuite):
+class CheckProgramBuildSuite(unittest.TestSuite):
     def __init__(self):
         unittest.TestSuite.__init__(self)
-        self.addTest(CheckProgramWithLibtool('test'))
-        self.addTest(CheckProgramWithoutLibtool('test'))
+        self.addTest(CheckProgramBuildWithLibtool('test'))
+        self.addTest(CheckProgramBuildWithoutLibtool('test'))
         pass
     pass
 
-class CheckProgramBase(unittest.TestCase, PersistentTest):
-    def __init__(self, str):
-        unittest.TestCase.__init__(self, str)
-        PersistentTest.__init__(self)
+class CheckProgramBuildBase(CheckProgramBase):
+    def __init__(self, methodName):
+        CheckProgramBase.__init__(self, methodName)
         pass
-
-    def setUp(self): PersistentTest.setUp(self)
-    def tearDown(self): PersistentTest.tearDown(self)
-    def use_libtool(self): assert 0
-
     def test(self):
-        fs = FileSystem(path=self.rootpath())
-
-        build = fs.rootdirectory().add(
-            name='build',
-            entry=Directory())
-
-        source = fs.rootdirectory().add(
-            name='source',
-            entry=Directory())
-        source.add(
-            name=const.CONFIX2_IN,
-            entry=File(lines=['PACKAGE_NAME("CheckProgramTest")',
-                              'PACKAGE_VERSION("1.2.3")']))
-        source.add(
-            name='_check_proggy.c',
-            entry=File(lines=['extern int open(const char *pathname, int flags);',
-                              'int main(void) {',
-                              '    return open("'+os.sep.join(build.abspath()+['my-check-was-here'])+'", O_RDWR);',
-                              '}']))
-        
-        package = LocalPackage(root=source,
-                               setups=[CSetupFactory(short_libnames=False,
-                                                     use_libtool=self.use_libtool())])
-        package.enlarge(external_nodes=[])
-        package.output()
-        fs.sync()
-
-        bootstrap.bootstrap(packageroot=os.sep.join(source.abspath()),
+        self.fs_.sync()
+        bootstrap.bootstrap(packageroot=os.sep.join(self.source_.abspath()),
                             path=None,
                             use_libtool=self.use_libtool())
-        configure.configure(packageroot=os.sep.join(source.abspath()),
-                            buildroot=os.sep.join(build.abspath()),
+        configure.configure(packageroot=os.sep.join(self.source_.abspath()),
+                            buildroot=os.sep.join(self.build_.abspath()),
                             prefix='/dev/null')
-        make.make(dir=os.sep.join(build.abspath()),
+        make.make(dir=os.sep.join(self.build_.abspath()),
                   args=['check'])
 
-        self.failUnless(os.path.isfile(os.sep.join(build.abspath()+['my-check-was-here'])))
+        self.failUnless(os.path.isfile(os.sep.join(self.build_.abspath()+['my-check-was-here'])))
         pass
     pass
 
-class CheckProgramWithLibtool(CheckProgramBase):
+class CheckProgramBuildWithLibtool(CheckProgramBuildBase):
+    def __init__(self, methodName):
+        CheckProgramBuildBase.__init__(self, methodName)
+        pass
     def use_libtool(self): return True
     pass
 
-class CheckProgramWithoutLibtool(CheckProgramBase):
+class CheckProgramBuildWithoutLibtool(CheckProgramBuildBase):
+    def __init__(self, methodName):
+        CheckProgramBuildBase.__init__(self, methodName)
+        pass
     def use_libtool(self): return False
     pass
 
 if __name__ == '__main__':
-    unittest.TextTestRunner().run(CheckProgramSuite())
+    unittest.TextTestRunner().run(CheckProgramBuildSuite())
     pass
 

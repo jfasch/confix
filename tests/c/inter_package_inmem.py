@@ -36,7 +36,7 @@ class InterPackageRelate(unittest.TestCase):
         lofs = dirhier.packageroot(name='lo', version='1.2.3')
         lofs.rootdirectory().add(name='lo.h', entry=File())
         lofs.rootdirectory().add(name='lo.c', entry=File())
-        local_lopkg = LocalPackage(root=lofs.rootdirectory(),
+        local_lopkg = LocalPackage(rootdirectory=lofs.rootdirectory(),
                                    setups=[CSetupFactory(short_libnames=False, use_libtool=False)])
         local_lopkg.enlarge(external_nodes=[])
         installed_lopkg = local_lopkg.install()
@@ -44,12 +44,12 @@ class InterPackageRelate(unittest.TestCase):
         hifs = dirhier.packageroot(name='hi', version='1.2.3')
         hifs.rootdirectory().add(name='hi.c',
                                  entry=File(lines=['#include <lo.h>']))
-        local_hipkg = LocalPackage(root=hifs.rootdirectory(),
+        local_hipkg = LocalPackage(rootdirectory=hifs.rootdirectory(),
                                    setups=[CSetupFactory(short_libnames=False, use_libtool=False)])
         local_hipkg.enlarge(external_nodes=installed_lopkg.nodes())
 
-        lo_h_builder = find.find_entrybuilder(root=local_lopkg.rootbuilder(), path=['lo.h'])
-        lo_c_builder = find.find_entrybuilder(root=local_lopkg.rootbuilder(), path=['lo.c'])
+        lo_h_builder = find.find_entrybuilder(rootbuilder=local_lopkg.rootbuilder(), path=['lo.h'])
+        lo_c_builder = find.find_entrybuilder(rootbuilder=local_lopkg.rootbuilder(), path=['lo.c'])
         liblo_builder = None
         for b in local_lopkg.rootbuilder().builders():
             if isinstance(b, LibraryBuilder):
@@ -60,7 +60,7 @@ class InterPackageRelate(unittest.TestCase):
             self.fail()
             pass
 
-        hi_c_builder = find.find_entrybuilder(root=local_hipkg.rootbuilder(), path=['hi.c'])
+        hi_c_builder = find.find_entrybuilder(rootbuilder=local_hipkg.rootbuilder(), path=['hi.c'])
         libhi_builder = None
         for b in local_hipkg.rootbuilder().builders():
             if isinstance(b, LibraryBuilder):

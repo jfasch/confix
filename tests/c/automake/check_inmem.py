@@ -16,30 +16,30 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 # USA
 
-import os, shutil, unittest
+from check import CheckProgramBase
 
-class PersistentTestCase(unittest.TestCase):
+import unittest
 
-    sequential_number = 0
-    
-    def __init__(self, methodName='runTest'):
-        unittest.TestCase.__init__(self, methodName)
+class CheckProgramInMemorySuite(unittest.TestSuite):
+    def __init__(self):
+        unittest.TestSuite.__init__(self)
+        self.addTest(CheckProgramInMemory('test'))
         pass
-
-    def rootpath(self):
-        return self.my_rootpath_
-
-    def setUp(self):
-        self.my_rootpath_ = ['', 'tmp',
-                             'confix.'+str(os.getpid())+'.'+str(PersistentTestCase.sequential_number)+'.'+self.__class__.__name__]
-        PersistentTestCase.sequential_number += 1
-        pass
-    
-    def tearDown(self):
-        dir = os.sep.join(self.my_rootpath_)
-        if os.path.isdir(dir):
-            shutil.rmtree(dir)
-            pass
-        pass
-
     pass
+
+class CheckProgramInMemory(CheckProgramBase):
+    def __init__(self, methodName):
+        CheckProgramBase.__init__(self, methodName)
+        pass
+
+    def use_libtool(self): return False
+
+    def test(self):
+        self.failUnless('CheckProgramTest__check_proggy' in self.package_.rootbuilder().makefile_am().check_programs())
+        pass
+    pass
+
+if __name__ == '__main__':
+    unittest.TextTestRunner().run(CheckProgramInMemorySuite())
+    pass
+

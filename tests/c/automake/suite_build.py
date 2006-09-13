@@ -1,6 +1,5 @@
-# $Id: suite.py,v 1.2 2006/07/12 08:42:21 jfasch Exp $
-
 # Copyright (C) 2002-2006 Salomon Automation
+# Copyright (C) 2006 Joerg Faschingbauer
 
 # This library is free software; you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as
@@ -20,7 +19,7 @@
 from simple_build import SimpleBuildSuite
 from intra_package_build import IntraPackageBuildSuite
 from inter_package_build import InterPackageBuildSuite
-from check_build import CheckProgramSuite
+from check_build import CheckProgramBuildSuite
 
 import unittest
 
@@ -30,7 +29,7 @@ class AutomakeCSuiteBuild(unittest.TestSuite):
         self.addTest(SimpleBuildSuite())
         self.addTest(IntraPackageBuildSuite())
         self.addTest(InterPackageBuildSuite())
-        self.addTest(CheckProgramSuite())
+        self.addTest(CheckProgramBuildSuite())
         pass
     pass
 

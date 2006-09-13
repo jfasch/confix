@@ -84,7 +84,7 @@ class InterfaceExecutor:
             if chdirbackto is not None:
                 os.chdir(chdirbackto)
                 pass
-            raise Error('Error in '+'/'.join(file.relpath()), [SystemError(e, sys.exc_traceback)])
+            raise Error('Error in '+'/'.join(file.abspath()), [SystemError(e, sys.exc_traceback)])
         pass
 
     def execute_pieces(self, pieces):

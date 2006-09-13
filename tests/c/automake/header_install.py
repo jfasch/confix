@@ -1,6 +1,5 @@
-# $Id: FILE-HEADER,v 1.4 2006/02/06 21:07:44 jfasch Exp $
-
 # Copyright (C) 2002-2006 Salomon Automation
+# Copyright (C) 2006 Joerg Faschingbauer
 
 # This library is free software; you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as
@@ -40,7 +39,7 @@ class HeaderInstallTest(unittest.TestCase):
         file_h = fs.rootdirectory().add(name='file.h',
                                         entry=File())
         file_h.set_property(name='INSTALLPATH_CINCLUDE', value=[])
-        package = LocalPackage(root=fs.rootdirectory(),
+        package = LocalPackage(rootdirectory=fs.rootdirectory(),
                                setups=[CSetupFactory(short_libnames=False,
                                                      use_libtool=False)])
         package.enlarge(external_nodes=[])
@@ -92,7 +91,7 @@ class HeaderInstallTest(unittest.TestCase):
         file_h = fs.rootdirectory().add(name='file.h',
                                         entry=File())
         file_h.set_property(name='INSTALLPATH_CINCLUDE', value=['xxx'])
-        package = LocalPackage(root=fs.rootdirectory(),
+        package = LocalPackage(rootdirectory=fs.rootdirectory(),
                                setups=[CSetupFactory(short_libnames=False,
                                                      use_libtool=False)])
         package.enlarge(external_nodes=[])
@@ -110,7 +109,7 @@ class HeaderInstallTest(unittest.TestCase):
         file_h = fs.rootdirectory().add(name='file.h',
                                         entry=File())
         file_h.set_property(name='INSTALLPATH_CINCLUDE', value=['xxx/yyy'])
-        package = LocalPackage(root=fs.rootdirectory(),
+        package = LocalPackage(rootdirectory=fs.rootdirectory(),
                                setups=[CSetupFactory(short_libnames=False,
                                                      use_libtool=False)])
         package.enlarge(external_nodes=[])

@@ -20,6 +20,7 @@ from buildinfo import BuildInfo_CLibrary_NativeLocal
 
 from libconfix.core.utils.paragraph import Paragraph, OrderedParagraphSet
 from libconfix.core.automake import helper_automake
+from libconfix.core.automake.configure_ac import Configure_ac
 
 class LibraryBuilder(LinkedBuilder):
     def __init__(self,
@@ -69,7 +70,7 @@ class LibraryBuilder(LinkedBuilder):
         else:
             self.package().configure_ac().add_paragraph(
                 paragraph=Paragraph(['AC_PROG_RANLIB']),
-                order=OrderedParagraphSet.PROGRAMS)
+                order=Configure_ac.PROGRAMS)
             mf_am.add_library(self.libname())
             pass
         

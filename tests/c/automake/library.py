@@ -1,6 +1,5 @@
-# $Id: library.py,v 1.2 2006/07/12 08:42:21 jfasch Exp $
-
 # Copyright (C) 2002-2006 Salomon Automation
+# Copyright (C) 2006 Joerg Faschingbauer
 
 # This library is free software; you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as
@@ -55,7 +54,7 @@ class LibraryBase(unittest.TestCase):
                   entry=File(lines=['void lo() {}']))
         
         self.package_ = LocalPackage(
-            root=self.fs_.rootdirectory(),
+            rootdirectory=self.fs_.rootdirectory(),
             setups=[DirectorySetupFactory(),
                     CSetupFactory(short_libnames=False, # there is already a test for it, elsewhere
                                   use_libtool=self.use_libtool())])

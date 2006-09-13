@@ -1,6 +1,5 @@
-# $Id: exe.py,v 1.3 2006/07/13 20:36:18 jfasch Exp $
-
 # Copyright (C) 2002-2006 Salomon Automation
+# Copyright (C) 2006 Joerg Faschingbauer
 
 # This library is free software; you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as
@@ -158,7 +157,7 @@ class CheckAndNoinstProgram(unittest.TestCase):
                                entry=File(lines=['int main(void) { return 0; }']))
         fs.rootdirectory().add(name='_proggy.c',
                                entry=File(lines=['int main(void) { return 0; }']))
-        package = LocalPackage(root=fs.rootdirectory(),
+        package = LocalPackage(rootdirectory=fs.rootdirectory(),
                                setups=[CSetupFactory(short_libnames=False, use_libtool=False)])
         package.enlarge(external_nodes=[])
         package.output()

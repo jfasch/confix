@@ -27,6 +27,7 @@ from libconfix.core import digraph
 from libconfix.core.automake import repo_automake
 from libconfix.core.automake.auxdir import AutoconfAuxDir
 from libconfix.core.automake.configure_ac import Configure_ac 
+from libconfix.core.automake.acinclude_m4 import ACInclude_m4 
 from libconfix.core.digraph.digraph import DirectedGraph
 from libconfix.core.filesys.directory import Directory
 from libconfix.core.filesys.file import File
@@ -46,8 +47,10 @@ class LocalPackage(Package):
         self.digraph_ = None
         self.local_nodes_ = None
 
-        # the (contents of the) configure.ac we will be writing
+        # the (contents of) configure.ac and acinclude.m4 we will be
+        # writing
         self.configure_ac_ = Configure_ac()
+        self.acinclude_m4_ = ACInclude_m4()
 
         # setup rootbuilder, and configure it with the setups we have.
         self.rootbuilder_ = DirectoryBuilder(
@@ -106,6 +109,8 @@ class LocalPackage(Package):
 
     def configure_ac(self):
         return self.configure_ac_
+    def acinclude_m4(self):
+        return self.acinclude_m4_
 
     def rootbuilder(self):
         return self.rootbuilder_
@@ -164,16 +169,23 @@ class LocalPackage(Package):
         # recursively write the package's output
         self.rootbuilder_.output()
 
-        # write my configure.ac
+        # write my configure.ac and acinclude.m4
         
-        cfg_ac = self.rootdirectory_.find(['configure.ac'])
-        if cfg_ac is None:
-            cfg_ac = File()
-            self.rootdirectory_.add(name='configure.ac', entry=cfg_ac)
+        configure_ac = self.rootdirectory_.find(['configure.ac'])
+        if configure_ac is None:
+            configure_ac = self.rootdirectory_.add(name='configure.ac', entry=File())
         else:
-            cfg_ac.truncate()
+            configure_ac.truncate()
             pass
-        cfg_ac.add_lines(self.configure_ac_.lines())
+        configure_ac.add_lines(self.configure_ac_.lines())
+
+        acinclude_m4 = self.rootdirectory_.find(['acinclude.m4'])
+        if acinclude_m4 is None:
+            acinclude_m4 = self.rootdirectory_.add(name='acinclude.m4', entry=File())
+        else:
+            acinclude_m4.truncate()
+            pass
+        acinclude_m4.add_lines(self.acinclude_m4_.lines())
         pass
 
     def install(self):

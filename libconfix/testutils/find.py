@@ -22,13 +22,13 @@ from libconfix.core.filebuilder import FileBuilder
 
 import types
 
-def find_entrybuilder(root, path):
+def find_entrybuilder(rootbuilder, path):
     assert type(path) is types.ListType
     list = path[:]
     if len(list) == 0:
-        return root
+        return rootbuilder
     entryname = list.pop(0)
-    for b in root.builders():
+    for b in rootbuilder.builders():
         if isinstance(b, DirectoryBuilder) and b.directory().name() == entryname:
             if len(list) == 0:
                 return b

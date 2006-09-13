@@ -119,34 +119,6 @@ import libconfix.const
 
 import libconfix.core.debug
 
-def PACKAGE_NAME(name):
-
-    global PACKAGE_
-    if PACKAGE_ is None:
-        raise Error('PACKAGE_NAME() is only available in the toplevel Makefile.py')
-    if type(name) is not types.StringType:
-        raise Error('PACKAGE_NAME(): argument must be a string')
-    PACKAGE_.makefile_py_set_name(name)
-
-def PACKAGE_VERSION(version):
-
-    global PACKAGE_
-    if PACKAGE_ is None:
-        raise Error('PACKAGE_VERSION() is only available in the toplevel Makefile.py')
-    if type(version) is not types.StringType:
-        raise Error('PACKAGE_VERSION(): argument must be a string')
-    PACKAGE_.makefile_py_set_version(version)
-
-def NAME(name):
-
-    if not SILENT_: libconfix.core.debug.warn('NAME() is deprecated; use PACKAGE_NAME() instead')
-    PACKAGE_NAME(name)
-
-def VERSION(version):
-
-    if not SILENT_: libconfix.core.debug.warn('VERSION() is deprecated; use PACKAGE_VERSION() instead')
-    PACKAGE_VERSION(version)
-
 def PACKAGE():
 
     global PACKAGE_
@@ -163,60 +135,6 @@ def IGNORE_AS_SUBMODULE():
     IGNORE_AS_SUBMODULE_ = 1
     pass
 
-LOCAL = 0
-def CONFIGURE_IN(
-    lines,
-    order,
-    id=None,
-    propagate_only=0,
-    propagate_mode=None
-    ):
-
-    global MODULE_
-    assert MODULE_ is not None
-
-    if type(order) not in [types.IntType or types.LongType]:
-        raise Error('CONFIGURE_IN(): order parameter must be an integer')
-
-    if not propagate_only:
-        MODULE_.add_configure_in(paragraph=Paragraph(lines=lines), order=order)
-        pass
-
-    if propagate_mode is None or propagate_mode != LOCAL:
-        MODULE_.add_buildinfo(BuildInfo_Configure_in(lines=lines, order=order))
-        pass
-    pass
-
-def ACINCLUDE_M4(
-    lines,
-    id=None,
-    propagate_only=0):
-
-    global MODULE_
-    assert MODULE_ is not None
-
-    if id is not None:
-        libconfix.core.debug.warn(os.path.join(MODULE_.dir(), libconfix.const.MAKEFILE_PY)+": "
-                             "ACINCLUDE_M4(): 'id' is deprecated and ignored")
-        pass
-
-    if not propagate_only:
-        MODULE_.add_acinclude_m4(Paragraph(lines))
-        pass
-    MODULE_.add_buildinfo(BuildInfo_ACInclude_m4(lines=lines))
-
-def ACINCLUDE(
-    lines,
-    id,
-    propagate_only=0):
-
-    global MODULE_
-    assert MODULE_ is not None
-
-    libconfix.core.debug.warn(os.path.join(MODULE_.dir(), libconfix.const.MAKEFILE_PY)+": "
-                         "ACINCLUDE() is deprecated, use ACINCLUDE_M4() instead")
-    ACINCLUDE_M4(lines, id, propagate_only)
-
 def MAKEFILE_AM(
     line):
     
@@ -232,79 +150,6 @@ def EXTRA_DIST(
     assert MODULE_ is not None
 
     MODULE_.makefile_am().add_extra_dist(filename)
-
-def PROVIDE_H(
-    filematch,
-    provide_mode='public'):
-
-    global MODULE_
-    assert MODULE_ is not None
-
-    if not filematch or len(filematch)==0:
-        raise Error('PROVIDE_H(): need a non-zero filematch parameter')
-
-    if not provide_mode in ['public', 'package']:
-        raise Error('PROVIDE_H(\\'' + filematch + '\\', ...): '
-                    'provide_mode parameter must be one of "public", "package"')
-
-    prov = Provide_CInclude(filematch, match=Provide_CInclude.GLOB_MATCH)
-
-##     if provide_mode == 'public':
-##         MODULE_.add_public_provide(prov)
-##     elif provide_mode == 'package':
-##         MODULE_.add_package_provide(prov)
-##     else: assert 0
-
-    MODULE_.add_provide(prov)
-
-def PROVIDE(
-    provide,
-    provide_mode='public'):
-
-    global MODULE_
-    assert MODULE_ is not None
-
-    if provide is None:
-        raise Error('PROVIDE(): "provide" must not be None')
-
-    if not isinstance(provide, Provide):
-        raise Error('PROVIDE(): "provide" parameter must be of type "Provide"')
-
-    if not provide_mode in ['public', 'package']:
-        raise Error('PROVIDE(): '
-                    'provide_mode parameter must be one of "public", "package"')
-    
-##     if provide_mode == 'public':
-##         MODULE_.add_public_provide(provide)
-##     elif provide_mode == 'package':
-##         MODULE_.add_package_provide(provide)
-##     else: assert 0
-
-    MODULE_.add_provide(provide)
-
-def PROVIDE_SYMBOL(
-    symbol,
-    provide_mode='public'):
-
-    global MODULE_
-    assert MODULE_ is not None
-
-    if not symbol or len(symbol)==0:
-        raise Error('PROVIDE_SYMBOL(): need a non-zero symbol parameter')
-
-    if not provide_mode in ['public', 'package']:
-        raise Error('PROVIDE_SYMBOL("' + symbol + '", ...): '
-                    'provide_mode parameter must be one of "public", "package"')
-
-    prov = Provide_Symbol(symbol)
-
-##     if provide_mode == 'public':
-##         MODULE_.add_public_provide(prov)
-##     elif provide_mode == 'package':
-##         MODULE_.add_package_provide(prov)
-##     else: assert 0
-
-    MODULE_.add_provide(prov)
 
 def PROVIDE_CALLABLE(
     name,
@@ -329,52 +174,6 @@ def PROVIDE_CALLABLE(
 ##     else: assert 0
 
     MODULE_.add_provide(prov)
-
-def REQUIRE(require): # copied to core.builder
- # copied to core.builder
-    global MODULE_ # copied to core.builder
-    assert MODULE_ is not None # copied to core.builder
- # copied to core.builder
-    if not require: # copied to core.builder
-        raise Error('REQUIRE(): parameter must not be None') # copied to core.builder
-    if not isinstance(require, Require): # copied to core.builder
-        raise Error('REQUIRE(): parameter must be of type Require') # copied to core.builder
- # copied to core.builder
-    MODULE_.add_require(require) # copied to core.builder
-
-def REQUIRE_H(filename, urgency=Require.URGENCY_DONTCARE):
-
-    global MODULE_
-    assert MODULE_ is not None
-
-    if not filename or len(filename)==0:
-        raise Error('REQUIRE_H(): need a non-zero filename parameter')
-
-    if not urgency in [Require.URGENCY_DONTCARE, Require.URGENCY_WARN,
-                       Require.URGENCY_ERROR]:
-        raise Error('REQUIRE_H(): urgency must be one of REQUIRED, WELCOMED, BLUNZN')
-
-    MODULE_.add_require(Require_CInclude(
-        filename,
-        found_in=os.path.join(MODULE_.dir(), 'Makefile.py'),
-        urgency=urgency))
-
-def REQUIRE_SYMBOL(symbol, urgency=Require.URGENCY_DONTCARE):
-
-    global MODULE_
-    assert MODULE_ is not None
-
-    if not symbol or len(symbol)==0:
-        raise Error('REQUIRE_SYMBOL(): need a non-zero symbol parameter')
-
-    if not urgency in [Require.URGENCY_DONTCARE, Require.URGENCY_WARN,
-                       Require.URGENCY_ERROR]:
-        raise Error('REQUIRE_SYMBOL(): urgency must be one of REQUIRED, WELCOMED, BLUNZN')
-
-    MODULE_.add_require(Require_Symbol(
-        symbol,
-        found_in=os.path.join(MODULE_.dir(), 'Makefile.py'),
-        urgency=urgency))
 
 def REQUIRE_CALLABLE(name, urgency=Require.URGENCY_DONTCARE):
 
@@ -445,45 +244,6 @@ def BUILDINFORMATION(
         raise Error('BUILDINFORMATION(): "buildinfo" parameter must be of type "BuildInformation"')
 
     MODULE_.add_buildinfo(buildinfo)
-
-# provide backward compatibility: BuildInformation was formerly
-# (around about Sep. 2005) called Content
-def CONTENT(content): BUILDINFORMATION(buildinfo=content)
-
-def IGNORE_FILE(
-    filename
-    ):
-
-    global MODULE_
-    assert MODULE_ is not None
-
-    if type(filename) is not types.StringType:
-        raise Error('IGNORE_FILE(): "filename" parameter must be a string')
-        
-    MODULE_.add_ignore_file(filename)
-
-def FILE_PROPERTIES(
-    filename,
-    properties
-    ):
-
-    global MODULE_
-    assert MODULE_ is not None
-
-    if not type(filename) is types.StringType:
-        raise Error("FILE_PROPERTIES(): "
-                    "'filename' parameter must be a string")
-    if properties is None:
-        raise Error("FILE_PROPERTIES(filename="+filename+"): "
-                    "'properties' parameter cannot be None")
-    if not type(properties) is types.DictionaryType:
-        raise Error("FILE_PROPERTIES(filename="+filename+"): "
-                    "'properties' parameter must be a dictionary")
-
-    MODULE_.fileproperties().add(
-        filename=filename,
-        buildable_type=None, 
-        properties=FileProperties(properties=properties))
 
 def MODULE_PROPERTIES(
     properties

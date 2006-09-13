@@ -20,6 +20,8 @@ from filebuilder import FileBuilder
 from iface import InterfaceExecutor, InterfacePiece
 from libconfix.core.utils.error import Error
 
+import os
+
 class Confix2_in(FileBuilder):
     def __init__(self, file, parentbuilder, package):
         FileBuilder.__init__(self,
@@ -48,7 +50,8 @@ class Confix2_in(FileBuilder):
             execer.execute_file(file=self.file())
             return 1
         except Error, e:
-            raise Error('could not execute code', [e])
+            raise Error('Could not execute file "'+\
+                        os.sep.join(self.file().relpath(self.package().rootdirectory()))+'"', [e])
         pass
 
     def output(self):

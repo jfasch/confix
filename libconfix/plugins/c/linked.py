@@ -22,6 +22,7 @@ from buildinfo import BuildInfo_CLibrary_NativeLocal, BuildInfo_CLibrary_NativeI
 from libconfix.core.utils.paragraph import Paragraph, OrderedParagraphSet
 from libconfix.core.filebuilder import FileBuilder
 from libconfix.core.builder import Builder, BuilderSet
+from libconfix.core.automake.configure_ac import Configure_ac
 
 class LinkedBuilder(Builder):
     def __init__(self, id, parentbuilder, package, use_libtool):
@@ -85,7 +86,7 @@ class LinkedBuilder(Builder):
                 paragraph=Paragraph(['AC_LIBTOOL_DLOPEN',
                                      'AC_LIBTOOL_WIN32_DLL',
                                      'AC_PROG_LIBTOOL']),
-                order=OrderedParagraphSet.PROGRAMS)
+                order=Configure_ac.PROGRAMS)
             pass
         pass
 

@@ -41,7 +41,7 @@ class IntraPackageInMemoryTest(unittest.TestCase):
                               rootdirectory=packages.lo_hi1_hi2_highest_exe(name='self.__class__.__name__',
                                                                             version='1.2.3'))
         
-        self.package_ = LocalPackage(root=self.fs_.rootdirectory(),
+        self.package_ = LocalPackage(rootdirectory=self.fs_.rootdirectory(),
                                      setups=[DirectorySetupFactory(),
                                              CSetupFactory(short_libnames=False,
                                                            use_libtool=False)])
@@ -50,7 +50,7 @@ class IntraPackageInMemoryTest(unittest.TestCase):
         pass
 
     def test_includepath(self):
-        hi1 = find.find_entrybuilder(root=self.package_.rootbuilder(), path=['hi1'])
+        hi1 = find.find_entrybuilder(rootbuilder=self.package_.rootbuilder(), path=['hi1'])
         self.failUnless('-I$(top_builddir)/confix_include' in hi1.makefile_am().includepath())
         pass
 

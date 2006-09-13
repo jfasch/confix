@@ -25,6 +25,8 @@ from libconfix.core.local_package import LocalPackage
 from libconfix.core.utils import const
 from libconfix.core.utils.error import Error
 
+from libconfix.testutils.persistent import PersistentTestCase
+
 from libconfix.plugins.c.setup import CSetupFactory
 
 import unittest, os, sys, shutil
@@ -37,20 +39,18 @@ class InterPackageBuildSuite(unittest.TestSuite):
         pass
     pass
 
-class InterPackageBuildBase(unittest.TestCase):
+class InterPackageBuildBase(PersistentTestCase):
     def __init__(self, str):
-        unittest.TestCase.__init__(self, str)
-        self.seqnum_ = 0
+        PersistentTestCase.__init__(self, str)
         pass
 
     def use_libtool(self): assert 0
-        
+    
     def setUp(self):
-        self.rootpath_ = ['', 'tmp', 'confix.'+self.__class__.__name__+'.'+str(self.seqnum_)+'.'+str(os.getpid())]
-        self.seqnum_ += 1
-        self.sourcedir_ = self.rootpath_ + ['source']
-        self.builddir_ = self.rootpath_ + ['build']
-        self.installdir_ = self.rootpath_ + ['install']
+        PersistentTestCase.setUp(self)
+        self.sourcedir_ = self.rootpath() + ['source']
+        self.builddir_ = self.rootpath() + ['build']
+        self.installdir_ = self.rootpath() + ['install']
         self.lo_sourcedir_ = self.sourcedir_ + ['lo']
         self.lo_builddir_ = self.builddir_ + ['lo']
         self.hi_sourcedir_ = self.sourcedir_ + ['hi']
@@ -71,7 +71,7 @@ class InterPackageBuildBase(unittest.TestCase):
                                       'void lo() {}']))
         self.lo_fs_ = FileSystem(path=self.lo_sourcedir_, rootdirectory=lo_root)
 
-        self.lo_package_ = LocalPackage(root=self.lo_fs_.rootdirectory(),
+        self.lo_package_ = LocalPackage(rootdirectory=self.lo_fs_.rootdirectory(),
                                         setups=[DirectorySetupFactory(),
                                                 CSetupFactory(short_libnames=False,
                                                               use_libtool=self.use_libtool())])
@@ -115,20 +115,13 @@ class InterPackageBuildBase(unittest.TestCase):
                                   '}']))
 
         self.hi_fs_ = FileSystem(path=self.hi_sourcedir_, rootdirectory=hi_root)
-        self.hi_package_ = LocalPackage(root=self.hi_fs_.rootdirectory(),
+        self.hi_package_ = LocalPackage(rootdirectory=self.hi_fs_.rootdirectory(),
                                         setups=[DirectorySetupFactory(),
                                                 CSetupFactory(short_libnames=False,
                                                               use_libtool=self.use_libtool())])
         
         pass
 
-    def tearDown(self):
-        dir = os.sep.join(self.rootpath_)
-        if os.path.isdir(dir):
-            shutil.rmtree(dir)
-            pass
-        pass
-    
     def test(self):
         try:
             # confixize, bootstrap, and install package 'lo'
@@ -139,7 +132,6 @@ class InterPackageBuildBase(unittest.TestCase):
 
             bootstrap.bootstrap(
                 packageroot=os.sep.join(self.lo_sourcedir_),
-                aclocal_includedirs=[],
                 use_libtool=self.use_libtool(),
                 path=None)
             os.makedirs(os.sep.join(self.lo_builddir_))
@@ -168,7 +160,6 @@ class InterPackageBuildBase(unittest.TestCase):
 
             bootstrap.bootstrap(
                 packageroot=os.sep.join(self.hi_sourcedir_),
-                aclocal_includedirs=[],
                 use_libtool=self.use_libtool(),
                 path=None)
             os.makedirs(os.sep.join(self.hi_builddir_))

@@ -1,6 +1,5 @@
-# $Id: acinclude_m4.py,v 1.3 2006/03/22 15:03:54 jfasch Exp $
-
-# Copyright (C) 2005 Salomon Automation
+# Copyright (C) 2002-2006 Salomon Automation
+# Copyright (C) 2006 Joerg Faschingbauer
 
 # This library is free software; you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as
@@ -17,17 +16,10 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 # USA
 
-from core.error import Error
-from paragraph import ParagraphSet
-import const
-import core.helper
-
-import types
+from libconfix.core.utils.paragraph import ParagraphSet
+from libconfix.core.utils import const
 
 class ACInclude_m4:
-
-    """ Encapsulates everything a package's acinclude.m4 file does,
-    including writing that file. """
 
     def __init__(self):
         self.paragraphs_ = ParagraphSet()
@@ -39,7 +31,7 @@ class ACInclude_m4:
     def add_paragraphs(self, paragraphset):
         self.paragraphs_ += paragraphset
         
-    def output(self):
+    def lines(self):
 
         """ Write the contents to the file acinclude.m4 in the current
         working directory. """
@@ -48,9 +40,5 @@ class ACInclude_m4:
         lines.append('# DO NOT EDIT! This file was automatically generated')
         lines.append('# by Confix version '+const.CONFIX_VERSION)
         lines.extend(self.paragraphs_.lines_for_acinclude_m4())
-
-        try:
-            core.helper.write_lines_to_file_if_changed('acinclude.m4', lines)
-        except Error, e:
-            raise Error("Could not write acinclude.m4", [e])
+        return lines
         

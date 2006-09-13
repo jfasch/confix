@@ -22,6 +22,18 @@ from libconfix.core.utils.paragraph import OrderedParagraphSet
 
 class Configure_ac:
 
+    # rough ordering scheme according to the recommendations in the
+    # autotools book , p.31
+
+    BOILERPLATE = 0
+    OPTIONS = 1000
+    PROGRAMS = 2000
+    LIBRARIES = 3000
+    HEADERS = 4000
+    TYPEDEFS_AND_STRUCTURES = 5000
+    FUNCTIONS = 6000
+    OUTPUT = 7000
+
     def __init__(self):
 
         # AC_INIT arguments
@@ -97,12 +109,6 @@ class Configure_ac:
     def add_paragraph(self, paragraph, order):
         self.ordered_paragraphs_.add(paragraph=paragraph, order=order)
         pass
-
-##     def add_paragraphs(self, paragraphs):
-
-##         """ Add an ordered paragraph set. """
-
-##         self.ordered_paragraphs_.update(paragraphs)
 
     def lines(self):
 

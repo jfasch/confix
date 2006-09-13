@@ -52,9 +52,9 @@ class InternalRequires(unittest.TestCase):
                                entry=File(lines=[]))
         fs.rootdirectory().add(name='file.c',
                                entry=File(lines=['#include "file.h"']))
-        package = LocalPackage(root=fs.rootdirectory(),
-                                   setups=[CSetupFactory(short_libnames=False,
-                                                         use_libtool=False)])
+        package = LocalPackage(rootdirectory=fs.rootdirectory(),
+                               setups=[CSetupFactory(short_libnames=False,
+                                                     use_libtool=False)])
         package.enlarge(external_nodes=[])
         rootnode = find.find_managing_node_of_builder(nodes=package.digraph().nodes(),
                                                       builder=package.rootbuilder())
@@ -67,10 +67,10 @@ class RelateBasic(unittest.TestCase):
         fs = FileSystem(path=[''],
                         rootdirectory=packages.lo_hi1_hi2_highest_exe(name='xxx', version='1.2.3'))
         
-        self.package_ = LocalPackage(root=fs.rootdirectory(),
-                                         setups=[DirectorySetupFactory(),
-                                                 CSetupFactory(short_libnames=False,
-                                                               use_libtool=False)])
+        self.package_ = LocalPackage(rootdirectory=fs.rootdirectory(),
+                                     setups=[DirectorySetupFactory(),
+                                             CSetupFactory(short_libnames=False,
+                                                           use_libtool=False)])
         self.package_.enlarge(external_nodes=[])
 
         # from here on, we collect things that we will need in the

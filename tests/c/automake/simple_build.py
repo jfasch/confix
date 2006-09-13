@@ -26,6 +26,8 @@ from libconfix.core.utils import const
 from libconfix.core.utils import const
 from libconfix.core.utils.error import Error
 
+from libconfix.testutils.persistent import PersistentTestCase
+
 from libconfix.plugins.c.setup import CSetupFactory
 
 import unittest, os, sys, shutil
@@ -38,19 +40,17 @@ class SimpleBuildSuite(unittest.TestSuite):
         pass
     pass
 
-class SimpleBuildBase(unittest.TestCase):
-    def __init__(self, str):
-        unittest.TestCase.__init__(self, str)
-        self.seqnum_ = 0
+class SimpleBuildBase(PersistentTestCase):
+    def __init__(self, methodName):
+        PersistentTestCase.__init__(self, methodName)
         pass
     def setUp(self):
+        PersistentTestCase.setUp(self)
         try:
-            self.rootpath_ = ['', 'tmp', 'confix.'+self.__class__.__name__+'.'+str(self.seqnum_)+'.'+str(os.getpid())]
-            self.sourcerootpath_ = self.rootpath_ + ['source']
+            self.sourcerootpath_ = self.rootpath() + ['source']
             self.fs_ = FileSystem(path=self.sourcerootpath_)
 
-            self.buildrootpath_ = self.rootpath_ + ['build']
-            self.seqnum_ += 1
+            self.buildrootpath_ = self.rootpath() + ['build']
 
             self.fs_.rootdirectory().add(name=const.CONFIX2_IN,
                                          entry=File(lines=['PACKAGE_NAME("simplebuildtest")',
@@ -66,7 +66,7 @@ class SimpleBuildBase(unittest.TestCase):
                                                            'int i;',
                                                            ]))
             
-            self.package_ = LocalPackage(root=self.fs_.rootdirectory(),
+            self.package_ = LocalPackage(rootdirectory=self.fs_.rootdirectory(),
                                          setups=[CSetupFactory(short_libnames=False, use_libtool=self.use_libtool())])
             self.package_.enlarge(external_nodes=[])
             self.package_.output()
@@ -76,18 +76,11 @@ class SimpleBuildBase(unittest.TestCase):
             raise
         pass
 
-    def tearDown(self):
-        dir = os.sep.join(self.rootpath_)
-        if os.path.isdir(dir):
-            shutil.rmtree(dir)
-            pass
-        pass
-        
     def test(self):
         try:
             packageroot = os.sep.join(self.sourcerootpath_)
             buildroot = os.sep.join(self.buildrootpath_)
-            bootstrap.bootstrap(packageroot=packageroot, aclocal_includedirs=[], path=None, use_libtool=self.use_libtool())
+            bootstrap.bootstrap(packageroot=packageroot, path=None, use_libtool=self.use_libtool())
             os.makedirs(buildroot)
             configure.configure(packageroot=packageroot, buildroot=buildroot, prefix='/dev/null')
             make.make(dir=buildroot, args=[])

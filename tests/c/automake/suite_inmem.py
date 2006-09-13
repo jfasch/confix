@@ -1,6 +1,5 @@
-# $Id: suite.py,v 1.2 2006/07/12 08:42:21 jfasch Exp $
-
 # Copyright (C) 2002-2006 Salomon Automation
+# Copyright (C) 2006 Joerg Faschingbauer
 
 # This library is free software; you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as
@@ -22,6 +21,7 @@ from library import LibrarySuite
 from exe import ExecutableSuite
 from header_install import HeaderInstallSuite
 from intra_package_inmem import IntraPackageInMemorySuite
+from check_inmem import CheckProgramInMemorySuite
 
 import unittest
 
@@ -33,6 +33,7 @@ class AutomakeCSuiteInMemory(unittest.TestSuite):
         self.addTest(ExecutableSuite())
         self.addTest(HeaderInstallSuite())
         self.addTest(IntraPackageInMemorySuite())
+        self.addTest(CheckProgramInMemorySuite())
         pass
     pass
 

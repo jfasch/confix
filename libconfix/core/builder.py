@@ -1,6 +1,5 @@
-# $Id: builder.py,v 1.16 2006/07/13 20:27:24 jfasch Exp $
-
 # Copyright (C) 2002-2006 Salomon Automation
+# Copyright (C) 2006 Joerg Faschingbauer
 
 # This library is free software; you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as
@@ -24,6 +23,11 @@ from require import Require
 from buildinfoset import BuildInformationSet
 
 from libconfix.core.utils.error import Error
+from libconfix.core.utils.paragraph import Paragraph
+from libconfix.core.automake.configure_ac import Configure_ac
+from libconfix.core.automake.buildinfo import \
+     BuildInfo_Configure_in, \
+     BuildInfo_ACInclude_m4
 
 import os
 
@@ -80,30 +84,58 @@ class Builder:
     
     def iface_pieces(self):
         return [InterfacePiece(globals={'BUILDER_': self,
+
                                         'URGENCY_IGNORE': Require.URGENCY_IGNORE,
                                         'URGENCY_WARN': Require.URGENCY_WARN,
                                         'URGENCY_ERROR': Require.URGENCY_ERROR,
                                         'EXACT_MATCH': Provide_String.EXACT_MATCH,
                                         'PREFIX_MATCH': Provide_String.PREFIX_MATCH,
-                                        'GLOB_MATCH': Provide_String.GLOB_MATCH},                               
+                                        'GLOB_MATCH': Provide_String.GLOB_MATCH,
+
+                                        'AC_BOILERPLATE': Configure_ac.BOILERPLATE,
+                                        'AC_OPTIONS': Configure_ac.OPTIONS,
+                                        'AC_PROGRAMS': Configure_ac.PROGRAMS,
+                                        'AC_LIBRARIES': Configure_ac.LIBRARIES,
+                                        'AC_HEADERS': Configure_ac.HEADERS,
+                                        'AC_TYPEDEFS_AND_STRUCTURES': Configure_ac.TYPEDEFS_AND_STRUCTURES,
+                                        'AC_FUNCTIONS': Configure_ac.FUNCTIONS,
+                                        'AC_OUTPUT': Configure_ac.OUTPUT,
+                                        
+                                        },
                                lines=[builder_code_])]
     def confix2_in_iface_pieces(self):
         return []
+
     def enlarge(self):
         self.base_enlarge_called_ = True
+
         if self.num_announced_dep_info_ < self.dep_info_.size():
             diff = self.dep_info_.size() - self.num_announced_dep_info_
             self.num_announced_dep_info_ = self.dep_info_.size()
             return diff
         return 0
     
+    def relate(self, node, digraph, topolist):
+        self.base_relate_called_ = True
+
+        for n in topolist:
+            for bi in n.buildinfos():
+                if isinstance(bi, BuildInfo_Configure_in):
+                    self.package().configure_ac().add_paragraph(
+                        paragraph=Paragraph(lines=bi.lines()),
+                        order=bi.order())
+                    continue
+                if isinstance(bi, BuildInfo_ACInclude_m4):
+                    self.package().acinclude_m4().add_paragraph(
+                        paragraph=Paragraph(lines=bi.lines()))
+                    continue
+                pass
+            pass
+        pass
+
     def nodes(self):
         return []
     
-    def relate(self, node, digraph, topolist):
-        self.base_relate_called_ = True
-        pass
-
     def output(self):
         self.base_output_called_ = True
         pass
@@ -150,6 +182,10 @@ from libconfix.core.require_symbol import Require_Symbol
 from libconfix.core.provide import Provide
 from libconfix.core.provide_symbol import Provide_Symbol
 from libconfix.core.utils.error import Error
+from libconfix.core.utils.paragraph import Paragraph
+
+from libconfix.core.automake.buildinfo import BuildInfo_Configure_in, BuildInfo_ACInclude_m4
+
 import os
 
 def REQUIRE(require):
@@ -181,5 +217,33 @@ def PROVIDE_SYMBOL(symbol, match=EXACT_MATCH):
     if not match in [EXACT_MATCH, PREFIX_MATCH, GLOB_MATCH]:
         raise Error('PROVIDE_SYMBOL(): match must be one of EXACT_MATCH, PREFIX_MATCH, GLOB_MATCH')
     BUILDER_.add_provide(Provide_Symbol(symbol=symbol, match=match))
+    pass
+
+LOCAL = 0
+PROPAGATE = 1
+def CONFIGURE_AC(lines, order, flags=[]):
+    if type(order) not in [types.IntType or types.LongType]:
+        raise Error('CONFIGURE_AC(): "order" parameter must be an integer')
+    if LOCAL in flags:
+        BUILDER_.package().configure_ac().add_paragraph(
+            paragraph=Paragraph(lines=lines),
+            order=order)
+        pass
+    if PROPAGATE in flags:
+        BUILDER_.add_buildinfo(BuildInfo_Configure_in(
+            lines=lines,
+            order=order))
+        pass
+    pass
+
+def ACINCLUDE_M4(lines, flags=[]):
+    if LOCAL in flags:
+        BUILDER_.package().acinclude_m4().add_paragraph(
+            paragraph=Paragraph(lines=lines))
+        pass
+    if PROPAGATE in flags:
+        BUILDER_.add_buildinfo(BuildInfo_ACInclude_m4(
+            lines=lines))
+        pass
     pass
 """

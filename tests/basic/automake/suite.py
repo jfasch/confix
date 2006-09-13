@@ -21,6 +21,7 @@ from makefile_utils import MakefileUtilsSuite
 from makefile_am import MakefileAmSuite
 from configure_ac import ConfigureACSuite
 from output import AutomakeOutputSuite
+from iface import InterfaceSuite
 
 import unittest
 
@@ -32,6 +33,7 @@ class AutomakeSuite(unittest.TestSuite):
         self.addTest(MakefileAmSuite())
         self.addTest(ConfigureACSuite())
         self.addTest(AutomakeOutputSuite())
+        self.addTest(InterfaceSuite())
         pass
 
     pass

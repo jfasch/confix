@@ -36,13 +36,21 @@ class RequireTestSuite(unittest.TestSuite):
 class ScanTest(unittest.TestCase):
     def runTest(self): self.test()
     def test(self):
-        file = File(lines=['#include <inc1>',
-                           '#include "inc2"',
-                           '#   include <inc3>',
-                           '#   include <inc4>   ',
-                           '   #include <inc5>',
-                           ])
-        builder = CBuilder(file=file, parentbuilder=None, package=None)
+        fs = FileSystem(path=[])
+        fs.rootdirectory().add(
+            name=const.CONFIX2_IN,
+            entry=File(['PACKAGE_NAME("argh")',
+                        'PACKAGE_VERSION("1.2.3")']))
+        file = fs.rootdirectory().add(
+            name='file',
+            entry=File(lines=['#include <inc1>',
+                              '#include "inc2"',
+                              '#   include <inc3>',
+                              '#   include <inc4>   ',
+                              '   #include <inc5>',
+                              ]))
+        package = LocalPackage(rootdirectory=fs.rootdirectory(), setups=[])
+        builder = CBuilder(file=file, parentbuilder=None, package=package)
         self.assertEqual(len(builder.requires()), 5)
         inc1 = None
         inc2 = None

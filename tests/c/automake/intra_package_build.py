@@ -23,8 +23,10 @@ from libconfix.core.hierarchy import DirectorySetupFactory
 from libconfix.core.utils.error import Error
 from libconfix.core.automake import bootstrap, configure, make
 
-from libconfix.plugins.c.setup import CSetupFactory
 from libconfix.testutils import packages
+from libconfix.testutils.persistent import PersistentTestCase
+
+from libconfix.plugins.c.setup import CSetupFactory
 
 import unittest, os, sys, shutil
 
@@ -36,25 +38,24 @@ class IntraPackageBuildSuite(unittest.TestSuite):
         pass
     pass
 
-class IntraPackageBuildBase(unittest.TestCase):
-    def __init__(self, str):
-        unittest.TestCase.__init__(self, str)
-        self.seqnum_ = 0
+class IntraPackageBuildBase(PersistentTestCase):
+    def __init__(self, methodName):
+        PersistentTestCase.__init__(self, methodName)
         pass
 
     def use_libtool(self): assert 0
 
     def setUp(self):
-        self.rootpath_ = ['', 'tmp', 'confix.'+self.__class__.__name__+'.'+str(self.seqnum_)+'.'+str(os.getpid())]
-        self.seqnum_ += 1
-        self.sourcerootpath_ = self.rootpath_ + ['source']
-        self.buildrootpath_ = self.rootpath_ + ['build']
+        PersistentTestCase.setUp(self)
+        
+        self.sourcerootpath_ = self.rootpath() + ['source']
+        self.buildrootpath_ = self.rootpath() + ['build']
 
         self.fs_ = FileSystem(path=self.sourcerootpath_,
                               rootdirectory=packages.lo_hi1_hi2_highest_exe(name='intrapackagebuildtest',
                                                                             version='1.2.3'))
         
-        self.package_ = LocalPackage(root=self.fs_.rootdirectory(),
+        self.package_ = LocalPackage(rootdirectory=self.fs_.rootdirectory(),
                                      setups=[DirectorySetupFactory(),
                                              CSetupFactory(short_libnames=False,
                                                            use_libtool=self.use_libtool())])
@@ -63,20 +64,12 @@ class IntraPackageBuildBase(unittest.TestCase):
         self.fs_.sync()
         pass
 
-    def tearDown(self):
-        dir = os.sep.join(self.rootpath_)
-        if os.path.isdir(dir):
-            shutil.rmtree(dir)
-            pass
-        pass
-
     def test(self):
         try:
             packageroot = os.sep.join(self.sourcerootpath_)
             buildroot = os.sep.join(self.buildrootpath_)
             bootstrap.bootstrap(
                 packageroot=packageroot,
-                aclocal_includedirs=[],
                 path=None,
                 use_libtool=self.use_libtool())
             os.makedirs(buildroot)
