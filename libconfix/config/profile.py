@@ -16,7 +16,10 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 # USA
 
-class ConfigProfile:
+from config import Configuration
+from configure_config import ConfigureConfig
+
+class Profile(Configuration):
 
     PREFIX = 'PREFIX'
     BUILDROOT = 'BUILDROOT'
@@ -26,6 +29,7 @@ class ConfigProfile:
     PRINT_TIMINGS = 'PRINT_TIMINGS'
     MESSAGE_PREFIX = 'MESSAGE_PREFIX'
     ADVANCED = 'ADVANCED'
+    CONFIGURE = 'CONFIGURE'
 
     def __init__(self, dict):
         self.dictionary_ = dict
@@ -47,6 +51,13 @@ class ConfigProfile:
         return self.dictionary_.get(ConfigProfile.MESSAGE_PREFIX)
     def advanced(self):
         return self.dictionary_.get(ConfigProfile.ADVANCED)
+
+    def configure(self):
+        dict = self.dictionary_.get(ConfigProfile.CONFIGURE)
+        if dict is not None:
+            return ConfigureConfig(dict)
+        return None
+    
 
 ##         if dict.has_key(const.CFG_PROF_CONFIX_READONLY_PREFIXES):
 ##             if not type(dict[const.CFG_PROF_CONFIX_READONLY_PREFIXES]) is ListType:
