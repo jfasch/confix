@@ -21,8 +21,8 @@ from libconfix.core.filesys.directory import Directory
 from libconfix.core.filesys.file import File
 from libconfix.core.utils import const
 from libconfix.core.local_package import LocalPackage
-from libconfix.core.hierarchy import DirectorySetupFactory
-from libconfix.plugins.c.setup import CSetupFactory
+from libconfix.core.hierarchy import DirectorySetup
+from libconfix.plugins.c.setup import CSetup
 from libconfix.plugins.c.executable import ExecutableBuilder
 from libconfix.plugins.c.library import LibraryBuilder
 
@@ -77,8 +77,8 @@ class ExecutableBase(unittest.TestCase):
         exe.add(name='something.c', entry=File())
         
         self.package_ = LocalPackage(root=self.fs_.rootdirectory(),
-                                     setups=[DirectorySetupFactory(),
-                                             CSetupFactory(short_libnames=False, use_libtool=self.use_libtool())])
+                                     setups=[DirectorySetup(),
+                                             CSetup(short_libnames=False, use_libtool=self.use_libtool())])
         self.package_.enlarge(external_nodes=[])
         self.package_.output()
 
@@ -158,7 +158,7 @@ class CheckAndNoinstProgram(unittest.TestCase):
         fs.rootdirectory().add(name='_proggy.c',
                                entry=File(lines=['int main(void) { return 0; }']))
         package = LocalPackage(rootdirectory=fs.rootdirectory(),
-                               setups=[CSetupFactory(short_libnames=False, use_libtool=False)])
+                               setups=[CSetup(short_libnames=False, use_libtool=False)])
         package.enlarge(external_nodes=[])
         package.output()
 

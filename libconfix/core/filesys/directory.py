@@ -18,7 +18,7 @@
 
 from entry import DirectoryEntry
 
-from libconfix.core.utils.error import Error
+from libconfix.core.utils.error import Error, NativeError
 
 import os, types, sys
 
@@ -104,7 +104,7 @@ class Directory(DirectoryEntry):
                 self.state_ = DirectoryState.SYNC
                 pass
             except OSError, err:
-                raise Error('Could not create directory '+path, [SystemError(err, sys.exc_traceback)])
+                raise Error('Could not create directory '+path, [NativeError(err, sys.exc_traceback)])
             pass
         else:
             assert 0

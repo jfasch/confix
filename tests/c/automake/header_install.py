@@ -18,7 +18,7 @@
 
 from libconfix.core.filesys.file import File
 from libconfix.core.local_package import LocalPackage
-from libconfix.plugins.c.setup import CSetupFactory
+from libconfix.plugins.c.setup import CSetup
 from libconfix.plugins.c.installer import Installer
 from libconfix.testutils import dirhier, makefileparser
 
@@ -40,8 +40,8 @@ class HeaderInstallTest(unittest.TestCase):
                                         entry=File())
         file_h.set_property(name='INSTALLPATH_CINCLUDE', value=[])
         package = LocalPackage(rootdirectory=fs.rootdirectory(),
-                               setups=[CSetupFactory(short_libnames=False,
-                                                     use_libtool=False)])
+                               setups=[CSetup(short_libnames=False,
+                                              use_libtool=False)])
         package.enlarge(external_nodes=[])
         package.output()
 
@@ -92,8 +92,8 @@ class HeaderInstallTest(unittest.TestCase):
                                         entry=File())
         file_h.set_property(name='INSTALLPATH_CINCLUDE', value=['xxx'])
         package = LocalPackage(rootdirectory=fs.rootdirectory(),
-                               setups=[CSetupFactory(short_libnames=False,
-                                                     use_libtool=False)])
+                               setups=[CSetup(short_libnames=False,
+                                              use_libtool=False)])
         package.enlarge(external_nodes=[])
         package.output()
 
@@ -110,8 +110,8 @@ class HeaderInstallTest(unittest.TestCase):
                                         entry=File())
         file_h.set_property(name='INSTALLPATH_CINCLUDE', value=['xxx/yyy'])
         package = LocalPackage(rootdirectory=fs.rootdirectory(),
-                               setups=[CSetupFactory(short_libnames=False,
-                                                     use_libtool=False)])
+                               setups=[CSetup(short_libnames=False,
+                                              use_libtool=False)])
         package.enlarge(external_nodes=[])
         package.output()
 

@@ -1,4 +1,5 @@
 # Copyright (C) 2002-2006 Salomon Automation
+# Copyright (C) 2006 Joerg Faschingbauer
 
 # This library is free software; you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as
@@ -15,12 +16,14 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 # USA
 
-from linked import LinkedBuilder
-from buildinfo import BuildInfo_CLibrary_NativeLocal
+import types
 
 from libconfix.core.utils.paragraph import Paragraph, OrderedParagraphSet
 from libconfix.core.automake import helper_automake
 from libconfix.core.automake.configure_ac import Configure_ac
+
+from linked import LinkedBuilder
+from buildinfo import BuildInfo_CLibrary_NativeLocal
 
 class LibraryBuilder(LinkedBuilder):
     def __init__(self,
@@ -29,6 +32,10 @@ class LibraryBuilder(LinkedBuilder):
                  basename,
                  use_libtool,
                  libtool_version_info):
+
+        assert type(libtool_version_info) in [types.ListType, types.TupleType]
+        assert len(libtool_version_info) == 3
+        
         LinkedBuilder.__init__(
             self,
             id=str(self.__class__)+'('+str(parentbuilder)+','+basename+')',
@@ -53,6 +60,9 @@ class LibraryBuilder(LinkedBuilder):
         else:
             return 'lib'+self.basename_+'.a'
         pass
+
+    def libtool_version_info(self):
+        return self.libtool_version_info_
 
     def output(self):
         LinkedBuilder.output(self)

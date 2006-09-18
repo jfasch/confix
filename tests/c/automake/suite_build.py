@@ -20,6 +20,7 @@ from simple_build import SimpleBuildSuite
 from intra_package_build import IntraPackageBuildSuite
 from inter_package_build import InterPackageBuildSuite
 from check_build import CheckProgramBuildSuite
+from autoconf_archive import AutoConfArchiveSuite
 
 import unittest
 
@@ -30,6 +31,7 @@ class AutomakeCSuiteBuild(unittest.TestSuite):
         self.addTest(IntraPackageBuildSuite())
         self.addTest(InterPackageBuildSuite())
         self.addTest(CheckProgramBuildSuite())
+        self.addTest(AutoConfArchiveSuite())
         pass
     pass
 

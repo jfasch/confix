@@ -1,4 +1,5 @@
 # Copyright (C) 2002-2006 Salomon Automation
+# Copyright (C) 2006 Joerg Faschingbauer
 
 # This library is free software; you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as
@@ -15,7 +16,22 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 # USA
 
-class Node:
+from libconfix.core.repo.marshalling import Marshallable
+
+class Node(Marshallable):
+    def get_marshalling_data(self):
+        return {Marshallable.GENERATING_CLASS: Node,
+                Marshallable.VERSIONS: {'Node': 1},
+                Marshallable.ATTRIBUTES: {}}
+    def set_marshalling_data(self, data):
+        version = data[Marshallable.VERSIONS]['Node']
+        if version != 1:
+            raise MarshalledVersionUnknownError(
+                klass=self.__class__,
+                marshalled_version=version,
+                current_version=1)
+        pass
+    
     def __init__(self):
         pass
     def provides(self):

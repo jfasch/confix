@@ -16,16 +16,31 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 # USA
 
-class Configuration:
-    def prefix(self): assert 0
-    def buildroot(self): assert 0
-    def use_libtool(self): assert 0
-    def use_bulk_install(self): assert 0
-    def use_kde_hack(self): assert 0
-    def print_timings(self): assert 0
-    def message_prefix(self): assert 0
-    def advanced(self): assert 0
+import os
 
-    def configure(self): assert 0
+class Configuration:
+    def __init__(self): pass
+    
+    def packageroot(self): assert 0, str(self.__class__)
+    def packagename(self): assert 0, str(self.__class__)
+    def packageversion(self): assert 0, str(self.__class__)
+    def builddir(self): assert 0, str(self.__class__)
+    
+    def prefix(self): assert 0, str(self.__class__)
+    def buildroot(self): assert 0, str(self.__class__)
+    def short_libnames(self): assert 0, str(self.__class__)
+    def use_libtool(self): assert 0, str(self.__class__)
+    def use_bulk_install(self): assert 0, str(self.__class__)
+    def use_kde_hack(self): assert 0, str(self.__class__)
+    def print_timings(self): assert 0, str(self.__class__)
+    def verbosity(self): assert 0, str(self.__class__)
+    def message_prefix(self): assert 0, str(self.__class__)
+    def advanced(self): assert 0, str(self.__class__)
+
+    def configure(self): assert 0, str(self.__class__)
+
+    # helper for derived classes
+    def expand_path(self, path):
+        return os.path.expanduser(os.path.expandvars(path))
 
     pass

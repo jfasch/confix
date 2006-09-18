@@ -1,6 +1,5 @@
-# $Id: setup_exe.py,v 1.5 2006/07/07 15:29:18 jfasch Exp $
-
 # Copyright (C) 2002-2006 Salomon Automation
+# Copyright (C) 2006 Joerg Faschingbauer
 
 # This library is free software; you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as
@@ -20,7 +19,7 @@
 from libconfix.core.filesys.file import File
 from libconfix.core.local_package import LocalPackage
 from libconfix.core.filebuilder import FileBuilder
-from libconfix.plugins.c.setup import CSetupFactory
+from libconfix.plugins.c.setup import CSetup
 from libconfix.plugins.c.h import HeaderBuilder
 from libconfix.plugins.c.c import CBuilder
 from libconfix.plugins.c.executable import ExecutableBuilder
@@ -40,8 +39,8 @@ class ExecutableSetupTest(unittest.TestCase):
         fs.rootdirectory().add(name='main.c', entry=main_c)
 
         package = LocalPackage(rootdirectory=fs.rootdirectory(),
-                               setups=[CSetupFactory(short_libnames=False,
-                                                     use_libtool=False)])
+                               setups=[CSetup(short_libnames=False,
+                                              use_libtool=False)])
         package.enlarge(external_nodes=[])
 
         file_h_builder = None

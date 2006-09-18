@@ -1,6 +1,5 @@
-# $Id: FILE-HEADER,v 1.4 2006/02/06 21:07:44 jfasch Exp $
-
 # Copyright (C) 2002-2006 Salomon Automation
+# Copyright (C) 2006 Joerg Faschingbauer
 
 # This library is free software; you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as
@@ -19,11 +18,10 @@
 
 from libconfix.core.filesys.filesys import FileSystem
 from libconfix.core.local_package import LocalPackage
-from libconfix.core.hierarchy import DirectorySetupFactory
+from libconfix.core.hierarchy import DirectorySetup
 from libconfix.core.utils.error import Error
-from libconfix.core.automake import bootstrap, configure, make
 
-from libconfix.plugins.c.setup import CSetupFactory
+from libconfix.plugins.c.setup import CSetup
 from libconfix.testutils import packages, find
 
 import unittest, os, sys, shutil
@@ -42,9 +40,9 @@ class IntraPackageInMemoryTest(unittest.TestCase):
                                                                             version='1.2.3'))
         
         self.package_ = LocalPackage(rootdirectory=self.fs_.rootdirectory(),
-                                     setups=[DirectorySetupFactory(),
-                                             CSetupFactory(short_libnames=False,
-                                                           use_libtool=False)])
+                                     setups=[DirectorySetup(),
+                                             CSetup(short_libnames=False,
+                                                    use_libtool=False)])
         self.package_.enlarge(external_nodes=[])
         self.package_.output()
         pass

@@ -1,6 +1,5 @@
-# $Id: file.py,v 1.3 2006/06/27 15:08:59 jfasch Exp $
-
 # Copyright (C) 2002-2006 Salomon Automation
+# Copyright (C) 2006 Joerg Faschingbauer
 
 # This library is free software; you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as
@@ -17,13 +16,13 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 # USA
 
-from entry import DirectoryEntry
-from filesys import FileSystem
+import os
 
-from libconfix.core.utils.error import Error
+from libconfix.core.utils.error import Error, NativeError
 import libconfix.core.utils.helper
 
-import os
+from entry import DirectoryEntry
+from filesys import FileSystem
 
 class FileState:
     NEW = 0
@@ -120,7 +119,7 @@ class File(DirectoryEntry):
                     os.chmod(filename, self.mode_)
                 except OSError, err:
                     raise Error('Could not change mode of file '+filename,
-                                [SystemError(err, sys.exc_traceback)])
+                                [NativeError(err, sys.exc_traceback)])
                 pass
 
             if FileSystem.CLEAR_ON_SYNC in self.filesystem().flags():

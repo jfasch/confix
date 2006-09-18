@@ -1,6 +1,5 @@
-# $Id: relate.py,v 1.4 2006/06/23 08:14:35 jfasch Exp $
-
 # Copyright (C) 2002-2006 Salomon Automation
+# Copyright (C) 2006 Joerg Faschingbauer
 
 # This library is free software; you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as
@@ -19,11 +18,11 @@
 
 from libconfix.testutils import dirhier
 from libconfix.testutils import find
-from libconfix.testutils.ifacetestbuilder import FileInterfaceTestSetupFactory
+from libconfix.testutils.ifacetestbuilder import FileInterfaceTestSetup
 
 from libconfix.core.filesys.file import File
 from libconfix.core.local_package import LocalPackage
-from libconfix.core.hierarchy import DirectorySetupFactory
+from libconfix.core.hierarchy import DirectorySetup
 
 import unittest
 
@@ -53,8 +52,8 @@ class RelateBasic(unittest.TestCase):
             entry=File(lines=['REQUIRE_SYMBOL(symbol="lo", urgency=URGENCY_ERROR)']))
 
         package = LocalPackage(rootdirectory=fs.rootdirectory(),
-                               setups=[DirectorySetupFactory(),
-                                       FileInterfaceTestSetupFactory()])
+                               setups=[DirectorySetup(),
+                                       FileInterfaceTestSetup()])
         package.enlarge(external_nodes=[])
 
         lodirbuilder = find.find_entrybuilder(package.rootbuilder(), ['lo'])
@@ -94,8 +93,8 @@ class InternalRequires(unittest.TestCase):
                               '               urgency=URGENCY_ERROR)']))
 
         package = LocalPackage(rootdirectory=fs.rootdirectory(),
-                               setups=[DirectorySetupFactory(),
-                                       FileInterfaceTestSetupFactory()])
+                               setups=[DirectorySetup(),
+                                       FileInterfaceTestSetup()])
         package.enlarge(external_nodes=[])
 
         rootnode = find.find_managing_node_of_builder(nodes=package.digraph().nodes(),

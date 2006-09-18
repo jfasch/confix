@@ -16,20 +16,25 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 # USA
 
+import os
+
 from libconfix.core.utils.error import Error
 from libconfix.core.utils import external_cmd
 
-import os
+import autoconf_archive
 
-def bootstrap(packageroot, path, use_libtool):
+def bootstrap(packageroot, path, use_libtool, argv0):
     aclocal_incdirs = []
+    aclocal_incdirs.append(autoconf_archive.include_path(argv0))
+    
     if use_libtool:
         libtoolize_prog = external_cmd.search_program('libtoolize', path)
         if libtoolize_prog is None:
             raise Error('libtoolize not found along path')
-        aclocal_incdirs.append(os.path.dirname(libtoolize_prog))
+        aclocal_incdirs.append(os.path.join(os.path.dirname(libtoolize_prog), '../share/aclocal'))
         external_cmd.exec_program(program=libtoolize_prog, dir=packageroot, args=['--force', '--copy'], path=path)
         pass
+
     aclocal(packageroot=packageroot, includedirs=aclocal_incdirs, path=path)
     autoheader(packageroot=packageroot, path=path)
     automake(packageroot=packageroot, path=path)

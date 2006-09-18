@@ -221,27 +221,27 @@ def PROVIDE_SYMBOL(symbol, match=EXACT_MATCH):
 
 LOCAL = 0
 PROPAGATE = 1
-def CONFIGURE_AC(lines, order, flags=[]):
+def CONFIGURE_AC(lines, order, flags=None):
     if type(order) not in [types.IntType or types.LongType]:
         raise Error('CONFIGURE_AC(): "order" parameter must be an integer')
-    if LOCAL in flags:
+    if flags is None or LOCAL in flags:
         BUILDER_.package().configure_ac().add_paragraph(
             paragraph=Paragraph(lines=lines),
             order=order)
         pass
-    if PROPAGATE in flags:
+    if flags is None or PROPAGATE in flags:
         BUILDER_.add_buildinfo(BuildInfo_Configure_in(
             lines=lines,
             order=order))
         pass
     pass
 
-def ACINCLUDE_M4(lines, flags=[]):
-    if LOCAL in flags:
+def ACINCLUDE_M4(lines, flags=None):
+    if flags is None or LOCAL in flags:
         BUILDER_.package().acinclude_m4().add_paragraph(
             paragraph=Paragraph(lines=lines))
         pass
-    if PROPAGATE in flags:
+    if flags is None or PROPAGATE in flags:
         BUILDER_.add_buildinfo(BuildInfo_ACInclude_m4(
             lines=lines))
         pass

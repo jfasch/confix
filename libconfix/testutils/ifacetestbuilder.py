@@ -1,6 +1,5 @@
-# $Id: ifacetestbuilder.py,v 1.5 2006/07/13 20:36:18 jfasch Exp $
-
 # Copyright (C) 2002-2006 Salomon Automation
+# Copyright (C) 2006 Joerg Faschingbauer
 
 # This library is free software; you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as
@@ -21,36 +20,16 @@ from libconfix.core.filesys.file import File
 from libconfix.core.filesys.directory import Directory
 from libconfix.core.filebuilder import FileBuilder
 from libconfix.core.iface import InterfaceExecutor, CodePiece
-from libconfix.core.setup import Setup, SetupFactory
+from libconfix.core.setup import Setup
 from libconfix.core.builder import Builder
 
-class FileInterfaceTestSetupFactory(SetupFactory):
-    def __init__(self):
-        SetupFactory.__init__(self)
-        pass
-    def create(self, parentbuilder, package):
-        return FileInterfaceTestSetup(parentbuilder=parentbuilder, package=package)
-    pass
-
 class FileInterfaceTestSetup(Setup):
-    def __init__(self, parentbuilder, package):
-        Setup.__init__(self,
-                       id=str(self.__class__)+'('+str(parentbuilder)+')',
-                       parentbuilder=parentbuilder,
-                       package=package)
-        self.bursted_ = False
+    def __init__(self):
+        Setup.__init__(self)
         pass
-    def clone(self, parentbuilder, package):
-        return FileInterfaceTestSetup(parentbuilder=parentbuilder, package=package)
-    def enlarge(self):
-        if self.bursted_:
-            return 0
-        self.bursted_ = True
-        self.parentbuilder().add_builder(FileInterfaceTestCreator(
-            parentbuilder=self.parentbuilder(),
-            package=self.package()))
-        return 1 + Setup.enlarge(self)
-        pass
+    def initial_builders(self, parentbuilder, package):
+        return [FileInterfaceTestCreator(parentbuilder=parentbuilder, package=package)] + \
+               Setup.initial_builders(self, parentbuilder=parentbuilder, package=package)
     pass
 
 class FileInterfaceTestCreator(Builder):

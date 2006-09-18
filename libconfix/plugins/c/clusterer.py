@@ -1,6 +1,5 @@
-# $Id: clusterer.py,v 1.9 2006/07/13 20:27:24 jfasch Exp $
-
 # Copyright (C) 2002-2006 Salomon Automation
+# Copyright (C) 2006 Joerg Faschingbauer
 
 # This library is free software; you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as
@@ -24,11 +23,12 @@ from library import LibraryBuilder
 import helper
 
 from libconfix.core.builder import Builder
+from libconfix.core.iface import InterfacePiece
 
 import os
 
 class CClusterer(Builder):
-    def __init__(self, parentbuilder, package, namefinder, use_libtool, libtool_version_info):
+    def __init__(self, parentbuilder, package, namefinder, use_libtool):
         Builder.__init__(
             self,
             id=str(self.__class__)+'('+str(parentbuilder)+')',
@@ -36,11 +36,15 @@ class CClusterer(Builder):
             package=package)
         self.namefinder_ = namefinder
         self.use_libtool_ = use_libtool
-        self.libtool_version_info_ = libtool_version_info
+        self.libtool_version_info_ = (0,0,0)
 
         self.library_ = None
         # ExecutableBuilder objects, indexed by their center builders
         self.executables_ = {}
+        pass
+
+    def set_libtool_version_info(self, version_tuple):
+        self.libtool_version_info_ = version_tuple
         pass
 
     def enlarge(self):
@@ -110,3 +114,30 @@ class CClusterer(Builder):
             pass
 
         return ret + Builder.enlarge(self)
+
+    def confix2_in_iface_pieces(self):
+        return Builder.confix2_in_iface_pieces(self) + \
+               [InterfacePiece(globals={'C_CLUSTERER_': self},
+                               lines=[_code])]
+        
+    pass
+
+
+_code = """
+
+from libconfix.core.utils.error import Error
+import types
+
+def LIBTOOL_LIBRARY_VERSION(version):
+    if type(version) not in [types.ListType, types.TupleType]:
+        raise Error("LIBTOOL_LIBRARY_VERSION: 'version' argument must be a tuple")
+    if len(version) != 3:
+        raise Error("LIBTOOL_LIBRARY_VERSION: 'version' argument must be a tuple of 3 integers")
+    for i in range(len(version)):
+        if type(version[i]) is not types.IntType:
+            raise Error("LIBTOOL_LIBRARY_VERSION: part '+str(i)+' of version is not an integer")
+        pass
+    C_CLUSTERER_.set_libtool_version_info(version)
+    pass
+
+"""

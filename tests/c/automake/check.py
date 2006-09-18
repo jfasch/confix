@@ -24,7 +24,7 @@ from libconfix.core.utils import const
 
 from libconfix.testutils.persistent import PersistentTestCase
 
-from libconfix.plugins.c.setup import CSetupFactory
+from libconfix.plugins.c.setup import CSetup
 
 import os, unittest
 
@@ -62,8 +62,8 @@ class CheckProgramBase(PersistentTestCase):
                               '}']))
         
         self.package_ = LocalPackage(rootdirectory=self.source_,
-                                     setups=[CSetupFactory(short_libnames=False,
-                                                           use_libtool=self.use_libtool())])
+                                     setups=[CSetup(short_libnames=False,
+                                                    use_libtool=self.use_libtool())])
         self.package_.enlarge(external_nodes=[])
         self.package_.output()
         pass

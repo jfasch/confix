@@ -1,6 +1,5 @@
-# $Id: relate.py,v 1.5 2006/07/07 15:29:18 jfasch Exp $
-
 # Copyright (C) 2002-2006 Salomon Automation
+# Copyright (C) 2006 Joerg Faschingbauer
 
 # This library is free software; you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as
@@ -24,8 +23,8 @@ from libconfix.core.filesys.directory import Directory
 from libconfix.core.filesys.file import File
 from libconfix.core.filesys.filesys import FileSystem
 from libconfix.core.local_package import LocalPackage
-from libconfix.core.hierarchy import DirectorySetupFactory
-from libconfix.plugins.c.setup import CSetupFactory
+from libconfix.core.hierarchy import DirectorySetup
+from libconfix.plugins.c.setup import CSetup
 from libconfix.plugins.c.library import LibraryBuilder
 from libconfix.plugins.c.executable import ExecutableBuilder
 from libconfix.plugins.c.buildinfo import BuildInfo_CIncludePath_NativeLocal, BuildInfo_CLibrary_NativeLocal
@@ -53,8 +52,8 @@ class InternalRequires(unittest.TestCase):
         fs.rootdirectory().add(name='file.c',
                                entry=File(lines=['#include "file.h"']))
         package = LocalPackage(rootdirectory=fs.rootdirectory(),
-                               setups=[CSetupFactory(short_libnames=False,
-                                                     use_libtool=False)])
+                               setups=[CSetup(short_libnames=False,
+                                              use_libtool=False)])
         package.enlarge(external_nodes=[])
         rootnode = find.find_managing_node_of_builder(nodes=package.digraph().nodes(),
                                                       builder=package.rootbuilder())
@@ -68,9 +67,9 @@ class RelateBasic(unittest.TestCase):
                         rootdirectory=packages.lo_hi1_hi2_highest_exe(name='xxx', version='1.2.3'))
         
         self.package_ = LocalPackage(rootdirectory=fs.rootdirectory(),
-                                     setups=[DirectorySetupFactory(),
-                                             CSetupFactory(short_libnames=False,
-                                                           use_libtool=False)])
+                                     setups=[DirectorySetup(),
+                                             CSetup(short_libnames=False,
+                                                    use_libtool=False)])
         self.package_.enlarge(external_nodes=[])
 
         # from here on, we collect things that we will need in the

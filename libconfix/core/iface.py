@@ -1,6 +1,5 @@
-# $Id: iface.py,v 1.7 2006/07/07 15:29:19 jfasch Exp $
-
 # Copyright (C) 2002-2006 Salomon Automation
+# Copyright (C) 2006 Joerg Faschingbauer
 
 # This library is free software; you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as
@@ -17,12 +16,13 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 # USA
 
-import filesys
-from libconfix.core.utils.error import Error, SystemError
-
 import os
 import sys
 import types
+
+from libconfix.core.utils.error import Error, NativeError
+
+import filesys
 
 class CodePiece:
     def __init__(self, start_lineno, lines):
@@ -72,7 +72,7 @@ class InterfaceExecutor:
         try:
             if file.is_persistent():
                 chdirbackto = os.getcwd()
-                os.chdir(file.parent().abspath())
+                os.chdir(os.sep.join(file.parent().abspath()))
                 execfile(file.name(), self.context_)
                 os.chdir(chdirbackto)
                 return
@@ -84,7 +84,7 @@ class InterfaceExecutor:
             if chdirbackto is not None:
                 os.chdir(chdirbackto)
                 pass
-            raise Error('Error in '+'/'.join(file.abspath()), [SystemError(e, sys.exc_traceback)])
+            raise Error('Error in '+'/'.join(file.abspath()), [NativeError(e, sys.exc_traceback)])
         pass
 
     def execute_pieces(self, pieces):
@@ -93,7 +93,7 @@ class InterfaceExecutor:
                 exec '\n'.join(p.lines()) in self.context_
             except Exception, e:
                 raise Error('Error in code piece starting at line '+str(p.start_lineno())+' ('+p.lines()[0]+')',
-                            [SystemError(e, sys.exc_traceback)])
+                            [NativeError(e, sys.exc_traceback)])
             pass
         pass
     pass

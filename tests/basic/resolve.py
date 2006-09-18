@@ -1,6 +1,5 @@
-# $Id: resolve.py,v 1.8 2006/07/07 15:29:19 jfasch Exp $
-
 # Copyright (C) 2002-2006 Salomon Automation
+# Copyright (C) 2006 Joerg Faschingbauer
 
 # This library is free software; you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as
@@ -19,13 +18,13 @@
 
 from libconfix.testutils import dirhier
 from libconfix.testutils import find
-from libconfix.testutils.ifacetestbuilder import FileInterfaceTestSetupFactory
+from libconfix.testutils.ifacetestbuilder import FileInterfaceTestSetup
 
 from libconfix.core.edgefinder import EdgeFinder
 from libconfix.core.require_symbol import Require_Symbol
 from libconfix.core.filesys.file import File
 from libconfix.core.local_package import LocalPackage
-from libconfix.core.hierarchy import DirectorySetupFactory
+from libconfix.core.hierarchy import DirectorySetup
 from libconfix.core.digraph.cycle import CycleError
 import unittest
 
@@ -51,8 +50,8 @@ class BasicResolveTest(unittest.TestCase):
                            entry=File(lines=['REQUIRE_SYMBOL(symbol="lo", urgency=URGENCY_ERROR)']))
 
         package = LocalPackage(rootdirectory=fs.rootdirectory(),
-                               setups=[DirectorySetupFactory(),
-                                       FileInterfaceTestSetupFactory()])
+                               setups=[DirectorySetup(),
+                                       FileInterfaceTestSetup()])
         package.enlarge(external_nodes=[])
 
         lodirbuilder = find.find_entrybuilder(package.rootbuilder(), ['lo'])
@@ -92,7 +91,7 @@ class NotResolvedTest(unittest.TestCase):
                                       entry=File(lines=['REQUIRE_SYMBOL(symbol="unknown_symbol", urgency=URGENCY_ERROR)']))
 
         package = LocalPackage(rootdirectory=fs.rootdirectory(),
-                               setups=[FileInterfaceTestSetupFactory()])
+                               setups=[FileInterfaceTestSetup()])
 
         try:
             package.enlarge(external_nodes=[])
@@ -125,8 +124,8 @@ class CycleTest(unittest.TestCase):
                                            'REQUIRE_SYMBOL(symbol="A")']))
 
         package = LocalPackage(rootdirectory=fs.rootdirectory(),
-                               setups=[DirectorySetupFactory(),
-                                       FileInterfaceTestSetupFactory()])
+                               setups=[DirectorySetup(),
+                                       FileInterfaceTestSetup()])
         try:
             package.enlarge(external_nodes=[])
         except CycleError:

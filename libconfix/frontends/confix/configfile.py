@@ -16,10 +16,11 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 # USA
 
-from libconfix.config.profile import ConfigProfile
-from libconfix.core.utils.error import Error
+from libconfix.core.utils.error import Error, NativeError
 
-import sys
+from profile_config import ProfileConfiguration
+
+import sys, os
 
 class ConfigFile:
     def __init__(self, file):
@@ -32,7 +33,7 @@ class ConfigFile:
             chdirbackto = None
             if file.is_persistent():
                 chdirbackto = os.getcwd()
-                os.chdir(file.parent().abspath())
+                os.chdir(os.sep.join(file.parent().abspath()))
                 execfile(file.name(), self.context_)
                 os.chdir(chdirbackto)
                 return
@@ -44,15 +45,17 @@ class ConfigFile:
             if chdirbackto is not None:
                 os.chdir(chdirbackto)
                 pass
-            raise Error('Error in '+'/'.join(file.abspath()), [SystemError(e, sys.exc_traceback)])
+            raise Error('Error in '+'/'.join(file.abspath()), [NativeError(e, sys.exc_traceback)])
 
         pass
 
     def get_profile(self, name):
-        if self.context_.has_key(name):
-            return ConfigProfile(self.context_[name])
-        else:
-            raise Error('Profile "'+name+'" not found in '+self.filename_)
-        pass
+        profiles_dict = self.context_.get('PROFILES')
+        if profiles_dict is None:
+            raise Error('PROFILES dictionary not found in '+os.sep.join(self.filename_))
+        profile = profiles_dict.get(name)
+        if profile is None:
+            raise Error('Profile "'+name+'" not found in '+os.sep.join(self.filename_))
+        return ProfileConfiguration(profile)
 
     pass

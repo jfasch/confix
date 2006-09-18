@@ -19,7 +19,7 @@
 
 from libconfix.core.local_package import LocalPackage
 from libconfix.core.filebuilder import FileBuilder
-from libconfix.core.hierarchy import DirectorySetupFactory, DirectoryBuilder
+from libconfix.core.hierarchy import DirectorySetup
 
 from libconfix.testutils import dirhier
 from libconfix.testutils import find
@@ -36,7 +36,7 @@ class BasicDirectorySetup(unittest.TestCase):
         
         package = LocalPackage(
             rootdirectory=fs.rootdirectory(),
-            setups=[DirectorySetupFactory()])
+            setups=[DirectorySetup()])
         package.enlarge(external_nodes=[])
 
         self.assertEqual(package.rootbuilder().directory().find(['a']), subdir)

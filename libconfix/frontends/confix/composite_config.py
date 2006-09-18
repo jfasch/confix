@@ -28,25 +28,30 @@ class CompositeConfiguration(Configuration):
         self.configurations_.append(config)
         pass
 
+    def packageroot(self): return self.search_param_('packageroot')
+    def packagename(self): return self.search_param_('packagename')
+    def packageversion(self): return self.search_param_('packageversion')
     def prefix(self): return self.search_param_('prefix')
     def buildroot(self): return self.search_param_('buildroot')
+    def builddir(self): return self.search_param_('builddir')
+    def short_libnames(self): return self.search_param_('short_libnames')
     def use_libtool(self): return self.search_param_('use_libtool')
     def use_bulk_install(self): return self.search_param_('use_bulk_install')
     def use_kde_hack(self): return self.search_param_('use_kde_hack')
+    def verbosity(self): return self.search_param_('use_kde_hack')
     def print_timings(self): return self.search_param_('print_timings')
     def message_prefix(self): return self.search_param_('message_prefix')
     def advanced(self): return self.search_param_('advanced')
-    def configure(self): return self.search_param_('configure')
+    def configure_args(self): return self.search_param_('configure_args')
+    def configure_env(self): return self.search_param_('configure_env')
 
     def search_param_(self, methodname):
         for config in self.configurations_:
-            method = getattr(config, methodname)
-            ret = apply(config, method)
-            if ret:
+            ret = getattr(config, methodname)()
+            if ret is not None:
                 return ret
             pass
         else:
-            return None
+            return ret
         pass
-
     pass

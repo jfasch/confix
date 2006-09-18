@@ -16,16 +16,35 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 # USA
 
-class Configuration:
-    def prefix(self): assert 0
-    def buildroot(self): assert 0
-    def use_libtool(self): assert 0
-    def use_bulk_install(self): assert 0
-    def use_kde_hack(self): assert 0
-    def print_timings(self): assert 0
-    def message_prefix(self): assert 0
-    def advanced(self): assert 0
+from libconfix.core.utils.error import Error
 
-    def configure(self): assert 0
+from repo import PackageRepository
 
-    pass
+class CompositePackageRepository(PackageRepository):
+
+    def __init__(self):
+
+        PackageRepository.__init__(self)
+        self.repositories_ = []
+
+    def description(self):
+
+        return 'Composite: '+','.join([r.description() for r in self.repositories()])
+
+    def add_repo(self, repo):
+
+        self.repositories_.append(repo)
+
+    def packages(self):
+
+        ret_packages = []
+        have_packages = {}
+
+        for r in self.repositories_:
+            for p in r.packages():
+                if have_packages.has_key(p.name()):
+                    continue
+                have_packages[p.name()] = 1
+                ret_packages.append(p)
+
+        return ret_packages

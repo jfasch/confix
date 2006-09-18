@@ -19,8 +19,8 @@
 from libconfix.testutils import dirhier
 from libconfix.core.filesys.file import File
 from libconfix.core.local_package import LocalPackage
-from libconfix.core.hierarchy import DirectorySetupFactory
-from libconfix.plugins.c.setup import CSetupFactory
+from libconfix.core.hierarchy import DirectorySetup
+from libconfix.plugins.c.setup import CSetup
 
 import unittest
 
@@ -47,9 +47,9 @@ class CTest(unittest.TestCase):
 
         package = LocalPackage(
             rootdirectory=fs.rootdirectory(),
-            setups=[DirectorySetupFactory(),
-                    CSetupFactory(short_libnames=False,
-                                  use_libtool=False)])
+            setups=[DirectorySetup(),
+                    CSetup(short_libnames=False,
+                           use_libtool=False)])
         package.enlarge(external_nodes=[])
         package.output()
 

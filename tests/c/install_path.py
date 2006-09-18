@@ -18,7 +18,7 @@
 
 from libconfix.plugins.c.h import HeaderBuilder
 import libconfix.plugins.c.namespace
-from libconfix.plugins.c.setup import CSetupFactory
+from libconfix.plugins.c.setup import CSetup
 
 from libconfix.core.filesys.directory import Directory
 from libconfix.core.filesys.file import File
@@ -177,8 +177,8 @@ class Namespace(unittest.TestCase):
                                                  "    value=['xxx'])"]))
         fs.rootdirectory().add(name='file.h', entry=File(lines=[]))
         package = LocalPackage(rootdirectory=fs.rootdirectory(),
-                               setups=[CSetupFactory(short_libnames=False,
-                                                     use_libtool=False)])
+                               setups=[CSetup(short_libnames=False,
+                                              use_libtool=False)])
         package.enlarge(external_nodes=[])
         filebuilder = find.find_entrybuilder(package.rootbuilder(), ['file.h'])
         assert filebuilder is not None

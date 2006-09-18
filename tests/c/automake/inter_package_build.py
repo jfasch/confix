@@ -16,20 +16,20 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 # USA
 
+import unittest, os, sys, shutil
+
 from libconfix.core.automake import bootstrap, configure, make, repo_automake
 from libconfix.core.filesys.directory import Directory
 from libconfix.core.filesys.file import File
 from libconfix.core.filesys.filesys import FileSystem
-from libconfix.core.hierarchy import DirectorySetupFactory
+from libconfix.core.hierarchy import DirectorySetup
 from libconfix.core.local_package import LocalPackage
 from libconfix.core.utils import const
 from libconfix.core.utils.error import Error
 
 from libconfix.testutils.persistent import PersistentTestCase
 
-from libconfix.plugins.c.setup import CSetupFactory
-
-import unittest, os, sys, shutil
+from libconfix.plugins.c.setup import CSetup
 
 class InterPackageBuildSuite(unittest.TestSuite):
     def __init__(self):
@@ -72,8 +72,7 @@ class InterPackageBuildBase(PersistentTestCase):
         self.lo_fs_ = FileSystem(path=self.lo_sourcedir_, rootdirectory=lo_root)
 
         self.lo_package_ = LocalPackage(rootdirectory=self.lo_fs_.rootdirectory(),
-                                        setups=[DirectorySetupFactory(),
-                                                CSetupFactory(short_libnames=False,
+                                        setups=[CSetup(short_libnames=False,
                                                               use_libtool=self.use_libtool())])
         
         
@@ -116,9 +115,9 @@ class InterPackageBuildBase(PersistentTestCase):
 
         self.hi_fs_ = FileSystem(path=self.hi_sourcedir_, rootdirectory=hi_root)
         self.hi_package_ = LocalPackage(rootdirectory=self.hi_fs_.rootdirectory(),
-                                        setups=[DirectorySetupFactory(),
-                                                CSetupFactory(short_libnames=False,
-                                                              use_libtool=self.use_libtool())])
+                                        setups=[DirectorySetup(),
+                                                CSetup(short_libnames=False,
+                                                       use_libtool=self.use_libtool())])
         
         pass
 
@@ -131,16 +130,17 @@ class InterPackageBuildBase(PersistentTestCase):
             self.lo_fs_.sync()
 
             bootstrap.bootstrap(
-                packageroot=os.sep.join(self.lo_sourcedir_),
+                packageroot=self.lo_sourcedir_,
                 use_libtool=self.use_libtool(),
-                path=None)
+                path=None,
+                argv0=sys.argv[0])
             os.makedirs(os.sep.join(self.lo_builddir_))
             configure.configure(
-                packageroot=os.sep.join(self.lo_sourcedir_),
-                buildroot=os.sep.join(self.lo_builddir_),
+                packageroot=self.lo_sourcedir_,
+                builddir=self.lo_builddir_,
                 prefix=os.sep.join(self.installdir_))
             make.make(
-                dir=os.sep.join(self.lo_builddir_),
+                builddir=self.lo_builddir_,
                 args=['install'])
 
             # read repo from prefix
@@ -159,16 +159,17 @@ class InterPackageBuildBase(PersistentTestCase):
             self.hi_fs_.sync()
 
             bootstrap.bootstrap(
-                packageroot=os.sep.join(self.hi_sourcedir_),
+                packageroot=self.hi_sourcedir_,
                 use_libtool=self.use_libtool(),
-                path=None)
+                path=None,
+                argv0=sys.argv[0])
             os.makedirs(os.sep.join(self.hi_builddir_))
             configure.configure(
-                packageroot=os.sep.join(self.hi_sourcedir_),
-                buildroot=os.sep.join(self.hi_builddir_),
+                packageroot=self.hi_sourcedir_,
+                builddir=self.hi_builddir_,
                 prefix=os.sep.join(self.installdir_))
             make.make(
-                dir=os.sep.join(self.hi_builddir_),
+                builddir=self.hi_builddir_,
                 args=['install'])
             
         except Error, e:

@@ -1,6 +1,5 @@
-# $Id: FILE-HEADER,v 1.4 2006/02/06 21:07:44 jfasch Exp $
-
 # Copyright (C) 2002-2006 Salomon Automation
+# Copyright (C) 2006 Joerg Faschingbauer
 
 # This library is free software; you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as
@@ -17,11 +16,13 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 # USA
 
+import os, types
+
 from error import Error
 
-import os
-
 def exec_program(program, dir, args=None, env=None, path=None):
+    assert type(dir) in [types.ListType, types.TupleType]
+
     if os.path.isabs(program):
         the_program = program
     else:
@@ -43,7 +44,7 @@ def exec_program(program, dir, args=None, env=None, path=None):
         pass
     
     chdirbackto = os.getcwd()
-    os.chdir(dir)
+    os.chdir(os.sep.join(dir))
     try:
         rv = os.spawnve(os.P_WAIT, the_program, [the_program] + the_args, the_env)
         if rv != 0:
@@ -51,7 +52,7 @@ def exec_program(program, dir, args=None, env=None, path=None):
         pass
     except Exception, e:
         os.chdir(chdirbackto)
-        raise Error("Could not execute '"+the_program+' '+' '.join(the_args)+"' in directory '"+dir, [e])
+        raise Error("Could not execute '"+the_program+' '+' '.join(the_args)+"' in directory '"+os.sep.join(dir)+"'", [e])
     os.chdir(chdirbackto)
     pass
 

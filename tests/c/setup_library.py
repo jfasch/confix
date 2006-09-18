@@ -19,11 +19,11 @@
 from libconfix.core.filebuilder import FileBuilder
 from libconfix.core.filesys.directory import Directory
 from libconfix.core.filesys.file import File
-from libconfix.core.hierarchy import DirectorySetupFactory
+from libconfix.core.hierarchy import DirectorySetup
 from libconfix.core.local_package import LocalPackage
 from libconfix.core.utils import const
 
-from libconfix.plugins.c.setup import CSetupFactory
+from libconfix.plugins.c.setup import CSetup
 from libconfix.plugins.c.h import HeaderBuilder
 from libconfix.plugins.c.c import CBuilder
 from libconfix.plugins.c.library import LibraryBuilder
@@ -46,7 +46,7 @@ class LibrarySetupBasic(unittest.TestCase):
         fs.rootdirectory().add(name='file.c', entry=File(lines=[]))
 
         package = LocalPackage(rootdirectory=fs.rootdirectory(),
-                               setups=[CSetupFactory(short_libnames=False, use_libtool=False)])
+                               setups=[CSetup(short_libnames=False, use_libtool=False)])
         package.enlarge(external_nodes=[])
 
         file_h_builder = None
@@ -90,9 +90,9 @@ class LibraryNames(unittest.TestCase):
     def testLongName(self):
         
         package = LocalPackage(rootdirectory=self.fs_.rootdirectory(),
-                               setups=[DirectorySetupFactory(),
-                                       CSetupFactory(short_libnames=False,
-                                                     use_libtool=False)])
+                               setups=[DirectorySetup(),
+                                       CSetup(short_libnames=False,
+                                              use_libtool=False)])
         package.enlarge(external_nodes=[])
 
         dir3lib_builder = None
@@ -110,9 +110,9 @@ class LibraryNames(unittest.TestCase):
     def testShortName(self):
         
         package = LocalPackage(rootdirectory=self.fs_.rootdirectory(),
-                               setups=[DirectorySetupFactory(),
-                                       CSetupFactory(short_libnames=True,
-                                                     use_libtool=False)])
+                               setups=[DirectorySetup(),
+                                       CSetup(short_libnames=True,
+                                              use_libtool=False)])
         package.enlarge(external_nodes=[])
 
         dir3lib_builder = None

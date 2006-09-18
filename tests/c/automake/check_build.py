@@ -16,11 +16,11 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 # USA
 
-from check import CheckProgramBase
+import os, sys, unittest
 
 from libconfix.core.automake import bootstrap, configure, make
 
-import os, unittest
+from check import CheckProgramBase
 
 class CheckProgramBuildSuite(unittest.TestSuite):
     def __init__(self):
@@ -36,14 +36,18 @@ class CheckProgramBuildBase(CheckProgramBase):
         pass
     def test(self):
         self.fs_.sync()
-        bootstrap.bootstrap(packageroot=os.sep.join(self.source_.abspath()),
-                            path=None,
-                            use_libtool=self.use_libtool())
-        configure.configure(packageroot=os.sep.join(self.source_.abspath()),
-                            buildroot=os.sep.join(self.build_.abspath()),
-                            prefix='/dev/null')
-        make.make(dir=os.sep.join(self.build_.abspath()),
-                  args=['check'])
+        bootstrap.bootstrap(
+            packageroot=self.source_.abspath(),
+            path=None,
+            use_libtool=self.use_libtool(),
+            argv0=sys.argv[0])
+        configure.configure(
+            packageroot=self.source_.abspath(),
+            buildroot=self.build_.abspath(),
+            prefix='/dev/null')
+        make.make(
+            dir=self.build_.abspath(),
+            args=['check'])
 
         self.failUnless(os.path.isfile(os.sep.join(self.build_.abspath()+['my-check-was-here'])))
         pass

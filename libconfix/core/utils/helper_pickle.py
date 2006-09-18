@@ -1,6 +1,5 @@
-# $Id: helper_pickle.py,v 1.9 2006/06/21 11:06:49 jfasch Exp $
-
-# Copyright (C) 2004 Salomon Automation
+# Copyright (C) 2002-2006 Salomon Automation
+# Copyright (C) 2006 Joerg Faschingbauer
 
 # This library is free software; you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as
@@ -17,7 +16,7 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 # USA
 
-from libconfix.core.utils.error import Error, SystemError
+from libconfix.core.utils.error import Error, NativeError
 
 import sys
 
@@ -42,7 +41,7 @@ def load_object_from_file(filename):
     try:
         object = mypickle.load(file)
     except Exception, e:
-        raise Error('Cannot read Python object from file '+filename, [SystemError(e, sys.exc_traceback)])
+        raise Error('Cannot read Python object from file '+filename, [NativeError(e, sys.exc_traceback)])
 
     return object
 
@@ -54,13 +53,13 @@ def dump_object_to_file(object, filename):
     try:
         mypickle.dump(object, file)
     except Exception, e:
-        raise Error('Cannot dump Python object "'+str(object)+'" to file '+filename, [SystemError(e, sys.exc_traceback)])
+        raise Error('Cannot dump Python object "'+str(object)+'" to file '+filename, [NativeError(e, sys.exc_traceback)])
 
 def load_object_from_string(string):
     try:
         object = mypickle.loads(string)
     except Exception, e:
-        raise Error('Cannot read Python object from string', [SystemError(e, sys.exc_traceback)])
+        raise Error('Cannot read Python object from string', [NativeError(e, sys.exc_traceback)])
 
     return object
 
@@ -68,4 +67,4 @@ def dump_object_to_string(object):
     try:
         return mypickle.dumps(object)
     except Exception, e:
-        raise Error('Cannot dump Python object to string', [SystemError(e, sys.exc_traceback)])
+        raise Error('Cannot dump Python object to string', [NativeError(e, sys.exc_traceback)])

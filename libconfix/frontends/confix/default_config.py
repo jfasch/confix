@@ -19,15 +19,26 @@
 from config import Configuration
 
 class DefaultConfiguration(Configuration):
+    def __init__(self):
+        Configuration.__init__(self)
+        pass
+    
+    def packageroot(self): return None
+    def packagename(self): return None
+    def packageversion(self): return None
     def prefix(self): return None
     def buildroot(self): return None
+    def builddir(self): return None
+    def short_libnames(self): return False
     def use_libtool(self): return False
     def use_bulk_install(self): return False
     def use_kde_hack(self): return False
+    def verbosity(self): return 0
     def print_timings(self): return False
     def message_prefix(self): return None
     def advanced(self): return False
 
-    def configure(self): return None
-    
+    def configure_args(self): return None
+    def configure_env(self): return None
+
     pass

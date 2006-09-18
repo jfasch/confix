@@ -1,4 +1,5 @@
 # Copyright (C) 2002-2006 Salomon Automation
+# Copyright (C) 2006 Joerg Faschingbauer
 
 # This library is free software; you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as
@@ -23,6 +24,13 @@ from buildinfoset import BuildInformationSet
 from libconfix.core.digraph import toposort
 
 class LocalNode(Node):
+    def get_marshalling_data(self):
+        assert 0
+        pass
+    def set_marshalling_data(self, data):
+        assert 0
+        pass
+    
     def __init__(self, responsible_builder, managed_builders):
         self.responsible_builder_ = responsible_builder
         self.managed_builders_ = managed_builders

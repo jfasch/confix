@@ -1,6 +1,5 @@
-# $Id: hierarchy.py,v 1.15 2006/07/13 20:27:24 jfasch Exp $
-
 # Copyright (C) 2002-2006 Salomon Automation
+# Copyright (C) 2006 Joerg Faschingbauer
 
 # This library is free software; you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as
@@ -19,7 +18,7 @@
 
 from builder import Builder, BuilderSet
 from entrybuilder import EntryBuilder
-from setup import SetupFactory, Setup
+from setup import Setup
 from confix2_in import Confix2_in
 from depindex import ProvideMap
 from local_node import LocalNode
@@ -35,29 +34,25 @@ import re
 import types
 import os
 
-class DirectorySetupFactory(SetupFactory):
+class DirectorySetup(Setup):
     def __init__(self):
-        SetupFactory.__init__(self)
+        Setup.__init__(self)
         pass
-    def create(self, parentbuilder, package):
-        return DirectorySetup(parentbuilder=parentbuilder, package=package)
+    def initial_builders(self, parentbuilder, package):
+        return [SubdirectoryRecognizer(parentbuilder=parentbuilder, package=package)] + \
+               Setup.initial_builders(self, parentbuilder=parentbuilder, package=package)
     pass
 
-class DirectorySetup(Setup):
+class SubdirectoryRecognizer(Builder):
     def __init__(self, parentbuilder, package):
         assert isinstance(parentbuilder, DirectoryBuilder)
-        Setup.__init__(
+        Builder.__init__(
             self,
             id=str(self.__class__)+'('+str(parentbuilder)+')',
             parentbuilder=parentbuilder,
             package=package)
-        self.handled_directories_ = set()
+        self.recognized_directories_ = set()
         pass
-
-    def clone(self, parentbuilder, package):
-        return DirectorySetup(
-            parentbuilder=parentbuilder,
-            package=package)
 
     def enlarge(self):
         newbuilders = []
@@ -65,7 +60,7 @@ class DirectorySetup(Setup):
         for name, entry in self.parentbuilder().entries():
             if not isinstance(entry, Directory):
                 continue
-            if entry in self.handled_directories_:
+            if entry in self.recognized_directories_:
                 continue
             confix2_in_file = entry.get(const.CONFIX2_IN)
             if confix2_in_file is None:
@@ -78,9 +73,9 @@ class DirectorySetup(Setup):
                     directory=entry,
                     parentbuilder=self.parentbuilder(),
                     package=self.package())
-                for b in self.parentbuilder().setups():
-                    dirbuilder.add_setup(b.clone(parentbuilder=dirbuilder,
-                                                 package=self.package()))
+                for setup in self.package().setups():
+                    dirbuilder.add_builders(setup.initial_builders(parentbuilder=dirbuilder,
+                                                                   package=self.package()))
                     pass
                 confix2_in = Confix2_in(file=confix2_in_file,
                                         parentbuilder=dirbuilder,
@@ -95,10 +90,10 @@ class DirectorySetup(Setup):
             raise Error('There were errors in directory '+\
                         os.sep.join(self.parentbuilder().directory().relpath()), errors)
         for dir, b in newbuilders:
-            self.handled_directories_.add(dir)
+            self.recognized_directories_.add(dir)
             self.parentbuilder().add_builder(b)
             pass
-        return len(newbuilders) + Setup.enlarge(self)
+        return len(newbuilders) + Builder.enlarge(self)
     
     pass
 
@@ -118,7 +113,6 @@ class DirectoryBuilder(EntryBuilder):
         
         self.directory_ = directory
         self.configurators_ = []
-        self.setups_ = []
         self.builders_ = BuilderSet()
         
         # names of files and directories that are to be ignored
@@ -155,6 +149,12 @@ class DirectoryBuilder(EntryBuilder):
         self.builders_.add(b)
         pass
 
+    def add_builders(self, builderlist):
+        for b in builderlist:
+            self.add_builder(b)
+            pass
+        pass
+
     def remove_builder(self, b):
         self.builders_.remove(b)
         pass
@@ -164,18 +164,10 @@ class DirectoryBuilder(EntryBuilder):
         self.add_builder(c)
         pass
 
-    def add_setup(self, b):
-        self.setups_.append(b)
-        self.add_builder(b)
-        pass
-
-    def setups(self):
-        return self.setups_
-
     def enlarge(self):
         # first of all, enlarge() our configurators. at the time of
         # this writing, the only configurator I see is the Confix2.in
-        # object, configuring all setups.
+        # object.
 
         for c in self.configurators_:
             c.enlarge()

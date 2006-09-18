@@ -41,9 +41,10 @@ class Confix2_in(FileBuilder):
         if self.executed_:
             return 0
         self.executed_ = True
+        
         try:
             iface_pieces = self.iface_pieces() + self.confix2_in_iface_pieces()
-            for b in self.parentbuilder().setups():
+            for b in self.parentbuilder().builders():
                 iface_pieces.extend(b.confix2_in_iface_pieces())
                 pass
             execer = InterfaceExecutor(iface_pieces=iface_pieces)
@@ -64,5 +65,11 @@ class Confix2_in(FileBuilder):
 code_ = """
 def IGNORE_ENTRIES(names):
     CONFIX2_IN_.parentbuilder().add_ignored_entries(names)
+    pass
+def EXTRA_DIST(filename):
+    CONFIX2_IN_.parentbuilder().makefile_am().add_extra_dist(filename)
+    pass
+def MAKEFILE_AM(line):
+    CONFIX2_IN_.parentbuilder().makefile_am().add_line(line)
     pass
 """

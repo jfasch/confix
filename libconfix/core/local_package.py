@@ -1,4 +1,5 @@
 # Copyright (C) 2002-2006 Salomon Automation
+# Copyright (C) 2006 Joerg Faschingbauer
 
 # This library is free software; you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as
@@ -44,6 +45,8 @@ class LocalPackage(Package):
         self.version_ = None
         self.rootdirectory_ = rootdirectory
 
+        self.setups_ = setups
+
         self.digraph_ = None
         self.local_nodes_ = None
 
@@ -57,8 +60,9 @@ class LocalPackage(Package):
             directory=rootdirectory,
             parentbuilder=None,
             package=self)
-        for s in setups:
-            self.rootbuilder_.add_setup(s.create(parentbuilder=self.rootbuilder_, package=self))
+        for setup in setups:
+            self.rootbuilder_.add_builders(setup.initial_builders(parentbuilder=self.rootbuilder_,
+                                                                  package=self))
             pass
 
         # slurp in Confix2.in
@@ -106,6 +110,9 @@ class LocalPackage(Package):
 
     def rootdirectory(self):
         return self.rootdirectory_
+
+    def setups(self):
+        return self.setups_
 
     def configure_ac(self):
         return self.configure_ac_
@@ -265,7 +272,12 @@ class LocalPackage(Package):
         # that takes care to install it. put it into the dist-package.
 
         repofilename = self.name() + '.repo'
-        repofile = self.rootdirectory_.add(name=repofilename, entry=File())
+        repofile = self.rootdirectory_.find([repofilename])
+        if repofile is None:
+            repofile = self.rootdirectory_.add(name=repofilename, entry=File())
+        else:
+            repofile.truncate()
+            pass
 
         RepositoryFile(file=repofile).dump(package=self.install())
 

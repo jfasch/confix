@@ -18,6 +18,6 @@
 
 from libconfix.core.utils import external_cmd
 
-def make(dir, args):
-    external_cmd.exec_program(program='make', dir=dir, args=args)
+def make(builddir, args):
+    external_cmd.exec_program(program='make', dir=builddir, args=args)
     pass

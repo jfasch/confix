@@ -19,7 +19,7 @@
 from libconfix.core.filesys.filesys import FileSystem
 from libconfix.core.filesys.directory import Directory
 from libconfix.core.filesys.file import File
-from libconfix.config.configfile import ConfigFile
+from libconfix.frontends.confix.configfile import ConfigFile
 
 import unittest
 
@@ -38,6 +38,7 @@ class ConfigFileTest(unittest.TestCase):
             entry=File(lines=["the_profile = {",
                               "    'PREFIX': '/some/prefix',",
                               "    'READONLY_PREFIXES': ['/some/prefix', '/some/other/prefix'],",
+                              "    'SHORT_LIBNAMES': True,",
                               "    'USE_LIBTOOL': True,",
                               "    'USE_BULK_INSTALL': True,",
                               "    'USE_KDE_HACK': False,",
@@ -46,40 +47,47 @@ class ConfigFileTest(unittest.TestCase):
                               "    'PRINT_TIMINGS': False,",
                               "    'ADVANCED': False,",
                               "",
-                              "    'CONFIX': {",
-                              "",
-                              "    },",
                               "    'CONFIGURE': {",
                               "        'ENV': {",
-                              "            'CFLAGS': '-ggdb -O0 -Wall -DWXDEBUG',",
-                              "            'CXXFLAGS': '-ggdb -O0 -Wall -Wold-style-cast -DWXDEBUG',",
-                              "            'CXXFLAGS': '-ggdb -O0 -Wall -DWXDEBUG',",
-                              "            'INSTALL': '/bin/install -p'",
+                              "            'CFLAGS': '-some-cflags',",
+                              "            'CXXFLAGS': '-some-cxxflags',",
+                              "            'INSTALL': '/bin/install'",
                               "        },",
                               "        'ARGS': ['--arg1', '--arg2'],",
                               "    },",
                               "}",
                               "PROFILES = {",
-                              "    'the_profile': the_profile,",
+                              "    'some_profile': the_profile,",
                               "}",
                               ]))
         pass
     
     def test(self):
         configfile = ConfigFile(file=self.file_)
-        profile = configfile.get_profile('the_profile')
+        profile = configfile.get_profile('some_profile')
         self.failIf(profile is None)
-
-        self.fail() # jjjjj weiter da
 
         self.failUnlessEqual(profile.prefix(), '/some/prefix')
         self.failUnlessEqual(profile.buildroot(), '/some/build/dir')
+        self.failUnlessEqual(profile.short_libnames(), True)
         self.failUnlessEqual(profile.use_libtool(), True)
         self.failUnlessEqual(profile.use_bulk_install(), True)
         self.failUnlessEqual(profile.use_kde_hack(), False)
         self.failUnlessEqual(profile.print_timings(), False)
         self.failUnlessEqual(profile.message_prefix(), 'some-message-prefix')
         self.failUnlessEqual(profile.advanced(), False)
+
+        configure_config = profile.configure()
+        self.failIf(configure_config is None)
+        configure_env = configure_config.env()
+        self.failIf(configure_env is None)
+        self.failUnless(configure_env.get('CFLAGS') == '-some-cflags')
+        self.failUnless(configure_env.get('CXXFLAGS') == '-some-cxxflags')
+        self.failUnless(configure_env.get('INSTALL') == '/bin/install')
+        configure_args = configure_config.args()
+        self.failIf(configure_args is None)
+        self.failUnlessEqual(configure_args, ['--arg1', '--arg2'])
+        
         pass
     pass
 

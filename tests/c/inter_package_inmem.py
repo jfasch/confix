@@ -1,4 +1,5 @@
 # Copyright (C) 2002-2006 Salomon Automation
+# Copyright (C) 2006 Joerg Faschingbauer
 
 # This library is free software; you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as
@@ -18,7 +19,7 @@
 from libconfix.testutils import dirhier, find
 from libconfix.core.filesys.file import File
 from libconfix.core.local_package import LocalPackage
-from libconfix.plugins.c.setup import CSetupFactory
+from libconfix.plugins.c.setup import CSetup
 from libconfix.plugins.c.library import LibraryBuilder
 from libconfix.plugins.c.buildinfo import BuildInfo_CLibrary_NativeInstalled
 
@@ -37,7 +38,7 @@ class InterPackageRelate(unittest.TestCase):
         lofs.rootdirectory().add(name='lo.h', entry=File())
         lofs.rootdirectory().add(name='lo.c', entry=File())
         local_lopkg = LocalPackage(rootdirectory=lofs.rootdirectory(),
-                                   setups=[CSetupFactory(short_libnames=False, use_libtool=False)])
+                                   setups=[CSetup(short_libnames=False, use_libtool=False)])
         local_lopkg.enlarge(external_nodes=[])
         installed_lopkg = local_lopkg.install()
 
@@ -45,7 +46,7 @@ class InterPackageRelate(unittest.TestCase):
         hifs.rootdirectory().add(name='hi.c',
                                  entry=File(lines=['#include <lo.h>']))
         local_hipkg = LocalPackage(rootdirectory=hifs.rootdirectory(),
-                                   setups=[CSetupFactory(short_libnames=False, use_libtool=False)])
+                                   setups=[CSetup(short_libnames=False, use_libtool=False)])
         local_hipkg.enlarge(external_nodes=installed_lopkg.nodes())
 
         lo_h_builder = find.find_entrybuilder(rootbuilder=local_lopkg.rootbuilder(), path=['lo.h'])

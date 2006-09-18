@@ -16,11 +16,13 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 # USA
 
+import unittest, os, sys, shutil
+
 from libconfix.core.automake import bootstrap, configure, make
 from libconfix.core.filesys.directory import Directory
 from libconfix.core.filesys.file import File
 from libconfix.core.filesys.filesys import FileSystem
-from libconfix.core.hierarchy import DirectorySetupFactory
+from libconfix.core.hierarchy import DirectorySetup
 from libconfix.core.local_package import LocalPackage
 from libconfix.core.utils import const
 from libconfix.core.utils import const
@@ -28,9 +30,7 @@ from libconfix.core.utils.error import Error
 
 from libconfix.testutils.persistent import PersistentTestCase
 
-from libconfix.plugins.c.setup import CSetupFactory
-
-import unittest, os, sys, shutil
+from libconfix.plugins.c.setup import CSetup
 
 class SimpleBuildSuite(unittest.TestSuite):
     def __init__(self):
@@ -67,7 +67,7 @@ class SimpleBuildBase(PersistentTestCase):
                                                            ]))
             
             self.package_ = LocalPackage(rootdirectory=self.fs_.rootdirectory(),
-                                         setups=[CSetupFactory(short_libnames=False, use_libtool=self.use_libtool())])
+                                         setups=[CSetup(short_libnames=False, use_libtool=self.use_libtool())])
             self.package_.enlarge(external_nodes=[])
             self.package_.output()
             self.fs_.sync()
@@ -78,12 +78,19 @@ class SimpleBuildBase(PersistentTestCase):
 
     def test(self):
         try:
-            packageroot = os.sep.join(self.sourcerootpath_)
-            buildroot = os.sep.join(self.buildrootpath_)
-            bootstrap.bootstrap(packageroot=packageroot, path=None, use_libtool=self.use_libtool())
-            os.makedirs(buildroot)
-            configure.configure(packageroot=packageroot, buildroot=buildroot, prefix='/dev/null')
-            make.make(dir=buildroot, args=[])
+            bootstrap.bootstrap(
+                packageroot=self.sourcerootpath_,
+                path=None,
+                use_libtool=self.use_libtool(),
+                argv0=sys.argv[0])
+            os.makedirs(os.sep.join(self.buildrootpath_))
+            configure.configure(
+                packageroot=self.sourcerootpath_,
+                builddir=self.buildrootpath_,
+                prefix='/dev/null')
+            make.make(
+                dir=self.buildrootpath_,
+                args=[])
         except Error, e:
             sys.stderr.write(`e`+'\n')
             raise

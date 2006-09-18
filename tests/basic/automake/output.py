@@ -22,8 +22,8 @@ from libconfix.core.utils import const
 from libconfix.core.filesys.directory import Directory
 from libconfix.core.filesys.file import File
 from libconfix.core.local_package import LocalPackage
-from libconfix.core.hierarchy import DirectorySetupFactory
-from libconfix.plugins.c.setup import CSetupFactory
+from libconfix.core.hierarchy import DirectorySetup
+from libconfix.plugins.c.setup import CSetup
 from libconfix.plugins.c.library import LibraryBuilder
 from libconfix.plugins.c.executable import ExecutableBuilder
 
@@ -58,7 +58,7 @@ class AutomakeOutputTest(unittest.TestCase):
                     entry=File(lines=['REQUIRE_SYMBOL("subdir2")']))
         
         self.package_ = LocalPackage(rootdirectory=self.fs_.rootdirectory(),
-                                     setups=[DirectorySetupFactory()])
+                                     setups=[DirectorySetup()])
         self.package_.enlarge(external_nodes=[])
         self.package_.output()
 

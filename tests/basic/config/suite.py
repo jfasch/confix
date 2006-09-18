@@ -17,6 +17,7 @@
 # USA
 
 from configfile import ConfigFileSuite
+from composite import CompositeConfigSuite
 
 import unittest
 
@@ -24,6 +25,7 @@ class ConfigSuite(unittest.TestSuite):
     def __init__(self):
         unittest.TestSuite.__init__(self)
         self.addTest(ConfigFileSuite())
+        self.addTest(CompositeConfigSuite())
         pass
     pass
 

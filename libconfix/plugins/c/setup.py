@@ -21,110 +21,34 @@ from clusterer import CClusterer
 from installer import Installer
 from namefinder import LongNameFinder, ShortNameFinder
 
-from libconfix.core.setup import SetupFactory, Setup
-from libconfix.core.iface import InterfacePiece
+from libconfix.core.setup import Setup
 
 import types
-
-class CSetupFactory(SetupFactory):
-    def __init__(self, short_libnames, use_libtool):
-        SetupFactory.__init__(self)
-        self.short_libnames_ = short_libnames
-        self.use_libtool_ = use_libtool
-        pass
-    def create(self, parentbuilder, package):
-        if self.short_libnames_ == True:
-            namefinder = ShortNameFinder()
-        else:
-            namefinder = LongNameFinder()
-            pass
-        return CSetup(parentbuilder=parentbuilder,
-                      package=package,
-                      namefinder=namefinder,
-                      use_libtool=self.use_libtool_)
-    pass
 
 class CSetup(Setup):
     def __init__(self,
-                 parentbuilder,
-                 package,
-                 namefinder,
+                 short_libnames,
                  use_libtool):
-        Setup.__init__(
-            self,
-            id=str(self.__class__)+'('+str(parentbuilder)+')',
-            parentbuilder=parentbuilder,
-            package=package)
-        self.namefinder_ = namefinder
+        Setup.__init__(self)
+
+        if short_libnames == True:
+            self.namefinder_ = ShortNameFinder()
+        else:
+            self.namefinder_ = LongNameFinder()
+            pass
         self.use_libtool_ = use_libtool
 
-        # version info for libtool library is not supposed to be
-        # passed in the ctor, as setup objects are always cloned from
-        # the parent builder's setup objects -- and the version sure
-        # differ.
-
-        # version info, if it is set, must always be set explicitly by
-        # the maintainer (actually, this is one of his jobs), so we
-        # have to leave it empty.
-        
-        self.libtool_version_info_ = None
-        
-        self.bursted_ = False
         pass
 
-    def set_libtool_version_info(self, v):
-        assert type(v) in [types.ListType, types.TupleType]
-        assert len(v) == 3
-        self.libtool_version_info_ = v
-        pass
+    def initial_builders(self, parentbuilder, package):
+        return Setup.initial_builders(self, parentbuilder=parentbuilder, package=package) + \
+               [Creator(parentbuilder=parentbuilder,
+                        package=package),
+                CClusterer(parentbuilder=parentbuilder,
+                           package=package,
+                           namefinder=self.namefinder_,
+                           use_libtool=self.use_libtool_),
+                Installer(parentbuilder=parentbuilder,
+                          package=package)]
 
-    def clone(self, parentbuilder, package):
-        return CSetup(parentbuilder=parentbuilder,
-                      package=package,
-                      namefinder=self.namefinder_,
-                      use_libtool=self.use_libtool_)
-
-    def enlarge(self):
-        if self.bursted_:
-            return 0
-        self.bursted_ = True
-        self.parentbuilder().add_builder(
-            Creator(parentbuilder=self.parentbuilder(),
-                    package=self.package()))
-        self.parentbuilder().add_builder(
-            CClusterer(parentbuilder=self.parentbuilder(),
-                       package=self.package(),
-                       namefinder=self.namefinder_,
-                       use_libtool=self.use_libtool_,
-                       libtool_version_info=self.libtool_version_info_))
-        self.parentbuilder().add_builder(
-            Installer(parentbuilder=self.parentbuilder(),
-                      package=self.package()))
-        
-        return 3 + Setup.enlarge(self)
-
-    def confix2_in_iface_pieces(self):
-        return Setup.confix2_in_iface_pieces(self) + \
-               [InterfacePiece(globals={'CSETUP_': self},
-                               lines=[code_])]
-        
     pass    
-
-code_ = """
-
-from libconfix.core.utils.error import Error
-import types
-
-def LIBTOOL_LIBRARY_VERSION(version):
-    if type(version) not in [types.ListType, types.TupleType]:
-        raise Error("LIBTOOL_LIBRARY_VERSION: 'version' argument must be a tuple")
-    if len(version) != 3:
-        raise Error("LIBTOOL_LIBRARY_VERSION: 'version' argument must be a tuple of 3 integers")
-    for i in range(len(version)):
-        if type(version[i]) is not types.IntType:
-            raise Error("LIBTOOL_LIBRARY_VERSION: part '+str(i)+' of version is not an integer")
-        pass
-    CSETUP_.set_libtool_version_info(version)
-    pass
-
-"""

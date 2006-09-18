@@ -20,8 +20,17 @@ from libconfix.core.utils import external_cmd
 
 import os
 
-def configure(packageroot, buildroot, prefix):
-    external_cmd.exec_program(program=os.path.join(packageroot, 'configure'),
-                              args=['--prefix='+prefix],
-                              dir=buildroot)
+def configure(packageroot, builddir, prefix=None, args=None, env=None):
+    argv = []
+    if prefix is not None:
+        argv.append('--prefix='+prefix)
+        pass
+    if args is not None:
+        argv.extend(args)
+        pass
+            
+    external_cmd.exec_program(program=os.sep.join(packageroot + ['configure']),
+                              args=argv,
+                              env=env,
+                              dir=builddir)
     pass

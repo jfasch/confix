@@ -48,58 +48,6 @@ class BuildInfo_CIncludePath_External(BuildInformation):
     def incpath(self): return self.incpath_
     pass
 
-## class BuildInfo_CIncludePath_NativeInstalled(BuildInformation):
-##     def get_marshalling_data(self):
-##         return update_marshalling_data(
-##             marshalling_data=BuildInformation.get_marshalling_data(self),
-##             generating_class=BuildInfo_CIncludePath_NativeInstalled,
-##             attributes={},
-##             version={'BuildInfo_CIncludePath_NativeInstalled': 1})
-##     def set_marshalling_data(self, data):
-##         version = data[Marshallable.VERSIONS]['BuildInfo_CIncludePath_NativeInstalled']
-##         if version != 1:
-##             raise MarshalledVersionUnknownError(
-##                 klass=self.__class__,
-##                 marshalled_version=version,
-##                 current_version=1)
-##         BuildInformation.set_marshalling_data(self, data)
-##         pass
-
-##     def __init__(self): BuildInformation.__init__(self)
-##     def unique_key(self):
-##         return self.__class__.__name__
-##     def install(self): assert 0
-
-## buildinfo_cincludepath_nativeinstalled = BuildInfo_CIncludePath_NativeInstalled()
-
-## class BuildInfo_CLibrary_NativeInstalled(BuildInformation):
-##     def get_marshalling_data(self):
-##         return update_marshalling_data(
-##             marshalling_data=BuildInformation.get_marshalling_data(self),
-##             generating_class=BuildInfo_CLibrary_NativeInstalled,
-##             attributes={'name': self.name_},
-##             version={'BuildInfo_CLibrary_NativeInstalled': 1})
-##     def set_marshalling_data(self, data):
-##         version = data[Marshallable.VERSIONS]['BuildInfo_CLibrary_NativeInstalled']
-##         if version != 1:
-##             raise MarshalledVersionUnknownError(
-##                 klass=self.__class__,
-##                 marshalled_version=version,
-##                 current_version=1)
-##         self.name_ = data[Marshallable.ATTRIBUTES]['name']
-##         BuildInformation.set_marshalling_data(self, data)
-##         pass
-
-##     def __init__(self, name):
-##         BuildInformation.__init__(self)
-##         self.name_ = name
-##         pass
-##     def unique_key(self):
-##         return self.__class__.__name__ + ':' + self.name_
-##     def name(self): return self.name_
-##     def install(self): assert 0
-##     pass
-
 class BuildInfo_CLibrary_External(BuildInformation):
     def get_marshalling_data(self):
         return update_marshalling_data(
