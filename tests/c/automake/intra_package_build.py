@@ -75,7 +75,7 @@ class IntraPackageBuildBase(PersistentTestCase):
                 packageroot=self.sourcerootpath_,
                 builddir=self.buildrootpath_,
                 prefix='/dev/null')
-            make.make(dir=self.buildrootpath_, args=[])
+            make.make(builddir=self.buildrootpath_, args=[])
         except Error, e:
             sys.stderr.write(`e`+'\n')
             raise

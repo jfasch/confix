@@ -76,17 +76,13 @@ class ConfigFileTest(unittest.TestCase):
         self.failUnlessEqual(profile.print_timings(), False)
         self.failUnlessEqual(profile.message_prefix(), 'some-message-prefix')
         self.failUnlessEqual(profile.advanced(), False)
+        self.failUnlessEqual(profile.configure_args(), ['--arg1', '--arg2'])
 
-        configure_config = profile.configure()
-        self.failIf(configure_config is None)
-        configure_env = configure_config.env()
+        configure_env = profile.configure_env()
         self.failIf(configure_env is None)
         self.failUnless(configure_env.get('CFLAGS') == '-some-cflags')
         self.failUnless(configure_env.get('CXXFLAGS') == '-some-cxxflags')
         self.failUnless(configure_env.get('INSTALL') == '/bin/install')
-        configure_args = configure_config.args()
-        self.failIf(configure_args is None)
-        self.failUnlessEqual(configure_args, ['--arg1', '--arg2'])
         
         pass
     pass

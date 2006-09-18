@@ -43,10 +43,10 @@ class CheckProgramBuildBase(CheckProgramBase):
             argv0=sys.argv[0])
         configure.configure(
             packageroot=self.source_.abspath(),
-            buildroot=self.build_.abspath(),
+            builddir=self.build_.abspath(),
             prefix='/dev/null')
         make.make(
-            dir=self.build_.abspath(),
+            builddir=self.build_.abspath(),
             args=['check'])
 
         self.failUnless(os.path.isfile(os.sep.join(self.build_.abspath()+['my-check-was-here'])))
