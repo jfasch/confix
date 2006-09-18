@@ -37,7 +37,8 @@ class Configuration:
     def message_prefix(self): assert 0, str(self.__class__)
     def advanced(self): assert 0, str(self.__class__)
 
-    def configure(self): assert 0, str(self.__class__)
+    def configure_args(self): assert 0, str(self.__class__)
+    def configure_env(self): assert 0, str(self.__class__)
 
     # helper for derived classes
     def expand_path(self, path):
