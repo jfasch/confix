@@ -51,7 +51,8 @@ class CompositeConfigTest(unittest.TestCase):
             verbosity=1,
             print_timings=None,
             message_prefix=None,
-            advanced=None))
+            advanced=None,
+            make_args=None))
 
         fs = FileSystem(path=['', 'home', 'jfasch'])
         confixfile=fs.rootdirectory().add(

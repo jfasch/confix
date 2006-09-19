@@ -48,9 +48,12 @@ class CheckProgramBase(PersistentTestCase):
             name='source',
             entry=Directory())
         self.source_.add(
-            name=const.CONFIX2_IN,
+            name=const.CONFIX2_PKG,
             entry=File(lines=['PACKAGE_NAME("CheckProgramTest")',
                               'PACKAGE_VERSION("1.2.3")']))
+        self.source_.add(
+            name=const.CONFIX2_DIR,
+            entry=File())
         self.source_.add(
             name='_check_proggy.c',
             entry=File(lines=['#include <sys/types.h>',

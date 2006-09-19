@@ -1,6 +1,5 @@
-# $Id: iface.py,v 1.4 2006/06/23 08:14:35 jfasch Exp $
-
 # Copyright (C) 2002-2006 Salomon Automation
+# Copyright (C) 2006 Joerg Faschingbauer
 
 # This library is free software; you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as
@@ -46,9 +45,12 @@ class BuilderInterface(unittest.TestCase):
     def testFilePropertyOK(self):
         fs = FileSystem(path=[])
         fs.rootdirectory().add(
-            name=const.CONFIX2_IN,
+            name=const.CONFIX2_PKG,
             entry=File(['PACKAGE_NAME("argh")',
                         'PACKAGE_VERSION("1.2.3")']))
+        fs.rootdirectory().add(
+            name=const.CONFIX2_DIR,
+            entry=File())
         file = fs.rootdirectory().add(
             name='file',
             entry=File(lines=["FILE_PROPERTY(name='XXX', value=666)",
@@ -68,9 +70,12 @@ class BuilderInterface(unittest.TestCase):
     def testRequires(self):
         fs = FileSystem(path=[])
         fs.rootdirectory().add(
-            name=const.CONFIX2_IN,
+            name=const.CONFIX2_PKG,
             entry=File(['PACKAGE_NAME("argh")',
                         'PACKAGE_VERSION("1.2.3")']))
+        fs.rootdirectory().add(
+            name=const.CONFIX2_DIR,
+            entry=File())
         file = fs.rootdirectory().add(
             name='file',
             entry=File(lines=["REQUIRE_SYMBOL(symbol='sym1')",
@@ -123,9 +128,12 @@ class BuilderInterface(unittest.TestCase):
     def testProvides(self):
         fs = FileSystem(path=[])
         fs.rootdirectory().add(
-            name=const.CONFIX2_IN,
+            name=const.CONFIX2_PKG,
             entry=File(['PACKAGE_NAME("argh")',
                         'PACKAGE_VERSION("1.2.3")']))
+        fs.rootdirectory().add(
+            name=const.CONFIX2_DIR,
+            entry=File())
         file = fs.rootdirectory().add(
             name='file',
             entry=File(lines=['from libconfix.core.provide_symbol import Provide_Symbol',
@@ -176,5 +184,5 @@ class BuilderInterface(unittest.TestCase):
     pass
 
 if __name__ == '__main__':
-    unittest.main()
+    unittest.TextTestRunner().run(BuilderInterfaceTestSuite())
     pass

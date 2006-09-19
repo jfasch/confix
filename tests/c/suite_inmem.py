@@ -1,6 +1,5 @@
-# $Id: suite.py,v 1.9 2006/07/07 15:29:18 jfasch Exp $
-
 # Copyright (C) 2002-2006 Salomon Automation
+# Copyright (C) 2006 Joerg Faschingbauer
 
 # This library is free software; you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as
@@ -18,8 +17,9 @@
 # USA
 
 from setup_library import LibrarySetupSuite
-from setup_exe import ExecutableSetupTest
-from main_search import MainSearch
+from setup_exe import ExecutableSetupSuite
+from setup_cxx import CXXSetupSuite
+from main_search import MainSearchSuite
 from requires import RequireTestSuite
 from install_path import InstallPathSuite
 from relate import RelateSuite
@@ -33,8 +33,9 @@ class CTestSuiteInMemory(unittest.TestSuite):
         unittest.TestSuite.__init__(self)
 
         self.addTest(LibrarySetupSuite())
-        self.addTest(ExecutableSetupTest('test'))
-        self.addTest(MainSearch('test'))
+        self.addTest(ExecutableSetupSuite())
+        self.addTest(CXXSetupSuite())
+        self.addTest(MainSearchSuite())
         self.addTest(RequireTestSuite())
         self.addTest(InstallPathSuite())
         self.addTest(RelateSuite())

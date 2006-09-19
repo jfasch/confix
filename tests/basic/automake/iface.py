@@ -43,10 +43,12 @@ class CONFIGURE_AC_ACINCLUDE_M4(unittest.TestCase):
         
         fs = FileSystem(path=[])
         fs.rootdirectory().add(
-            name=const.CONFIX2_IN,
+            name=const.CONFIX2_PKG,
             entry=File(lines=['PACKAGE_NAME("blah")',
-                              'PACKAGE_VERSION("1.2.3")',
-                              "CONFIGURE_AC(lines=['the_token_for_configure_ac'],",
+                              'PACKAGE_VERSION("1.2.3")']))
+        fs.rootdirectory().add(
+            name=const.CONFIX2_DIR,
+            entry=File(lines=["CONFIGURE_AC(lines=['the_token_for_configure_ac'],",
                               "             order=AC_PROGRAMS,",
                               "             flags=[LOCAL])",
                               "ACINCLUDE_M4(lines=['the_token_for_acinclude_m4'],",
@@ -86,14 +88,17 @@ class CONFIGURE_AC_ACINCLUDE_M4(unittest.TestCase):
 
         fs = FileSystem(path=[])
         fs.rootdirectory().add(
-            name=const.CONFIX2_IN,
+            name=const.CONFIX2_PKG,
             entry=File(lines=['PACKAGE_NAME("blah")',
                               'PACKAGE_VERSION("1.2.3")']))
+        fs.rootdirectory().add(
+            name=const.CONFIX2_DIR,
+            entry=File())
         lo = fs.rootdirectory().add(
             name='lo',
             entry=Directory())
         lo.add(
-            name=const.CONFIX2_IN,
+            name=const.CONFIX2_DIR,
             entry=File(lines=['PROVIDE_SYMBOL("lo")',
                               'CONFIGURE_AC(lines=["the_token_for_configure_ac"],',
                               '             order=AC_PROGRAMS,',
@@ -104,7 +109,7 @@ class CONFIGURE_AC_ACINCLUDE_M4(unittest.TestCase):
             name='hi',
             entry=Directory())
         hi.add(
-            name=const.CONFIX2_IN,
+            name=const.CONFIX2_DIR,
             entry=File(lines=['REQUIRE_SYMBOL("lo", URGENCY_ERROR)']))
 
         package = LocalPackage(rootdirectory=fs.rootdirectory(),
@@ -140,14 +145,17 @@ class CONFIGURE_AC_ACINCLUDE_M4(unittest.TestCase):
         
         fs = FileSystem(path=[])
         fs.rootdirectory().add(
-            name=const.CONFIX2_IN,
+            name=const.CONFIX2_PKG,
             entry=File(lines=['PACKAGE_NAME("blah")',
                               'PACKAGE_VERSION("1.2.3")']))
+        fs.rootdirectory().add(
+            name=const.CONFIX2_DIR,
+            entry=File())
         lo = fs.rootdirectory().add(
             name='lo',
             entry=Directory())
         lo.add(
-            name=const.CONFIX2_IN,
+            name=const.CONFIX2_DIR,
             entry=File(lines=['PROVIDE_SYMBOL("lo")',
                               'CONFIGURE_AC(lines=["the_token_for_configure_ac"],',
                               '             order=AC_PROGRAMS)',
@@ -156,7 +164,7 @@ class CONFIGURE_AC_ACINCLUDE_M4(unittest.TestCase):
             name='hi',
             entry=Directory())
         hi.add(
-            name=const.CONFIX2_IN,
+            name=const.CONFIX2_DIR,
             entry=File(lines=['REQUIRE_SYMBOL("lo", URGENCY_ERROR)']))
 
         package = LocalPackage(rootdirectory=fs.rootdirectory(),

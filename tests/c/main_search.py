@@ -1,6 +1,5 @@
-# $Id: main_search.py,v 1.4 2006/06/23 08:14:35 jfasch Exp $
-
 # Copyright (C) 2002-2006 Salomon Automation
+# Copyright (C) 2006 Joerg Faschingbauer
 
 # This library is free software; you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as
@@ -22,6 +21,13 @@ from libconfix.plugins.c import helper
 
 import unittest
 
+class MainSearchSuite(unittest.TestSuite):
+    def __init__(self):
+        unittest.TestSuite.__init__(self)
+        self.addTest(MainSearch('test'))
+        pass
+    pass
+
 class MainSearch(unittest.TestCase):
     def test(self):
         file1 = File(lines=['int main() {}'])
@@ -39,5 +45,5 @@ class MainSearch(unittest.TestCase):
     pass
 
 if __name__ == '__main__':
-    unittest.main()
-
+    unittest.TextTestRunner().run(MainSearchSuite())
+    pass

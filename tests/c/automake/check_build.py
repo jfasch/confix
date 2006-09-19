@@ -44,7 +44,7 @@ class CheckProgramBuildBase(CheckProgramBase):
         configure.configure(
             packageroot=self.source_.abspath(),
             builddir=self.build_.abspath(),
-            prefix='/dev/null')
+            prefix='/dev/null'.split(os.sep))
         make.make(
             builddir=self.build_.abspath(),
             args=['check'])

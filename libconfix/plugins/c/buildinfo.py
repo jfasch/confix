@@ -1,6 +1,5 @@
-# $Id: buildinfo.py,v 1.1 2006/04/05 20:07:47 jfasch Exp $
-
 # Copyright (C) 2002-2006 Salomon Automation
+# Copyright (C) 2006 Joerg Faschingbauer
 
 # This library is free software; you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as
@@ -18,7 +17,10 @@
 # USA
 
 from libconfix.core.buildinfo import BuildInformation
-from libconfix.core.repo.marshalling import update_marshalling_data, Marshallable
+from libconfix.core.repo.marshalling import \
+     update_marshalling_data, \
+     Marshallable, \
+     MarshalledVersionUnknownError
 
 import types
 

@@ -22,7 +22,8 @@ class DefaultConfiguration(Configuration):
     def __init__(self):
         Configuration.__init__(self)
         pass
-    
+
+    def setups(self): return None
     def packageroot(self): return None
     def packagename(self): return None
     def packageversion(self): return None
@@ -40,5 +41,8 @@ class DefaultConfiguration(Configuration):
 
     def configure_args(self): return None
     def configure_env(self): return None
+
+    def make_args(self): return None
+    def make_env(self): return None
 
     pass

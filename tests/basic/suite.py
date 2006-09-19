@@ -1,6 +1,5 @@
-# $Id: suite.py,v 1.11 2006/07/12 08:42:22 jfasch Exp $
-
 # Copyright (C) 2002-2006 Salomon Automation
+# Copyright (C) 2006 Joerg Faschingbauer
 
 # This library is free software; you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as
@@ -17,10 +16,11 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 # USA
 
-from dirsetup import BasicDirectorySetup
+from naked_package import NakedPackageSuite
+from dirsetup import BasicDirectorySetupSuite
 from filesystests import FileSystemTestSuite
-from ignored_entries import IgnoredEntries
-from property import Property
+from ignored_entries import IgnoredEntriesSuite
+from property import PropertySuite
 from iface import BuilderInterfaceTestSuite
 from resolve import ResolveTestSuite
 from relate import RelateTestSuite
@@ -35,10 +35,11 @@ class BasicTestSuite(unittest.TestSuite):
     def __init__(self):
         unittest.TestSuite.__init__(self)
 
+        self.addTest(NakedPackageSuite())
         self.addTest(FileSystemTestSuite())
-        self.addTest(BasicDirectorySetup('test'))
-        self.addTest(IgnoredEntries('test'))
-        self.addTest(Property('test'))
+        self.addTest(BasicDirectorySetupSuite())
+        self.addTest(IgnoredEntriesSuite())
+        self.addTest(PropertySuite())
         self.addTest(BuilderInterfaceTestSuite())
         self.addTest(ResolveTestSuite())
         self.addTest(RelateTestSuite())

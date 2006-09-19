@@ -15,11 +15,12 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 # USA
 
-from h import HeaderBuilder
-from c import CBuilder
-
 from libconfix.core.builder import Builder
 import libconfix.core.filesys
+
+from h import HeaderBuilder
+from c import CBuilder
+from cxx import CXXBuilder
 
 class Creator(Builder):
     def __init__(self, parentbuilder, package):
@@ -51,6 +52,14 @@ class Creator(Builder):
                                     CBuilder(file=entry,
                                              parentbuilder=self.parentbuilder(),
                                              package=self.package())))
+                continue
+            if entry.name().endswith('.cpp') or \
+               entry.name().endswith('.cc') or \
+               entry.name().endswith('.cxx'):
+                newbuilders.append((entry,
+                                    CXXBuilder(file=entry,
+                                               parentbuilder=self.parentbuilder(),
+                                               package=self.package())))
                 continue
             pass
         for entry, b in newbuilders:

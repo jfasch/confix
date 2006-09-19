@@ -28,16 +28,38 @@ from libconfix.testutils import dirhier
 
 import unittest
 
+class ExecutableSetupSuite(unittest.TestSuite):
+    def __init__(self):
+        unittest.TestSuite.__init__(self)
+        self.addTest(ExecutableSetupTest('test'))
+        pass
+    pass
+
 class ExecutableSetupTest(unittest.TestCase):
 
     def test(self):
         fs = dirhier.packageroot()
-        fs.rootdirectory().add(name='file.h', entry=File(lines=[]))
-        fs.rootdirectory().add(name='file.c', entry=File(lines=[]))
-        main_c = File(lines=[])
-        main_c.set_property(name='MAIN', value=True)
-        fs.rootdirectory().add(name='main.c', entry=main_c)
+        fs.rootdirectory().add(
+            name='file.h',
+            entry=File(lines=[]))
+        fs.rootdirectory().add(
+            name='file.c',
+            entry=File(lines=[]))
 
+        # main.c has file property MAIN set to True, and hence must
+        # become the center of an executable.
+        main_c = fs.rootdirectory().add(
+            name='main.c',
+            entry=File(lines=[]))
+        main_c.set_property(name='MAIN', value=True)
+
+        # main2.c's builder (CBuilder, in this case) sees the
+        # EXENAME() call in its body, and must also become the center
+        # of an executable.
+        main2_c = fs.rootdirectory().add(
+            name='main2.c',
+            entry=File(lines=['// CONFIX:EXENAME("main2")']))
+        
         package = LocalPackage(rootdirectory=fs.rootdirectory(),
                                setups=[CSetup(short_libnames=False,
                                               use_libtool=False)])
@@ -47,6 +69,7 @@ class ExecutableSetupTest(unittest.TestCase):
         file_c_builder = None
         library_builder = None
         main_builder = None
+        main2_builder = None
         for b in package.rootbuilder().builders():
             if isinstance(b, FileBuilder):
                 if b.file().name() == 'file.h' and isinstance(b, HeaderBuilder):
@@ -62,17 +85,23 @@ class ExecutableSetupTest(unittest.TestCase):
             elif isinstance(b, ExecutableBuilder):
                 if b.center().file().name() == 'main.c':
                     main_builder = b
-                    pass
+                    continue
+                if b.center().file().name() == 'main2.c':
+                    main2_builder = b
+                    continue
                 pass
             pass
-        self.assert_(isinstance(file_h_builder, HeaderBuilder))
-        self.assert_(isinstance(file_c_builder, CBuilder))
-        self.assert_(library_builder is None)
-        self.assert_(isinstance(main_builder, ExecutableBuilder))
+        self.failUnless(isinstance(file_h_builder, HeaderBuilder))
+        self.failUnless(isinstance(file_c_builder, CBuilder))
+        self.failUnless(library_builder is None)
+        self.failUnless(isinstance(main_builder, ExecutableBuilder))
+        self.failUnless(isinstance(main2_builder, ExecutableBuilder))
+        self.failUnlessEqual(main2_builder.exename(), 'main2')
 
         pass
 
     pass
     
 if __name__ == '__main__':
-    unittest.main()
+    unittest.TextTestRunner().run(ExecutableSetupSuite())
+    pass

@@ -78,11 +78,11 @@ class LibraryNames(unittest.TestCase):
     def setUp(self):
         self.fs_ = dirhier.packageroot()
         dir1 = self.fs_.rootdirectory().add(name='dir1', entry=Directory())
-        dir1.add(name=const.CONFIX2_IN, entry=File(lines=[]))
+        dir1.add(name=const.CONFIX2_DIR, entry=File(lines=[]))
         dir2 = dir1.add(name='dir2', entry=Directory())
-        dir2.add(name=const.CONFIX2_IN, entry=File(lines=[]))
+        dir2.add(name=const.CONFIX2_DIR, entry=File(lines=[]))
         dir3 = dir2.add(name='dir3', entry=Directory())
-        dir3.add(name=const.CONFIX2_IN, entry=File(lines=[]))
+        dir3.add(name=const.CONFIX2_DIR, entry=File(lines=[]))
         dir3.add(name='file.c', entry=File(lines=[]))
         self.dir3_ = dir3
         pass

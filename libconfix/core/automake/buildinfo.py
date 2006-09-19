@@ -17,8 +17,11 @@
 # USA
 
 from libconfix.core.buildinfo import BuildInformation
-from libconfix.core.repo.marshalling import update_marshalling_data
 from libconfix.core.utils.helper import md5_hexdigest_from_lines
+from libconfix.core.repo.marshalling import \
+     update_marshalling_data, \
+     Marshallable, \
+     MarshalledVersionUnknownError
 
 class BuildInfo_Configure_in(BuildInformation):
     def get_marshalling_data(self):

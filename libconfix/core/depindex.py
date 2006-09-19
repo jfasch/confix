@@ -161,9 +161,9 @@ class Index_Provide_String(Unmarshallable):
             existing_node = self.exact_.get(provide.string())
             if existing_node:
                 raise Error('Index for provide type "'+self.type_.__name__+'": '
-                            'duplicate provide-key "'+provide.string()+', '
-                            'conflicting parties are '+str(node.module())+' and'
-                            ' '+str(existing_node.module()))
+                            'duplicate provide-key "'+provide.string()+'", '
+                            'conflicting parties are '+str(node)+' and'
+                            ' '+str(existing_node))
             self.exact_[provide.string()] = node
         elif provide.match() == Provide_String.PREFIX_MATCH:
             self.prefix_.append((provide, node))

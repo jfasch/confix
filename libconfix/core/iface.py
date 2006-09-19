@@ -62,6 +62,9 @@ class InterfaceExecutor:
             pass
         pass
 
+    def context(self):
+        return self.context_
+
     def execute_file(self, file):
         assert isinstance(file, filesys.file.File), file
         assert file.parent() is not None

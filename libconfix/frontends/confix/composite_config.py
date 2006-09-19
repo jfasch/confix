@@ -28,6 +28,7 @@ class CompositeConfiguration(Configuration):
         self.configurations_.append(config)
         pass
 
+    def setups(self): return self.search_param_('setups')
     def packageroot(self): return self.search_param_('packageroot')
     def packagename(self): return self.search_param_('packagename')
     def packageversion(self): return self.search_param_('packageversion')
@@ -44,6 +45,8 @@ class CompositeConfiguration(Configuration):
     def advanced(self): return self.search_param_('advanced')
     def configure_args(self): return self.search_param_('configure_args')
     def configure_env(self): return self.search_param_('configure_env')
+    def make_args(self): return self.search_param_('make_args')
+    def make_env(self): return self.search_param_('make_env')
 
     def search_param_(self, methodname):
         for config in self.configurations_:

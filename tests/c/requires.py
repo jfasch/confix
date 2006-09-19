@@ -38,9 +38,12 @@ class ScanTest(unittest.TestCase):
     def test(self):
         fs = FileSystem(path=[])
         fs.rootdirectory().add(
-            name=const.CONFIX2_IN,
+            name=const.CONFIX2_PKG,
             entry=File(['PACKAGE_NAME("argh")',
                         'PACKAGE_VERSION("1.2.3")']))
+        fs.rootdirectory().add(
+            name=const.CONFIX2_DIR,
+            entry=File())
         file = fs.rootdirectory().add(
             name='file',
             entry=File(lines=['#include <inc1>',
@@ -94,9 +97,12 @@ class IfaceTest(unittest.TestCase):
     def test(self):
         fs = FileSystem(path=[])
         fs.rootdirectory().add(
-            name=const.CONFIX2_IN,
+            name=const.CONFIX2_PKG,
             entry=File(['PACKAGE_NAME("argh")',
                         'PACKAGE_VERSION("1.2.3")']))
+        fs.rootdirectory().add(
+            name=const.CONFIX2_DIR,
+            entry=File())
         file = fs.rootdirectory().add(
             name='file',
             entry=File(lines=["// CONFIX:REQUIRE_H(filename='inc1')",

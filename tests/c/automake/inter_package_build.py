@@ -57,9 +57,18 @@ class InterPackageBuildBase(PersistentTestCase):
         self.hi_builddir_ = self.builddir_ + ['hi']
 
         lo_root = Directory()
-        lo_root.add(name=const.CONFIX2_IN,
+        lo_root.add(name=const.CONFIX2_PKG,
                     entry=File(lines=['PACKAGE_NAME("lo")',
                                       'PACKAGE_VERSION("1.2.3")']))
+        lo_root.add(name=const.CONFIX2_DIR,
+                    # we actually do nothing intelligent here but to
+                    # test the marshalling of buildinfo (which is not
+                    # strictly the target of this particular test, but
+                    # I'm too lazy to make an extra test of it)
+                    entry=File(lines=['CONFIGURE_AC(lines=["  "],',
+                                      '             order=AC_PROGRAMS)',
+                                      'ACINCLUDE_M4(lines=["  "])'
+                                      ]))
         lo_root.add(name='lo.h',
                     entry=File(lines=['#ifndef lo_lo_h',
                                       '#define lo_lo_h',
@@ -77,12 +86,14 @@ class InterPackageBuildBase(PersistentTestCase):
         
         
         hi_root = Directory()
-        hi_root.add(name=const.CONFIX2_IN,
+        hi_root.add(name=const.CONFIX2_PKG,
                     entry=File(lines=['PACKAGE_NAME("hi")',
                                       'PACKAGE_VERSION("4.5.6")']))
+        hi_root.add(name=const.CONFIX2_DIR,
+                    entry=File())
         lib = hi_root.add(name='lib',
                           entry=Directory())
-        lib.add(name=const.CONFIX2_IN,
+        lib.add(name=const.CONFIX2_DIR,
                 entry=File())
         lib.add(name='hilib.h',
                 entry=File(lines=['#ifndef hi_hilib_h',
@@ -97,7 +108,7 @@ class InterPackageBuildBase(PersistentTestCase):
                                   '}']))
         bin = hi_root.add(name='bin',
                           entry=Directory())
-        bin.add(name=const.CONFIX2_IN,
+        bin.add(name=const.CONFIX2_DIR,
                 entry=File())
         bin.add(name='main.c',
                 entry=File(lines=['#include <lo.h>',
@@ -138,7 +149,7 @@ class InterPackageBuildBase(PersistentTestCase):
             configure.configure(
                 packageroot=self.lo_sourcedir_,
                 builddir=self.lo_builddir_,
-                prefix=os.sep.join(self.installdir_))
+                prefix=self.installdir_)
             make.make(
                 builddir=self.lo_builddir_,
                 args=['install'])
@@ -167,7 +178,7 @@ class InterPackageBuildBase(PersistentTestCase):
             configure.configure(
                 packageroot=self.hi_sourcedir_,
                 builddir=self.hi_builddir_,
-                prefix=os.sep.join(self.installdir_))
+                prefix=self.installdir_)
             make.make(
                 builddir=self.hi_builddir_,
                 args=['install'])

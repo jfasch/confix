@@ -20,6 +20,8 @@ import os
 
 class Configuration:
     def __init__(self): pass
+
+    def setups(self): assert 0, str(self.__class__)
     
     def packageroot(self): assert 0, str(self.__class__)
     def packagename(self): assert 0, str(self.__class__)
@@ -40,8 +42,7 @@ class Configuration:
     def configure_args(self): assert 0, str(self.__class__)
     def configure_env(self): assert 0, str(self.__class__)
 
-    # helper for derived classes
-    def expand_path(self, path):
-        return os.path.expanduser(os.path.expandvars(path))
+    def make_args(self): assert 0, str(self.__class__)
+    def make_env(self): assert 0, str(self.__class__)
 
     pass

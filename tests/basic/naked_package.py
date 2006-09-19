@@ -20,51 +20,35 @@ import unittest
 
 from libconfix.core.filesys.filesys import FileSystem
 from libconfix.core.filesys.file import File
-from libconfix.core.filesys.directory import Directory
 from libconfix.core.utils import const
 from libconfix.core.local_package import LocalPackage
 
-from libconfix.plugins.c.setup import CSetup
-from libconfix.plugins.c.library import LibraryBuilder
-
-class LibtoolVersionSuite(unittest.TestSuite):
+class NakedPackageSuite(unittest.TestSuite):
     def __init__(self):
         unittest.TestSuite.__init__(self)
-        self.addTest(LibtoolVersionTest('test'))
+        self.addTest(NakedPackageTest('test'))
         pass
     pass
 
-class LibtoolVersionTest(unittest.TestCase):
+class NakedPackageTest(unittest.TestCase):
     def test(self):
-        fs = FileSystem(path=[])
+        fs = FileSystem(path=['','path','to','package'])
         fs.rootdirectory().add(
             name=const.CONFIX2_PKG,
-            entry=File(lines=["PACKAGE_NAME('LibtoolVersionTest')",
-                              "PACKAGE_VERSION('1.2.3')"]))
+            entry=File(lines=['PACKAGE_NAME("TheNakedPackage")',
+                              'PACKAGE_VERSION("1.2.3")']))
+        # add Confix2.dir for no real reason. we could really do
+        # without, and should take some time to investigate. but not
+        # now (now==2006-09-19).
         fs.rootdirectory().add(
             name=const.CONFIX2_DIR,
-            entry=File(lines=["LIBTOOL_LIBRARY_VERSION((6,6,6))"]))
-        fs.rootdirectory().add(
-            name='file.c',
-            entry=File())
-        package = LocalPackage(rootdirectory=fs.rootdirectory(),
-                               setups=[CSetup(short_libnames=False,
-                                              use_libtool=True)])
-        package.enlarge(external_nodes=[])
-
-        for b in package.rootbuilder().builders():
-            if isinstance(b, LibraryBuilder):
-                lib_builder = b
-                break
-            pass
-        else:
-            self.fail()
-            pass
-
-        self.failUnlessEqual(lib_builder.libtool_version_info(), (6,6,6))
+            entry=File([]))
+        package = LocalPackage(rootdirectory=fs.rootdirectory(), setups=[])
+        self.failUnlessEqual(package.name(), 'TheNakedPackage')
+        self.failUnlessEqual(package.version(), '1.2.3')
         pass
     pass
 
 if __name__ == '__main__':
-    unittest.TextTestRunner().run(LibtoolVersionSuite())
+    unittest.TextTestRunner().run(NakedPackageSuite())
     pass

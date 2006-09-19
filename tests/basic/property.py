@@ -1,6 +1,5 @@
-# $Id: property.py,v 1.2 2006/06/23 08:14:35 jfasch Exp $
-
 # Copyright (C) 2002-2006 Salomon Automation
+# Copyright (C) 2006 Joerg Faschingbauer
 
 # This library is free software; you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as
@@ -21,6 +20,13 @@ from libconfix.core.filesys.directory import Directory
 from libconfix.core.filesys.file import File
 
 import unittest
+
+class PropertySuite(unittest.TestSuite):
+    def __init__(self):
+        unittest.TestSuite.__init__(self)
+        self.addTest(Property('test'))
+        pass
+    pass
 
 class Property(unittest.TestCase):
     def test(self):
@@ -43,5 +49,5 @@ class Property(unittest.TestCase):
     pass
 
 if __name__ == '__main__':
-    unittest.main()
+    unittest.TextTestRunner().run(PropertySuite())
     pass

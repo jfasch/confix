@@ -23,12 +23,14 @@ from libconfix.core.utils import const
 def lo_hi1_hi2_highest_exe(name, version):
     ret = Directory()
 
-    ret.add(name=const.CONFIX2_IN,
+    ret.add(name=const.CONFIX2_PKG,
             entry=File(lines=['PACKAGE_NAME("'+name+'")',
                               'PACKAGE_VERSION("'+version+'")']))
+    ret.add(name=const.CONFIX2_DIR,
+            entry=File())
             
     liblo = ret.add(name='lo', entry=Directory())
-    liblo.add(name=const.CONFIX2_IN, entry=File(lines=[]))
+    liblo.add(name=const.CONFIX2_DIR, entry=File(lines=[]))
     liblo.add(name='lo.h',
               entry=File(lines=['#ifndef LO_H',
                                 '#  define LO_H',
@@ -38,7 +40,7 @@ def lo_hi1_hi2_highest_exe(name, version):
               entry=File(lines=['void lo() {}']))
 
     libhi1 = ret.add(name='hi1', entry=Directory())
-    libhi1.add(name=const.CONFIX2_IN, entry=File(lines={}))
+    libhi1.add(name=const.CONFIX2_DIR, entry=File(lines={}))
     libhi1.add(name='hi1.h',
                entry=File(lines=['#ifndef HI1_H',
                                  '#  define HI1_H',
@@ -50,7 +52,7 @@ def lo_hi1_hi2_highest_exe(name, version):
                                  'void hi1() { lo(); }']))
 
     libhi2 = ret.add(name='hi2', entry=Directory())
-    libhi2.add(name=const.CONFIX2_IN, entry=File(lines=[]))
+    libhi2.add(name=const.CONFIX2_DIR, entry=File(lines=[]))
     libhi2.add(name='hi2.h',
                entry=File(lines=['#ifndef HI2_H',
                                  '#  define HI2_H',
@@ -62,7 +64,7 @@ def lo_hi1_hi2_highest_exe(name, version):
                                  'void hi2() { lo(); }']))
 
     highest = ret.add(name='highest', entry=Directory())
-    highest.add(name=const.CONFIX2_IN, entry=File(lines=[]))
+    highest.add(name=const.CONFIX2_DIR, entry=File(lines=[]))
     highest.add(name='highest.c',
                 entry=File(lines=['#include <hi1.h>',
                                   '#include <hi2.h>',
@@ -72,7 +74,7 @@ def lo_hi1_hi2_highest_exe(name, version):
                                   '}']))
 
     exe = ret.add(name='exe', entry=Directory())
-    exe.add(name=const.CONFIX2_IN, entry=File(lines=[]))
+    exe.add(name=const.CONFIX2_DIR, entry=File(lines=[]))
     exe.add(name='main.c',
             entry=File(lines=['#include <hi1.h>',
                               '#include <hi2.h>',

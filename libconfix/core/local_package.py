@@ -18,8 +18,8 @@
 
 from package import Package
 from installed_package import InstalledPackage
-from confix2_in import Confix2_in
-from iface import InterfacePiece
+from confix2_dir import Confix2_dir
+from iface import InterfacePiece, InterfaceExecutor
 from hierarchy import DirectoryBuilder
 from edgefinder import EdgeFinder
 from filebuilder import FileBuilder
@@ -55,6 +55,19 @@ class LocalPackage(Package):
         self.configure_ac_ = Configure_ac()
         self.acinclude_m4_ = ACInclude_m4()
 
+        # read package definition file
+        pkgdeffile = self.rootdirectory_.find([const.CONFIX2_PKG])
+        if pkgdeffile is None:
+            raise Error(const.CONFIX2_PKG+' missing in '+os.sep.join(self.rootdirectory_.abspath()))
+        pkgdef = PackageDefinition()
+        pkgdef.evaluate(pkgdeffile)
+        self.name_ = pkgdef.name()
+        self.version_ = pkgdef.version()
+        if self.name_ is None:
+            raise Error(const.CONFIX2_PKG+': package name has not been set')
+        if self.version_ is None:
+            raise Error(const.CONFIX2_PKG+': package version has not been set')
+        
         # setup rootbuilder, and configure it with the setups we have.
         self.rootbuilder_ = DirectoryBuilder(
             directory=rootdirectory,
@@ -65,16 +78,16 @@ class LocalPackage(Package):
                                                                   package=self))
             pass
 
-        # slurp in Confix2.in
+        # slurp in Confix2.dir
         try:
-            confix2_in_file = rootdirectory.get(const.CONFIX2_IN)
-            if confix2_in_file is None:
-                raise Error(const.CONFIX2_IN+' missing in '+os.sep.join(rootdirectory.abspath()))
-            if not isinstance(confix2_in_file, File):
-                raise Error(os.sep.join(confix2_in_file.abspath())+' is not a file')
+            confix2_dir_file = rootdirectory.get(const.CONFIX2_DIR)
+            if confix2_dir_file is None:
+                raise Error(const.CONFIX2_DIR+' missing in '+os.sep.join(rootdirectory.abspath()))
+            if not isinstance(confix2_dir_file, File):
+                raise Error(os.sep.join(confix2_dir_file.abspath())+' is not a file')
 
-            confix2_in = PackageConfix2_in(file=confix2_in_file, parentbuilder=self.rootbuilder_, package=self)
-            self.rootbuilder_.add_configurator(confix2_in)
+            confix2_dir = Confix2_dir(file=confix2_dir_file, parentbuilder=self.rootbuilder_, package=self)
+            self.rootbuilder_.add_configurator(confix2_dir)
 
             pass
         except Error, e:
@@ -155,12 +168,6 @@ class LocalPackage(Package):
 
     def output(self):
 
-        # PackageConfix2_in is supposed to have set package name and version
-        if self.name_ is None:
-            raise Error(confix2_in_file.abspath()+': package name not set')
-        if self.version_ is None:
-            raise Error(confix2_in_file.abspath()+': package version not set')
-
         # we will be writing two files in the package's root
         # directory. configure.ac is our responsbility - we will have
         # to create it etc.. the other file, Makefile.am, is not our
@@ -175,6 +182,9 @@ class LocalPackage(Package):
 
         # recursively write the package's output
         self.rootbuilder_.output()
+
+        # distribute the package configuration file
+        self.rootbuilder_.makefile_am().add_extra_dist(const.CONFIX2_PKG)
 
         # write my configure.ac and acinclude.m4
         
@@ -305,7 +315,7 @@ class LocalPackage(Package):
                 continue
             goodfile = None
             notsogoodfile = None
-            if b.file().name() == const.CONFIX2_IN:
+            if b.file().name() in [const.CONFIX2_PKG, const.CONFIX2_DIR]:
                 notsogoodfile = b.file()
             else:
                 goodfile = b.file()
@@ -351,14 +361,20 @@ class LocalPackage(Package):
 
     pass
 
-class PackageConfix2_in(Confix2_in):
-    def __init__(self, file, parentbuilder, package):
-        Confix2_in.__init__(self, file=file, parentbuilder=parentbuilder, package=package)
+class PackageDefinition:
+    def __init__(self):
+        self.execer_ = InterfaceExecutor(
+            iface_pieces=[InterfacePiece(globals={'PACKAGE_NAME_': None,
+                                                  'PACKAGE_VERSION_': None},
+                                         lines=[code_])])
         pass
-
-    def iface_pieces(self):
-        return Confix2_in.iface_pieces(self) + [InterfacePiece(globals={'PACKAGE_': self.package()},
-                                                               lines=[code_])]
+    def evaluate(self, file):
+        self.execer_.execute_file(file)
+        pass
+    def name(self):
+        return self.execer_.context()['PACKAGE_NAME_']
+    def version(self):
+        return self.execer_.context()['PACKAGE_VERSION_']
     pass
 
 code_ = """
@@ -366,20 +382,16 @@ from libconfix.core.utils.error import Error
 import types
 
 def PACKAGE_NAME(name):
-    global PACKAGE_
-    if PACKAGE_ is None:
-        raise Error('PACKAGE_NAME() is only available in the toplevel Confix2.in')
+    global PACKAGE_NAME_
     if type(name) is not types.StringType:
         raise Error('PACKAGE_NAME(): argument must be a string')
-    PACKAGE_.set_name(name)
+    PACKAGE_NAME_ = name
     pass
 
 def PACKAGE_VERSION(version):
-    global PACKAGE_
-    if PACKAGE_ is None:
-        raise Error('PACKAGE_VERSION() is only available in the toplevel Confix2.in')
+    global PACKAGE_VERSION_
     if type(version) is not types.StringType:
         raise Error('PACKAGE_VERSION(): argument must be a string')
-    PACKAGE_.set_version(version)
+    PACKAGE_VERSION_ = version
     pass
 """

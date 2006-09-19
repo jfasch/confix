@@ -19,7 +19,7 @@
 from builder import Builder, BuilderSet
 from entrybuilder import EntryBuilder
 from setup import Setup
-from confix2_in import Confix2_in
+from confix2_dir import Confix2_dir
 from depindex import ProvideMap
 from local_node import LocalNode
 
@@ -62,11 +62,11 @@ class SubdirectoryRecognizer(Builder):
                 continue
             if entry in self.recognized_directories_:
                 continue
-            confix2_in_file = entry.get(const.CONFIX2_IN)
-            if confix2_in_file is None:
+            confix2_dir_file = entry.get(const.CONFIX2_DIR)
+            if confix2_dir_file is None:
                 continue
-            if not isinstance(confix2_in_file, File):
-                errors.append(Error(confix2_in_file.relpath()+' is not a file'))
+            if not isinstance(confix2_dir_file, File):
+                errors.append(Error(confix2_dir_file.relpath()+' is not a file'))
                 continue
             try:
                 dirbuilder = DirectoryBuilder(
@@ -77,13 +77,13 @@ class SubdirectoryRecognizer(Builder):
                     dirbuilder.add_builders(setup.initial_builders(parentbuilder=dirbuilder,
                                                                    package=self.package()))
                     pass
-                confix2_in = Confix2_in(file=confix2_in_file,
-                                        parentbuilder=dirbuilder,
-                                        package=self.package())
-                dirbuilder.add_configurator(confix2_in)
+                confix2_dir = Confix2_dir(file=confix2_dir_file,
+                                          parentbuilder=dirbuilder,
+                                          package=self.package())
+                dirbuilder.add_configurator(confix2_dir)
                 newbuilders.append((entry, dirbuilder))
             except Error, e:
-                errors.append(Error('Error executing '+os.sep.join(confix2_in_file.relpath()), [e]))
+                errors.append(Error('Error executing '+os.sep.join(confix2_dir_file.relpath()), [e]))
                 pass
             pass
         if len(errors):

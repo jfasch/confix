@@ -20,6 +20,7 @@ from config import Configuration
 
 class ProfileConfiguration(Configuration):
 
+    SETUPS = 'setups'
     PREFIX = 'PREFIX'
     BUILDROOT = 'BUILDROOT'
     SHORT_LIBNAMES = 'SHORT_LIBNAMES'
@@ -31,6 +32,7 @@ class ProfileConfiguration(Configuration):
     MESSAGE_PREFIX = 'MESSAGE_PREFIX'
     ADVANCED = 'ADVANCED'
     CONFIGURE = 'CONFIGURE'
+    MAKE = 'MAKE'
     ARGS = 'ARGS'
     ENV = 'ENV'
 
@@ -38,10 +40,12 @@ class ProfileConfiguration(Configuration):
         self.dictionary_ = dict
         pass
 
+    def setups(self):
+        return self.dictionary_.get(ProfileConfiguration.SETUPS)
     def prefix(self):
-        return self.expand_path(self.dictionary_.get(ProfileConfiguration.PREFIX))
+        return self.dictionary_.get(ProfileConfiguration.PREFIX)
     def buildroot(self):
-        return self.expand_path(self.dictionary_.get(ProfileConfiguration.BUILDROOT))
+        return self.dictionary_.get(ProfileConfiguration.BUILDROOT)
     def short_libnames(self):
         return self.dictionary_.get(ProfileConfiguration.SHORT_LIBNAMES)
     def use_libtool(self):
@@ -60,14 +64,23 @@ class ProfileConfiguration(Configuration):
         return self.dictionary_.get(ProfileConfiguration.ADVANCED)
 
     def configure_args(self):
-        assert 0, 'expand_path?'
         dict = self.dictionary_.get(ProfileConfiguration.CONFIGURE)
         if dict is None:
             return None
         return dict.get(ProfileConfiguration.ARGS)
     def configure_env(self):
-        assert 0, 'expand_path?'
         dict = self.dictionary_.get(ProfileConfiguration.CONFIGURE)
+        if dict is None:
+            return None
+        return dict.get(ProfileConfiguration.ENV)
+
+    def make_args(self):
+        dict = self.dictionary_.get(ProfileConfiguration.MAKE)
+        if dict is None:
+            return None
+        return dict.get(ProfileConfiguration.ARGS)
+    def make_env(self):
+        dict = self.dictionary_.get(ProfileConfiguration.MAKE)
         if dict is None:
             return None
         return dict.get(ProfileConfiguration.ENV)

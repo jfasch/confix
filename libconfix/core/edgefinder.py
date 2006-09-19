@@ -52,7 +52,7 @@ class EdgeFinder(digraph.EdgeFinder):
                 try:
                     self.providemap_.add(p, n)
                 except Error, e:
-                    errors.append(Error('"'+str(p)+'" of node '+'.'.join(str(n)), [e]))
+                    errors.append(Error('"'+str(p)+'" of node '+str(n), [e]))
                     pass
                 pass
             pass

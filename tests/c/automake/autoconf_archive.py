@@ -43,10 +43,12 @@ class AutoConfArchiveTest(PersistentTestCase):
     def test(self):
         fs = FileSystem(path=self.rootpath())
         fs.rootdirectory().add(
-            name=const.CONFIX2_IN,
+            name=const.CONFIX2_PKG,
             entry=File(lines=["PACKAGE_NAME('AutoConfArchiveTest')",
-                              "PACKAGE_VERSION('1.2.3')",
-                              "CONFIGURE_AC(lines=['AC_CXX_NAMESPACES'],",
+                              "PACKAGE_VERSION('1.2.3')"]))
+        fs.rootdirectory().add(
+            name=const.CONFIX2_DIR,
+            entry=File(lines=["CONFIGURE_AC(lines=['AC_CXX_NAMESPACES'],",
                               "             order=AC_PROGRAMS)"]))
         package = LocalPackage(rootdirectory=fs.rootdirectory(), setups=[])
         package.enlarge(external_nodes=[])

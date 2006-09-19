@@ -162,6 +162,9 @@ class BuilderSet:
     def __contains__(self, b):
         return self.builders_.has_key(b.id())
 
+    def __len__(self):
+        return len(self.builders_)
+
     def values(self):
         return self.builders_.values()
 

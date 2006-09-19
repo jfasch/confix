@@ -52,9 +52,11 @@ class SimpleBuildBase(PersistentTestCase):
 
             self.buildrootpath_ = self.rootpath() + ['build']
 
-            self.fs_.rootdirectory().add(name=const.CONFIX2_IN,
+            self.fs_.rootdirectory().add(name=const.CONFIX2_PKG,
                                          entry=File(lines=['PACKAGE_NAME("simplebuildtest")',
                                                            'PACKAGE_VERSION("6.6.6")']))
+            self.fs_.rootdirectory().add(name=const.CONFIX2_DIR,
+                                         entry=File())
             self.fs_.rootdirectory().add(name='file.h',
                                          entry=File(lines=['#ifndef FILE_H',
                                                            '#define FILE_H',
@@ -87,7 +89,7 @@ class SimpleBuildBase(PersistentTestCase):
             configure.configure(
                 packageroot=self.sourcerootpath_,
                 builddir=self.buildrootpath_,
-                prefix='/dev/null')
+                prefix='/dev/null'.split(os.sep))
             make.make(
                 builddir=self.buildrootpath_,
                 args=[])

@@ -1,6 +1,5 @@
-# $Id: dirsetup.py,v 1.5 2006/06/23 08:14:35 jfasch Exp $
-
 # Copyright (C) 2002-2006 Salomon Automation
+# Copyright (C) 2006 Joerg Faschingbauer
 
 # This library is free software; you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as
@@ -26,6 +25,13 @@ from libconfix.testutils import find
 
 import unittest
 import types
+
+class BasicDirectorySetupSuite(unittest.TestSuite):
+    def __init__(self):
+        unittest.TestSuite.__init__(self)
+        self.addTest(BasicDirectorySetup('test'))
+        pass
+    pass
 
 class BasicDirectorySetup(unittest.TestCase):
 
@@ -53,5 +59,5 @@ class BasicDirectorySetup(unittest.TestCase):
     pass
 
 if __name__ == '__main__':
-    unittest.main()
+    unittest.TextTestRunner().run(BasicDirectorySetupSuite())
     pass

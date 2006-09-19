@@ -1,6 +1,5 @@
-# $Id: dirhier.py,v 1.4 2006/06/23 08:14:35 jfasch Exp $
-
 # Copyright (C) 2002-2006 Salomon Automation
+# Copyright (C) 2006 Joerg Faschingbauer
 
 # This library is free software; you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as
@@ -36,15 +35,17 @@ def packageroot(path=None, name=None, version=None):
         myversion = '6.6.6'
         pass
     fs = FileSystem(path=mypath)
-    fs.rootdirectory().add(name=const.CONFIX2_IN,
+    fs.rootdirectory().add(name=const.CONFIX2_PKG,
                            entry=File(lines=['PACKAGE_NAME("'+myname+'")',
                                              'PACKAGE_VERSION("'+myversion+'")']))
+    fs.rootdirectory().add(name=const.CONFIX2_DIR,
+                           entry=File(lines=[]))
     return fs
 
 def subdir(parent, name):
     dir = Directory()
-    dir.add(name=const.CONFIX2_IN,
-            entry=File(lines=[]))
+    dir.add(name=const.CONFIX2_DIR,
+            entry=File())
     parent.add(name=name, entry=dir)
     return dir
 

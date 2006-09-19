@@ -1,6 +1,5 @@
-# $Id: output.py,v 1.1 2006/07/12 08:42:22 jfasch Exp $
-
 # Copyright (C) 2002-2006 Salomon Automation
+# Copyright (C) 2006 Joerg Faschingbauer
 
 # This library is free software; you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as
@@ -46,15 +45,15 @@ class AutomakeOutputTest(unittest.TestCase):
     def setUp(self):
         self.fs_ = dirhier.packageroot()
         subdir1 = self.fs_.rootdirectory().add(name='subdir1', entry=Directory())
-        subdir1.add(name=const.CONFIX2_IN,
+        subdir1.add(name=const.CONFIX2_DIR,
                     entry=File(lines=['PROVIDE_SYMBOL("subdir1")']))
         
         subdir2 = self.fs_.rootdirectory().add(name='subdir2', entry=Directory())
-        subdir2.add(name=const.CONFIX2_IN,
+        subdir2.add(name=const.CONFIX2_DIR,
                     entry=File(lines=['PROVIDE_SYMBOL("subdir2")',
                                       'REQUIRE_SYMBOL("subdir1")']))
         subdir3 = self.fs_.rootdirectory().add(name='subdir3', entry=Directory())
-        subdir3.add(name=const.CONFIX2_IN,
+        subdir3.add(name=const.CONFIX2_DIR,
                     entry=File(lines=['REQUIRE_SYMBOL("subdir2")']))
         
         self.package_ = LocalPackage(rootdirectory=self.fs_.rootdirectory(),
@@ -78,7 +77,8 @@ class AutomakeOutputTest(unittest.TestCase):
 
     def test_subdirs(self):
         self.failIfEqual(self.fs_.rootdirectory().find(['Makefile.am']), None)
-        self.failUnless(const.CONFIX2_IN in self.package_.rootbuilder().makefile_am().extra_dist())
+        self.failUnless(const.CONFIX2_DIR in self.package_.rootbuilder().makefile_am().extra_dist())
+        self.failUnless(const.CONFIX2_PKG in self.package_.rootbuilder().makefile_am().extra_dist())
 
         # relative positions of subdir1, subdir2, subdir3 in toplevel
         # Makefile.am's SUBDIRS must be subdir1 < subdir2 <
@@ -150,7 +150,8 @@ class AutomakeOutputTest(unittest.TestCase):
         self.failUnless('dist-bzip2' in mf_am.automake_options())
         self.failUnless('dist-shar' in mf_am.automake_options())
         self.failUnless('dist-zip' in mf_am.automake_options())
-        self.failUnless(const.CONFIX2_IN in mf_am.extra_dist())
+        self.failUnless(const.CONFIX2_DIR in mf_am.extra_dist())
+        self.failUnless(const.CONFIX2_PKG in mf_am.extra_dist())
         self.failUnless(self.package_.name()+'.repo' in mf_am.extra_dist())
         self.failUnless('Makefile.in' in mf_am.maintainercleanfiles())
         self.failUnless('Makefile.am' in mf_am.maintainercleanfiles())
@@ -158,21 +159,21 @@ class AutomakeOutputTest(unittest.TestCase):
 
     def test_subdir1_makefile_am(self):
         self.failIfEqual(self.fs_.rootdirectory().find(['subdir1', 'Makefile.am']), None)
-        self.failUnless(const.CONFIX2_IN in self.subdir1_builder_.makefile_am().extra_dist())
+        self.failUnless(const.CONFIX2_DIR in self.subdir1_builder_.makefile_am().extra_dist())
         self.failUnless('Makefile.in' in self.subdir1_builder_.makefile_am().maintainercleanfiles())
         self.failUnless('Makefile.am' in self.subdir1_builder_.makefile_am().maintainercleanfiles())
         pass
 
     def test_subdir2_makefile_am(self):
         self.failIfEqual(self.fs_.rootdirectory().find(['subdir2', 'Makefile.am']), None)
-        self.failUnless(const.CONFIX2_IN in self.subdir2_builder_.makefile_am().extra_dist())
+        self.failUnless(const.CONFIX2_DIR in self.subdir2_builder_.makefile_am().extra_dist())
         self.failUnless('Makefile.in' in self.subdir2_builder_.makefile_am().maintainercleanfiles())
         self.failUnless('Makefile.am' in self.subdir2_builder_.makefile_am().maintainercleanfiles())
         pass
 
     def test_subdir3_makefile_am(self):
         self.failIfEqual(self.fs_.rootdirectory().find(['subdir3', 'Makefile.am']), None)
-        self.failUnless(const.CONFIX2_IN in self.subdir3_builder_.makefile_am().extra_dist())
+        self.failUnless(const.CONFIX2_DIR in self.subdir3_builder_.makefile_am().extra_dist())
         self.failUnless('Makefile.in' in self.subdir3_builder_.makefile_am().maintainercleanfiles())
         self.failUnless('Makefile.am' in self.subdir3_builder_.makefile_am().maintainercleanfiles())
         pass

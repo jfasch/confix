@@ -35,7 +35,8 @@ class CommandlineConfiguration(Configuration):
                  print_timings,
                  verbosity,
                  message_prefix,
-                 advanced
+                 advanced,
+                 make_args
                  ):
         self.configdir_ = configdir
         self.profile_ = profile
@@ -53,6 +54,7 @@ class CommandlineConfiguration(Configuration):
         self.verbosity_ = verbosity
         self.message_prefix_ = message_prefix
         self.advanced_ = advanced
+        self.make_args_ = make_args
         pass
 
     # things that we read in order for other to have entry points into
@@ -61,6 +63,7 @@ class CommandlineConfiguration(Configuration):
     def profile(self): return self.profile_
 
     # Configuration interface
+    def setups(self): return None
     def packageroot(self): return self.packageroot_
     def packagename(self): return self.packagename_
     def packageversion(self): return self.packageversion_
@@ -78,5 +81,8 @@ class CommandlineConfiguration(Configuration):
 
     def configure_args(self): return None
     def configure_env(self): return None
+    
+    def make_args(self): return self.make_args_
+    def make_env(self): return None
     
     pass

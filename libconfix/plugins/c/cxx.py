@@ -16,25 +16,25 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 # USA
 
-import os, types
+from libconfix.core.utils.paragraph import Paragraph
+from libconfix.core.automake.configure_ac import Configure_ac
 
-from libconfix.core.utils import external_cmd
+from compiled import CompiledCBuilder
 
-def configure(packageroot, builddir, prefix=None, args=None, env=None):
-    assert type(packageroot) in [types.ListType, types.TupleType]
-    assert type(builddir) in [types.ListType, types.TupleType]
-    assert type(prefix) in [types.NoneType, types.ListType, types.TupleType]
-    
-    argv = []
-    if prefix is not None:
-        argv.append('--prefix='+os.sep.join(prefix))
+class CXXBuilder(CompiledCBuilder):
+    def __init__(self, file, parentbuilder, package):
+        CompiledCBuilder.__init__(
+            self,
+            file=file,
+            parentbuilder=parentbuilder,
+            package=package)
         pass
-    if args is not None:
-        argv.extend(args)
+        
+    def output(self):
+        CompiledCBuilder.output(self)
+        self.package().configure_ac().add_paragraph(
+            paragraph=Paragraph(['AC_PROG_CXX']),
+            order=Configure_ac.PROGRAMS)
         pass
-            
-    external_cmd.exec_program(program=os.sep.join(packageroot + ['configure']),
-                              args=argv,
-                              env=env,
-                              dir=builddir)
+
     pass

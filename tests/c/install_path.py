@@ -49,9 +49,12 @@ class FilePropertyOnly(unittest.TestCase):
     def test(self):
         fs = FileSystem(path=[])
         fs.rootdirectory().add(
-            name=const.CONFIX2_IN,
+            name=const.CONFIX2_PKG,
             entry=File(['PACKAGE_NAME("argh")',
                         'PACKAGE_VERSION("1.2.3")']))
+        fs.rootdirectory().add(
+            name=const.CONFIX2_DIR,
+            entry=File())
         file = fs.rootdirectory().add(
             name='some_file',
             entry=File(lines=[]))
@@ -66,9 +69,12 @@ class IfaceOnly(unittest.TestCase):
     def test(self):
         fs = FileSystem(path=[])
         fs.rootdirectory().add(
-            name=const.CONFIX2_IN,
+            name=const.CONFIX2_PKG,
             entry=File(['PACKAGE_NAME("argh")',
                         'PACKAGE_VERSION("1.2.3")']))
+        fs.rootdirectory().add(
+            name=const.CONFIX2_DIR,
+            entry=File())
         file = fs.rootdirectory().add(
             name='some_file',
             entry=File(lines=["// CONFIX:INSTALLPATH(['xxx'])"]))
@@ -82,9 +88,12 @@ class Namespace(unittest.TestCase):
     def testSimple(self):
         fs = FileSystem(path=[])
         fs.rootdirectory().add(
-            name=const.CONFIX2_IN,
+            name=const.CONFIX2_PKG,
             entry=File(['PACKAGE_NAME("argh")',
                         'PACKAGE_VERSION("1.2.3")']))
+        fs.rootdirectory().add(
+            name=const.CONFIX2_DIR,
+            entry=File())
         file = fs.rootdirectory().add(
             name='some_file',
             entry=File(lines=['namespace A {',
@@ -96,9 +105,12 @@ class Namespace(unittest.TestCase):
     def testNested(self):
         fs = FileSystem(path=[])
         fs.rootdirectory().add(
-            name=const.CONFIX2_IN,
+            name=const.CONFIX2_PKG,
             entry=File(['PACKAGE_NAME("argh")',
                         'PACKAGE_VERSION("1.2.3")']))
+        fs.rootdirectory().add(
+            name=const.CONFIX2_DIR,
+            entry=File())
         file = fs.rootdirectory().add(
             name='some_file',
             entry=File(lines=['namespace A {',
@@ -112,9 +124,12 @@ class Namespace(unittest.TestCase):
     def testGlobal(self):
         fs = FileSystem(path=[])
         fs.rootdirectory().add(
-            name=const.CONFIX2_IN,
+            name=const.CONFIX2_PKG,
             entry=File(['PACKAGE_NAME("argh")',
                         'PACKAGE_VERSION("1.2.3")']))
+        fs.rootdirectory().add(
+            name=const.CONFIX2_DIR,
+            entry=File())
         file = fs.rootdirectory().add(
             name='some_file',
             entry=File(lines=[]))
@@ -125,9 +140,12 @@ class Namespace(unittest.TestCase):
     def testAmbiguousFlat(self):
         fs = FileSystem(path=[])
         fs.rootdirectory().add(
-            name=const.CONFIX2_IN,
+            name=const.CONFIX2_PKG,
             entry=File(['PACKAGE_NAME("argh")',
                         'PACKAGE_VERSION("1.2.3")']))
+        fs.rootdirectory().add(
+            name=const.CONFIX2_DIR,
+            entry=File())
         file = fs.rootdirectory().add(
             name='file',
             entry=File(lines=['namespace A {',
@@ -145,9 +163,12 @@ class Namespace(unittest.TestCase):
     def testAmbiguousNested(self):
         fs = FileSystem(path=[])
         fs.rootdirectory().add(
-            name=const.CONFIX2_IN,
+            name=const.CONFIX2_PKG,
             entry=File(['PACKAGE_NAME("argh")',
                         'PACKAGE_VERSION("1.2.3")']))
+        fs.rootdirectory().add(
+            name=const.CONFIX2_DIR,
+            entry=File())
         file = fs.rootdirectory().add(
             name='file',
             entry=File(lines=['namespace A {',
@@ -168,10 +189,11 @@ class Namespace(unittest.TestCase):
         pass
     def testDirectory(self):
         fs = FileSystem(path=[])
-        fs.rootdirectory().add(name=const.CONFIX2_IN,
+        fs.rootdirectory().add(name=const.CONFIX2_PKG,
                                entry=File(lines=["PACKAGE_NAME('xxx')",
-                                                 "PACKAGE_VERSION('6.6.6')",
-                                                 "FILE_PROPERTY(",
+                                                 "PACKAGE_VERSION('6.6.6')"]))
+        fs.rootdirectory().add(name=const.CONFIX2_DIR,
+                               entry=File(lines=["FILE_PROPERTY(",
                                                  "    filename='file.h', ",
                                                  "    name='INSTALLPATH_CINCLUDE',",
                                                  "    value=['xxx'])"]))
@@ -191,9 +213,12 @@ class IfaceFilePropertyConflict(unittest.TestCase):
     def test(self):
         fs = FileSystem(path=[])
         fs.rootdirectory().add(
-            name=const.CONFIX2_IN,
+            name=const.CONFIX2_PKG,
             entry=File(['PACKAGE_NAME("argh")',
                         'PACKAGE_VERSION("1.2.3")']))
+        fs.rootdirectory().add(
+            name=const.CONFIX2_DIR,
+            entry=File())
         file = fs.rootdirectory().add(
             name='file',
             entry=File(lines=["// CONFIX:INSTALLPATH(['xxx'])"]))

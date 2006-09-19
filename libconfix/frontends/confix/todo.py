@@ -20,15 +20,18 @@ import os, sys
 
 from libconfix.core.local_package import LocalPackage
 from libconfix.core.utils import debug
+from libconfix.core.utils import helper
 from libconfix.core.utils.error import Error
 from libconfix.core.filesys.scan import scan_filesystem
 from libconfix.core.hierarchy import DirectorySetup
 from libconfix.core.repo.repo_composite import CompositePackageRepository
 from libconfix.core.digraph.cycle import CycleError
-from libconfix.core.automake import bootstrap, configure
+from libconfix.core.automake import bootstrap, configure, make
 from libconfix.core.automake.repo_automake import AutomakePackageRepository
 
 from libconfix.plugins.c.setup import CSetup
+
+from confix_setup import ConfixSetup
 
 TODO = []
 CONFIG = None
@@ -56,11 +59,15 @@ def PACKAGE():
     debug.message("scanning package in %s ..." % CONFIG.packageroot(),
                   CONFIG.verbosity())
 
+    setups = CONFIG.setups()
+    if setups is None:
+        setups = [ConfixSetup(use_libtool=CONFIG.use_libtool(),
+                              short_libnames=CONFIG.short_libnames())]
+        pass
+
     filesystem = scan_filesystem(path=CONFIG.packageroot().split(os.sep))
     package = LocalPackage(rootdirectory=filesystem.rootdirectory(),
-                           setups=[DirectorySetup(),
-                                   CSetup(use_libtool=CONFIG.use_libtool(),
-                                          short_libnames=CONFIG.short_libnames())])
+                           setups=setups)
     DONE_PACKAGE = 1
     return 0
 
@@ -126,20 +133,22 @@ def ENLARGE():
 
     # as input for the dependency graph calculation, extract all nodes
     # from our package repository.
-    ext_nodes = []
+    external_nodes = []
     for p in repository.packages():
-        ext_nodes.extend(p.nodes())
+        if p.name() != package.name():
+            external_nodes.extend(p.nodes())
+            pass
         pass
 
-    debug.message("resolving dependencies ...", CONFIG.verbosity())
+    debug.message("massaging package ...", CONFIG.verbosity())
     try:
-        package.enlarge(external_nodes=ext_nodes)
+        package.enlarge(external_nodes=external_nodes)
     except CycleError, e:
         for l in core.helper.format_cycle_error(e):
             sys.stderr.write(l+'\n')
             pass
         return 1
-    debug.message("done resolving", CONFIG.verbosity())
+    debug.message("done massaging", CONFIG.verbosity())
 
     DONE_RESOLVE = 1
     return 0
@@ -336,29 +345,19 @@ def CONFIGURE():
         env.update(configure_env)
         pass
 
-    if CONFIG.builddir() is not None:
-        builddir = CONFIG.builddir()
-    else:
-        buildroot = CONFIG.buildroot()
-        if buildroot is None:
-            raise Error('Cannot determine build directory: neither builddir nor buildroot are set')
-        builddir = os.path.join(buildroot, package.name())
-        pass
-
+    builddir = deduce_builddir()
+    
     if CONFIG.advanced() and not os.path.exists(builddir):
         os.makedirs(builddir)
         pass
     
-    
-        
-
 ##     if ARGS.has_key(const.ARG_READONLY_PREFIXES) and len(ARGS[const.ARG_READONLY_PREFIXES]):
 ##         cmdline.append('--with-readonly-prefixes='+','.join(ARGS[const.ARG_READONLY_PREFIXES]))
 
     try:
         configure.configure(packageroot=CONFIG.packageroot().split(os.sep),
                             builddir=builddir.split(os.sep),
-                            prefix=CONFIG.prefix(),
+                            prefix=CONFIG.prefix().split(os.sep),
                             args=CONFIG.configure_args(),
                             env=CONFIG.configure_env())
     except Error, e:
@@ -372,93 +371,44 @@ def MAKE():
     global DONE_MAKE
     if DONE_MAKE: return 0
 
-    if BUILDDIR(): return -1
+    cmdline = []
+    env = {}
+    env.update(os.environ)
 
-    params = None
-    if ARGS.has_key(const.ARG_MAKEPARAMS):
-        params = ARGS[const.ARG_MAKEPARAMS]
+    make_args = CONFIG.make_args()
+    if make_args is not None:
+        cmdline.extend(make_args)
+        pass
+    make_env = CONFIG.make_env()
+    if make_env is not None:
+        env.update(make_env)
+        pass
 
-    targets = []
-    if ARGS.has_key(const.ARG_TARGETS):
-        targets = ARGS[const.ARG_TARGETS].split()
+    builddir = deduce_builddir()
 
     try:
-        make.make(params, targets, ARGS[const.ARG_BUILDDIR],
-                  verbosity = ARGS[const.ARG_VERBOSITY])
+        make.make(builddir=builddir.split(os.sep),
+                  args=make_args,
+                  env=make_env)
     except Error, e:
         raise Error("Error calling make:", [e])
 
     DONE_MAKE = 1
     return 0
 
-DONE_VERSION = 0
-def VERSION():
-    global DONE_VERSION
-    if DONE_VERSION: return 0
 
-    str = """%s version %s
-Confix is Free Software, as defined by the GNU Lesser General Public License
-(LGPL). As such Confix comes with ABSOLUTELY NO WARRANTY, and you are free to
-modify and redistribute Confix under certain conditions. See the LGPL for more
-details about copying conditions and other information.
-""" % (os.path.basename(sys.argv[0]), const.CONFIX_VERSION)
 
-    sys.stderr.write(str)
+def deduce_builddir():
+    builddir = CONFIG.builddir()
+    if builddir is not None:
+        return builddir
+    buildroot = CONFIG.buildroot()
+    if buildroot is None:
+        raise Error('Cannot determine build directory: neither builddir nor buildroot are set')
+    packageroot = CONFIG.packageroot()
+    if packageroot is None:
+        raise Error('Cannot determine build directory: need packageroot')
 
-    DONE_VERSION = 1
-    return 0
+    PACKAGE()
 
-DONE_HELP = 0
-def HELP():
-    global DONE_HELP
-    if DONE_HELP: return 0
-
-    dirname = os.getcwd()
-
-    str = """Usage: %s [SETTING]... [ACTION]...
-
-Settings:
-
---advanced                    Enable advanced features (see manual).
---builddir=DIR                Set the package build directory to DIR.
-                              [default is BUILDROOT/PACKAGENAME]
---buildroot=DIR               Set the package build root to DIR.
---configfile=file1,file2,...  Paths to extra configuration files.
---packagename=NAME            Set the name of the package.
---packageroot=DIR             Top level directory of the package to be scanned.
-                              [default is current directory]
---packageversion=VERSION      Set the version of the package. [default is 0.0.0]
---prefix=DIR                  Use DIR for the installation prefix.
---profile=profilename         Name of the configuration profile to be used.
-                              [default is 'default']
---quiet                       Print out less Confix information.
---trace=level1,level2,...     Turn on debugging messages. Available levels:
-                              provide, require, resolve, check.
---verbose                     Print out more Confix information.
-
-Actions:
-
---help                        Print this message and quit.
---version                     Print Confix version information and quit.
---resolve                     Scan files for dependencies, and resolve them. Do
-                              not output anything.
---output, --bootstrap         Generate the toplevel configure.in and all needed
-                              Makefile.am files. Automatically runs --resolve.
---configure                   Call 'configure' in the package's build directory.
---make                        Call 'make' in the package's build directory.
---targets="check clean ..."   Specify one or more make targets
-
-Special dirty performance hacks:
-
---use-bulk-install            Do not install files one-by-one. Rather,
-                              use a dedicated high-preformance
-                              install program.
---use-kde-hack                Apply KDE's perl hack which replaces sed
-                              in creating configuration files.
-
-""" % sys.argv[0]
-
-    sys.stderr.write(str)
-
-    DONE_HELP = 1
-    return 0
+    return os.path.join(buildroot, package.name()+'-'+package.version())

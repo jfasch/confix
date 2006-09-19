@@ -76,6 +76,7 @@ def parse(args):
     parser.add_option('--advanced',
                       help='Create build directory if necessary.')
     parser.add_option('--targets',
+                      dest='make_args',
                       metavar='STRING',
                       help='The arguments that are passed to the make program.')
     parser.add_option('--trace',
@@ -132,6 +133,7 @@ def parse(args):
         verbosity=opts.verbosity,
         message_prefix=opts.message_prefix,
         advanced=opts.advanced,
+        make_args=opts.make_args.split(),
         )
 
     # collect actions

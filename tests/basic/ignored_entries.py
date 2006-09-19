@@ -1,6 +1,5 @@
-# $Id: ignored_entries.py,v 1.7 2006/06/23 08:14:35 jfasch Exp $
-
 # Copyright (C) 2002-2006 Salomon Automation
+# Copyright (C) 2006 Joerg Faschingbauer
 
 # This library is free software; you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as
@@ -27,6 +26,13 @@ from libconfix.testutils import dirhier
 
 import unittest
 
+class IgnoredEntriesSuite(unittest.TestSuite):
+    def __init__(self):
+        unittest.TestSuite.__init__(self)
+        self.addTest(IgnoredEntries('test'))
+        pass
+    pass
+
 class FileWatcher(Builder):
     def __init__(self, parentbuilder, package):
         Builder.__init__(
@@ -52,10 +58,11 @@ class IgnoredEntries(unittest.TestCase):
 
     def test(self):
         fs = FileSystem(path=['a'])
-        fs.rootdirectory().add(name=const.CONFIX2_IN,
+        fs.rootdirectory().add(name=const.CONFIX2_PKG,
                                entry=File(lines=["PACKAGE_NAME('xxx')",
-                                                 "PACKAGE_VERSION('6.6.6')",
-                                                 'IGNORE_ENTRIES(["file"])']))
+                                                 "PACKAGE_VERSION('6.6.6')"]))
+        fs.rootdirectory().add(name=const.CONFIX2_DIR,
+                               entry=File(lines=['IGNORE_ENTRIES(["file"])']))
         fs.rootdirectory().add(name='file',
                                entry=File())
         
@@ -74,5 +81,5 @@ class IgnoredEntries(unittest.TestCase):
     pass
 
 if __name__ == '__main__':
-    unittest.main()
+    unittest.TextTestRunner().run(IgnoredEntriesSuite())
     pass

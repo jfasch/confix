@@ -31,10 +31,10 @@ import unittest
 class ExecutableSuite(unittest.TestSuite):
     def __init__(self):
         unittest.TestSuite.__init__(self)
-##         self.addTest(LibtoolExecutable('common_test'))
-##         self.addTest(StandardExecutable('common_test'))
-##         self.addTest(LibtoolExecutable('test'))
-##         self.addTest(StandardExecutable('test'))
+        self.addTest(LibtoolExecutable('common_test'))
+        self.addTest(StandardExecutable('common_test'))
+        self.addTest(LibtoolExecutable('test'))
+        self.addTest(StandardExecutable('test'))
         self.addTest(CheckAndNoinstProgram('test'))
         pass
     pass
@@ -44,7 +44,7 @@ class ExecutableBase(unittest.TestCase):
     def setUp(self):
         self.fs_ = dirhier.packageroot()
         liblo = self.fs_.rootdirectory().add(name='lo', entry=Directory())
-        liblo.add(name=const.CONFIX2_IN, entry=File(lines=[]))
+        liblo.add(name=const.CONFIX2_DIR, entry=File(lines=[]))
         liblo.add(name='lo.h',
                   entry=File(lines=['#ifndef LO_H',
                                     '#define LO_H',
@@ -55,7 +55,7 @@ class ExecutableBase(unittest.TestCase):
                   entry=File(lines=['void lo() {}']))
         
         libhi = self.fs_.rootdirectory().add(name='hi', entry=Directory())
-        libhi.add(name=const.CONFIX2_IN, entry=File(lines={}))
+        libhi.add(name=const.CONFIX2_DIR, entry=File(lines={}))
         libhi.add(name='hi.h',
                    entry=File(lines=['#ifndef HI_H',
                                      '#  define HI_H',
@@ -67,7 +67,7 @@ class ExecutableBase(unittest.TestCase):
                                      'void hi() { lo(); }']))
         
         exe = self.fs_.rootdirectory().add(name='exe', entry=Directory())
-        exe.add(name=const.CONFIX2_IN, entry=File(lines=[]))
+        exe.add(name=const.CONFIX2_DIR, entry=File(lines=[]))
         exe.add(name='main.c',
                 entry=File(lines=['#include <hi.h>',
                                   'int main(void) {',
@@ -76,7 +76,7 @@ class ExecutableBase(unittest.TestCase):
                                   '}']))
         exe.add(name='something.c', entry=File())
         
-        self.package_ = LocalPackage(root=self.fs_.rootdirectory(),
+        self.package_ = LocalPackage(rootdirectory=self.fs_.rootdirectory(),
                                      setups=[DirectorySetup(),
                                              CSetup(short_libnames=False, use_libtool=self.use_libtool())])
         self.package_.enlarge(external_nodes=[])

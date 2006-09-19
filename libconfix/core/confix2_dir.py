@@ -22,7 +22,7 @@ from libconfix.core.utils.error import Error
 
 import os
 
-class Confix2_in(FileBuilder):
+class Confix2_dir(FileBuilder):
     def __init__(self, file, parentbuilder, package):
         FileBuilder.__init__(self,
                              file=file,
@@ -32,7 +32,7 @@ class Confix2_in(FileBuilder):
         pass
 
     def iface_pieces(self):
-        return FileBuilder.iface_pieces(self) + [InterfacePiece(globals={'CONFIX2_IN_': self},
+        return FileBuilder.iface_pieces(self) + [InterfacePiece(globals={'CONFIX2_DIR_': self},
                                                                 lines=[code_])]
 
     def enlarge(self):
@@ -64,12 +64,12 @@ class Confix2_in(FileBuilder):
 
 code_ = """
 def IGNORE_ENTRIES(names):
-    CONFIX2_IN_.parentbuilder().add_ignored_entries(names)
+    CONFIX2_DIR_.parentbuilder().add_ignored_entries(names)
     pass
 def EXTRA_DIST(filename):
-    CONFIX2_IN_.parentbuilder().makefile_am().add_extra_dist(filename)
+    CONFIX2_DIR_.parentbuilder().makefile_am().add_extra_dist(filename)
     pass
 def MAKEFILE_AM(line):
-    CONFIX2_IN_.parentbuilder().makefile_am().add_line(line)
+    CONFIX2_DIR_.parentbuilder().makefile_am().add_line(line)
     pass
 """
