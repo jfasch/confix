@@ -20,6 +20,7 @@ from setup_library import LibrarySetupSuite
 from setup_exe import ExecutableSetupSuite
 from setup_cxx import CXXSetupSuite
 from main_search import MainSearchSuite
+from name_mangling import NameManglingSuite
 from requires import RequireTestSuite
 from install_path import InstallPathSuite
 from relate import RelateSuite
@@ -36,6 +37,7 @@ class CTestSuiteInMemory(unittest.TestSuite):
         self.addTest(ExecutableSetupSuite())
         self.addTest(CXXSetupSuite())
         self.addTest(MainSearchSuite())
+        self.addTest(NameManglingSuite())
         self.addTest(RequireTestSuite())
         self.addTest(InstallPathSuite())
         self.addTest(RelateSuite())

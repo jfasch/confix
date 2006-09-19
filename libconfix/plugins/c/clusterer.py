@@ -54,8 +54,9 @@ class CClusterer(Builder):
         for b in self.parentbuilder().builders().values()[:]:
             if not isinstance(b, CBaseBuilder):
                 continue
-            if isinstance(b, CompiledCBuilder) and helper.has_main(b.file()):
+            if isinstance(b, CompiledCBuilder) and (helper.has_main(b.file()) or b.exename() is not None):
                 if self.executables_.has_key(b):
+                    # already got that one.
                     continue
                 center_stem, center_ext = os.path.splitext(b.file().name())
                 if center_stem.startswith('_check'):
@@ -65,13 +66,18 @@ class CClusterer(Builder):
                 else:
                     what = ExecutableBuilder.BIN
                     pass
+                exename = b.exename()
+                if exename is None:
+                    exename = self.namefinder_.find_exename(
+                        packagename=self.package().name(),
+                        path=self.parentbuilder().directory().relpath(self.package().rootdirectory()),
+                        centername=center_stem)
+                    pass
                 exe = ExecutableBuilder(
                     parentbuilder=self.parentbuilder(),
                     package=self.package(),
                     center=b,
-                    exename=self.namefinder_.find_exename(packagename=self.package().name(),
-                                                          path=self.parentbuilder().directory().relpath(self.package().rootdirectory()),
-                                                          centername=center_stem),
+                    exename=exename,
                     use_libtool=self.use_libtool_,
                     what=what)
                 self.parentbuilder().add_builder(exe)

@@ -1,4 +1,5 @@
 # Copyright (C) 2002-2006 Salomon Automation
+# Copyright (C) 2006 Joerg Faschingbauer
 
 # This library is free software; you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as
@@ -15,13 +16,15 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 # USA
 
+from libconfix.core.utils import const
+from libconfix.core.iface import InterfacePiece
+
 from base import CBaseBuilder
 from buildinfo import BuildInfo_CIncludePath_NativeLocal, BuildInfo_CIncludePath_NativeInstalled
 
-from libconfix.core.utils import const
-
 class CompiledCBuilder(CBaseBuilder):
     def __init__(self, file, parentbuilder, package):
+        self.exename_ = None
         CBaseBuilder.__init__(
             self,
             file=file,
@@ -30,6 +33,14 @@ class CompiledCBuilder(CBaseBuilder):
         self.init_buildinfo_()
         pass
 
+    def exename(self):
+        return self.exename_
+
+    def set_exename(self, name):
+        assert self.exename_ is None
+        self.exename_ = name
+        pass
+        
     def buildinfo_includepath_native_local(self):
         return self.buildinfo_includepath_native_local_
 
@@ -62,9 +73,21 @@ class CompiledCBuilder(CBaseBuilder):
                 '-I$(includedir)')
         pass
 
+    def iface_pieces(self):
+        return CBaseBuilder.iface_pieces(self) + \
+               [InterfacePiece(globals={'COMPILED_BUILDER_': self},
+                               lines=[code_])]
+        
     def init_buildinfo_(self):
         self.buildinfo_includepath_native_local_ = 0
         self.buildinfo_includepath_native_installed_ = 0
         pass
     pass
 
+code_ = """
+
+def EXENAME(name):
+    COMPILED_BUILDER_.set_exename(name)
+    pass
+
+"""

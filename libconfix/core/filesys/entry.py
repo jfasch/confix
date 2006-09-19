@@ -1,6 +1,5 @@
-# $Id: entry.py,v 1.1 2006/06/23 08:14:36 jfasch Exp $
-
 # Copyright (C) 2002-2006 Salomon Automation
+# Copyright (C) 2006 Joerg Faschingbauer
 
 # This library is free software; you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as
@@ -60,12 +59,6 @@ class DirectoryEntry:
         if self.parent_ is None:
             return []
         return self.parent_.relpath(dir) + [self.parent_.entryname(self)]
-        
-        
-        
-##         if self.parent_ is None:
-##             return []
-##         return self.parent_.relpath() + [self.parent_.entryname(self)]
 
     def set_property(self, name, value):
         self.properties_[name] = value
