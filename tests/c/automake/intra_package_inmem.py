@@ -18,7 +18,7 @@
 
 from libconfix.core.filesys.filesys import FileSystem
 from libconfix.core.local_package import LocalPackage
-from libconfix.core.hierarchy import DirectorySetup
+from libconfix.core.hierarchy.setup import DirectorySetup
 from libconfix.core.utils.error import Error
 
 from libconfix.plugins.c.setup import CSetup

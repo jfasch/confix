@@ -20,7 +20,7 @@ import os
 import types
 
 from libconfix.core.builder import Builder
-from libconfix.core.iface import InterfacePiece
+from libconfix.core.iface.proxy import InterfaceProxy
 
 from base import CBaseBuilder
 from compiled import CompiledCBuilder
@@ -123,9 +123,16 @@ class CClusterer(Builder):
         return ret + Builder.enlarge(self)
 
     def confix2_in_iface_pieces(self):
-        return Builder.confix2_in_iface_pieces(self) + \
-               [InterfacePiece(globals={'LIBTOOL_LIBRARY_VERSION': getattr(self, 'LIBTOOL_LIBRARY_VERSION')},
-                               lines=[])]
+        return Builder.confix2_in_iface_pieces(self) + [CClustererInterfaceProxy(clusterer=self)]
+
+    pass
+
+class CClustererInterfaceProxy(InterfaceProxy):
+    def __init__(self, clusterer):
+        InterfaceProxy.__init__(self)
+        self.clusterer_ = clusterer
+        self.add_global('LIBTOOL_LIBRARY_VERSION', getattr(self, 'LIBTOOL_LIBRARY_VERSION'))
+        pass
 
     def LIBTOOL_LIBRARY_VERSION(self, version):
         if type(version) not in [types.ListType, types.TupleType]:
@@ -136,6 +143,7 @@ class CClusterer(Builder):
             if type(version[i]) is not types.IntType:
                 raise Error("LIBTOOL_LIBRARY_VERSION: part "+str(i)+" of version is not an integer")
             pass
-        self.set_libtool_version_info(version)
+        self.clusterer_.set_libtool_version_info(version)
         pass
+
     pass

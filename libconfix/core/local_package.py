@@ -16,15 +16,11 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 # USA
 
-from package import Package
-from installed_package import InstalledPackage
-from confix2_dir import Confix2_dir
-from iface import InterfacePiece, InterfaceExecutor
-from hierarchy import DirectoryBuilder
-from edgefinder import EdgeFinder
-from filebuilder import FileBuilder
+import os
+import types
 
-from libconfix.core import digraph
+from libconfix.core.digraph import algorithm
+from libconfix.core.digraph import algorithm, toposort
 from libconfix.core.automake import repo_automake
 from libconfix.core.automake.auxdir import AutoconfAuxDir
 from libconfix.core.automake.configure_ac import Configure_ac 
@@ -35,8 +31,15 @@ from libconfix.core.filesys.file import File
 from libconfix.core.repo.repofile import RepositoryFile
 from libconfix.core.utils import const
 from libconfix.core.utils.error import Error
+from libconfix.core.iface.proxy import InterfaceProxy
+from libconfix.core.iface.executor import InterfaceExecutor
+from libconfix.core.hierarchy.confix2_dir import Confix2_dir
+from libconfix.core.hierarchy.dirbuilder import DirectoryBuilder
 
-import os
+from package import Package
+from installed_package import InstalledPackage
+from edgefinder import EdgeFinder
+from filebuilder import FileBuilder
 
 class LocalPackage(Package):
 
@@ -60,7 +63,7 @@ class LocalPackage(Package):
         if pkgdeffile is None:
             raise Error(const.CONFIX2_PKG+' missing in '+os.sep.join(self.rootdirectory_.abspath()))
         pkgdef = PackageDefinition()
-        pkgdef.evaluate(pkgdeffile)
+        InterfaceExecutor(iface_pieces=[PackageDefinitionInterfaceProxy(pkgdef=pkgdef)]).execute_file(pkgdeffile)
         self.name_ = pkgdef.name()
         self.version_ = pkgdef.version()
         if self.name_ is None:
@@ -261,9 +264,9 @@ class LocalPackage(Package):
                 pass
             pass
 
-        graph = digraph.utils.subgraph(digraph=self.digraph_,
-                                       nodes=subdir_nodes)
-        for n in digraph.toposort.toposort(digraph=graph, nodes=subdir_nodes):
+        graph = algorithm.subgraph(digraph=self.digraph_,
+                                   nodes=subdir_nodes)
+        for n in toposort.toposort(digraph=graph, nodes=subdir_nodes):
             dirbuilder = n.responsible_builder()
             assert isinstance(dirbuilder, DirectoryBuilder)
             relpath = dirbuilder.directory().relpath(self.rootdirectory_)
@@ -364,35 +367,45 @@ class LocalPackage(Package):
 
 class PackageDefinition:
     def __init__(self):
-        self.execer_ = InterfaceExecutor(
-            iface_pieces=[InterfacePiece(globals={'PACKAGE_NAME_': None,
-                                                  'PACKAGE_VERSION_': None},
-                                         lines=[code_])])
+        self.name_ = None
+        self.version_ = None
         pass
-    def evaluate(self, file):
-        self.execer_.execute_file(file)
+    def set_name(self, name):
+        self.name_ = name
+        pass
+    def set_version(self, version):
+        self.version_ = version
         pass
     def name(self):
-        return self.execer_.context()['PACKAGE_NAME_']
+        return self.name_
     def version(self):
-        return self.execer_.context()['PACKAGE_VERSION_']
+        return self.version_
     pass
 
-code_ = """
-from libconfix.core.utils.error import Error
-import types
+class PackageDefinitionInterfaceProxy(InterfaceProxy):
+    def __init__(self, pkgdef):
+        InterfaceProxy.__init__(self)
 
-def PACKAGE_NAME(name):
-    global PACKAGE_NAME_
-    if type(name) is not types.StringType:
-        raise Error('PACKAGE_NAME(): argument must be a string')
-    PACKAGE_NAME_ = name
-    pass
+        self.pkgdef_ = pkgdef
 
-def PACKAGE_VERSION(version):
-    global PACKAGE_VERSION_
-    if type(version) is not types.StringType:
-        raise Error('PACKAGE_VERSION(): argument must be a string')
-    PACKAGE_VERSION_ = version
+        self.add_global('PACKAGE_NAME', getattr(self, 'PACKAGE_NAME'))
+        self.add_global('PACKAGE_VERSION', getattr(self, 'PACKAGE_VERSION'))
+
+        pass
+
+    def name(self): return self.name_
+    def version(self): return self.version_
+
+    def PACKAGE_NAME(self, name):
+        if type(name) is not types.StringType:
+            raise Error('PACKAGE_NAME(): argument must be a string')
+        self.pkgdef_.set_name(name)
+        pass
+
+    def PACKAGE_VERSION(self, version):
+        if type(version) is not types.StringType:
+            raise Error('PACKAGE_VERSION(): argument must be a string')
+        self.pkgdef_.set_version(version)
+        pass
+        
     pass
-"""

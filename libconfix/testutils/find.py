@@ -1,6 +1,5 @@
-# $Id: find.py,v 1.1 2006/03/27 20:20:01 jfasch Exp $
-
 # Copyright (C) 2002-2006 Salomon Automation
+# Copyright (C) 2006 Joerg Faschingbauer
 
 # This library is free software; you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as
@@ -17,7 +16,7 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 # USA
 
-from libconfix.core.hierarchy import DirectoryBuilder
+from libconfix.core.hierarchy.dirbuilder import DirectoryBuilder
 from libconfix.core.filebuilder import FileBuilder
 
 import types

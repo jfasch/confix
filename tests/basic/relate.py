@@ -22,7 +22,7 @@ from libconfix.testutils.ifacetestbuilder import FileInterfaceTestSetup
 
 from libconfix.core.filesys.file import File
 from libconfix.core.local_package import LocalPackage
-from libconfix.core.hierarchy import DirectorySetup
+from libconfix.core.hierarchy.setup import DirectorySetup
 
 import unittest
 

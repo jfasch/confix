@@ -26,8 +26,9 @@ from libconfix.core.automake.buildinfo import \
      BuildInfo_Configure_in, \
      BuildInfo_ACInclude_m4
 
+from libconfix.core.iface.proxy import InterfaceProxy
+
 from depinfo import DependencyInformation
-from iface import InterfacePiece
 from provide import Provide
 from provide_string import Provide_String
 from provide_symbol import Provide_Symbol
@@ -123,103 +124,8 @@ class Builder:
         self.base_output_called_ = True
         pass
 
-
     def iface_pieces(self):
-        return [InterfacePiece(globals={'BUILDER_': self,
-
-                                        'URGENCY_IGNORE': Require.URGENCY_IGNORE,
-                                        'URGENCY_WARN': Require.URGENCY_WARN,
-                                        'URGENCY_ERROR': Require.URGENCY_ERROR,
-                                        'EXACT_MATCH': Provide_String.EXACT_MATCH,
-                                        'PREFIX_MATCH': Provide_String.PREFIX_MATCH,
-                                        'GLOB_MATCH': Provide_String.GLOB_MATCH,
-
-                                        'PROVIDE': getattr(self, 'PROVIDE'),
-                                        'REQUIRE': getattr(self, 'REQUIRE'),
-                                        'PROVIDE_SYMBOL': getattr(self, 'PROVIDE_SYMBOL'),
-                                        'REQUIRE_SYMBOL': getattr(self, 'REQUIRE_SYMBOL'),
-                                        'BUILDINFORMATION': getattr(self, 'BUILDINFORMATION'),
-
-                                        'LOCAL': Builder.AC_BUILDINFO_TRANSPORT_LOCAL,
-                                        'PROPAGATE': Builder.AC_BUILDINFO_TRANSPORT_PROPAGATE,
-                                        'AC_BOILERPLATE': Configure_ac.BOILERPLATE,
-                                        'AC_OPTIONS': Configure_ac.OPTIONS,
-                                        'AC_PROGRAMS': Configure_ac.PROGRAMS,
-                                        'AC_LIBRARIES': Configure_ac.LIBRARIES,
-                                        'AC_HEADERS': Configure_ac.HEADERS,
-                                        'AC_TYPEDEFS_AND_STRUCTURES': Configure_ac.TYPEDEFS_AND_STRUCTURES,
-                                        'AC_FUNCTIONS': Configure_ac.FUNCTIONS,
-                                        'AC_OUTPUT': Configure_ac.OUTPUT,
-                                        
-                                        'CONFIGURE_AC': getattr(self, 'CONFIGURE_AC'),
-                                        'ACINCLUDE_M4': getattr(self, 'ACINCLUDE_M4')
-                                        
-                                        
-                                        },
-                               lines=[])]
-
-    def PROVIDE(self, provide):
-        if not isinstance(provide, Provide):
-            raise Error('PROVIDE(): argument must be of type '+str(Provide)+' (was '+str(provide)+')')
-        self.add_provide(provide)
-        pass
-
-    def REQUIRE(self, require):
-        if not isinstance(require, Require):
-            raise Error('REQUIRE(): argument must be of type '+str(Require))
-        self.add_require(require)
-        pass
-
-    def PROVIDE_SYMBOL(self, symbol, match=Provide_String.EXACT_MATCH):
-        if not symbol or len(symbol) == 0:
-            raise Error('PROVIDE_SYMBOL(): need a non-zero symbol parameter')
-        if not match in [Provide_String.EXACT_MATCH, Provide_String.PREFIX_MATCH, Provide_String.GLOB_MATCH]:
-            raise Error('PROVIDE_SYMBOL(): match must be one of EXACT_MATCH, PREFIX_MATCH, GLOB_MATCH')
-        self.add_provide(Provide_Symbol(symbol=symbol, match=match))
-        pass
-
-    def REQUIRE_SYMBOL(self, symbol, urgency=Require.URGENCY_IGNORE):
-        if not symbol or len(symbol)==0:
-            raise Error('REQUIRE_SYMBOL(): need a non-zero symbol parameter')
-        if not urgency in [Require.URGENCY_IGNORE, Require.URGENCY_WARN, Require.URGENCY_ERROR]:
-            raise Error('REQUIRE_SYMBOL(): urgency must be one of URGENCY_IGNORE, URGENCY_WARN, URGENCY_ERROR')
-        self.add_require(Require_Symbol(
-            symbol,
-            found_in=["don't yet know where - concept needed"],
-            urgency=urgency))
-        pass
-
-    def BUILDINFORMATION(self, buildinfo):
-        self.add_buildinfo(buildinfo)
-        pass
-
-    AC_BUILDINFO_TRANSPORT_LOCAL = 0
-    AC_BUILDINFO_TRANSPORT_PROPAGATE = 1
-    def CONFIGURE_AC(self, lines, order, flags=None):
-        if type(order) not in [types.IntType or types.LongType]:
-            raise Error('CONFIGURE_AC(): "order" parameter must be an integer')
-        if flags is None or Builder.AC_BUILDINFO_TRANSPORT_LOCAL in flags:
-            self.package().configure_ac().add_paragraph(
-                paragraph=Paragraph(lines=lines),
-                order=order)
-            pass
-        if flags is None or Builder.AC_BUILDINFO_TRANSPORT_PROPAGATE in flags:
-            self.add_buildinfo(BuildInfo_Configure_in(
-                lines=lines,
-                order=order))
-            pass
-        pass
-
-    def ACINCLUDE_M4(self, lines, flags=None):
-        if flags is None or Builder.AC_BUILDINFO_TRANSPORT_LOCAL in flags:
-            self.package().acinclude_m4().add_paragraph(
-                paragraph=Paragraph(lines=lines))
-            pass
-        if flags is None or Builder.AC_BUILDINFO_TRANSPORT_PROPAGATE in flags:
-            self.add_buildinfo(BuildInfo_ACInclude_m4(
-                lines=lines))
-            pass
-        pass
+        return [BuilderInterfaceProxy(builder=self)]
 
     # these are mainly for use by test programs, and serve no real
     # functionality
@@ -229,6 +135,108 @@ class Builder:
     
     pass
 
+class BuilderInterfaceProxy(InterfaceProxy):
+    def __init__(self, builder):
+        InterfaceProxy.__init__(self)
+
+        self.builder_ = builder
+        
+        # PROVIDE, PROVIDE_SYMBOL, and associated flag values
+        self.add_global('URGENCY_IGNORE', Require.URGENCY_IGNORE)
+        self.add_global('URGENCY_WARN', Require.URGENCY_WARN)
+        self.add_global('URGENCY_ERROR', Require.URGENCY_ERROR)
+        self.add_global('EXACT_MATCH', Provide_String.EXACT_MATCH)
+        self.add_global('PREFIX_MATCH', Provide_String.PREFIX_MATCH)
+        self.add_global('GLOB_MATCH', Provide_String.GLOB_MATCH)
+
+        self.add_global('PROVIDE', getattr(self, 'PROVIDE'))
+        self.add_global('REQUIRE', getattr(self, 'REQUIRE'))
+        self.add_global('PROVIDE_SYMBOL', getattr(self, 'PROVIDE_SYMBOL'))
+        self.add_global('REQUIRE_SYMBOL', getattr(self, 'REQUIRE_SYMBOL'))
+
+        # BUILDINFORMATION
+        self.add_global('BUILDINFORMATION', getattr(self, 'BUILDINFORMATION'))
+
+        # CONFIGURE_AC, ACINCLUDE_M4, and associated flag values
+        self.add_global('LOCAL', BuilderInterfaceProxy.AC_BUILDINFO_TRANSPORT_LOCAL)
+        self.add_global('PROPAGATE', BuilderInterfaceProxy.AC_BUILDINFO_TRANSPORT_PROPAGATE)
+        self.add_global('AC_BOILERPLATE', Configure_ac.BOILERPLATE)
+        self.add_global('AC_OPTIONS', Configure_ac.OPTIONS)
+        self.add_global('AC_PROGRAMS', Configure_ac.PROGRAMS)
+        self.add_global('AC_LIBRARIES', Configure_ac.LIBRARIES)
+        self.add_global('AC_HEADERS', Configure_ac.HEADERS)
+        self.add_global('AC_TYPEDEFS_AND_STRUCTURES', Configure_ac.TYPEDEFS_AND_STRUCTURES)
+        self.add_global('AC_FUNCTIONS', Configure_ac.FUNCTIONS)
+        self.add_global('AC_OUTPUT', Configure_ac.OUTPUT)
+
+        self.add_global('CONFIGURE_AC', getattr(self, 'CONFIGURE_AC'))
+        self.add_global('ACINCLUDE_M4', getattr(self, 'ACINCLUDE_M4'))        
+        
+        pass
+
+    def PROVIDE(self, provide):
+        if not isinstance(provide, Provide):
+            raise Error('PROVIDE(): argument must be of type '+str(Provide)+' (was '+str(provide)+')')
+        self.builder_.add_provide(provide)
+        pass
+
+    def REQUIRE(self, require):
+        if not isinstance(require, Require):
+            raise Error('REQUIRE(): argument must be of type '+str(Require))
+        self.builder_.add_require(require)
+        pass
+
+    def PROVIDE_SYMBOL(self, symbol, match=Provide_String.EXACT_MATCH):
+        if not symbol or len(symbol) == 0:
+            raise Error('PROVIDE_SYMBOL(): need a non-zero symbol parameter')
+        if not match in [Provide_String.EXACT_MATCH, Provide_String.PREFIX_MATCH, Provide_String.GLOB_MATCH]:
+            raise Error('PROVIDE_SYMBOL(): match must be one of EXACT_MATCH, PREFIX_MATCH, GLOB_MATCH')
+        self.builder_.add_provide(Provide_Symbol(symbol=symbol, match=match))
+        pass
+
+    def REQUIRE_SYMBOL(self, symbol, urgency=Require.URGENCY_IGNORE):
+        if not symbol or len(symbol)==0:
+            raise Error('REQUIRE_SYMBOL(): need a non-zero symbol parameter')
+        if not urgency in [Require.URGENCY_IGNORE, Require.URGENCY_WARN, Require.URGENCY_ERROR]:
+            raise Error('REQUIRE_SYMBOL(): urgency must be one of URGENCY_IGNORE, URGENCY_WARN, URGENCY_ERROR')
+        self.builder_.add_require(Require_Symbol(
+            symbol,
+            found_in=["don't yet know where - concept needed"],
+            urgency=urgency))
+        pass
+
+    def BUILDINFORMATION(self, buildinfo):
+        self.builder_.add_buildinfo(buildinfo)
+        pass
+
+    AC_BUILDINFO_TRANSPORT_LOCAL = 0
+    AC_BUILDINFO_TRANSPORT_PROPAGATE = 1
+    def CONFIGURE_AC(self, lines, order, flags=None):
+        if type(order) not in [types.IntType or types.LongType]:
+            raise Error('CONFIGURE_AC(): "order" parameter must be an integer')
+        if flags is None or BuilderInterfaceProxy.AC_BUILDINFO_TRANSPORT_LOCAL in flags:
+            self.builder_.package().configure_ac().add_paragraph(
+                paragraph=Paragraph(lines=lines),
+                order=order)
+            pass
+        if flags is None or BuilderInterfaceProxy.AC_BUILDINFO_TRANSPORT_PROPAGATE in flags:
+            self.builder_.add_buildinfo(BuildInfo_Configure_in(
+                lines=lines,
+                order=order))
+            pass
+        pass
+
+    def ACINCLUDE_M4(self, lines, flags=None):
+        if flags is None or BuilderInterfaceProxy.AC_BUILDINFO_TRANSPORT_LOCAL in flags:
+            self.builder_.package().acinclude_m4().add_paragraph(
+                paragraph=Paragraph(lines=lines))
+            pass
+        if flags is None or BuilderInterfaceProxy.AC_BUILDINFO_TRANSPORT_PROPAGATE in flags:
+            self.builder_.add_buildinfo(BuildInfo_ACInclude_m4(
+                lines=lines))
+            pass
+        pass
+    pass
 
 class BuilderSet:
     def __init__(self):

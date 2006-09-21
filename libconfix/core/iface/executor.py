@@ -16,49 +16,22 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 # USA
 
-import os
-import sys
 import types
+import sys
 
 from libconfix.core.utils.error import Error, NativeError
-
-import filesys
-
-class CodePiece:
-    def __init__(self, start_lineno, lines):
-        self.start_lineno_ = start_lineno
-        self.lines_ = lines
-        pass
-    def start_lineno(self):
-        return self.start_lineno_
-    def lines(self):
-        return self.lines_
-    pass
-
-class InterfacePiece:
-    def __init__(self, globals, lines):
-        assert type(globals) is types.DictionaryType
-        self.globals_ = globals
-        self.lines_ = lines
-        pass
-    def globals(self):
-        return self.globals_
-    def lines(self):
-        return self.lines_
-    pass
+from libconfix.core.filesys.file import File
+from libconfix.core.filesys.directory import Directory
 
 class InterfaceExecutor:
     def __init__(self, iface_pieces):
         self.context_ = {}
         for piece in iface_pieces:
-            for n, v in piece.globals().iteritems():
+            for n, v in piece.get_globals().iteritems():
                 assert type(n) is types.StringType
                 assert not self.context_.has_key(n), n
                 self.context_[n] = v
                 pass
-            assert type(piece.lines()) is types.ListType or type(piece.lines()) is types.TupleType
-            code = '\n'.join(piece.lines())
-            exec code in self.context_
             pass
         pass
 
@@ -66,9 +39,9 @@ class InterfaceExecutor:
         return self.context_
 
     def execute_file(self, file):
-        assert isinstance(file, filesys.file.File), file
+        assert isinstance(file, File), file
         assert file.parent() is not None
-        assert isinstance(file.parent(), filesys.directory.Directory)
+        assert isinstance(file.parent(), Directory)
 
         chdirbackto = None
             

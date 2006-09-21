@@ -19,9 +19,9 @@
 import types
 
 from libconfix.core.utils.error import Error
+from libconfix.core.iface.proxy import InterfaceProxy
 
 from entrybuilder import EntryBuilder
-from iface import InterfacePiece
 
 class FileBuilder(EntryBuilder):
     def __init__(self, file, parentbuilder, package):
@@ -35,10 +35,18 @@ class FileBuilder(EntryBuilder):
         return self.entry()
     def iface_pieces(self):
         return EntryBuilder.iface_pieces(self) + \
-               [InterfacePiece(globals={'FILE_PROPERTIES': getattr(self, 'FILE_PROPERTIES'),
-                                        'FILE_PROPERTY': getattr(self, 'FILE_PROPERTY'),
-                                        },
-                               lines=[])]
+               [FileBuilderInterfaceProxy(builder=self)]
+    pass
+
+class FileBuilderInterfaceProxy(InterfaceProxy):
+    def __init__(self, builder):
+        InterfaceProxy.__init__(self)
+
+        self.builder_ = builder
+        
+        self.add_global('FILE_PROPERTIES', getattr(self, 'FILE_PROPERTIES'))
+        self.add_global('FILE_PROPERTY', getattr(self, 'FILE_PROPERTY'))
+        pass
 
     def FILE_PROPERTIES(self, properties):
         if properties is None:
@@ -46,15 +54,12 @@ class FileBuilder(EntryBuilder):
         if not type(properties) is types.DictionaryType:
             raise Error("FILE_PROPERTIES(): 'properties' parameter must be a dictionary")
         for name, value in properties.iteritems():
-            self.file().set_property(name=name, value=value)
+            self.builder_.file().set_property(name=name, value=value)
             pass
         pass
 
     def FILE_PROPERTY(self, name, value):
         if type(name) is not types.StringType:
             raise Error("FILE_PROPERTY(): 'name' must be a string")
-        self.file().set_property(name, value)
+        self.builder_.file().set_property(name, value)
         pass
-    
-    pass
-

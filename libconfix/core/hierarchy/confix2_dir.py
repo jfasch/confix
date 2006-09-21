@@ -16,11 +16,14 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 # USA
 
-from filebuilder import FileBuilder
-from iface import InterfaceExecutor, InterfacePiece
-from libconfix.core.utils.error import Error
-
 import os
+
+from libconfix.core.iface.executor import InterfaceExecutor
+from libconfix.core.iface.proxy import InterfaceProxy
+from libconfix.core.utils.error import Error
+from libconfix.core.filebuilder import FileBuilder
+
+from iface import DirectoryBuilderInterfaceProxy
 
 class Confix2_dir(FileBuilder):
     def __init__(self, file, parentbuilder, package):
@@ -57,21 +60,8 @@ class Confix2_dir(FileBuilder):
         pass
 
     def iface_pieces(self):
-        return FileBuilder.iface_pieces(self) + \
-               [InterfacePiece(globals={'IGNORE_ENTRIES': getattr(self, 'IGNORE_ENTRIES'),
-                                        'EXTRA_DIST': getattr(self, 'EXTRA_DIST'),
-                                        'MAKEFILE_AM': getattr(self, 'MAKEFILE_AM'),
-                                        },
-                               lines=[])]
-
-    def IGNORE_ENTRIES(self, names):
-        self.parentbuilder().add_ignored_entries(names)
-        pass
-    def EXTRA_DIST(self, filename):
-        self.parentbuilder().makefile_am().add_extra_dist(filename)
-        pass
-    def MAKEFILE_AM(self, line):
-        self.parentbuilder().makefile_am().add_line(line)
-        pass
+        # our interface is not that of a regular file builder. rather,
+        # we implement the interface into the *directory* we live in.
+        return self.parentbuilder().iface_pieces()
 
     pass

@@ -18,7 +18,7 @@
 
 from libconfix.core.local_package import LocalPackage
 from libconfix.core.filebuilder import FileBuilder
-from libconfix.core.hierarchy import DirectorySetup
+from libconfix.core.hierarchy.setup import DirectorySetup
 
 from libconfix.testutils import dirhier
 from libconfix.testutils import find

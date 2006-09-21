@@ -85,12 +85,11 @@ class Provide_CInclude(Provide_String):
     MATCH_CLASSES = [Require_CInclude]
 
     def __init__(self, filename, match=EXACT_MATCH):
-
         Provide_String.__init__(self,
                                 string=helper.normalize_filename(filename),
                                 match=match)
-
-    def __repr__(self):
+        pass
+    def __str__(self):
         return "C: "+self.string()
 
     def can_match_classes(self): return Provide_CInclude.MATCH_CLASSES

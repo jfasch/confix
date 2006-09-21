@@ -25,7 +25,7 @@ from libconfix.core.filesys.file import File
 from libconfix.core.filesys.directory import Directory
 from libconfix.core.utils import const
 from libconfix.core.local_package import LocalPackage
-from libconfix.core.hierarchy import DirectorySetup
+from libconfix.core.hierarchy.setup import DirectorySetup
 from libconfix.testutils import find
 
 class BuildInfoSuite(unittest.TestSuite):

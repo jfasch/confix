@@ -19,7 +19,7 @@
 
 from makefile_am import Makefile_am
 
-from libconfix.core.hierarchy import DirectoryBuilder
+from libconfix.core.hierarchy.dirbuilder import DirectoryBuilder
 from libconfix.core.filesys.file import File
 from libconfix.core.utils.error import Error
 from libconfix.core.utils import helper

@@ -23,7 +23,7 @@ from libconfix.core.filesys.file import File
 from libconfix.core.filesys.directory import Directory
 from libconfix.core.utils import const
 from libconfix.core.local_package import LocalPackage
-from libconfix.core.hierarchy import DirectorySetup
+from libconfix.core.hierarchy.setup import DirectorySetup
 
 from libconfix.testutils import find
 
@@ -40,7 +40,6 @@ class Confix2_dir_Suite(unittest.TestSuite):
 
 class ExternalLibraryTest(unittest.TestCase):
     def test(self):
-        self.fail('Have to implement EXTERNAL_LIBRARY')
         fs = FileSystem(path=['', 'path', 'to', 'it'])
         fs.rootdirectory().add(
             name=const.CONFIX2_PKG,
@@ -122,7 +121,6 @@ class ExternalLibraryTest(unittest.TestCase):
 
 class ProvideRequireInclude(unittest.TestCase):
     def test(self):
-        self.fail('Have to find a way of importing C iface to Confix2.dir')
         fs = FileSystem(path=['', 'path', 'to', 'it'])
         fs.rootdirectory().add(
             name=const.CONFIX2_PKG,

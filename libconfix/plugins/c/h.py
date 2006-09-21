@@ -1,6 +1,5 @@
-# $Id: h.py,v 1.8 2006/06/27 15:08:59 jfasch Exp $
-
 # Copyright (C) 2002-2006 Salomon Automation
+# Copyright (C) 2006 Joerg Faschingbauer
 
 # This library is free software; you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as
@@ -22,7 +21,7 @@ from dependency import Provide_CInclude
 import buildinfo
 import namespace
 
-from libconfix.core.iface import InterfacePiece
+from libconfix.core.iface.proxy import InterfaceProxy
 from libconfix.core.utils.error import Error
 
 import os
@@ -97,13 +96,7 @@ class HeaderBuilder(CBaseBuilder):
         pass
     
     def iface_pieces(self):
-        return CBaseBuilder.iface_pieces(self) + \
-               [InterfacePiece(globals={'INSTALLPATH': getattr(self, 'INSTALLPATH')},
-                               lines=[])]
-
-    def INSTALLPATH(self, path):
-        self.set_install_path(path)
-        pass
+        return CBaseBuilder.iface_pieces(self) + [HeaderBuilderInterfaceProxy(object=self)]
 
     def __check_installpath(self, path):
         for d in path:
@@ -111,5 +104,16 @@ class HeaderBuilder(CBaseBuilder):
                 raise Error(os.sep.join(self.file().relpath())+': '
                             'empty path component in install path '+str(path))
             pass
+        pass
+    pass
+
+class HeaderBuilderInterfaceProxy(InterfaceProxy):
+    def __init__(self, object):
+        InterfaceProxy.__init__(self)
+        self.object_ = object
+        self.add_global('INSTALLPATH', getattr(self, 'INSTALLPATH'))
+        pass
+    def INSTALLPATH(self, path):
+        self.object_.set_install_path(path)
         pass
     pass

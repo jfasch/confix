@@ -28,7 +28,6 @@ from libconfix.core.require_symbol import Require_Symbol
 from libconfix.core.provide import Provide
 from libconfix.core.provide_string import Provide_String
 from libconfix.core.provide_symbol import Provide_Symbol
-from libconfix.core.iface import InterfaceExecutor, CodePiece
 from libconfix.core.utils import const
 
 import unittest
@@ -66,7 +65,7 @@ class BuilderInterface(unittest.TestCase):
         self.assertEqual(file.get_property(name='YYY'), 777)
         
         pass
-
+    
     def testRequires(self):
         fs = FileSystem(path=[])
         fs.rootdirectory().add(

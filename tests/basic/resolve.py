@@ -24,7 +24,7 @@ from libconfix.core.edgefinder import EdgeFinder
 from libconfix.core.require_symbol import Require_Symbol
 from libconfix.core.filesys.file import File
 from libconfix.core.local_package import LocalPackage
-from libconfix.core.hierarchy import DirectorySetup
+from libconfix.core.hierarchy.setup import DirectorySetup
 from libconfix.core.digraph.cycle import CycleError
 import unittest
 

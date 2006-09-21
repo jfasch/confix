@@ -24,7 +24,7 @@ from creator import Creator
 from clusterer import CClusterer
 from installer import Installer
 from namefinder import LongNameFinder, ShortNameFinder
-from iface import InterfaceProxy
+from configurator import ConfiguratorInterface
 
 class CSetup(Setup):
     def __init__(self,
@@ -43,8 +43,8 @@ class CSetup(Setup):
 
     def initial_builders(self, parentbuilder, package):
         return Setup.initial_builders(self, parentbuilder=parentbuilder, package=package) + \
-               [InterfaceProxy(parentbuilder=parentbuilder,
-                               package=package),
+               [ConfiguratorInterface(parentbuilder=parentbuilder,
+                                      package=package),
                 Creator(parentbuilder=parentbuilder,
                         package=package),
                 CClusterer(parentbuilder=parentbuilder,

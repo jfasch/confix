@@ -17,7 +17,7 @@
 # USA
 
 from libconfix.core.utils import const
-from libconfix.core.iface import InterfacePiece
+from libconfix.core.iface.proxy import InterfaceProxy
 
 from base import CBaseBuilder
 from buildinfo import \
@@ -127,14 +127,8 @@ class CompiledCBuilder(CBaseBuilder):
         pass
 
     def iface_pieces(self):
-        return CBaseBuilder.iface_pieces(self) + \
-               [InterfacePiece(globals={'EXENAME': getattr(self, 'EXENAME')},
-                               lines=[])]
+        return CBaseBuilder.iface_pieces(self) + [CompiledCBuilderInterfaceProxy(object=self)]
 
-    def EXENAME(self, name):
-        self.set_exename(name)
-        pass
-        
     def __init_buildinfo(self):
         self.buildinfo_includepath_native_local_ = 0
         self.buildinfo_includepath_native_installed_ = 0
@@ -172,3 +166,13 @@ class CompiledCBuilder(CBaseBuilder):
     
     pass
 
+class CompiledCBuilderInterfaceProxy(InterfaceProxy):
+    def __init__(self, object):
+        InterfaceProxy.__init__(self)
+        self.object_ = object
+        self.add_global('EXENAME', getattr(self, 'EXENAME'))
+        pass
+    def EXENAME(self, name):
+        self.object_.set_exename(name)
+        pass
+    pass

@@ -16,86 +16,14 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 # USA
 
-from builder import Builder, BuilderSet
-from entrybuilder import EntryBuilder
-from setup import Setup
-from confix2_dir import Confix2_dir
-from depindex import ProvideMap
-from local_node import LocalNode
-
-from libconfix.core.filesys.file import File
+from libconfix.core.entrybuilder import EntryBuilder
 from libconfix.core.filesys.directory import Directory
+from libconfix.core.filesys.file import File
+from libconfix.core.builder import BuilderSet
 from libconfix.core.automake.makefile_am import Makefile_am
-from libconfix.core.utils.error import Error
-from libconfix.core.utils import const
-from libconfix.core.digraph import utils, toposort
+from libconfix.core.local_node import LocalNode
 
-import re
-import types
-import os
-
-class DirectorySetup(Setup):
-    def __init__(self):
-        Setup.__init__(self)
-        pass
-    def initial_builders(self, parentbuilder, package):
-        return [SubdirectoryRecognizer(parentbuilder=parentbuilder, package=package)] + \
-               Setup.initial_builders(self, parentbuilder=parentbuilder, package=package)
-    pass
-
-class SubdirectoryRecognizer(Builder):
-    def __init__(self, parentbuilder, package):
-        assert isinstance(parentbuilder, DirectoryBuilder)
-        Builder.__init__(
-            self,
-            id=str(self.__class__)+'('+str(parentbuilder)+')',
-            parentbuilder=parentbuilder,
-            package=package)
-        self.recognized_directories_ = set()
-        pass
-
-    def enlarge(self):
-        newbuilders = []
-        errors = []
-        for name, entry in self.parentbuilder().entries():
-            if not isinstance(entry, Directory):
-                continue
-            if entry in self.recognized_directories_:
-                continue
-            confix2_dir_file = entry.get(const.CONFIX2_DIR)
-            if confix2_dir_file is None:
-                continue
-            if not isinstance(confix2_dir_file, File):
-                errors.append(Error(confix2_dir_file.relpath()+' is not a file'))
-                continue
-            try:
-                dirbuilder = DirectoryBuilder(
-                    directory=entry,
-                    parentbuilder=self.parentbuilder(),
-                    package=self.package())
-                for setup in self.package().setups():
-                    dirbuilder.add_builders(setup.initial_builders(parentbuilder=dirbuilder,
-                                                                   package=self.package()))
-                    pass
-                confix2_dir = Confix2_dir(file=confix2_dir_file,
-                                          parentbuilder=dirbuilder,
-                                          package=self.package())
-                dirbuilder.add_configurator(confix2_dir)
-                newbuilders.append((entry, dirbuilder))
-            except Error, e:
-                errors.append(Error('Error executing '+os.sep.join(confix2_dir_file.relpath()), [e]))
-                pass
-            pass
-        if len(errors):
-            raise Error('There were errors in directory '+\
-                        os.sep.join(self.parentbuilder().directory().relpath()), errors)
-        for dir, b in newbuilders:
-            self.recognized_directories_.add(dir)
-            self.parentbuilder().add_builder(b)
-            pass
-        return len(newbuilders) + Builder.enlarge(self)
-    
-    pass
+from iface import DirectoryBuilderInterfaceProxy
 
 class DirectoryBuilder(EntryBuilder):
     def __init__(self,
@@ -187,7 +115,7 @@ class DirectoryBuilder(EntryBuilder):
                 break
             total_more += more
             pass
-        return total_more + Builder.enlarge(self)
+        return total_more + EntryBuilder.enlarge(self)
 
     def nodes(self):
 
@@ -244,5 +172,7 @@ class DirectoryBuilder(EntryBuilder):
 
         pass
      
+    def iface_pieces(self):
+        return EntryBuilder.iface_pieces(self) + \
+               [DirectoryBuilderInterfaceProxy(directory_builder=self)]
     pass
-
