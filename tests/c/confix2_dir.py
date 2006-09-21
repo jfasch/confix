@@ -30,15 +30,17 @@ from libconfix.testutils import find
 from libconfix.plugins.c.setup import CSetup
 from libconfix.plugins.c.library import LibraryBuilder
 
-class ExternalLibrarySuite(unittest.TestSuite):
+class Confix2_dir_Suite(unittest.TestSuite):
     def __init__(self):
         unittest.TestSuite.__init__(self)
         self.addTest(ExternalLibraryTest('test'))
+        self.addTest(ProvideRequireInclude('test'))
         pass
     pass
 
 class ExternalLibraryTest(unittest.TestCase):
     def test(self):
+        self.fail('Have to implement EXTERNAL_LIBRARY')
         fs = FileSystem(path=['', 'path', 'to', 'it'])
         fs.rootdirectory().add(
             name=const.CONFIX2_PKG,
@@ -118,7 +120,52 @@ class ExternalLibraryTest(unittest.TestCase):
         pass
     pass
 
+class ProvideRequireInclude(unittest.TestCase):
+    def test(self):
+        self.fail('Have to find a way of importing C iface to Confix2.dir')
+        fs = FileSystem(path=['', 'path', 'to', 'it'])
+        fs.rootdirectory().add(
+            name=const.CONFIX2_PKG,
+            entry=File(lines=["PACKAGE_NAME('ProvideRequireInclude')",
+                              "PACKAGE_VERSION('1.2.3')"]))
+        fs.rootdirectory().add(
+            name=const.CONFIX2_DIR,
+            entry=File())
+
+        lo = fs.rootdirectory().add(
+            name='lo',
+            entry=Directory())
+        lo.add(
+            name=const.CONFIX2_DIR,
+            entry=File(lines=["PROVIDE_H('lo.h')"]))
+
+        hi = fs.rootdirectory().add(
+            name='hi',
+            entry=Directory())
+        hi.add(
+            name=const.CONFIX2_DIR,
+            entry=File(lines=["REQUIRE_H('lo.h', URGENCY_ERROR)"]))
+
+        package = LocalPackage(rootdirectory=fs.rootdirectory(),
+                               setups=[DirectorySetup(),
+                                       CSetup(use_libtool=False,
+                                              short_libnames=False)])
+        package.enlarge(external_nodes=[])
+
+        lo_builder = find.find_entrybuilder(rootbuilder=package.rootbuilder(),
+                                            path=['lo'])
+        hi_builder = find.find_entrybuilder(rootbuilder=package.rootbuilder(),
+                                            path=['hi'])
+        lo_node = find.find_managing_node_of_builder(nodes=package.digraph().nodes(),
+                                                     builder=lo_builder)
+        hi_node = find.find_managing_node_of_builder(nodes=package.digraph().nodes(),
+                                                     builder=hi_builder)
+
+        self.failUnless(lo_node in package.digraph().successors(hi_node))
+        pass
+    pass
+        
 if __name__ == '__main__':
-    unittest.TextTestRunner().run(ExternalLibrarySuite())
+    unittest.TextTestRunner().run(Confix2_dir_Suite())
     pass
 

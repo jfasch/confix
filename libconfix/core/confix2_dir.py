@@ -31,10 +31,6 @@ class Confix2_dir(FileBuilder):
         self.executed_ = False
         pass
 
-    def iface_pieces(self):
-        return FileBuilder.iface_pieces(self) + [InterfacePiece(globals={'CONFIX2_DIR_': self},
-                                                                lines=[code_])]
-
     def enlarge(self):
         FileBuilder.enlarge(self)
         
@@ -59,17 +55,23 @@ class Confix2_dir(FileBuilder):
         FileBuilder.output(self)
         self.parentbuilder().makefile_am().add_extra_dist(self.file().name())
         pass
-    
-    pass
 
-code_ = """
-def IGNORE_ENTRIES(names):
-    CONFIX2_DIR_.parentbuilder().add_ignored_entries(names)
+    def iface_pieces(self):
+        return FileBuilder.iface_pieces(self) + \
+               [InterfacePiece(globals={'IGNORE_ENTRIES': getattr(self, 'IGNORE_ENTRIES'),
+                                        'EXTRA_DIST': getattr(self, 'EXTRA_DIST'),
+                                        'MAKEFILE_AM': getattr(self, 'MAKEFILE_AM'),
+                                        },
+                               lines=[])]
+
+    def IGNORE_ENTRIES(self, names):
+        self.parentbuilder().add_ignored_entries(names)
+        pass
+    def EXTRA_DIST(self, filename):
+        self.parentbuilder().makefile_am().add_extra_dist(filename)
+        pass
+    def MAKEFILE_AM(self, line):
+        self.parentbuilder().makefile_am().add_line(line)
+        pass
+
     pass
-def EXTRA_DIST(filename):
-    CONFIX2_DIR_.parentbuilder().makefile_am().add_extra_dist(filename)
-    pass
-def MAKEFILE_AM(line):
-    CONFIX2_DIR_.parentbuilder().makefile_am().add_line(line)
-    pass
-"""

@@ -16,15 +16,17 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 # USA
 
-from dependency import Require_CInclude
-import helper
+import os
+import re
+import types
 
 from libconfix.core.filebuilder import FileBuilder
 from libconfix.core.iface import InterfaceExecutor, InterfacePiece, CodePiece
+from libconfix.core.require import Require
 from libconfix.core.utils.error import Error
 
-import os
-import re
+from dependency import Require_CInclude
+import helper
 
 # argh: '$' does not hit doze-like carriage return, but rather leaves
 # it at the end of the match.
@@ -51,8 +53,23 @@ class CBaseBuilder(FileBuilder):
 
     def iface_pieces(self):
         return FileBuilder.iface_pieces(self) + \
-               [InterfacePiece(globals={'CBASEBUILDER_': self},
-                               lines=[code_])]
+               [InterfacePiece(globals={'REQUIRE_H': getattr(self, 'REQUIRE_H')},
+                               lines=[])]
+
+    def REQUIRE_H(self, filename, urgency=Require.URGENCY_IGNORE):
+        if not filename:
+            raise Error("REQUIRE_H(): need a non-null 'filename' parameter")
+        if type(filename) is not types.StringType:
+            raise Error("REQUIRE_H(): 'filename' parameter must be a string")
+        if len(filename)==0:
+            raise Error("REQUIRE_H(): need a non-zero 'filename' parameter")
+        if not urgency in [Require.URGENCY_IGNORE, Require.URGENCY_WARN, Require.URGENCY_ERROR]:
+            raise Error('REQUIRE_H(): urgency must be one of URGENCY_IGNORE, URGENCY_WARN, URGENCY_ERROR')
+        self.add_require(Require_CInclude(
+            filename=filename,
+            found_in='/'.join(self.file().relpath(self.package().rootdirectory())),
+            urgency=urgency))
+        pass
 
     def eval_iface_(self):
 
@@ -103,21 +120,3 @@ class CBaseBuilder(FileBuilder):
         pass
     pass
 
-code_ = """
-from libconfix.core.require import Require
-from libconfix.plugins.c.dependency import Require_CInclude
-
-def REQUIRE_H(filename, urgency=Require.URGENCY_IGNORE):
-    if not filename:
-        raise Error("REQUIRE_H(): need a non-null 'filename' parameter")
-    if type(filename) is not types.StringType:
-        raise Error("REQUIRE_H(): 'filename' parameter must be a string")
-    if len(filename)==0:
-        raise Error("REQUIRE_H(): need a non-zero 'filename' parameter")
-    if not urgency in [URGENCY_IGNORE, URGENCY_WARN, URGENCY_ERROR]:
-        raise Error('REQUIRE_H(): urgency must be one of URGENCY_IGNORE, URGENCY_WARN, URGENCY_ERROR')
-    CBASEBUILDER_.add_require(Require_CInclude(
-        filename=filename,
-        found_in='/'.join(CBASEBUILDER_.file().relpath(CBASEBUILDER_.package().rootdirectory())),
-        urgency=urgency))
-"""

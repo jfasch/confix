@@ -16,14 +16,15 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 # USA
 
+import types
+
+from libconfix.core.setup import Setup
+
 from creator import Creator
 from clusterer import CClusterer
 from installer import Installer
 from namefinder import LongNameFinder, ShortNameFinder
-
-from libconfix.core.setup import Setup
-
-import types
+from iface import InterfaceProxy
 
 class CSetup(Setup):
     def __init__(self,
@@ -42,7 +43,9 @@ class CSetup(Setup):
 
     def initial_builders(self, parentbuilder, package):
         return Setup.initial_builders(self, parentbuilder=parentbuilder, package=package) + \
-               [Creator(parentbuilder=parentbuilder,
+               [InterfaceProxy(parentbuilder=parentbuilder,
+                               package=package),
+                Creator(parentbuilder=parentbuilder,
                         package=package),
                 CClusterer(parentbuilder=parentbuilder,
                            package=package,

@@ -16,8 +16,11 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 # USA
 
-from entrybuilder import EntryBuilder
+import types
 
+from libconfix.core.utils.error import Error
+
+from entrybuilder import EntryBuilder
 from iface import InterfacePiece
 
 class FileBuilder(EntryBuilder):
@@ -32,42 +35,26 @@ class FileBuilder(EntryBuilder):
         return self.entry()
     def iface_pieces(self):
         return EntryBuilder.iface_pieces(self) + \
-               [InterfacePiece(globals={'ENTRY_': self.file()},
-                               lines=[iface])]
-    pass
+               [InterfacePiece(globals={'FILE_PROPERTIES': getattr(self, 'FILE_PROPERTIES'),
+                                        'FILE_PROPERTY': getattr(self, 'FILE_PROPERTY'),
+                                        },
+                               lines=[])]
 
-iface = """
-from libconfix.core.utils.error import Error
-
-import types
-
-def FILE_PROPERTIES(properties, filename=None):
-    global ENTRY_
-    if properties is None:
-        raise Error("FILE_PROPERTIES(): 'properties' parameter cannot be None")
-    if not type(properties) is types.DictionaryType:
-        raise Error("FILE_PROPERTIES(): 'properties' parameter must be a dictionary")
-    file = find_file(filename)
-    for name, value in properties.iteritems():
-        file.set_property(name=name, value=value)
+    def FILE_PROPERTIES(self, properties):
+        if properties is None:
+            raise Error("FILE_PROPERTIES(): 'properties' parameter cannot be None")
+        if not type(properties) is types.DictionaryType:
+            raise Error("FILE_PROPERTIES(): 'properties' parameter must be a dictionary")
+        for name, value in properties.iteritems():
+            self.file().set_property(name=name, value=value)
+            pass
         pass
-    pass
 
-def FILE_PROPERTY(name, value, filename=None):
-    global ENTRY_
-    if type(name) is not types.StringType:
-        raise Error("FILE_PROPERTY(): 'name' must be a string")
-    file = find_file(filename)
-    file.set_property(name, value)
-    pass
-
-def find_file(filename):
-    if filename is None:
-        file = ENTRY_
-    else:
-        file = ENTRY_.parent().get(filename)
-        if file is None:
-            raise Error('FILE_PROPERTIES(): file '+filename+' not found in directory '+ENTRY_.parent().name())
+    def FILE_PROPERTY(self, name, value):
+        if type(name) is not types.StringType:
+            raise Error("FILE_PROPERTY(): 'name' must be a string")
+        self.file().set_property(name, value)
         pass
-    return file
-"""
+    
+    pass
+

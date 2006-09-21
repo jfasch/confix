@@ -16,11 +16,8 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 # USA
 
-from depinfo import DependencyInformation
-from iface import InterfacePiece
-from provide_string import Provide_String
-from require import Require
-from buildinfoset import BuildInformationSet
+import os
+import types
 
 from libconfix.core.utils.error import Error
 from libconfix.core.utils.paragraph import Paragraph
@@ -29,7 +26,14 @@ from libconfix.core.automake.buildinfo import \
      BuildInfo_Configure_in, \
      BuildInfo_ACInclude_m4
 
-import os
+from depinfo import DependencyInformation
+from iface import InterfacePiece
+from provide import Provide
+from provide_string import Provide_String
+from provide_symbol import Provide_Symbol
+from require import Require
+from require_symbol import Require_Symbol
+from buildinfoset import BuildInformationSet
 
 class Builder:
     def __init__(self, id, parentbuilder, package):
@@ -82,27 +86,6 @@ class Builder:
     def buildinfos(self):
         return self.buildinfos_
     
-    def iface_pieces(self):
-        return [InterfacePiece(globals={'BUILDER_': self,
-
-                                        'URGENCY_IGNORE': Require.URGENCY_IGNORE,
-                                        'URGENCY_WARN': Require.URGENCY_WARN,
-                                        'URGENCY_ERROR': Require.URGENCY_ERROR,
-                                        'EXACT_MATCH': Provide_String.EXACT_MATCH,
-                                        'PREFIX_MATCH': Provide_String.PREFIX_MATCH,
-                                        'GLOB_MATCH': Provide_String.GLOB_MATCH,
-
-                                        'AC_BOILERPLATE': Configure_ac.BOILERPLATE,
-                                        'AC_OPTIONS': Configure_ac.OPTIONS,
-                                        'AC_PROGRAMS': Configure_ac.PROGRAMS,
-                                        'AC_LIBRARIES': Configure_ac.LIBRARIES,
-                                        'AC_HEADERS': Configure_ac.HEADERS,
-                                        'AC_TYPEDEFS_AND_STRUCTURES': Configure_ac.TYPEDEFS_AND_STRUCTURES,
-                                        'AC_FUNCTIONS': Configure_ac.FUNCTIONS,
-                                        'AC_OUTPUT': Configure_ac.OUTPUT,
-                                        
-                                        },
-                               lines=[builder_code_])]
     def confix2_in_iface_pieces(self):
         return []
 
@@ -141,6 +124,103 @@ class Builder:
         pass
 
 
+    def iface_pieces(self):
+        return [InterfacePiece(globals={'BUILDER_': self,
+
+                                        'URGENCY_IGNORE': Require.URGENCY_IGNORE,
+                                        'URGENCY_WARN': Require.URGENCY_WARN,
+                                        'URGENCY_ERROR': Require.URGENCY_ERROR,
+                                        'EXACT_MATCH': Provide_String.EXACT_MATCH,
+                                        'PREFIX_MATCH': Provide_String.PREFIX_MATCH,
+                                        'GLOB_MATCH': Provide_String.GLOB_MATCH,
+
+                                        'PROVIDE': getattr(self, 'PROVIDE'),
+                                        'REQUIRE': getattr(self, 'REQUIRE'),
+                                        'PROVIDE_SYMBOL': getattr(self, 'PROVIDE_SYMBOL'),
+                                        'REQUIRE_SYMBOL': getattr(self, 'REQUIRE_SYMBOL'),
+                                        'BUILDINFORMATION': getattr(self, 'BUILDINFORMATION'),
+
+                                        'LOCAL': Builder.AC_BUILDINFO_TRANSPORT_LOCAL,
+                                        'PROPAGATE': Builder.AC_BUILDINFO_TRANSPORT_PROPAGATE,
+                                        'AC_BOILERPLATE': Configure_ac.BOILERPLATE,
+                                        'AC_OPTIONS': Configure_ac.OPTIONS,
+                                        'AC_PROGRAMS': Configure_ac.PROGRAMS,
+                                        'AC_LIBRARIES': Configure_ac.LIBRARIES,
+                                        'AC_HEADERS': Configure_ac.HEADERS,
+                                        'AC_TYPEDEFS_AND_STRUCTURES': Configure_ac.TYPEDEFS_AND_STRUCTURES,
+                                        'AC_FUNCTIONS': Configure_ac.FUNCTIONS,
+                                        'AC_OUTPUT': Configure_ac.OUTPUT,
+                                        
+                                        'CONFIGURE_AC': getattr(self, 'CONFIGURE_AC'),
+                                        'ACINCLUDE_M4': getattr(self, 'ACINCLUDE_M4')
+                                        
+                                        
+                                        },
+                               lines=[])]
+
+    def PROVIDE(self, provide):
+        if not isinstance(provide, Provide):
+            raise Error('PROVIDE(): argument must be of type '+str(Provide)+' (was '+str(provide)+')')
+        self.add_provide(provide)
+        pass
+
+    def REQUIRE(self, require):
+        if not isinstance(require, Require):
+            raise Error('REQUIRE(): argument must be of type '+str(Require))
+        self.add_require(require)
+        pass
+
+    def PROVIDE_SYMBOL(self, symbol, match=Provide_String.EXACT_MATCH):
+        if not symbol or len(symbol) == 0:
+            raise Error('PROVIDE_SYMBOL(): need a non-zero symbol parameter')
+        if not match in [Provide_String.EXACT_MATCH, Provide_String.PREFIX_MATCH, Provide_String.GLOB_MATCH]:
+            raise Error('PROVIDE_SYMBOL(): match must be one of EXACT_MATCH, PREFIX_MATCH, GLOB_MATCH')
+        self.add_provide(Provide_Symbol(symbol=symbol, match=match))
+        pass
+
+    def REQUIRE_SYMBOL(self, symbol, urgency=Require.URGENCY_IGNORE):
+        if not symbol or len(symbol)==0:
+            raise Error('REQUIRE_SYMBOL(): need a non-zero symbol parameter')
+        if not urgency in [Require.URGENCY_IGNORE, Require.URGENCY_WARN, Require.URGENCY_ERROR]:
+            raise Error('REQUIRE_SYMBOL(): urgency must be one of URGENCY_IGNORE, URGENCY_WARN, URGENCY_ERROR')
+        self.add_require(Require_Symbol(
+            symbol,
+            found_in=["don't yet know where - concept needed"],
+            urgency=urgency))
+        pass
+
+    def BUILDINFORMATION(self, buildinfo):
+        self.add_buildinfo(buildinfo)
+        pass
+
+    AC_BUILDINFO_TRANSPORT_LOCAL = 0
+    AC_BUILDINFO_TRANSPORT_PROPAGATE = 1
+    def CONFIGURE_AC(self, lines, order, flags=None):
+        if type(order) not in [types.IntType or types.LongType]:
+            raise Error('CONFIGURE_AC(): "order" parameter must be an integer')
+        if flags is None or Builder.AC_BUILDINFO_TRANSPORT_LOCAL in flags:
+            self.package().configure_ac().add_paragraph(
+                paragraph=Paragraph(lines=lines),
+                order=order)
+            pass
+        if flags is None or Builder.AC_BUILDINFO_TRANSPORT_PROPAGATE in flags:
+            self.add_buildinfo(BuildInfo_Configure_in(
+                lines=lines,
+                order=order))
+            pass
+        pass
+
+    def ACINCLUDE_M4(self, lines, flags=None):
+        if flags is None or Builder.AC_BUILDINFO_TRANSPORT_LOCAL in flags:
+            self.package().acinclude_m4().add_paragraph(
+                paragraph=Paragraph(lines=lines))
+            pass
+        if flags is None or Builder.AC_BUILDINFO_TRANSPORT_PROPAGATE in flags:
+            self.add_buildinfo(BuildInfo_ACInclude_m4(
+                lines=lines))
+            pass
+        pass
+
     # these are mainly for use by test programs, and serve no real
     # functionality
     def base_enlarge_called(self): return self.base_enlarge_called_
@@ -178,75 +258,3 @@ class BuilderSet:
         del self.builders_[b.id()]
         pass
     pass
-
-builder_code_ = """
-from libconfix.core.require import Require
-from libconfix.core.require_symbol import Require_Symbol
-from libconfix.core.provide import Provide
-from libconfix.core.provide_symbol import Provide_Symbol
-from libconfix.core.utils.error import Error
-from libconfix.core.utils.paragraph import Paragraph
-
-from libconfix.core.automake.buildinfo import BuildInfo_Configure_in, BuildInfo_ACInclude_m4
-
-import os
-
-def REQUIRE(require):
-    if not isinstance(require, Require):
-        raise Error('REQUIRE(): argument must be of type '+str(Require))
-    BUILDER_.add_require(require)
-    pass
-
-def REQUIRE_SYMBOL(symbol, urgency=Require.URGENCY_IGNORE):
-    if not symbol or len(symbol)==0:
-        raise Error('REQUIRE_SYMBOL(): need a non-zero symbol parameter')
-    if not urgency in [URGENCY_IGNORE, URGENCY_WARN, URGENCY_ERROR]:
-        raise Error('REQUIRE_SYMBOL(): urgency must be one of URGENCY_IGNORE, URGENCY_WARN, URGENCY_ERROR')
-    BUILDER_.add_require(Require_Symbol(
-        symbol,
-        found_in=["don't yet know where - concept needed"],
-        urgency=urgency))
-    pass
-
-def PROVIDE(provide):
-    if not isinstance(provide, Provide):
-        raise Error('PROVIDE(): argument must be of type '+str(Provide)+' (was '+str(provide)+')')
-    BUILDER_.add_provide(provide)
-    pass
-
-def PROVIDE_SYMBOL(symbol, match=EXACT_MATCH):
-    if not symbol or len(symbol) == 0:
-        raise Error('PROVIDE_SYMBOL(): need a non-zero symbol parameter')
-    if not match in [EXACT_MATCH, PREFIX_MATCH, GLOB_MATCH]:
-        raise Error('PROVIDE_SYMBOL(): match must be one of EXACT_MATCH, PREFIX_MATCH, GLOB_MATCH')
-    BUILDER_.add_provide(Provide_Symbol(symbol=symbol, match=match))
-    pass
-
-LOCAL = 0
-PROPAGATE = 1
-def CONFIGURE_AC(lines, order, flags=None):
-    if type(order) not in [types.IntType or types.LongType]:
-        raise Error('CONFIGURE_AC(): "order" parameter must be an integer')
-    if flags is None or LOCAL in flags:
-        BUILDER_.package().configure_ac().add_paragraph(
-            paragraph=Paragraph(lines=lines),
-            order=order)
-        pass
-    if flags is None or PROPAGATE in flags:
-        BUILDER_.add_buildinfo(BuildInfo_Configure_in(
-            lines=lines,
-            order=order))
-        pass
-    pass
-
-def ACINCLUDE_M4(lines, flags=None):
-    if flags is None or LOCAL in flags:
-        BUILDER_.package().acinclude_m4().add_paragraph(
-            paragraph=Paragraph(lines=lines))
-        pass
-    if flags is None or PROPAGATE in flags:
-        BUILDER_.add_buildinfo(BuildInfo_ACInclude_m4(
-            lines=lines))
-        pass
-    pass
-"""

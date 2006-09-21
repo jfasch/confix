@@ -78,7 +78,8 @@ class BuilderInterface(unittest.TestCase):
             entry=File())
         file = fs.rootdirectory().add(
             name='file',
-            entry=File(lines=["REQUIRE_SYMBOL(symbol='sym1')",
+            entry=File(lines=["from libconfix.core.require_symbol import Require_Symbol",
+                              "REQUIRE_SYMBOL(symbol='sym1')",
                               "REQUIRE_SYMBOL(symbol='sym2', urgency=URGENCY_IGNORE)",
                               "REQUIRE_SYMBOL(symbol='sym3', urgency=URGENCY_WARN)",
                               "REQUIRE_SYMBOL(symbol='sym4', urgency=URGENCY_ERROR)",

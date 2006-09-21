@@ -1,6 +1,5 @@
-# $Id: makefile_am.py,v 1.7 2006/07/13 20:36:19 jfasch Exp $
-
-# Copyright (C) 2004 Salomon Automation
+# Copyright (C) 2002-2006 Salomon Automation
+# Copyright (C) 2006 Joerg Faschingbauer
 
 # This library is free software; you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as
@@ -194,6 +193,7 @@ class Makefile_am:
     def am_cflags(self): return self.am_cflags_
     def add_am_cflags(self, f): self.am_cflags_.add_value(f)
 
+    def am_cxxflags(self): return self.am_cxxflags_
     def add_am_cxxflags(self, f): self.am_cxxflags_.add_value(f)
 
     def add_am_lflags(self, f): self.am_lflags_.add_value(f)
@@ -231,7 +231,12 @@ class Makefile_am:
             if not self.have_includedir_.has_key(dir):
                 self.includepath_.append(dir)
                 self.have_includedir_[dir] = 1
+                pass
+            pass
+        pass
 
+    def cmdlinemacros(self):
+        return self.cmdlinemacros_
     def add_cmdlinemacro(self, m, value=None):
 
         if self.cmdlinemacros_.has_key(m):

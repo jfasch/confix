@@ -24,6 +24,8 @@ from name_mangling import NameManglingSuite
 from requires import RequireTestSuite
 from install_path import InstallPathSuite
 from relate import RelateSuite
+from buildinfo import BuildInfoSuite
+from confix2_dir import Confix2_dir_Suite
 from inter_package_inmem import InterPackageInMemorySuite
 from automake.suite_inmem import AutomakeCSuiteInMemory
 
@@ -41,6 +43,8 @@ class CTestSuiteInMemory(unittest.TestSuite):
         self.addTest(RequireTestSuite())
         self.addTest(InstallPathSuite())
         self.addTest(RelateSuite())
+        self.addTest(BuildInfoSuite())
+        self.addTest(Confix2_dir_Suite())
         self.addTest(InterPackageInMemorySuite())
 
         self.addTest(AutomakeCSuiteInMemory())

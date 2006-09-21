@@ -145,6 +145,7 @@ class LocalPackage(Package):
 
     def enlarge(self, external_nodes):
         self.rootbuilder_.enlarge()
+
         while True:
             self.local_nodes_ = self.rootbuilder_.nodes()
             all_nodes = set(self.local_nodes_)

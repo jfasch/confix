@@ -20,6 +20,7 @@ from libconfix.core.utils.paragraph import Paragraph
 from libconfix.core.automake.configure_ac import Configure_ac
 
 from compiled import CompiledCBuilder
+from buildinfo import BuildInfo_CXXFLAGS
 
 class CXXBuilder(CompiledCBuilder):
     def __init__(self, file, parentbuilder, package):
@@ -28,13 +29,36 @@ class CXXBuilder(CompiledCBuilder):
             file=file,
             parentbuilder=parentbuilder,
             package=package)
+        self.__init_buildinfo()
         pass
+
+    def cxxflags(self):
+        return self.cxxflags_
         
+    def relate(self, node, digraph, topolist):
+        CompiledCBuilder.relate(self, node, digraph, topolist)
+        self.__init_buildinfo()
+        for n in topolist:
+            for bi in n.buildinfos():
+                if isinstance(bi, BuildInfo_CXXFLAGS):
+                    self.cxxflags_.extend(bi.cxxflags())
+                    continue
+                pass
+            pass
+        pass
+
     def output(self):
         CompiledCBuilder.output(self)
         self.package().configure_ac().add_paragraph(
             paragraph=Paragraph(['AC_PROG_CXX']),
             order=Configure_ac.PROGRAMS)
+        for cxxflag in self.cxxflags_:
+            self.parentbuilder().makefile_am().add_am_cxxflags(cxxflag)
+            pass
+        pass
+
+    def __init_buildinfo(self):
+        self.cxxflags_ = []
         pass
 
     pass

@@ -1,6 +1,5 @@
-# $Id: makefile_am.py,v 1.2 2006/07/13 20:27:24 jfasch Exp $
-
 # Copyright (C) 2002-2006 Salomon Automation
+# Copyright (C) 2006 Joerg Faschingbauer
 
 # This library is free software; you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as
@@ -91,6 +90,11 @@ class MakefileAmTest(unittest.TestCase):
         mf_am.add_includepath('-Isome_path')
         mf_am.add_includepath('-Isome_other_path')
 
+        mf_am.add_cmdlinemacro('key1', 'value1')
+        mf_am.add_cmdlinemacro('key2', 'value2')
+        mf_am.add_cmdlinemacro('key3')
+        mf_am.add_cmdlinemacro('key4')
+
         ##########################
         lines = mf_am.lines()
         elements = makefileparser.parse_makefile(lines=lines)
@@ -138,11 +142,15 @@ class MakefileAmTest(unittest.TestCase):
         self.failUnlessEqual(makefileparser.find_list(name='BUILT_SOURCES', elements=elements).values(),
                              ['some-built-source', 'some-other-built-source'])
 
-        # mf_am.add_includepath() goes into AM_CPPFLAGS
+        # mf_am.add_includepath() and add_cmdlinemacro() goes into
+        # AM_CPPFLAGS
         am_cppflags = makefileparser.find_list(name='AM_CPPFLAGS', elements=elements).values()
         self.failUnless('-Isome_path' in am_cppflags)
         self.failUnless('-Isome_other_path' in am_cppflags)
-
+        self.failUnless('-Dkey1=value1' in am_cppflags)
+        self.failUnless('-Dkey2=value2' in am_cppflags)
+        self.failUnless('-Dkey3' in am_cppflags)
+        self.failUnless('-Dkey4' in am_cppflags)
         pass
 
     def test_errors(self):

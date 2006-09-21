@@ -16,16 +16,17 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 # USA
 
+import os
+import types
+
+from libconfix.core.builder import Builder
+from libconfix.core.iface import InterfacePiece
+
 from base import CBaseBuilder
 from compiled import CompiledCBuilder
 from executable import ExecutableBuilder
 from library import LibraryBuilder
 import helper
-
-from libconfix.core.builder import Builder
-from libconfix.core.iface import InterfacePiece
-
-import os
 
 class CClusterer(Builder):
     def __init__(self, parentbuilder, package, namefinder, use_libtool):
@@ -123,27 +124,18 @@ class CClusterer(Builder):
 
     def confix2_in_iface_pieces(self):
         return Builder.confix2_in_iface_pieces(self) + \
-               [InterfacePiece(globals={'C_CLUSTERER_': self},
-                               lines=[_code])]
-        
-    pass
+               [InterfacePiece(globals={'LIBTOOL_LIBRARY_VERSION': getattr(self, 'LIBTOOL_LIBRARY_VERSION')},
+                               lines=[])]
 
-
-_code = """
-
-from libconfix.core.utils.error import Error
-import types
-
-def LIBTOOL_LIBRARY_VERSION(version):
-    if type(version) not in [types.ListType, types.TupleType]:
-        raise Error("LIBTOOL_LIBRARY_VERSION: 'version' argument must be a tuple")
-    if len(version) != 3:
-        raise Error("LIBTOOL_LIBRARY_VERSION: 'version' argument must be a tuple of 3 integers")
-    for i in range(len(version)):
-        if type(version[i]) is not types.IntType:
-            raise Error("LIBTOOL_LIBRARY_VERSION: part '+str(i)+' of version is not an integer")
+    def LIBTOOL_LIBRARY_VERSION(self, version):
+        if type(version) not in [types.ListType, types.TupleType]:
+            raise Error("LIBTOOL_LIBRARY_VERSION: 'version' argument must be a tuple")
+        if len(version) != 3:
+            raise Error("LIBTOOL_LIBRARY_VERSION: 'version' argument must be a tuple of 3 integers")
+        for i in range(len(version)):
+            if type(version[i]) is not types.IntType:
+                raise Error("LIBTOOL_LIBRARY_VERSION: part "+str(i)+" of version is not an integer")
+            pass
+        self.set_libtool_version_info(version)
         pass
-    C_CLUSTERER_.set_libtool_version_info(version)
     pass
-
-"""

@@ -188,6 +188,7 @@ class Namespace(unittest.TestCase):
         self.fail()
         pass
     def testDirectory(self):
+        self.fail('Have to implement FILE_PROPERTY properly for Confix2.dir')
         fs = FileSystem(path=[])
         fs.rootdirectory().add(name=const.CONFIX2_PKG,
                                entry=File(lines=["PACKAGE_NAME('xxx')",

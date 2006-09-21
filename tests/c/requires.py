@@ -106,9 +106,9 @@ class IfaceTest(unittest.TestCase):
         file = fs.rootdirectory().add(
             name='file',
             entry=File(lines=["// CONFIX:REQUIRE_H(filename='inc1')",
-                              "// CONFIX:REQUIRE_H(filename='inc2', urgency=Require.URGENCY_IGNORE)",
-                              "// CONFIX:REQUIRE_H(filename='inc3', urgency=Require.URGENCY_WARN)",
-                              "// CONFIX:REQUIRE_H(filename='inc4', urgency=Require.URGENCY_ERROR)"]))
+                              "// CONFIX:REQUIRE_H(filename='inc2', urgency=URGENCY_IGNORE)",
+                              "// CONFIX:REQUIRE_H(filename='inc3', urgency=URGENCY_WARN)",
+                              "// CONFIX:REQUIRE_H(filename='inc4', urgency=URGENCY_ERROR)"]))
         package = LocalPackage(rootdirectory=fs.rootdirectory(), setups=[])
         builder = CBuilder(file=file, parentbuilder=None, package=package)
         self.assertEqual(len(builder.requires()), 4)

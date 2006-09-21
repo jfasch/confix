@@ -33,7 +33,7 @@ class BuildInformation(Marshallable):
         pass
     
     def __init__(self): pass
-    def install(self): assert 0
+    def install(self): assert 0, self.__class__
 
     def unique_key(self):
         
@@ -41,4 +41,4 @@ class BuildInformation(Marshallable):
         index BuildInformation objects, and to eventually sort out
         duplicates. """
 
-        assert 0, 'abstract: '+str(self)
+        assert 0, self.__class__

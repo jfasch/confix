@@ -55,7 +55,13 @@ class NamesBase(unittest.TestCase):
             entry=File())
         
         libdir = fs.rootdirectory().add(
-            name='lib',
+            name='lib1',
+            entry=Directory())
+        libdir.add(
+            name=const.CONFIX2_DIR,
+            entry=File())
+        libdir = libdir.add(
+            name='lib2',
             entry=Directory())
         libdir.add(
             name=const.CONFIX2_DIR,
@@ -65,7 +71,13 @@ class NamesBase(unittest.TestCase):
             entry=File())
 
         exedir = fs.rootdirectory().add(
-            name='exe',
+            name='exe1',
+            entry=Directory())
+        exedir.add(
+            name=const.CONFIX2_DIR,
+            entry=File())
+        exedir = exedir.add(
+            name='exe2',
             entry=Directory())
         exedir.add(
             name=const.CONFIX2_DIR,
@@ -81,9 +93,9 @@ class NamesBase(unittest.TestCase):
         package.enlarge(external_nodes=[])
 
         libdir_builder = find.find_entrybuilder(rootbuilder=package.rootbuilder(),
-                                                path=['lib'])
+                                                path=['lib1', 'lib2'])
         exedir_builder = find.find_entrybuilder(rootbuilder=package.rootbuilder(),
-                                                path=['exe'])
+                                                path=['exe1', 'exe2'])
         self.failIf(libdir_builder is None)
         self.failIf(exedir_builder is None)
 
@@ -112,8 +124,8 @@ class LongNamesBase(NamesBase):
     def short_libnames(self):
         return False
     def test(self):
-        self.failUnlessEqual(self.lib_builder_.basename(), 'package_lib')
-        self.failUnlessEqual(self.exe_builder_.exename(), 'package_exe_main')
+        self.failUnlessEqual(self.lib_builder_.basename(), 'package_lib1_lib2')
+        self.failUnlessEqual(self.exe_builder_.exename(), 'package_exe1_exe2_main')
         pass
     pass
 class LongNamesWithLibtool(LongNamesBase):
@@ -127,11 +139,12 @@ class ShortNamesBase(NamesBase):
     def short_libnames(self):
         return True
     def test(self):
-        # hmmm. I think we cannot define the mangling here, so we
-        # check only that the computed name is shorter than a long
-        # name :-}
-        self.failUnless(len(self.lib_builder_.basename()) < len('package_lib'))
-        self.failUnless(len(self.exe_builder_.exename()) < len('package_exe_main'))
+        # hmmm. we cannot define the short mangling (it depends upon
+        # the whole package content, and the order of its evaluation),
+        # so we only check that the computed short name is shorter
+        # than the long name :-}
+        self.failUnless(len(self.lib_builder_.basename()) < len('package_lib1_lib2'))
+        self.failUnlessEqual(self.exe_builder_.exename(), 'package_exe1_exe2_main')
         pass
     pass
 class ShortNamesWithLibtool(ShortNamesBase):

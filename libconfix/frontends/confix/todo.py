@@ -148,7 +148,6 @@ def ENLARGE():
             sys.stderr.write(l+'\n')
             pass
         return 1
-    debug.message("done massaging", CONFIG.verbosity())
 
     DONE_RESOLVE = 1
     return 0

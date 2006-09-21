@@ -50,7 +50,7 @@ class HeaderBuilder(CBaseBuilder):
 
         installpath = file.get_property(HeaderBuilder.PROPERTY_INSTALLPATH)
         if installpath is not None:
-            self.check_installpath_(installpath)
+            self.__check_installpath(installpath)
             self.set_install_path(installpath)
             pass
         
@@ -98,10 +98,14 @@ class HeaderBuilder(CBaseBuilder):
     
     def iface_pieces(self):
         return CBaseBuilder.iface_pieces(self) + \
-               [InterfacePiece(globals={'CHEADERBUILDER_': self},
-                               lines=[code_])]
+               [InterfacePiece(globals={'INSTALLPATH': getattr(self, 'INSTALLPATH')},
+                               lines=[])]
 
-    def check_installpath_(self, path):
+    def INSTALLPATH(self, path):
+        self.set_install_path(path)
+        pass
+
+    def __check_installpath(self, path):
         for d in path:
             if len(d) == 0:
                 raise Error(os.sep.join(self.file().relpath())+': '
@@ -109,10 +113,3 @@ class HeaderBuilder(CBaseBuilder):
             pass
         pass
     pass
-
-
-code_ = """
-def INSTALLPATH(path):
-    CHEADERBUILDER_.set_install_path(path)
-    pass
-"""

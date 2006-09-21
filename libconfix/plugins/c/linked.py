@@ -16,7 +16,10 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 # USA
 
-from buildinfo import BuildInfo_CLibrary_NativeLocal, BuildInfo_CLibrary_NativeInstalled
+from buildinfo import \
+     BuildInfo_CLibrary_NativeLocal, \
+     BuildInfo_CLibrary_NativeInstalled, \
+     BuildInfo_CLibrary_External
 
 from libconfix.core.utils.paragraph import Paragraph, OrderedParagraphSet
 from libconfix.core.filebuilder import FileBuilder
@@ -31,7 +34,7 @@ class LinkedBuilder(Builder):
             parentbuilder=parentbuilder,
             package=package)
 
-        self.init_buildinfo_()
+        self.__init_buildinfo()
         self.members_ = BuilderSet()
         self.use_libtool_ = use_libtool
         pass
@@ -47,35 +50,56 @@ class LinkedBuilder(Builder):
     def use_libtool(self):
         return self.use_libtool_
     
-    def buildinfo_direct_dependent_libs(self):
-        return self.buildinfo_direct_dependent_libs_
-    def buildinfo_topo_dependent_libs(self):
-        return self.buildinfo_topo_dependent_libs_
+    def buildinfo_direct_dependent_native_libs(self):
+        return self.buildinfo_direct_dependent_native_libs_
+    def buildinfo_topo_dependent_native_libs(self):
+        return self.buildinfo_topo_dependent_native_libs_
+    def external_libpath(self):
+        return self.external_libpath_
+    def external_libraries(self):
+        return self.external_libraries_
 
     def relate(self, node, digraph, topolist):
         Builder.relate(self, node, digraph, topolist)
-        self.init_buildinfo_()
+        self.__init_buildinfo()
+
+        # of the native (confix-built) libraries we remember both the
+        # direct successors (for libtool, which does topological
+        # sorting by itself) and the toposorted list (if we do not use
+        # libtool).
+
+        # we do not know if an external library was built with
+        # libtool, so we have to pass the full topolist in either
+        # case.
+        
         for n in digraph.successors(node):
             for bi in n.buildinfos():
                 if isinstance(bi, BuildInfo_CLibrary_NativeLocal):
-                    self.buildinfo_direct_dependent_libs_.append(bi)
+                    self.buildinfo_direct_dependent_native_libs_.append(bi)
                     continue
                 if isinstance(bi, BuildInfo_CLibrary_NativeInstalled):
-                    self.buildinfo_direct_dependent_libs_.append(bi)
+                    self.buildinfo_direct_dependent_native_libs_.append(bi)
                     continue
                 pass
             pass
         for n in topolist:
             for bi in n.buildinfos():
                 if isinstance(bi, BuildInfo_CLibrary_NativeLocal):
-                    self.buildinfo_topo_dependent_libs_.insert(0, bi)
+                    self.buildinfo_topo_dependent_native_libs_.insert(0, bi)
                     continue
                 if isinstance(bi, BuildInfo_CLibrary_NativeInstalled):
-                    self.buildinfo_topo_dependent_libs_.insert(0, bi)
+                    self.buildinfo_topo_dependent_native_libs_.insert(0, bi)
+                    continue
+                if isinstance(bi, BuildInfo_CLibrary_External):
+                    key = '.'.join(bi.libpath())
+                    if not key in self.have_external_libpath_:
+                        self.have_external_libpath_.add(key)
+                        self.external_libpath_.insert(0, bi.libpath())
+                        pass
+                    self.external_libraries_.insert(0, bi.libs())
                     continue
                 pass
             pass
-                
         pass
 
     def output(self):
@@ -99,10 +123,10 @@ class LinkedBuilder(Builder):
             # specify the whole topologically sorted list of
             # dependencies - libtool does that by itself. we only
             # specify the direct dependencies.
-            libs_to_use = self.buildinfo_direct_dependent_libs_
+            libs_to_use = self.buildinfo_direct_dependent_native_libs_
         else:
             # not using libtool; have to toposort ourselves
-            libs_to_use = self.buildinfo_topo_dependent_libs_
+            libs_to_use = self.buildinfo_topo_dependent_native_libs_
             pass
 
         for bi in libs_to_use:
@@ -123,9 +147,12 @@ class LinkedBuilder(Builder):
 
         return paths + libraries
     
-    def init_buildinfo_(self):
-        self.buildinfo_direct_dependent_libs_ = []
-        self.buildinfo_topo_dependent_libs_ = []
+    def __init_buildinfo(self):
+        self.buildinfo_direct_dependent_native_libs_ = []
+        self.buildinfo_topo_dependent_native_libs_ = []
+        self.external_libpath_ = []
+        self.have_external_libpath_ = set()
+        self.external_libraries_ = []
         pass
 
     pass

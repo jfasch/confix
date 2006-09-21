@@ -168,24 +168,24 @@ class BuildableCBase(BuildableSingle):
                     self.using_native_local_module_ = True # in confix2
                     continue # in confix2
 
-                if isinstance(bi, BuildInfo_CIncludePath_NativeInstalled):
-                    # remember to add $(includedir) and the readonly
-                    # prefixes to our include path.
-                    self.using_native_installed_module_ = True
-                    continue
+                if isinstance(bi, BuildInfo_CIncludePath_NativeInstalled): # in confix2
+                    # remember to add $(includedir) and the readonly # in confix2
+                    # prefixes to our include path. # in confix2
+                    self.using_native_installed_module_ = True # in confix2
+                    continue # in confix2
 
-                if isinstance(bi, BuildInfo_CIncludePath_External):
-                    incpath = bi.incpath()
-                    key = '.'.join(incpath)
-                    if not self.have_reverse_include_path_external_.has_key(key):
-                        self.reverse_include_path_external_.append(incpath)
-                        self.have_reverse_include_path_external_[key] = 1
-                    continue
+                if isinstance(bi, BuildInfo_CIncludePath_External): # in confix2
+                    incpath = bi.incpath() # in confix2
+                    key = '.'.join(incpath) # in confix2
+                    if not self.have_reverse_include_path_external_.has_key(key): # in confix2
+                        self.reverse_include_path_external_.append(incpath) # in confix2
+                        self.have_reverse_include_path_external_[key] = 1 # in confix2
+                    continue # in confix2
 
-                if isinstance(bi, BuildInfo_CommandlineMacros):
-                    for (k, v) in bi.macros().iteritems():
-                        self.insert_cmdlinemacro_(k, v)
-                    continue
+                if isinstance(bi, BuildInfo_CommandlineMacros): # in confix2
+                    for (k, v) in bi.macros().iteritems(): # in confix2
+                        self.insert_cmdlinemacro_(k, v) # in confix2
+                    continue # in confix2
                 pass
             pass
         pass
@@ -212,28 +212,28 @@ class BuildableCBase(BuildableSingle):
             buildmod.makefile_am().add_includepath('-I$(includedir)')
             buildmod.makefile_am().add_includepath('$('+readonly_prefixes.incpath_var+')')
 
-        incpath = self.reverse_include_path_external_[:]
-        incpath.reverse()
+        incpath = self.reverse_include_path_external_[:] # in confix2
+        incpath.reverse() # in confix2
+ # in confix2
+        for p in incpath: # in confix2
+            for item in p: # in confix2
+                buildmod.makefile_am().add_includepath(item) # in confix2
 
-        for p in incpath:
-            for item in p:
-                buildmod.makefile_am().add_includepath(item)
+        for m in self.cmdlinemacros_.keys(): # in confix2
+            val = self.cmdlinemacros_[m] # in confix2
+            buildmod.makefile_am().add_cmdlinemacro(m, val) # in confix2
 
-        for m in self.cmdlinemacros_.keys():
-            val = self.cmdlinemacros_[m]
-            buildmod.makefile_am().add_cmdlinemacro(m, val)
-
-    def insert_cmdlinemacro_(self, key, value):
-
-        if self.cmdlinemacros_.has_key(key):
-            existing_value = self.cmdlinemacros_[key]
-            if existing_value != value:
-                raise Error(self.name()+': '
-                            'conflicting values for macro "'+key+'": '
-                            '"'+existing_value+'"/"'+value+'"')
-            return
-
-        self.cmdlinemacros_[key] = value
+    def insert_cmdlinemacro_(self, key, value): # in confix2
+ # in confix2
+        if self.cmdlinemacros_.has_key(key): # in confix2
+            existing_value = self.cmdlinemacros_[key] # in confix2
+            if existing_value != value: # in confix2
+                raise Error(self.name()+': ' # in confix2
+                            'conflicting values for macro "'+key+'": ' # in confix2
+                            '"'+existing_value+'"/"'+value+'"') # in confix2
+            return # in confix2
+ # in confix2
+        self.cmdlinemacros_[key] = value # in confix2
 
     def eval_iface_(self, lines): # copied to plugins.c.base
  # copied to plugins.c.base
