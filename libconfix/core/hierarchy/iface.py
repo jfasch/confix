@@ -26,13 +26,22 @@ class DirectoryBuilderInterfaceProxy(InterfaceProxy):
         InterfaceProxy.__init__(self)
         self.directory_builder_ = directory_builder
         self.add_global('IGNORE_ENTRIES', getattr(self, 'IGNORE_ENTRIES'))
+        self.add_global('IGNORE_FILE', getattr(self, 'IGNORE_FILE'))
         self.add_global('EXTRA_DIST', getattr(self, 'EXTRA_DIST'))
         self.add_global('MAKEFILE_AM', getattr(self, 'MAKEFILE_AM'))
         self.add_global('FILE_PROPERTIES', getattr(self, 'FILE_PROPERTIES'))
         self.add_global('FILE_PROPERTY', getattr(self, 'FILE_PROPERTY'))
         pass
     def IGNORE_ENTRIES(self, names):
+        if type(names) not in [types.ListType, types.TupleType]:
+            raise Error('IGNORE_ENTRIES() expects a list')
         self.directory_builder_.add_ignored_entries(names)
+        pass
+    def IGNORE_FILE(self, name):
+        # for backward compatibility with confix 1.5
+        if type(name) is not types.StringType:
+            raise Error('IGNORE_FILE() expects a string')
+        self.directory_builder_.add_ignored_entries([name])
         pass
     def EXTRA_DIST(self, filename):
         self.directory_builder_.makefile_am().add_extra_dist(filename)

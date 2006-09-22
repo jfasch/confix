@@ -16,6 +16,10 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 # USA
 
+import unittest
+
+from automake.suite_inmem import AutomakeCSuiteInMemory
+
 from setup_library import LibrarySetupSuite
 from setup_exe import ExecutableSetupSuite
 from setup_cxx import CXXSetupSuite
@@ -27,9 +31,7 @@ from relate import RelateSuite
 from buildinfo import BuildInfoSuite
 from confix2_dir import Confix2_dir_Suite
 from inter_package_inmem import InterPackageInMemorySuite
-from automake.suite_inmem import AutomakeCSuiteInMemory
-
-import unittest
+from misc import MiscellaneousSuite
 
 class CTestSuiteInMemory(unittest.TestSuite):
     def __init__(self):
@@ -46,6 +48,7 @@ class CTestSuiteInMemory(unittest.TestSuite):
         self.addTest(BuildInfoSuite())
         self.addTest(Confix2_dir_Suite())
         self.addTest(InterPackageInMemorySuite())
+        self.addTest(MiscellaneousSuite())
 
         self.addTest(AutomakeCSuiteInMemory())
         pass

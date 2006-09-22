@@ -18,16 +18,15 @@
 
 import unittest
 
-from c.suite_build import CTestSuiteBuild
-from plainfile.suite_build import PlainFileSuiteBuild
+from simple import SimpleSuite
+
+class PlainFileSuiteInMemory(unittest.TestSuite):
+    def __init__(self):
+        unittest.TestSuite.__init__(self)
+        self.addTest(SimpleSuite())
+        pass
+    pass
 
 if __name__ == '__main__':
-
-    suite = unittest.TestSuite()
-
-    suite.addTest(CTestSuiteBuild())
-    suite.addTest(PlainFileSuiteBuild())
-
-    runner = unittest.TextTestRunner()
-    runner.run(suite)
+    unittest.TextTestRunner().run(PlainFileSuiteInMemory())
     pass

@@ -40,13 +40,14 @@ class DirectoryBuilder(EntryBuilder):
             package=package)
         
         self.directory_ = directory
-        self.configurators_ = []
+        self.configurator_ = None
         self.builders_ = BuilderSet()
         
         # names of files and directories that are to be ignored
         self.ignored_entries_ = set()
 
-        # the (contents of the) Makefile.am we will be writing on output()
+        # the (contents of the) Makefile.am we will be writing on
+        # output()
         self.makefile_am_ = Makefile_am()
 
         pass
@@ -87,18 +88,19 @@ class DirectoryBuilder(EntryBuilder):
         self.builders_.remove(b)
         pass
 
-    def add_configurator(self, c):
-        self.configurators_.append(c)
+    def configurator(self):
+        return self.configurator_
+
+    def set_configurator(self, c):
+        assert self.configurator_ is None
+        self.configurator_ = c
         self.add_builder(c)
         pass
 
     def enlarge(self):
-        # first of all, enlarge() our configurators. at the time of
-        # this writing, the only configurator I see is the Confix2.in
-        # object.
-
-        for c in self.configurators_:
-            c.enlarge()
+        # first of all, have myself configured
+        if self.configurator_ is not None:
+            self.configurator_.enlarge()
             pass
         
         total_more = 0

@@ -62,8 +62,11 @@ class IgnoredEntries(unittest.TestCase):
                                entry=File(lines=["PACKAGE_NAME('xxx')",
                                                  "PACKAGE_VERSION('6.6.6')"]))
         fs.rootdirectory().add(name=const.CONFIX2_DIR,
-                               entry=File(lines=['IGNORE_ENTRIES(["file"])']))
-        fs.rootdirectory().add(name='file',
+                               entry=File(lines=['IGNORE_ENTRIES(["file1"])',
+                                                 'IGNORE_FILE("file2")']))
+        fs.rootdirectory().add(name='file1',
+                               entry=File())
+        fs.rootdirectory().add(name='file2',
                                entry=File())
         
         package = LocalPackage(
@@ -74,7 +77,8 @@ class IgnoredEntries(unittest.TestCase):
         package.rootbuilder().add_builder(filewatcher)
         package.enlarge(external_nodes=[])
 
-        self.failIf('file' in filewatcher.seen_names())
+        self.failIf('file1' in filewatcher.seen_names())
+        self.failIf('file2' in filewatcher.seen_names())
 
         pass
 

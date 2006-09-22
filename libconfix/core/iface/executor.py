@@ -18,6 +18,7 @@
 
 import types
 import sys
+import os
 
 from libconfix.core.utils.error import Error, NativeError
 from libconfix.core.filesys.file import File

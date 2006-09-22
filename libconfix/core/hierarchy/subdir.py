@@ -55,14 +55,13 @@ class SubdirectoryRecognizer(Builder):
                     directory=entry,
                     parentbuilder=self.parentbuilder(),
                     package=self.package())
-                for setup in self.package().setups():
-                    dirbuilder.add_builders(setup.initial_builders(parentbuilder=dirbuilder,
-                                                                   package=self.package()))
-                    pass
                 confix2_dir = Confix2_dir(file=confix2_dir_file,
                                           parentbuilder=dirbuilder,
                                           package=self.package())
-                dirbuilder.add_configurator(confix2_dir)
+                dirbuilder.set_configurator(confix2_dir)
+                for setup in self.package().setups():
+                    setup.setup_directory(directory_builder=dirbuilder)
+                    pass
                 newbuilders.append((entry, dirbuilder))
             except Error, e:
                 errors.append(Error('Error executing '+os.sep.join(confix2_dir_file.relpath()), [e]))

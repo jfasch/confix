@@ -23,7 +23,6 @@ from libconfix.core.utils import debug
 from libconfix.core.utils import helper
 from libconfix.core.utils.error import Error
 from libconfix.core.filesys.scan import scan_filesystem
-from libconfix.core.hierarchy import DirectorySetup
 from libconfix.core.repo.repo_composite import CompositePackageRepository
 from libconfix.core.digraph.cycle import CycleError
 from libconfix.core.automake import bootstrap, configure, make
@@ -112,9 +111,8 @@ def READ_REPO():
     # finally, do our job
     repository = CompositePackageRepository()
     for prefix in prefixes:
-        debug.message("reading repository "+prefix+" ", CONFIG.verbosity())
+        debug.message("reading repository "+prefix+" ...", CONFIG.verbosity())
         repository.add_repo(AutomakePackageRepository(prefix=prefix.split(os.sep)))
-        debug.message("done.", CONFIG.verbosity())
         pass
 
     DONE_READREPO = 1
@@ -180,108 +178,11 @@ def BOOTSTRAP():
 
     if OUTPUT(): return -1
 
-    debug.message('+ BOOTSTRAP')
-    debug.message('+ Current working directory: '+os.getcwd())
-    debug.message('')
-
+    debug.message('bootstrapping in '+CONFIG.packageroot()+' ...')
     bootstrap.bootstrap(packageroot=CONFIG.packageroot().split(os.sep),
                         use_libtool=CONFIG.use_libtool(),
                         path=None,
                         argv0=sys.argv[0])
-
-##     am_prefix = '' # '/usr/local/automake-1.5'
-##     ac_prefix = '' # '/usr/local/autoconf-2.52'
-##     lt_prefix = '' # '/usr/local/libtool-1.4.0'
-
-##     aclocal = 'aclocal'
-##     autoheader = 'autoheader'
-##     autoheader_args = ''
-##     automake = 'automake'
-##     automake_args = ' --foreign --add-missing --copy'
-##     autoconf = 'autoconf'
-##     autoconf_args = ''
-##     libtoolize = 'libtoolize'
-##     libtoolize_args = ' --force --copy'
-
-##     assert ARGS.has_key(const.ARG_M4INCDIR)
-
-##     aclocal_args = ''
-##     for d in ARGS[const.ARG_M4INCDIR]:
-##         aclocal_args = aclocal_args + ' -I ' + d
-
-##     if (ARGS[const.ARG_USELIBTOOL]):
-
-##         # see where libtool lives, in order to set aclocal's include
-##         # path to libtool's macros (roughly stolen from apr's
-##         # buildconf)
-
-##         if os.environ.has_key('PATH'): path = os.environ['PATH']
-##         else: path = ['/usr/bin']
-
-##         libtooldir = None
-
-##         for dir in path.split(os.pathsep):
-##             file = os.path.join(dir, libtoolize)
-##             if os.path.exists(file) and os.path.isfile(file) and os.access(file, os.X_OK):
-##                 libtooldir = dir
-##                 break
-
-##         if libtooldir is None:
-##             raise Error('libtoolize not found along path')
-
-##         aclocal_args = aclocal_args + ' -I ' + libtooldir + '/../share/aclocal'
-
-##     if len(am_prefix): aclocal = os.path.join(am_prefix, 'bin', aclocal)
-
-##     aclocal = aclocal + aclocal_args # in confix2
-##     debug.message(aclocal + '...') # in confix2
-##     if os.system(aclocal): # in confix2
-##         return -1
-
-##     if ARGS[const.ARG_USELIBTOOL]:
-##         if len(lt_prefix):
-##             libtoolize = os.path.join(lt_prefix, 'bin', libtoolize)
-##         libtoolize = libtoolize + libtoolize_args
-##         debug.message(libtoolize + '...')
-##         if os.system(libtoolize):
-##             return -1
-
-##     if len(ac_prefix): autoheader = os.path.join(ac_prefix, 'bin', autoheader)
-##     autoheader = autoheader + autoheader_args # in confix2
-##     debug.message(autoheader + '...') # in confix2
-##     if os.system(autoheader): # in confix2
-##         return -1 # in confix2
-
-##     if len(am_prefix): automake = os.path.join(am_prefix, 'bin', automake)
-##     automake = automake + automake_args # in confix2
-##     debug.message(automake + '...') # in confix2
-##     if os.system(automake): # in confix2
-##         return -1 # in confix2
-
-##     if ARGS[const.ARG_USE_KDE_HACK]:
-##         # somehow autoconf will not create a new configure script when
-##         # it decides that this is not necessary (still don't know how
-##         # it would decide that). anyway, if it leaves the old script
-##         # around which we have already patched, then conf.change.pl
-##         # (the patch is about calling conf.change.pl) will complain
-##         # about something I don't quite understand. solution: remove
-##         # configure before re-creating it.
-##         if os.path.isfile('configure'):
-##             debug.message('KDE hack: removing existing configure script')
-##             os.remove('configure')
-##             pass
-##         pass
-
-##     if len(ac_prefix): autoconf = os.path.join(ac_prefix, 'bin', autoconf)
-##     autoconf = autoconf + autoconf_args # in confix2
-##     debug.message(autoconf + '...') # in confix2
-##     if os.system(autoconf): # in confix2
-##         return -1 # in confix2
-
-##     if ARGS[const.ARG_USE_KDE_HACK]:
-##         debug.message('KDE hack: patching configure script...')            
-##         kde_hack.patch_configure_script('configure')
-##         pass
 
     DONE_BOOTSTRAP = 1
     return 0
@@ -299,7 +200,6 @@ def OUTPUT():
     debug.message("generating output ...", CONFIG.verbosity())
     package.output()
     filesystem.sync()
-    debug.message("done generating output", CONFIG.verbosity())
 
     DONE_OUTPUT = 1
     return 0

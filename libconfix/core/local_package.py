@@ -70,18 +70,16 @@ class LocalPackage(Package):
             raise Error(const.CONFIX2_PKG+': package name has not been set')
         if self.version_ is None:
             raise Error(const.CONFIX2_PKG+': package version has not been set')
-        
-        # setup rootbuilder, and configure it with the setups we have.
+
+        # setup rootbuilder.
         self.rootbuilder_ = DirectoryBuilder(
             directory=rootdirectory,
             parentbuilder=None,
             package=self)
-        for setup in setups:
-            self.rootbuilder_.add_builders(setup.initial_builders(parentbuilder=self.rootbuilder_,
-                                                                  package=self))
-            pass
-
-        # slurp in Confix2.dir
+        
+        # slurp in Confix2.dir which will act as the rootbuilder's
+        # configurator object. the setup objects will be asked to
+        # contribute to the configurator object's interface.
         try:
             confix2_dir_file = rootdirectory.get(const.CONFIX2_DIR)
             if confix2_dir_file is None:
@@ -90,11 +88,14 @@ class LocalPackage(Package):
                 raise Error(os.sep.join(confix2_dir_file.abspath())+' is not a file')
 
             confix2_dir = Confix2_dir(file=confix2_dir_file, parentbuilder=self.rootbuilder_, package=self)
-            self.rootbuilder_.add_configurator(confix2_dir)
-
-            pass
+            self.rootbuilder_.set_configurator(confix2_dir)
         except Error, e:
             raise Error('Cannot initialize package in '+'/'.join(rootdirectory.abspath()), [e])
+
+        # setup the rootbuilder
+        for setup in setups:
+            setup.setup_directory(directory_builder=self.rootbuilder_)
+            pass
 
         # setup our autoconf auxiliary directory. this a regular
         # builder by itself, but plays a special role for us because

@@ -74,6 +74,7 @@ def parse(args):
                       metavar='DIR',
                       help='Use DIR as the installation prefix.')
     parser.add_option('--advanced',
+                      action='store_true',
                       help='Create build directory if necessary.')
     parser.add_option('--targets',
                       dest='make_args',

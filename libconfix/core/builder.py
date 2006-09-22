@@ -31,9 +31,11 @@ from libconfix.core.iface.proxy import InterfaceProxy
 from depinfo import DependencyInformation
 from provide import Provide
 from provide_string import Provide_String
+from provide_callable import Provide_Callable
 from provide_symbol import Provide_Symbol
 from require import Require
 from require_symbol import Require_Symbol
+from require_callable import Require_Callable
 from buildinfoset import BuildInformationSet
 
 class Builder:
@@ -87,9 +89,6 @@ class Builder:
     def buildinfos(self):
         return self.buildinfos_
     
-    def confix2_in_iface_pieces(self):
-        return []
-
     def enlarge(self):
         self.base_enlarge_called_ = True
 
@@ -145,6 +144,7 @@ class BuilderInterfaceProxy(InterfaceProxy):
         self.add_global('URGENCY_IGNORE', Require.URGENCY_IGNORE)
         self.add_global('URGENCY_WARN', Require.URGENCY_WARN)
         self.add_global('URGENCY_ERROR', Require.URGENCY_ERROR)
+        self.add_global('REQUIRED', Require.URGENCY_ERROR) # backward compat with 1.5
         self.add_global('EXACT_MATCH', Provide_String.EXACT_MATCH)
         self.add_global('PREFIX_MATCH', Provide_String.PREFIX_MATCH)
         self.add_global('GLOB_MATCH', Provide_String.GLOB_MATCH)
@@ -153,6 +153,8 @@ class BuilderInterfaceProxy(InterfaceProxy):
         self.add_global('REQUIRE', getattr(self, 'REQUIRE'))
         self.add_global('PROVIDE_SYMBOL', getattr(self, 'PROVIDE_SYMBOL'))
         self.add_global('REQUIRE_SYMBOL', getattr(self, 'REQUIRE_SYMBOL'))
+        self.add_global('PROVIDE_CALLABLE', getattr(self, 'PROVIDE_CALLABLE'))
+        self.add_global('REQUIRE_CALLABLE', getattr(self, 'REQUIRE_CALLABLE'))
 
         # BUILDINFORMATION
         self.add_global('BUILDINFORMATION', getattr(self, 'BUILDINFORMATION'))
@@ -201,7 +203,24 @@ class BuilderInterfaceProxy(InterfaceProxy):
             raise Error('REQUIRE_SYMBOL(): urgency must be one of URGENCY_IGNORE, URGENCY_WARN, URGENCY_ERROR')
         self.builder_.add_require(Require_Symbol(
             symbol,
-            found_in=["don't yet know where - concept needed"],
+            found_in=[str(self.builder_)],
+            urgency=urgency))
+        pass
+
+    def PROVIDE_CALLABLE(self, name):
+        if not name or len(name) == 0:
+            raise Error('PROVIDE_CALLABLE(): need a non-zero name parameter')
+        self.builder_.add_provide(Provide_Callable(exename=name))
+        pass
+
+    def REQUIRE_CALLABLE(self, name, urgency=Require.URGENCY_IGNORE):
+        if not name or len(name)==0:
+            raise Error('REQUIRE_CALLABLE(): need a non-zero name parameter')
+        if not urgency in [Require.URGENCY_IGNORE, Require.URGENCY_WARN, Require.URGENCY_ERROR]:
+            raise Error('REQUIRE_SYMBOL(): urgency must be one of URGENCY_IGNORE, URGENCY_WARN, URGENCY_ERROR')
+        self.builder_.add_require(Require_Callable(
+            exename=name,
+            found_in=[str(self.builder_)],
             urgency=urgency))
         pass
 

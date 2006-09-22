@@ -17,9 +17,10 @@
 # USA
 
 from libconfix.core.setup import Setup
-from libconfix.core.hierarchy import DirectorySetup
+from libconfix.core.hierarchy.setup import DirectorySetup
 
 from libconfix.plugins.c.setup import CSetup
+from libconfix.plugins.plainfile.setup import PlainFileSetup
 
 class ConfixSetup(Setup):
     def __init__(self,
@@ -27,13 +28,14 @@ class ConfixSetup(Setup):
                  short_libnames):
         Setup.__init__(self)
         self.setups_ = [CSetup(short_libnames=short_libnames, use_libtool=use_libtool),
-                        DirectorySetup()]
+                        DirectorySetup(),
+                        PlainFileSetup()]
         pass
 
-    def initial_builders(self, parentbuilder, package):
-        ret = []
+    def setup_directory(self, directory_builder):
+        Setup.setup_directory(self, directory_builder)
         for setup in self.setups_:
-            ret.extend(setup.initial_builders(parentbuilder, package))
+            setup.setup_directory(directory_builder)
             pass
-        return ret
+        pass
     pass

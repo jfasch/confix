@@ -122,15 +122,12 @@ class CClusterer(Builder):
 
         return ret + Builder.enlarge(self)
 
-    def confix2_in_iface_pieces(self):
-        return Builder.confix2_in_iface_pieces(self) + [CClustererInterfaceProxy(clusterer=self)]
-
     pass
 
 class CClustererInterfaceProxy(InterfaceProxy):
-    def __init__(self, clusterer):
+    def __init__(self, object):
         InterfaceProxy.__init__(self)
-        self.clusterer_ = clusterer
+        self.object_ = object
         self.add_global('LIBTOOL_LIBRARY_VERSION', getattr(self, 'LIBTOOL_LIBRARY_VERSION'))
         pass
 
@@ -143,7 +140,7 @@ class CClustererInterfaceProxy(InterfaceProxy):
             if type(version[i]) is not types.IntType:
                 raise Error("LIBTOOL_LIBRARY_VERSION: part "+str(i)+" of version is not an integer")
             pass
-        self.clusterer_.set_libtool_version_info(version)
+        self.object_.set_libtool_version_info(version)
         pass
 
     pass

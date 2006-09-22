@@ -16,18 +16,21 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 # USA
 
-import unittest
+import types
 
-from c.suite_build import CTestSuiteBuild
-from plainfile.suite_build import PlainFileSuiteBuild
+from libconfix.core.setup import Setup
 
-if __name__ == '__main__':
+from iface import PLAINFILE_InterfaceProxy
 
-    suite = unittest.TestSuite()
+class PlainFileSetup(Setup):
+    def __init__(self):
+        Setup.__init__(self)
+        pass
 
-    suite.addTest(CTestSuiteBuild())
-    suite.addTest(PlainFileSuiteBuild())
+    def setup_directory(self, directory_builder):
+        Setup.setup_directory(self, directory_builder)
+        directory_builder.configurator().add_method(
+            PLAINFILE_InterfaceProxy(object=directory_builder))
+        pass
 
-    runner = unittest.TextTestRunner()
-    runner.run(suite)
-    pass
+    pass    

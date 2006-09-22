@@ -24,7 +24,10 @@ class DirectorySetup(Setup):
     def __init__(self):
         Setup.__init__(self)
         pass
-    def initial_builders(self, parentbuilder, package):
-        return [SubdirectoryRecognizer(parentbuilder=parentbuilder, package=package)] + \
-               Setup.initial_builders(self, parentbuilder=parentbuilder, package=package)
+    def setup_directory(self, directory_builder):
+        Setup.setup_directory(self, directory_builder)
+        directory_builder.add_builder(
+            SubdirectoryRecognizer(parentbuilder=directory_builder,
+                                   package=directory_builder.package()))
+        pass
     pass

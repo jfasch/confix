@@ -22,6 +22,7 @@ from libconfix.core.builder import Builder
 from libconfix.core.iface.proxy import InterfaceProxy
 from libconfix.core.require import Require
 from libconfix.core.provide_string import Provide_String
+from libconfix.core.utils.error import Error
 
 from dependency import Provide_CInclude, Require_CInclude
 
@@ -49,29 +50,17 @@ class EXTERNAL_LIBRARY_InterfaceProxy(InterfaceProxy):
         libs=[]):
 
         if type(incpath) is not types.ListType:
-            raise Error("EXTERNAL_LIBRARY() in "+\
-                        os.sep.join(PLUGIN_C_IFACE_PROXY_.parentbuilder().directory().relpath())+": "
-                        "'incpath' argument must be a list")
+            raise Error("EXTERNAL_LIBRARY(): 'incpath' argument must be a list")
         if type(cflags) is not types.ListType:
-            raise Error("EXTERNAL_LIBRARY() in "+\
-                        os.sep.join(PLUGIN_C_IFACE_PROXY_.parentbuilder().directory().relpath())+": "
-                        "'cflags' argument must be a list")
+            raise Error("EXTERNAL_LIBRARY(): 'cflags' argument must be a list")
         if type(cxxflags) is not types.ListType:
-            raise Error("EXTERNAL_LIBRARY() in "+\
-                        os.sep.join(PLUGIN_C_IFACE_PROXY_.parentbuilder().directory().relpath())+": "
-                        "'cxxflags' argument must be a list")
+            raise Error("EXTERNAL_LIBRARY(): 'cxxflags' argument must be a list")
         if type(cmdlinemacros) is not types.DictionaryType:
-            raise Error("EXTERNAL_LIBRARY() in "+\
-                        os.sep.join(PLUGIN_C_IFACE_PROXY_.parentbuilder().directory().relpath())+": "
-                        "'cmdlinemacros' argument must be a dictionary")
+            raise Error("EXTERNAL_LIBRARY(): 'cmdlinemacros' argument must be a dictionary")
         if type(libpath) is not types.ListType:
-            raise Error("EXTERNAL_LIBRARY() in "+\
-                        os.sep.join(PLUGIN_C_IFACE_PROXY_.parentbuilder().directory().relpath())+": "
-                        "'libpath' argument must be a list")
+            raise Error("EXTERNAL_LIBRARY(): 'libpath' argument must be a list")
         if type(libs) is not types.ListType:
-            raise Error("EXTERNAL_LIBRARY() in "+\
-                        os.sep.join(PLUGIN_C_IFACE_PROXY_.parentbuilder().directory().relpath())+": "
-                        "'libs' argument must be a list")
+            raise Error("EXTERNAL_LIBRARY(): 'libs' argument must be a list")
 
         if len(incpath) > 0:
             self.object_.add_buildinfo(

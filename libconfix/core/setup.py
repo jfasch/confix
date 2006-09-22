@@ -19,6 +19,6 @@
 class Setup:
     def __init__(self):
         pass
-    def initial_builders(self, parentbuilder, package):
-        return []
+    def setup_directory(self, directory_builder):
+        pass
     pass

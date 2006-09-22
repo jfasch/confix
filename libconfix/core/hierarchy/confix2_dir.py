@@ -32,6 +32,11 @@ class Confix2_dir(FileBuilder):
                              parentbuilder=parentbuilder,
                              package=package)
         self.executed_ = False
+        self.external_ifaces_ = []
+        pass
+
+    def add_method(self, method):
+        self.external_ifaces_.append(method)
         pass
 
     def enlarge(self):
@@ -42,10 +47,11 @@ class Confix2_dir(FileBuilder):
         self.executed_ = True
         
         try:
-            iface_pieces = self.iface_pieces() + self.confix2_in_iface_pieces()
-            for b in self.parentbuilder().builders():
-                iface_pieces.extend(b.confix2_in_iface_pieces())
-                pass
+            # take the externally provided methods, plus our
+            # directory's (don't take our own -- we're here to
+            # interface our directory, after all), provide them to our
+            # user-file, and execute the user-file.
+            iface_pieces = self.external_ifaces_ + self.parentbuilder().iface_pieces()
             execer = InterfaceExecutor(iface_pieces=iface_pieces)
             execer.execute_file(file=self.file())
             return 1
@@ -58,10 +64,5 @@ class Confix2_dir(FileBuilder):
         FileBuilder.output(self)
         self.parentbuilder().makefile_am().add_extra_dist(self.file().name())
         pass
-
-    def iface_pieces(self):
-        # our interface is not that of a regular file builder. rather,
-        # we implement the interface into the *directory* we live in.
-        return self.parentbuilder().iface_pieces()
 
     pass
