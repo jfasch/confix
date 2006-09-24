@@ -34,6 +34,7 @@ class IntraPackageBuildSuite(unittest.TestSuite):
         unittest.TestSuite.__init__(self)
         self.addTest(IntraPackageBuildWithLibtool('test'))
         self.addTest(IntraPackageBuildWithoutLibtool('test'))
+        self.addTest(LocalIncludeDirTest('test'))
         pass
     pass
 
@@ -102,6 +103,78 @@ class IntraPackageBuildWithoutLibtool(IntraPackageBuildBase):
         IntraPackageBuildBase.__init__(self, str)
         pass
     def use_libtool(self): return False
+    pass
+
+class LocalIncludeDirTest(PersistentTestCase):
+    def test(self):
+        fs = FileSystem(path=self.rootpath())
+        
+        source = fs.rootdirectory().add(
+            name='source',
+            entry=Directory())
+        build = fs.rootdirectory().add(
+            name='build',
+            entry=Directory())
+
+        source.add(
+            name=const.CONFIX2_PKG,
+            entry=File(lines=["PACKAGE_NAME('LocalIncludeDirTest')",
+                              "PACKAGE_VERSION('1.2.3')"]))
+        source.add(
+            name=const.CONFIX2_DIR,
+            entry=File())
+
+        flat = source.add(
+            name='flat',
+            entry=Directory())
+        flat.add(
+            name=const.CONFIX2_DIR,
+            entry=File())
+        flat.add(
+            name='flat.h',
+            entry=File())
+
+        deep = source.add(
+            name='deep',
+            entry=Directory())
+        deep.add(
+            name=const.CONFIX2_DIR,
+            entry=File())
+        deep.add(
+            name='deep.h',
+            entry=File(lines=["// CONFIX:INSTALLPATH(['path', 'to', 'deep'])"]))
+
+        user = source.add(
+            name='user',
+            entry=Directory())
+        user.add(
+            name=const.CONFIX2_DIR,
+            entry=File())
+        user.add(
+            name='user.c',
+            entry=File(lines=["#include <flat.h>",
+                              "#include <path/to/deep/deep.h>"]))
+
+        package = LocalPackage(rootdirectory=source,
+                               setups=[DirectorySetup(),
+                                       CSetup(use_libtool=False, short_libnames=False)])
+        package.enlarge(external_nodes=[])
+        package.output()
+
+        fs.sync()
+
+        bootstrap.bootstrap(
+            packageroot=source.abspath(),
+            path=None,
+            use_libtool=False,
+            argv0=sys.argv[0])
+        configure.configure(
+            packageroot=source.abspath(),
+            builddir=build.abspath())
+        make.make(
+            builddir=build.abspath(),
+            args=[])
+        pass
     pass
 
 if __name__ == '__main__':

@@ -36,6 +36,7 @@ class InterPackageBuildSuite(unittest.TestSuite):
         unittest.TestSuite.__init__(self)
         self.addTest(InterPackageBuildWithLibtool('test'))
         self.addTest(InterPackageBuildWithoutLibtool('test'))
+        self.addTest(InstalledIncludeDirTest('test'))
         pass
     pass
 
@@ -202,8 +203,120 @@ class InterPackageBuildWithoutLibtool(InterPackageBuildBase):
         InterPackageBuildBase.__init__(self, str)
         pass
     def use_libtool(self): return False
-    
+    pass
 
+class InstalledIncludeDirTest(PersistentTestCase):
+    def tearDown(self): pass
+    def test(self):
+        fs = FileSystem(path=self.rootpath())
+        source = fs.rootdirectory().add(
+            name='source',
+            entry=Directory())
+        build = fs.rootdirectory().add(
+            name='build',
+            entry=Directory())
+        lo_build = build.add(
+            name='lo',
+            entry=Directory())
+        hi_build = build.add(
+            name='hi',
+            entry=Directory())
+        prefix = fs.rootdirectory().add(
+            name='prefix',
+            entry=Directory())
+            
+        # package lo contains 2 header files. one is installed flat
+        # into #(includedir), the other onto a subdirectory thereof.
+        lo_source = source.add(
+            name='lo',
+            entry=Directory())
+        lo_source.add(
+            name=const.CONFIX2_PKG,
+            entry=File(lines=["PACKAGE_NAME('InstalledIncludeDirTest-LO')",
+                              "PACKAGE_VERSION('1.2.3')"]))
+        lo_source.add(
+            name=const.CONFIX2_DIR,
+            entry=File())
+        lo_source.add(
+            name='flat.h',
+            entry=File())
+        lo_source.add(
+            name='deep.h',
+            entry=File(lines=["// CONFIX:INSTALLPATH(['path', 'to', 'deep'])"]))
+
+        # hi contains one file that includes both.
+        hi_source = source.add(
+            name='hi',
+            entry=Directory())
+
+        hi_source.add(
+            name=const.CONFIX2_PKG,
+            entry=File(lines=["PACKAGE_NAME('InstalledIncludeDirTest-HI')",
+                              "PACKAGE_VERSION('1.2.3')"]))
+        hi_source.add(
+            name=const.CONFIX2_DIR,
+            entry=File())
+        hi_source.add(
+            name='hi.c',
+            entry=File(lines=["#include <flat.h>",
+                              "#include <path/to/deep/deep.h>"]))
+
+
+        # bootstrap ... install lo
+        package = LocalPackage(rootdirectory=lo_source,
+                               setups=[CSetup(short_libnames=False,
+                                              use_libtool=False)])
+        package.enlarge(external_nodes=[])
+        package.output()
+        fs.sync()
+
+        bootstrap.bootstrap(
+            packageroot=lo_source.abspath(),
+            path=None,
+            use_libtool=False,
+            argv0=sys.argv[0])
+        configure.configure(
+            packageroot=lo_source.abspath(),
+            builddir=lo_build.abspath(),
+            prefix=prefix.abspath())
+        make.make(
+            builddir=lo_build.abspath(),
+            args=['install'])
+
+        # read repo that we need for hi
+            
+        automake_repo = repo_automake.AutomakePackageRepository(
+            prefix=prefix.abspath())
+        ext_nodes = []
+        for p in automake_repo.packages():
+            ext_nodes.extend(p.nodes())
+            pass
+
+        # bootstrap ... make hi
+
+        
+        package = LocalPackage(rootdirectory=hi_source,
+                               setups=[CSetup(short_libnames=False,
+                                              use_libtool=False)])
+        package.enlarge(external_nodes=ext_nodes)
+        package.output()
+        fs.sync()
+
+        bootstrap.bootstrap(
+            packageroot=hi_source.abspath(),
+            path=None,
+            use_libtool=False,
+            argv0=sys.argv[0])
+        configure.configure(
+            packageroot=hi_source.abspath(),
+            builddir=hi_build.abspath(),
+            prefix=prefix.abspath())
+        make.make(
+            builddir=hi_build.abspath(),
+            args=[])
+        pass
+    pass
+        
 if __name__ == '__main__':
     unittest.TextTestRunner().run(InterPackageBuildSuite())
     pass

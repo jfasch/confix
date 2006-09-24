@@ -16,6 +16,8 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 # USA
 
+import os
+import sys
 import unittest
 
 from libconfix.testutils.persistent import PersistentTestCase
@@ -23,6 +25,7 @@ from libconfix.core.filesys.filesys import FileSystem
 from libconfix.core.filesys.directory import Directory
 from libconfix.core.local_package import LocalPackage
 from libconfix.core.hierarchy.setup import DirectorySetup
+from libconfix.core.automake import bootstrap, configure, make
 
 from libconfix.plugins.plainfile.builder import PlainFileBuilder
 from libconfix.plugins.plainfile.setup import PlainFileSetup

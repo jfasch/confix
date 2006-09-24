@@ -54,64 +54,80 @@ class Installer(Builder):
             pass
         return 0
 
+##     def output(self):
+##         Builder.output(self)
+
+##         # register public header files for installation
+
+##         for (installpath, files) in self.install_directories_.values():
+##             if len(installpath) == 0:
+##                 # no need to define subdirectory; take predefined
+##                 symbolicname = ''
+##             else:
+##                 symbolicname = 'publicheader_'+compute_install_dirname_(installpath)
+##                 self.parentbuilder().makefile_am().define_install_directory(
+##                     symbolicname=symbolicname,
+##                     dirname='/'.join(['$(includedir)']+installpath))
+##                 pass
+##             self.parentbuilder().makefile_am().add_to_install_directory(
+##                 symbolicname=symbolicname,
+##                 family='HEADERS',
+##                 files=files)
+##             pass
+
+##         # now for the private header files. this is a bit more
+##         # complicated as we have to do it by hand, using the all-local
+##         # hook.
+
+##         self.parentbuilder().makefile_am().add_all_local('confix-install-local')
+##         self.parentbuilder().makefile_am().add_clean_local('confix-clean-local')
+
+##         install_local_rule = Rule(targets=['confix-install-local'], prerequisites=[], commands=[])
+##         clean_local_rule = Rule(targets=['confix-clean-local'], prerequisites=[], commands=[])
+##         self.parentbuilder().makefile_am().add_element(install_local_rule)        
+##         self.parentbuilder().makefile_am().add_element(clean_local_rule)
+
+##         # add mkdir rules for every subdirectory
+##         for (installpath, files) in self.install_directories_.values():
+##             targetdir = '/'.join(['$(top_builddir)', const.LOCAL_INCLUDE_DIR] + installpath)
+##             self.parentbuilder().makefile_am().add_element(
+##                 Rule(targets=[targetdir],
+##                      prerequisites=[],
+##                      commands=['-$(mkinstalldirs) '+targetdir]))
+##             pass
+
+##         # copy files
+##         for (installpath, files) in self.install_directories_.values():
+##             targetdir = '/'.join(['$(top_builddir)', const.LOCAL_INCLUDE_DIR] + installpath)
+##             for f in files:
+##                 targetfile = '/'.join([targetdir, f])
+##                 self.parentbuilder().makefile_am().add_element(
+##                     Rule(targets=[targetfile],
+##                          prerequisites=[targetdir, f],
+##                          commands=['cp -fp $(srcdir)/'+f+' '+targetdir,
+##                                    'chmod 0444 '+targetfile]))
+##                 self.parentbuilder().makefile_am().add_element(
+##                     Rule(targets=[targetfile+'-clean'],
+##                          prerequisites=[],
+##                          commands=['rm -f '+targetfile]))
+##                 install_local_rule.add_prerequisite(targetfile)
+##                 clean_local_rule.add_prerequisite(targetfile+'-clean')
+##                 pass
+##             pass
+##         pass
+
     def output(self):
         Builder.output(self)
 
-        # register public header files for installation
+        # register public and private header files for installation
 
-        for (installpath, files) in self.install_directories_.values():
-            if len(installpath) == 0:
-                # no need to define subdirectory; take predefined
-                symbolicname = ''
-            else:
-                symbolicname = 'publicheader_'+compute_install_dirname_(installpath)
-                self.parentbuilder().makefile_am().define_install_directory(
-                    symbolicname=symbolicname,
-                    dirname='/'.join(['$(includedir)']+installpath))
-                pass
-            self.parentbuilder().makefile_am().add_to_install_directory(
-                symbolicname=symbolicname,
-                family='HEADERS',
-                files=files)
-            pass
+        # fixme: is it right to not distinguish between public and
+        # private?
 
-        # now for the private header files. this is a bit more
-        # complicated as we have to do it by hand, using the all-local
-        # hook.
-
-        self.parentbuilder().makefile_am().add_all_local('confix-install-local')
-        self.parentbuilder().makefile_am().add_clean_local('confix-clean-local')
-
-        install_local_rule = Rule(targets=['confix-install-local'], prerequisites=[], commands=[])
-        clean_local_rule = Rule(targets=['confix-clean-local'], prerequisites=[], commands=[])
-        self.parentbuilder().makefile_am().add_element(install_local_rule)        
-        self.parentbuilder().makefile_am().add_element(clean_local_rule)
-
-        # add mkdir rules for every subdirectory
-        for (installpath, files) in self.install_directories_.values():
-            targetdir = '/'.join(['$(top_builddir)', const.LOCAL_INCLUDE_DIR] + installpath)
-            self.parentbuilder().makefile_am().add_element(
-                Rule(targets=[targetdir],
-                     prerequisites=[],
-                     commands=['-$(mkinstalldirs) '+targetdir]))
-            pass
-
-        # copy files
-        for (installpath, files) in self.install_directories_.values():
-            targetdir = '/'.join(['$(top_builddir)', const.LOCAL_INCLUDE_DIR] + installpath)
+        for installpath, files in self.install_directories_.values():
             for f in files:
-                targetfile = '/'.join([targetdir, f])
-                self.parentbuilder().makefile_am().add_element(
-                    Rule(targets=[targetfile],
-                         prerequisites=[targetdir, f],
-                         commands=['cp -fp $(srcdir)/'+f+' '+targetdir,
-                                   'chmod 0444 '+targetfile]))
-                self.parentbuilder().makefile_am().add_element(
-                    Rule(targets=[targetfile+'-clean'],
-                         prerequisites=[],
-                         commands=['rm -f '+targetfile]))
-                install_local_rule.add_prerequisite(targetfile)
-                clean_local_rule.add_prerequisite(targetfile+'-clean')
+                self.parentbuilder().file_installer().add_public_header(filename=f, dir=installpath)
+                self.parentbuilder().file_installer().add_private_header(filename=f, dir=installpath)
                 pass
             pass
         pass

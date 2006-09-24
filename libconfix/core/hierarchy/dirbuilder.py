@@ -21,6 +21,7 @@ from libconfix.core.filesys.directory import Directory
 from libconfix.core.filesys.file import File
 from libconfix.core.builder import BuilderSet
 from libconfix.core.automake.makefile_am import Makefile_am
+from libconfix.core.automake.file_installer import FileInstaller
 from libconfix.core.local_node import LocalNode
 
 from iface import DirectoryBuilderInterfaceProxy
@@ -50,6 +51,10 @@ class DirectoryBuilder(EntryBuilder):
         # output()
         self.makefile_am_ = Makefile_am()
 
+        # a helper that we use to install files intelligently (well,
+        # more or less so).
+        self.file_installer_ = FileInstaller()
+
         pass
 
     def directory(self):
@@ -57,6 +62,9 @@ class DirectoryBuilder(EntryBuilder):
 
     def makefile_am(self):
         return self.makefile_am_
+
+    def file_installer(self):
+        return self.file_installer_
 
     def add_ignored_entries(self, names):
         self.ignored_entries_ |= set(names)
@@ -157,10 +165,21 @@ class DirectoryBuilder(EntryBuilder):
             b.output()
             assert b.base_output_called() == True, str(b)
             pass
-        pass
+
+        # the file installer is a little helper that relieves our
+        # builders from having to care of how files are installed. our
+        # builders use it to format their install wishes down to our
+        # Makefile.am. so, basically, what I want to say is that we
+        # have to flush the file installer into self.makefile_am_
+        # *after* flushing the builders, and before flushing
+        # self.makefile_am_
 
         # prepare the raw file object, and wrap a Makefile_am instance
         # around it.
+
+        self.file_installer_.output(makefile_am=self.makefile_am_)
+
+        # finally, write our Makefile.am.
         
         mf_am = self.directory_.find(['Makefile.am'])
         if mf_am is None:

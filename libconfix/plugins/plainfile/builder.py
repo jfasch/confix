@@ -32,7 +32,7 @@ class PlainFileBuilder(FileBuilder):
                  installtype,
                  installdir):
         assert installtype in [PlainFileBuilder.DATA, PlainFileBuilder.PREFIX]
-        
+
         FileBuilder.__init__(self,
                              file=file,
                              parentbuilder=parentbuilder,
@@ -47,9 +47,13 @@ class PlainFileBuilder(FileBuilder):
         FileBuilder.output(self)
 
         if self.installtype_ == PlainFileBuilder.DATA:
-            self.parentbuilder().file_installer().add_datafile(filename=self.filename(), dir=self.installdir_)
+            self.parentbuilder().file_installer().add_datafile(
+                filename=self.file().name(),
+                dir=self.installdir_)
         elif self.installtype_ == PlainFileBuilder.PREFIX:
-            self.parentbuilder().file_installer().add_prefixfile(filename=self.filename(), dir=self.installdir_)
+            self.parentbuilder().file_installer().add_prefixfile(
+                filename=self.file().name(),
+                dir=self.installdir_)
         else:
             assert 0
             pass

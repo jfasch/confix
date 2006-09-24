@@ -41,8 +41,6 @@ class SimplePlainFileTest(unittest.TestCase):
         package = LocalPackage(rootdirectory=fs.rootdirectory(), setups=[PlainFileSetup()])
         package.enlarge(external_nodes=[])
         
-        return package
-
         plainfile_data = find.find_entrybuilder(rootbuilder=package.rootbuilder(), path=['plainfile_data'])
         plainfile_prefix = find.find_entrybuilder(rootbuilder=package.rootbuilder(), path=['plainfile_prefix'])
         self.failIf(plainfile_data is None)

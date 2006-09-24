@@ -31,10 +31,10 @@ def make_package():
         entry=File(lines=['from libconfix.plugins.plainfile.builder import PlainFileBuilder',
                           "PLAINFILE(filename='plainfile_data', ",
                           "          installtype=PLAINFILE_DATA,",
-                          "          installdir='subdir/data')",
+                          "          installdir=['subdir', 'data'])",
                           "PLAINFILE(filename='plainfile_prefix',",
                           "          installtype=PLAINFILE_PREFIX,",
-                          "          installdir='subdir/prefix')",
+                          "          installdir=['subdir', 'prefix'])",
                           ]))
     root.add(
         name='plainfile_data',

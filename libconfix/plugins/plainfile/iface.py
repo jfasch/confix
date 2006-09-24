@@ -18,6 +18,7 @@
 
 import types
 
+from libconfix.core.utils.error import Error
 from libconfix.core.iface.proxy import InterfaceProxy
 from libconfix.core.filesys.file import File
 
@@ -37,8 +38,8 @@ class PLAINFILE_InterfaceProxy(InterfaceProxy):
             raise Error('PLAINFILE(): filename must be a string')
         if installtype not in [PlainFileBuilder.DATA, PlainFileBuilder.PREFIX]:
             raise Error('PLAINFILE(): installtype must be one of PLAINFILE_DATA or PLAINFILE_PREFIX')
-        if type(installdir) is not types.StringType:
-            raise Error('PLAINFILE(): installdir must be a string')
+        if type(installdir) is not types.ListType:
+            raise Error('PLAINFILE(): installdir must be a list of path components')
 
         file = self.object_.directory().find([filename])
         if file is None:
@@ -48,7 +49,7 @@ class PLAINFILE_InterfaceProxy(InterfaceProxy):
 
         self.object_.add_builder(
             PlainFileBuilder(file=file,
-                             parentbuilder=self.object_.parentbuilder(),
+                             parentbuilder=self.object_,
                              package=self.object_.package(),
                              installtype=installtype,
                              installdir=installdir))

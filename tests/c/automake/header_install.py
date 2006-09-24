@@ -87,6 +87,7 @@ class HeaderInstallTest(unittest.TestCase):
         pass
 
     def test_onedeep(self):
+
         fs = dirhier.packageroot()
         file_h = fs.rootdirectory().add(name='file.h',
                                         entry=File())
