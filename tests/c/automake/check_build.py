@@ -49,6 +49,7 @@ class CheckProgramBuildBase(CheckProgramBase):
             builddir=self.build_.abspath(),
             args=['check'])
 
+        # as a side effect, the test program creates a file for us.
         self.failUnless(os.path.isfile(os.sep.join(self.build_.abspath()+['my-check-was-here'])))
         pass
     pass
