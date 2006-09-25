@@ -16,14 +16,24 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 # USA
 
-from libconfix.core.setup import Setup
+import types
 
-from iface import PLAINFILE_InterfaceProxy
+from libconfix.core.filebuilder import FileBuilder
 
-class PlainFileSetup(Setup):
-    def setup_directory(self, directory_builder):
-        Setup.setup_directory(self, directory_builder)
-        directory_builder.configurator().add_method(
-            PLAINFILE_InterfaceProxy(object=directory_builder))
+class ScriptBuilder(FileBuilder):
+    def __init__(self,
+                 file,
+                 parentbuilder,
+                 package):
+        FileBuilder.__init__(self,
+                             file=file,
+                             parentbuilder=parentbuilder,
+                             package=package)
         pass
-    pass    
+
+    def output(self):
+        FileBuilder.output(self)
+        self.parentbuilder().makefile_am().add_bin_script(scriptname=self.file().name())
+        pass
+
+    pass

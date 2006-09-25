@@ -16,8 +16,10 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 # USA
 
+from libconfix.core.filesys.filesys import FileSystem
 from libconfix.core.filesys.file import File
 from libconfix.core.local_package import LocalPackage
+from libconfix.core.utils import const
 from libconfix.plugins.c.setup import CSetup
 from libconfix.plugins.c.installer import Installer
 from libconfix.testutils import dirhier, makefileparser
@@ -27,13 +29,14 @@ import unittest
 class HeaderInstallSuite(unittest.TestSuite):
     def __init__(self):
         unittest.TestSuite.__init__(self)
-        self.addTest(HeaderInstallTest('test_zerodeep'))
-        self.addTest(HeaderInstallTest('test_onedeep'))
-        self.addTest(HeaderInstallTest('test_twodeep'))
+        self.addTest(BasicHeaderInstallTest('test_zerodeep'))
+        self.addTest(BasicHeaderInstallTest('test_onedeep'))
+        self.addTest(BasicHeaderInstallTest('test_twodeep'))
+        self.addTest(HeaderInstallInterfaceTest('test'))
         pass
     pass
 
-class HeaderInstallTest(unittest.TestCase):
+class BasicHeaderInstallTest(unittest.TestCase):
     def test_zerodeep(self):
         fs = dirhier.packageroot()
         file_h = fs.rootdirectory().add(name='file.h',
@@ -123,7 +126,46 @@ class HeaderInstallTest(unittest.TestCase):
         self.failUnless(directory_definition.files('HEADERS') == ['file.h'])
         pass
     pass
-        
+
+class HeaderInstallInterfaceTest(unittest.TestCase):
+    def test(self):
+        fs = FileSystem(path=['don\'t', 'care'])
+        fs.rootdirectory().add(
+            name=const.CONFIX2_PKG,
+            entry=File(lines=["PACKAGE_NAME('HeaderInstallInterfaceTest')",
+                              "PACKAGE_VERSION('1.2.3')"]))
+        fs.rootdirectory().add(
+            name=const.CONFIX2_DIR,
+            entry=File(lines=["INSTALLDIR_H('install/from/dir/iface')"]))
+        fs.rootdirectory().add(
+            name='file.h',
+            entry=File(lines=['namespace install {',
+                              'namespace from {',
+                              'namespace ns {',
+                              'namespace hierarchy {',
+                              '} // /namespace',
+                              '} // /namespace',
+                              '} // /namespace',
+                              '} // /namespace',
+                              ]))
+        package = LocalPackage(rootdirectory=fs.rootdirectory(),
+                               setups=[CSetup(use_libtool=False, short_libnames=False)])
+        package.enlarge(external_nodes=[])
+        package.output()
+
+        for b in package.rootbuilder().builders():
+            if isinstance(b, Installer):
+                installer = b
+                break
+            pass
+        else:
+            self.fail()
+            pass
+
+        self.failUnless('file.h' in installer.install_directories()['install/from/dir/iface'])        
+        self.failIf('file.h' in installer.install_directories()['install/from/ns/hierarchy'])
+        pass
+    pass
 
 if __name__ == '__main__':
     unittest.TextTestRunner().run(HeaderInstallSuite())

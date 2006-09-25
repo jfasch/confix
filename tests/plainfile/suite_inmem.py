@@ -18,14 +18,37 @@
 
 import unittest
 
-from simple import SimpleSuite
+from libconfix.core.local_package import LocalPackage
+from libconfix.core.filesys.filesys import FileSystem
+from libconfix.testutils import find
+
+from libconfix.plugins.plainfile.builder import PlainFileBuilder
+from libconfix.plugins.plainfile.setup import PlainFileSetup
+
+from package import make_package
 
 class PlainFileSuiteInMemory(unittest.TestSuite):
     def __init__(self):
         unittest.TestSuite.__init__(self)
-        self.addTest(SimpleSuite())
+        self.addTest(PlainFileInMemoryTest('test'))
         pass
     pass
+
+class PlainFileInMemoryTest(unittest.TestCase):
+    def test(self):
+        fs = FileSystem(path=['don\'t', 'care'], rootdirectory=make_package())
+        
+        package = LocalPackage(rootdirectory=fs.rootdirectory(), setups=[PlainFileSetup()])
+        package.enlarge(external_nodes=[])
+        
+        plainfile_data = find.find_entrybuilder(rootbuilder=package.rootbuilder(), path=['plainfile_data'])
+        plainfile_prefix = find.find_entrybuilder(rootbuilder=package.rootbuilder(), path=['plainfile_prefix'])
+        self.failIf(plainfile_data is None)
+        self.failIf(plainfile_prefix is None)
+        self.failUnless(isinstance(plainfile_data, PlainFileBuilder))
+        self.failUnless(isinstance(plainfile_prefix, PlainFileBuilder))
+        pass
+    pass        
 
 if __name__ == '__main__':
     unittest.TextTestRunner().run(PlainFileSuiteInMemory())

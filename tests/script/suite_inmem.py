@@ -18,39 +18,34 @@
 
 import unittest
 
-from libconfix.core.local_package import LocalPackage
 from libconfix.core.filesys.filesys import FileSystem
+from libconfix.core.local_package import LocalPackage
 from libconfix.testutils import find
 
-from libconfix.plugins.plainfile.builder import PlainFileBuilder
-from libconfix.plugins.plainfile.setup import PlainFileSetup
+from libconfix.plugins.script.setup import ScriptSetup
 
 from package import make_package
 
-class SimpleSuite(unittest.TestSuite):
+class ScriptSuiteInMemory(unittest.TestSuite):
     def __init__(self):
         unittest.TestSuite.__init__(self)
-        self.addTest(SimplePlainFileTest('test'))
+        self.addTest(ScriptInMemoryTest('test'))
         pass
     pass
 
-class SimplePlainFileTest(unittest.TestCase):
+class ScriptInMemoryTest(unittest.TestCase):
     def test(self):
         fs = FileSystem(path=['don\'t', 'care'], rootdirectory=make_package())
-        
-        package = LocalPackage(rootdirectory=fs.rootdirectory(), setups=[PlainFileSetup()])
+        package = LocalPackage(rootdirectory=fs.rootdirectory(),
+                               setups=[ScriptSetup()])
         package.enlarge(external_nodes=[])
-        
-        plainfile_data = find.find_entrybuilder(rootbuilder=package.rootbuilder(), path=['plainfile_data'])
-        plainfile_prefix = find.find_entrybuilder(rootbuilder=package.rootbuilder(), path=['plainfile_prefix'])
-        self.failIf(plainfile_data is None)
-        self.failIf(plainfile_prefix is None)
-        self.failUnless(isinstance(plainfile_data, PlainFileBuilder))
-        self.failUnless(isinstance(plainfile_prefix, PlainFileBuilder))
-        pass
-    pass        
+        package.output()
 
-if __name__ == '__main__':
-    unittest.TextTestRunner().run(SimpleSuite())
+        script = find.find_entrybuilder(rootbuilder=package.rootbuilder(), path=['script'])
+        self.failIf(script is None)
+        pass
     pass
 
+if __name__ == '__main__':
+    unittest.TextTestRunner().run(ScriptSuiteInMemory())
+    pass

@@ -21,6 +21,7 @@ import unittest
 from basic.suite import BasicTestSuite
 from c.suite_inmem import CTestSuiteInMemory
 from plainfile.suite_inmem import PlainFileSuiteInMemory
+from script.suite_inmem import ScriptSuiteInMemory
 
 if __name__ == '__main__':
 
@@ -29,6 +30,7 @@ if __name__ == '__main__':
     suite.addTest(BasicTestSuite())
     suite.addTest(CTestSuiteInMemory())
     suite.addTest(PlainFileSuiteInMemory())
+    suite.addTest(ScriptSuiteInMemory())
 
     runner = unittest.TextTestRunner()
     runner.run(suite)

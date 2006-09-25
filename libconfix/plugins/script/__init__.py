@@ -15,15 +15,3 @@
 # License along with this library; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 # USA
-
-from libconfix.core.setup import Setup
-
-from iface import PLAINFILE_InterfaceProxy
-
-class PlainFileSetup(Setup):
-    def setup_directory(self, directory_builder):
-        Setup.setup_directory(self, directory_builder)
-        directory_builder.configurator().add_method(
-            PLAINFILE_InterfaceProxy(object=directory_builder))
-        pass
-    pass    

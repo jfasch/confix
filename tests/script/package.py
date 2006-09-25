@@ -24,20 +24,13 @@ def make_package():
     root = Directory()
     root.add(
         name=const.CONFIX2_PKG,
-        entry=File(lines=["PACKAGE_NAME('SimplePlainFileTest')",
+        entry=File(lines=["PACKAGE_NAME('ScriptPluginTest')",
                           "PACKAGE_VERSION('1.2.3')"]))
     root.add(
         name=const.CONFIX2_DIR,
-        entry=File(lines=["PLAINFILE(filename='plainfile_data', ",
-                          "          datadir=['subdir', 'data'])", # list of path components
-                          "PLAINFILE(filename='plainfile_prefix',",
-                          "          prefixdir='subdir/prefix')", # string
-                          ]))
+        entry=File(lines=["SCRIPT(filename='script')"]))
     root.add(
-        name='plainfile_data',
-        entry=File())
-    root.add(
-        name='plainfile_prefix',
+        name='script',
         entry=File())
 
     return root
