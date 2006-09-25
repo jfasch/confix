@@ -53,13 +53,21 @@ class CheckProgramBase(PersistentTestCase):
                               'PACKAGE_VERSION("1.2.3")']))
         self.source_.add(
             name=const.CONFIX2_DIR,
-            entry=File())
+            entry=File(lines=["TESTS_ENVIRONMENT('name', 'value')"]))
         self.source_.add(
             name='_check_proggy.c',
             entry=File(lines=['#include <sys/types.h>',
                               '#include <sys/stat.h>',
                               '#include <fcntl.h>',
+                              '#include <stdlib.h>',
+                              '#include <string.h>',
+                              
                               'int main(void) {',
+                              '    const char* name = getenv("name");',
+                              '    if (!name)',
+                              '        return 1;',
+                              '    if (strcmp(name, "value"))',
+                              '        return 1;',
                               '    return open("'+os.sep.join(self.build_.abspath()+['my-check-was-here'])+'",',
                               '                O_CREAT|O_RDWR) >=0?0:1;',
                               '}']))

@@ -92,7 +92,6 @@ class REQUIRE_H_InterfaceProxy(InterfaceProxy):
 
         self.add_global('REQUIRE_H', getattr(self, 'REQUIRE_H'))
         pass
-
     def REQUIRE_H(self, filename, urgency=Require.URGENCY_IGNORE):
         if not filename:
             raise Error("REQUIRE_H(): need a non-null 'filename' parameter")
@@ -116,12 +115,26 @@ class PROVIDE_H_InterfaceProxy(InterfaceProxy):
         self.object_ = object
         self.add_global('PROVIDE_H', getattr(self, 'PROVIDE_H'))
         pass
-
     def PROVIDE_H(self, filename, match=Provide_String.GLOB_MATCH):
         if not filename or len(filename)==0:
             raise Error('PROVIDE_H(): need a non-zero filename parameter')
         if match not in [Provide_String.EXACT_MATCH, Provide_String.PREFIX_MATCH, Provide_String.GLOB_MATCH]:
             raise Error('PROVIDE_H(): match parameter must be one of EXACT_MATCH, PREFIX_MATCH, GLOB_MATCH')
         self.object_.add_provide(Provide_CInclude(filename, match))
+        pass
+    pass
+
+class TESTS_ENVIRONMENT_InterfaceProxy(InterfaceProxy):
+    def __init__(self, object):
+        InterfaceProxy.__init__(self)
+        self.object_ = object
+        self.add_global('TESTS_ENVIRONMENT', getattr(self, 'TESTS_ENVIRONMENT'))
+        pass
+    def TESTS_ENVIRONMENT(self, name, value):
+        if type(name) is not types.StringType:
+            raise Error('TESTS_ENVIRONMENT(): key must be a string')
+        if type(value) is not types.StringType:
+            raise Error('TESTS_ENVIRONMENT(): value must be a string')
+        self.object_.parentbuilder().makefile_am().add_tests_environment(name, value)
         pass
     pass

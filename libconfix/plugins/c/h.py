@@ -17,8 +17,6 @@
 # USA
 
 from base import CBaseBuilder
-from dependency import Provide_CInclude
-import buildinfo
 import namespace
 
 from libconfix.core.iface.proxy import InterfaceProxy
@@ -29,17 +27,10 @@ import os
 class HeaderBuilder(CBaseBuilder):
     PROPERTY_INSTALLPATH = 'INSTALLPATH_CINCLUDE'
     
-    class InstallPathConflict(Error):
-        def __init__(self, old, new):
-            Error.__init__(self, 'Cannot set install path to '+'/'.join(new)+' '
-                           '(has already been set to '+'/'.join(old)+')')
-            pass
-        pass
-                           
     def __init__(self, file, parentbuilder, package):
         # we exec the iface in the ctor, so the relevant members have
         # to be available before this.
-        self.install_path_ = None
+        self.iface_install_path_ = None
         
         CBaseBuilder.__init__(
             self,
@@ -47,64 +38,28 @@ class HeaderBuilder(CBaseBuilder):
             parentbuilder=parentbuilder,
             package=package)
 
-        installpath = file.get_property(HeaderBuilder.PROPERTY_INSTALLPATH)
-        if installpath is not None:
-            self.__check_installpath(installpath)
-            self.set_install_path(installpath)
-            pass
-        
-        if self.install_path_ is None:
-            self.set_install_path(namespace.find_unique_namespace(file.lines()))
-            pass
-
-        # provide ourselves.
-
-        # we potentially have to provide ourselves in a twofold way:
-
-        # in any case, we provide ourselves to the outside world. for
-        # example, if we (the file we manage) is named "file.h", and
-        # our install path is "some/directory", then we have to
-        # provide our file like "some/directory/file.h". if our
-        # install path is empty, we'll provide the file as "file.h",
-        # of course. in short, we provide the file as it is included
-        # by OTHERS: they'll say, #include <some/directory/file.h>, or
-        # #include <file.h>, respectively.
-
-        # on the other hand, local users - those which reside in the
-        # same directory as we do - have to say #include "file.h",
-        # regardless where it is installed.
-
-        filename = self.file().name()
-        outside_name = '/'.join(self.install_path() + [filename])
-        self.add_provide(Provide_CInclude(outside_name))
-
-        if outside_name != filename:
-            self.add_internal_provide(Provide_CInclude(filename))
-            pass
-
-        # tell the one who has required me how to find me
-        self.add_buildinfo(buildinfo.singleton_buildinfo_cincludepath_nativelocal)
-
+        self.namespace_install_path_ = None
         pass
 
-    def install_path(self):
-        return self.install_path_
-    def set_install_path(self, path):
-        if self.install_path_ is not None:
-            raise HeaderBuilder.InstallPathConflict(old=self.install_path_, new=path)
-        self.install_path_ = path
+    def iface_install_path(self):
+        return self.iface_install_path_
+    def set_iface_install_path(self, path):
+        self.iface_install_path_ = path
         pass
+
+    def namespace_install_path(self):
+        if self.namespace_install_path_ is None:
+            self.namespace_install_path_ = namespace.find_unique_namespace(self.file().lines())
+            pass
+        return self.namespace_install_path_
+
+    def property_install_path(self):
+        if self.file() is not None:
+            return self.file().get_property(HeaderBuilder.PROPERTY_INSTALLPATH)
+        return None
     
     def iface_pieces(self):
         return CBaseBuilder.iface_pieces(self) + [HeaderBuilderInterfaceProxy(object=self)]
-
-    def __check_installpath(self, path):
-        for d in path:
-            if len(d) == 0:
-                raise Error(os.sep.join(self.file().relpath())+': '
-                            'empty path component in install path '+str(path))
-            pass
-        pass
     pass
 
 class HeaderBuilderInterfaceProxy(InterfaceProxy):
@@ -114,6 +69,6 @@ class HeaderBuilderInterfaceProxy(InterfaceProxy):
         self.add_global('INSTALLPATH', getattr(self, 'INSTALLPATH'))
         pass
     def INSTALLPATH(self, path):
-        self.object_.set_install_path(path)
+        self.object_.set_iface_install_path(path)
         pass
     pass

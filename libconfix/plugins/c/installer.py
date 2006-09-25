@@ -1,4 +1,5 @@
 # Copyright (C) 2002-2006 Salomon Automation
+# Copyright (C) 2006 Joerg Faschingbauer
 
 # This library is free software; you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as
@@ -15,15 +16,28 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 # USA
 
-from h import HeaderBuilder
+import os
+import types
+
+from libconfix.core.utils.error import Error
 from libconfix.core.builder import Builder
 from libconfix.core.automake import helper_automake
 from libconfix.core.automake.rule import Rule
 from libconfix.core.utils import const
+from libconfix.core.iface.proxy import InterfaceProxy
 
-import re
+from dependency import Provide_CInclude
+from h import HeaderBuilder
+import buildinfo
 
 class Installer(Builder):
+
+    class InstallPathConflict(Error):
+        def __init__(self, msg):
+            Error.__init__(self, msg)
+            pass
+        pass
+                           
     def __init__(self,
                  parentbuilder,
                  package):
@@ -31,110 +45,130 @@ class Installer(Builder):
             self,
             id=str(self.__class__)+'('+str(parentbuilder)+')',
             parentbuilder=parentbuilder,
-            package=package)            
-        
-        self.install_directories_ = {}
+            package=package)
+        self.global_installdir_ = None
+        self.files_installed_as_ = {}
+        self.buildinfo_passed_ = False
         pass
 
+    def set_installdir(self, dir):
+        self.global_installdir_ = dir
+        pass
+
+    def installpath_of_headerfile(self, filename):
+        # for testing
+        return self.files_installed_as_[filename]
+
     def enlarge(self):
-        Builder.enlarge(self)
-        
-        # fixme: performance: maybe it is cheaper to keep the
-        # information and just edit it. nobody knows.
-        self.install_directories_ = {}
-        curbuilders = self.parentbuilder().builders().values()
-        for b in curbuilders:
+        for b in self.parentbuilder().builders():
             if not isinstance(b, HeaderBuilder):
                 continue
-            if b.install_path() is None:
-                continue
-            key = '/'.join(b.install_path())
-            dirdef = self.install_directories_.setdefault(key, (b.install_path(), []))
-            dirdef[1].append(b.file().name())
+            new_instdir = self.__calc_install_path(b)
+            old_instdir = self.files_installed_as_.get(b.file().name())
+            if old_instdir is None:
+                # seeing it for the first time.
+                self.files_installed_as_[b.file().name()] = new_instdir
+                
+                # provide it.
+
+                # we potentially have to provide ourselves in a
+                # twofold way:
+
+                # in any case, we provide it to the outside world. for
+                # example, if the file is named "file.h", and its
+                # install path is "some/directory", then we have to
+                # provide the file like "some/directory/file.h". if
+                # its install path is empty, we'll provide the file as
+                # "file.h", of course. in short, we provide the file
+                # as it is included by OTHERS: they'll say, #include
+                # <some/directory/file.h>, or #include <file.h>,
+                # respectively.
+
+                # on the other hand, local users - those which reside
+                # in the same directory as we do - have to say
+                # #include "file.h", regardless where it is installed.
+
+                filename = b.file().name()
+                outside_name = '/'.join([d for d in new_instdir] + [filename])
+                self.add_provide(Provide_CInclude(outside_name))
+                
+                if outside_name != filename:
+                    self.add_internal_provide(Provide_CInclude(filename))
+                    pass
+                pass
+            else:
+                assert old_instdir == new_instdir
+                pass
             pass
-        return 0
+        if not self.buildinfo_passed_:
+            if len(self.files_installed_as_):
+                self.add_buildinfo(buildinfo.singleton_buildinfo_cincludepath_nativelocal)
+                self.buildinfo_passed_ = True
+                pass
+            pass
 
-##     def output(self):
-##         Builder.output(self)
-
-##         # register public header files for installation
-
-##         for (installpath, files) in self.install_directories_.values():
-##             if len(installpath) == 0:
-##                 # no need to define subdirectory; take predefined
-##                 symbolicname = ''
-##             else:
-##                 symbolicname = 'publicheader_'+compute_install_dirname_(installpath)
-##                 self.parentbuilder().makefile_am().define_install_directory(
-##                     symbolicname=symbolicname,
-##                     dirname='/'.join(['$(includedir)']+installpath))
-##                 pass
-##             self.parentbuilder().makefile_am().add_to_install_directory(
-##                 symbolicname=symbolicname,
-##                 family='HEADERS',
-##                 files=files)
-##             pass
-
-##         # now for the private header files. this is a bit more
-##         # complicated as we have to do it by hand, using the all-local
-##         # hook.
-
-##         self.parentbuilder().makefile_am().add_all_local('confix-install-local')
-##         self.parentbuilder().makefile_am().add_clean_local('confix-clean-local')
-
-##         install_local_rule = Rule(targets=['confix-install-local'], prerequisites=[], commands=[])
-##         clean_local_rule = Rule(targets=['confix-clean-local'], prerequisites=[], commands=[])
-##         self.parentbuilder().makefile_am().add_element(install_local_rule)        
-##         self.parentbuilder().makefile_am().add_element(clean_local_rule)
-
-##         # add mkdir rules for every subdirectory
-##         for (installpath, files) in self.install_directories_.values():
-##             targetdir = '/'.join(['$(top_builddir)', const.LOCAL_INCLUDE_DIR] + installpath)
-##             self.parentbuilder().makefile_am().add_element(
-##                 Rule(targets=[targetdir],
-##                      prerequisites=[],
-##                      commands=['-$(mkinstalldirs) '+targetdir]))
-##             pass
-
-##         # copy files
-##         for (installpath, files) in self.install_directories_.values():
-##             targetdir = '/'.join(['$(top_builddir)', const.LOCAL_INCLUDE_DIR] + installpath)
-##             for f in files:
-##                 targetfile = '/'.join([targetdir, f])
-##                 self.parentbuilder().makefile_am().add_element(
-##                     Rule(targets=[targetfile],
-##                          prerequisites=[targetdir, f],
-##                          commands=['cp -fp $(srcdir)/'+f+' '+targetdir,
-##                                    'chmod 0444 '+targetfile]))
-##                 self.parentbuilder().makefile_am().add_element(
-##                     Rule(targets=[targetfile+'-clean'],
-##                          prerequisites=[],
-##                          commands=['rm -f '+targetfile]))
-##                 install_local_rule.add_prerequisite(targetfile)
-##                 clean_local_rule.add_prerequisite(targetfile+'-clean')
-##                 pass
-##             pass
-##         pass
+        return Builder.enlarge(self)
 
     def output(self):
         Builder.output(self)
-
-        # register public and private header files for installation
-
-        # fixme: is it right to not distinguish between public and
-        # private?
-
-        for installpath, files in self.install_directories_.values():
-            for f in files:
-                self.parentbuilder().file_installer().add_public_header(filename=f, dir=installpath)
-                self.parentbuilder().file_installer().add_private_header(filename=f, dir=installpath)
-                pass
+        for filename, instdir in self.files_installed_as_.iteritems():
+            # fixme: is it right to not distinguish between public and
+            # private?
+            self.parentbuilder().file_installer().add_public_header(filename=filename, dir=instdir)
+            self.parentbuilder().file_installer().add_private_header(filename=filename, dir=instdir)
             pass
         pass
 
+    def __calc_install_path(self, b):
+        ret = None
+        defined_in = []
+
+        iface = b.iface_install_path()
+        glob = self.global_installdir_
+        property = b.property_install_path()
+
+        if iface is not None:
+            ret = iface
+            defined_in.append(('file interface', iface))
+            pass
+        if glob is not None:
+            ret = glob
+            defined_in.append(('Confix2.dir', glob))
+            pass
+        if property is not None:
+            ret = property
+            defined_in.append(('file property', property))
+            pass
+
+        if len(defined_in) > 1:
+            raise Installer.InstallPathConflict(
+                'Install path ambiguously defined: '+\
+                ','.join([msg+'('+'/'.join(loc)+')' for msg, loc in defined_in]))
+        
+        if ret is None:
+            ret = b.namespace_install_path()
+            pass
+        if ret is None:
+            ret = ''
+            pass
+
+        return ret
+
     pass        
 
-re_subst = re.compile('(^[_\d]|\W)')
-def compute_install_dirname_(path):
-    relpathstr = '/'.join(path)
-    return helper_automake.automake_name(re_subst.sub('', relpathstr))
+class InstallerInterfaceProxy(InterfaceProxy):
+    def __init__(self, object):
+        InterfaceProxy.__init__(self)
+        self.object_ = object
+        self.add_global('INSTALLDIR_H', getattr(self, 'INSTALLDIR_H'))
+        pass
+    def INSTALLDIR_H(self, dir):
+        if type(dir) is types.StringType:
+            the_dir = dir.split(os.sep)
+        elif type(dir) in (types.ListType, types.TupleType):
+            the_dir = dir
+        else:
+            raise Error('INSTALLDIR_H(): dir argument must either be a string or a list of path components')
+        self.object_.set_installdir(the_dir)
+        pass
+    pass

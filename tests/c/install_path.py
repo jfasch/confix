@@ -16,9 +16,7 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 # USA
 
-from libconfix.plugins.c.h import HeaderBuilder
-import libconfix.plugins.c.namespace
-from libconfix.plugins.c.setup import CSetup
+import unittest
 
 from libconfix.core.filesys.directory import Directory
 from libconfix.core.filesys.file import File
@@ -28,7 +26,10 @@ from libconfix.core.utils import const
 
 from libconfix.testutils import find
 
-import unittest
+from libconfix.plugins.c.h import HeaderBuilder
+from libconfix.plugins.c.setup import CSetup
+from libconfix.plugins.c.installer import Installer
+import libconfix.plugins.c.namespace
 
 class InstallPathSuite(unittest.TestSuite):
     def __init__(self):
@@ -42,6 +43,7 @@ class InstallPathSuite(unittest.TestSuite):
         self.addTest(Namespace('testAmbiguousFlat'))
         self.addTest(Namespace('testAmbiguousNested'))
         self.addTest(Namespace('testDirectory'))
+        self.addTest(InstallPriorities('test'))
         pass
     pass
 
@@ -56,12 +58,15 @@ class FilePropertyOnly(unittest.TestCase):
             name=const.CONFIX2_DIR,
             entry=File())
         file = fs.rootdirectory().add(
-            name='some_file',
+            name='file.h',
             entry=File(lines=[]))
         file.set_property(name='INSTALLPATH_CINCLUDE', value=['xxx'])
-        package = LocalPackage(rootdirectory=fs.rootdirectory(), setups=[])
-        builder = HeaderBuilder(file=file, parentbuilder=None, package=package)
-        self.failUnlessEqual(builder.install_path(), ['xxx'])
+        package = LocalPackage(rootdirectory=fs.rootdirectory(),
+                               setups=[CSetup(use_libtool=False, short_libnames=False)])
+        package.enlarge(external_nodes=[])
+        self.failUnlessEqual(find.find_installer(rootbuilder=package.rootbuilder(),
+                                                 path=[]).
+                             installpath_of_headerfile('file.h'), ['xxx'])
         pass
     pass
 
@@ -76,11 +81,14 @@ class IfaceOnly(unittest.TestCase):
             name=const.CONFIX2_DIR,
             entry=File())
         file = fs.rootdirectory().add(
-            name='some_file',
+            name='file.h',
             entry=File(lines=["// CONFIX:INSTALLPATH(['xxx'])"]))
-        package = LocalPackage(rootdirectory=fs.rootdirectory(), setups=[])
-        builder = HeaderBuilder(file=file, parentbuilder=None, package=package)
-        self.failUnlessEqual(builder.install_path(), ['xxx'])
+        package = LocalPackage(rootdirectory=fs.rootdirectory(),
+                               setups=[CSetup(use_libtool=False, short_libnames=False)])
+        package.enlarge(external_nodes=[])
+        self.failUnlessEqual(find.find_installer(rootbuilder=package.rootbuilder(),
+                                                 path=[]).
+                             installpath_of_headerfile('file.h'), ['xxx'])
         pass
     pass
 
@@ -95,12 +103,15 @@ class Namespace(unittest.TestCase):
             name=const.CONFIX2_DIR,
             entry=File())
         file = fs.rootdirectory().add(
-            name='some_file',
+            name='file.h',
             entry=File(lines=['namespace A {',
                               '}; // /namespace']))
-        package = LocalPackage(rootdirectory=fs.rootdirectory(), setups=[])
-        builder = HeaderBuilder(file=file, parentbuilder=None,  package=package)
-        self.failUnlessEqual(builder.install_path(), ['A'])
+        package = LocalPackage(rootdirectory=fs.rootdirectory(),
+                               setups=[CSetup(use_libtool=False, short_libnames=False)])
+        package.enlarge(external_nodes=[])
+        self.failUnlessEqual(find.find_installer(rootbuilder=package.rootbuilder(),
+                                                 path=[]).
+                             installpath_of_headerfile('file.h'), ['A'])
         pass
     def testNested(self):
         fs = FileSystem(path=[])
@@ -112,14 +123,17 @@ class Namespace(unittest.TestCase):
             name=const.CONFIX2_DIR,
             entry=File())
         file = fs.rootdirectory().add(
-            name='some_file',
+            name='file.h',
             entry=File(lines=['namespace A {',
                               'namespace B {',
                               '}; // /namespace',
                               '}; // /namespace']))
-        package = LocalPackage(rootdirectory=fs.rootdirectory(), setups=[])
-        builder = HeaderBuilder(file=file, parentbuilder=None,  package=package)
-        self.failUnlessEqual(builder.install_path(), ['A', 'B'])
+        package = LocalPackage(rootdirectory=fs.rootdirectory(),
+                               setups=[CSetup(use_libtool=False, short_libnames=False)])
+        package.enlarge(external_nodes=[])
+        self.failUnlessEqual(find.find_installer(rootbuilder=package.rootbuilder(),
+                                                 path=[]).
+                             installpath_of_headerfile('file.h'), ['A', 'B'])
         pass
     def testGlobal(self):
         fs = FileSystem(path=[])
@@ -131,11 +145,14 @@ class Namespace(unittest.TestCase):
             name=const.CONFIX2_DIR,
             entry=File())
         file = fs.rootdirectory().add(
-            name='some_file',
+            name='file.h',
             entry=File(lines=[]))
-        package = LocalPackage(rootdirectory=fs.rootdirectory(), setups=[])
-        builder = HeaderBuilder(file=file, parentbuilder=None,  package=package)
-        self.failUnlessEqual(builder.install_path(), [])
+        package = LocalPackage(rootdirectory=fs.rootdirectory(),
+                               setups=[CSetup(use_libtool=False, short_libnames=False)])
+        package.enlarge(external_nodes=[])
+        self.failUnlessEqual(find.find_installer(rootbuilder=package.rootbuilder(),
+                                                 path=[]).
+                             installpath_of_headerfile('file.h'), [])
         pass
     def testAmbiguousFlat(self):
         fs = FileSystem(path=[])
@@ -147,15 +164,16 @@ class Namespace(unittest.TestCase):
             name=const.CONFIX2_DIR,
             entry=File())
         file = fs.rootdirectory().add(
-            name='file',
+            name='file.h',
             entry=File(lines=['namespace A {',
                               '}; // /namespace',
                               'namespace B {',
                               '}; // /namespace'
                               ]))
-        package = LocalPackage(rootdirectory=fs.rootdirectory(), setups=[])
+        package = LocalPackage(rootdirectory=fs.rootdirectory(),
+                               setups=[CSetup(use_libtool=False, short_libnames=False)])
         try:
-            HeaderBuilder(file=file, parentbuilder=None,  package=package)
+            package.enlarge(external_nodes=[])
         except libconfix.plugins.c.namespace.AmbiguousNamespace:
             return
         self.fail()
@@ -170,7 +188,7 @@ class Namespace(unittest.TestCase):
             name=const.CONFIX2_DIR,
             entry=File())
         file = fs.rootdirectory().add(
-            name='file',
+            name='file.h',
             entry=File(lines=['namespace A {',
                               ' namespace A1 {',
                               ' }; // /namespace',
@@ -180,9 +198,10 @@ class Namespace(unittest.TestCase):
                               ' }; // /namespace',
                               '}; // /namespace'
                               ]))
-        package = LocalPackage(rootdirectory=fs.rootdirectory(), setups=[])
+        package = LocalPackage(rootdirectory=fs.rootdirectory(),
+                               setups=[CSetup(use_libtool=False, short_libnames=False)])
         try:
-            HeaderBuilder(file=file, parentbuilder=None,  package=package)
+            package.enlarge(external_nodes=[])
         except libconfix.plugins.c.namespace.AmbiguousNamespace:
             return
         self.fail()
@@ -202,9 +221,9 @@ class Namespace(unittest.TestCase):
                                setups=[CSetup(short_libnames=False,
                                               use_libtool=False)])
         package.enlarge(external_nodes=[])
-        filebuilder = find.find_entrybuilder(package.rootbuilder(), ['file.h'])
-        assert filebuilder is not None
-        self.failUnlessEqual(filebuilder.install_path(), ['xxx'])
+        self.failUnlessEqual(find.find_installer(rootbuilder=package.rootbuilder(),
+                                                 path=[]).
+                             installpath_of_headerfile('file.h'), ['xxx'])
         pass
     pass
 
@@ -220,15 +239,50 @@ class IfaceFilePropertyConflict(unittest.TestCase):
             name=const.CONFIX2_DIR,
             entry=File())
         file = fs.rootdirectory().add(
-            name='file',
+            name='file.h',
             entry=File(lines=["// CONFIX:INSTALLPATH(['xxx'])"]))
         file.set_property(name='INSTALLPATH_CINCLUDE', value=['xxx'])
-        package = LocalPackage(rootdirectory=fs.rootdirectory(), setups=[])
+        package = LocalPackage(rootdirectory=fs.rootdirectory(),
+                               setups=[CSetup(short_libnames=False,
+                                              use_libtool=False)])
         try:
-            builder = HeaderBuilder(file=file, parentbuilder=None, package=package)
-        except HeaderBuilder.InstallPathConflict, e:
+            package.enlarge(external_nodes=[])
+        except Installer.InstallPathConflict, e:
             return
         self.fail()
+        pass
+    pass
+
+class InstallPriorities(unittest.TestCase):
+    def test(self):
+        fs = FileSystem(path=['don\'t', 'care'])
+        fs.rootdirectory().add(
+            name=const.CONFIX2_PKG,
+            entry=File(lines=["PACKAGE_NAME('HeaderInstallInterfaceTest')",
+                              "PACKAGE_VERSION('1.2.3')"]))
+        fs.rootdirectory().add(
+            name=const.CONFIX2_DIR,
+            entry=File(lines=["INSTALLDIR_H('install/from/dir/iface')"]))
+        fs.rootdirectory().add(
+            name='file.h',
+            entry=File(lines=['namespace install {',
+                              'namespace from {',
+                              'namespace ns {',
+                              'namespace hierarchy {',
+                              '} // /namespace',
+                              '} // /namespace',
+                              '} // /namespace',
+                              '} // /namespace',
+                              ]))
+        package = LocalPackage(rootdirectory=fs.rootdirectory(),
+                               setups=[CSetup(use_libtool=False, short_libnames=False)])
+        package.enlarge(external_nodes=[])
+        package.output()
+
+        self.failUnlessEqual(find.find_installer(rootbuilder=package.rootbuilder(),
+                                                 path=[]).
+                             installpath_of_headerfile('file.h'),
+                             ['install','from','dir','iface'])
         pass
     pass
 

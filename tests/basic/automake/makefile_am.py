@@ -95,6 +95,9 @@ class MakefileAmTest(unittest.TestCase):
         mf_am.add_cmdlinemacro('key3')
         mf_am.add_cmdlinemacro('key4')
 
+        mf_am.add_tests_environment(name='name1', value='value1')
+        mf_am.add_tests_environment(name='name2', value='value2')
+
         ##########################
         lines = mf_am.lines()
         elements = makefileparser.parse_makefile(lines=lines)
@@ -151,6 +154,13 @@ class MakefileAmTest(unittest.TestCase):
         self.failUnless('-Dkey2=value2' in am_cppflags)
         self.failUnless('-Dkey3' in am_cppflags)
         self.failUnless('-Dkey4' in am_cppflags)
+
+        # TESTS_ENVIRONMENT
+        tests_environment = makefileparser.find_list(name='TESTS_ENVIRONMENT', elements=elements).values()
+        self.failUnlessEqual(len(tests_environment), 2)
+        self.failUnless('name1=value1' in tests_environment)
+        self.failUnless('name2=value2' in tests_environment)
+        
         pass
 
     def test_errors(self):

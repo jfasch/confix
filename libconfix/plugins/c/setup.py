@@ -22,12 +22,13 @@ from libconfix.core.setup import Setup
 
 from creator import Creator
 from clusterer import CClusterer, CClustererInterfaceProxy
-from installer import Installer
+from installer import Installer, InstallerInterfaceProxy
 from namefinder import LongNameFinder, ShortNameFinder
 from iface import \
      EXTERNAL_LIBRARY_InterfaceProxy, \
      REQUIRE_H_InterfaceProxy, \
-     PROVIDE_H_InterfaceProxy
+     PROVIDE_H_InterfaceProxy, \
+     TESTS_ENVIRONMENT_InterfaceProxy
 
 class CSetup(Setup):
     def __init__(self,
@@ -47,25 +48,32 @@ class CSetup(Setup):
     def setup_directory(self, directory_builder):
         Setup.setup_directory(self, directory_builder)
         
-        clusterer = CClusterer(parentbuilder=directory_builder,
-                               package=directory_builder.package(),
-                               namefinder=self.namefinder_,
-                               use_libtool=self.use_libtool_)
+        clusterer = CClusterer(
+            parentbuilder=directory_builder,
+            package=directory_builder.package(),
+            namefinder=self.namefinder_,
+            use_libtool=self.use_libtool_)
+        installer = Installer(
+            parentbuilder=directory_builder,
+            package=directory_builder.package())
 
         directory_builder.configurator().add_method(
             CClustererInterfaceProxy(object=clusterer))
+        directory_builder.configurator().add_method(
+            InstallerInterfaceProxy(object=installer))
         directory_builder.configurator().add_method(
             EXTERNAL_LIBRARY_InterfaceProxy(object=directory_builder.configurator()))
         directory_builder.configurator().add_method(
             REQUIRE_H_InterfaceProxy(object=directory_builder.configurator()))
         directory_builder.configurator().add_method(
             PROVIDE_H_InterfaceProxy(object=directory_builder.configurator()))
+        directory_builder.configurator().add_method(
+            TESTS_ENVIRONMENT_InterfaceProxy(object=directory_builder.configurator()))
 
         directory_builder.add_builders([Creator(parentbuilder=directory_builder,
                                                 package=directory_builder.package()),
                                         clusterer,
-                                        Installer(parentbuilder=directory_builder,
-                                                  package=directory_builder.package())])
+                                        installer])
         pass
 
     pass    

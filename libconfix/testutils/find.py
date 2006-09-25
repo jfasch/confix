@@ -19,6 +19,8 @@
 from libconfix.core.hierarchy.dirbuilder import DirectoryBuilder
 from libconfix.core.filebuilder import FileBuilder
 
+from libconfix.plugins.c.installer import Installer
+
 import types
 
 def find_entrybuilder(rootbuilder, path):
@@ -49,3 +51,13 @@ def find_managing_node_of_builder(nodes, builder):
             return n
         pass
     return None
+
+def find_installer(rootbuilder, path):
+    dirbuilder = find_entrybuilder(rootbuilder, path)
+    assert isinstance(dirbuilder, DirectoryBuilder)
+    for b in dirbuilder.builders():
+        if isinstance(b, Installer):
+            return b
+        pass
+    return None
+    

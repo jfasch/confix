@@ -36,6 +36,8 @@ class CheckProgramInMemory(CheckProgramBase):
 
     def test(self):
         self.failUnless('CheckProgramTest__check_proggy' in self.package_.rootbuilder().makefile_am().check_programs())
+        self.failUnlessEqual(len(self.package_.rootbuilder().makefile_am().tests_environment()), 1)
+        self.failUnlessEqual(self.package_.rootbuilder().makefile_am().tests_environment()['name'], 'value')
         pass
     pass
 

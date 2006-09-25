@@ -32,7 +32,6 @@ class HeaderInstallSuite(unittest.TestSuite):
         self.addTest(BasicHeaderInstallTest('test_zerodeep'))
         self.addTest(BasicHeaderInstallTest('test_onedeep'))
         self.addTest(BasicHeaderInstallTest('test_twodeep'))
-        self.addTest(HeaderInstallInterfaceTest('test'))
         pass
     pass
 
@@ -124,46 +123,6 @@ class BasicHeaderInstallTest(unittest.TestCase):
         self.failUnless(directory_definition.dirname() == '$(includedir)/xxx/yyy')
         self.failIf(directory_definition.files('HEADERS') is None)
         self.failUnless(directory_definition.files('HEADERS') == ['file.h'])
-        pass
-    pass
-
-class HeaderInstallInterfaceTest(unittest.TestCase):
-    def test(self):
-        fs = FileSystem(path=['don\'t', 'care'])
-        fs.rootdirectory().add(
-            name=const.CONFIX2_PKG,
-            entry=File(lines=["PACKAGE_NAME('HeaderInstallInterfaceTest')",
-                              "PACKAGE_VERSION('1.2.3')"]))
-        fs.rootdirectory().add(
-            name=const.CONFIX2_DIR,
-            entry=File(lines=["INSTALLDIR_H('install/from/dir/iface')"]))
-        fs.rootdirectory().add(
-            name='file.h',
-            entry=File(lines=['namespace install {',
-                              'namespace from {',
-                              'namespace ns {',
-                              'namespace hierarchy {',
-                              '} // /namespace',
-                              '} // /namespace',
-                              '} // /namespace',
-                              '} // /namespace',
-                              ]))
-        package = LocalPackage(rootdirectory=fs.rootdirectory(),
-                               setups=[CSetup(use_libtool=False, short_libnames=False)])
-        package.enlarge(external_nodes=[])
-        package.output()
-
-        for b in package.rootbuilder().builders():
-            if isinstance(b, Installer):
-                installer = b
-                break
-            pass
-        else:
-            self.fail()
-            pass
-
-        self.failUnless('file.h' in installer.install_directories()['install/from/dir/iface'])        
-        self.failIf('file.h' in installer.install_directories()['install/from/ns/hierarchy'])
         pass
     pass
 

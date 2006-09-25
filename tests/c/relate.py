@@ -210,48 +210,52 @@ class RelateBasic(unittest.TestCase):
     def testLocalBuildInfo(self):
         # see if everyone who is involved in the game has the right
         # buildinfo.
-        lo_include = None
-        lo_lib = None
-        hi1_include = None
-        li1_lib = None
-        hi2_include = None
-        hi2_lib = None
+
+        for bi in find.find_installer(rootbuilder=self.lodir_builder_, path=[]).buildinfos():
+            if isinstance(bi, BuildInfo_CIncludePath_NativeLocal):
+                break
+            pass
+        else:
+            self.fail()
+            pass
+        
         for bi in self.lodir_lib_builder_.buildinfos():
             if isinstance(bi, BuildInfo_CLibrary_NativeLocal):
-                lo_lib = bi
-                continue
+                break
             pass
-        for bi in self.lodir_lo_h_builder_.buildinfos():
-            if isinstance(bi, BuildInfo_CIncludePath_NativeLocal):
-                lo_include = bi
-                continue
+        else:
+            self.fail()
             pass
+        
         for bi in self.hi1dir_lib_builder_.buildinfos():
             if isinstance(bi, BuildInfo_CLibrary_NativeLocal):
-                hi1_lib = bi
-                continue
+                break
             pass
-        for bi in self.hi1dir_hi1_h_builder_.buildinfos():
+        else:
+            self.fail()
+            pass
+        
+        for bi in find.find_installer(rootbuilder=self.hi1dir_builder_, path=[]).buildinfos():
             if isinstance(bi, BuildInfo_CIncludePath_NativeLocal):
-                hi1_include = bi
-                continue
+                break
             pass
+        else:
+            self.fail()
+            pass
+        
         for bi in self.hi2dir_lib_builder_.buildinfos():
             if isinstance(bi, BuildInfo_CLibrary_NativeLocal):
                 hi2_lib = bi
                 continue
             pass
-        for bi in self.hi2dir_hi2_h_builder_.buildinfos():
+
+        for bi in find.find_installer(rootbuilder=self.hi2dir_builder_, path=[]).buildinfos():
             if isinstance(bi, BuildInfo_CIncludePath_NativeLocal):
-                hi2_include = bi
-                continue
+                break
             pass
-        self.failIf(lo_include is None)
-        self.failIf(lo_lib is None)
-        self.failIf(hi1_include is None)
-        self.failIf(hi1_lib is None)
-        self.failIf(hi2_include is None)
-        self.failIf(hi2_lib is None)
+        else:
+            self.fail()
+            pass
         pass
 
     def testPropagatedLibraryInfo(self):

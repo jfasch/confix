@@ -332,10 +332,11 @@ class Makefile_am:
         self.add_dir_primary('noinst', 'SCRIPTS', scriptname)
         pass
 
-    def add_tests_environment(self, key, value):
-        assert type(key) is types.StringType
+    def tests_environment(self): return self.tests_environment_        
+    def add_tests_environment(self, name, value):
+        assert type(name) is types.StringType
         assert type(value) is types.StringType
-        self.tests_environment_[key] = value
+        self.tests_environment_[name] = value
         pass
 
     def add_built_sources(self, filename):
