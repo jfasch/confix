@@ -21,14 +21,16 @@ from libconfix.core.hierarchy.setup import DirectorySetup
 
 from libconfix.plugins.c.setup import CSetup
 from libconfix.plugins.plainfile.setup import PlainFileSetup
+from libconfix.plugins.script.setup import ScriptSetup
 
 class ConfixSetup(Setup):
     def __init__(self,
                  use_libtool,
                  short_libnames):
         Setup.__init__(self)
-        self.setups_ = [CSetup(short_libnames=short_libnames, use_libtool=use_libtool),
-                        DirectorySetup(),
+        self.setups_ = [DirectorySetup(),
+                        CSetup(short_libnames=short_libnames, use_libtool=use_libtool),
+                        ScriptSetup(),
                         PlainFileSetup()]
         pass
 
