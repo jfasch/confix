@@ -30,11 +30,9 @@ def make_package():
         name=const.CONFIX2_DIR,
         entry=File(lines=['from libconfix.plugins.plainfile.builder import PlainFileBuilder',
                           "PLAINFILE(filename='plainfile_data', ",
-                          "          installtype=PLAINFILE_DATA,",
-                          "          installdir=['subdir', 'data'])",
+                          "          datadir=['subdir', 'data'])", # list of path components
                           "PLAINFILE(filename='plainfile_prefix',",
-                          "          installtype=PLAINFILE_PREFIX,",
-                          "          installdir=['subdir', 'prefix'])",
+                          "          prefixdir='subdir/prefix')", # string
                           ]))
     root.add(
         name='plainfile_data',

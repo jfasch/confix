@@ -16,6 +16,7 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 # USA
 
+import os
 import types
 
 from libconfix.core.utils.error import Error
@@ -28,19 +29,33 @@ class PLAINFILE_InterfaceProxy(InterfaceProxy):
     def __init__(self, object):
         InterfaceProxy.__init__(self)
         self.object_ = object
-        self.add_global('PLAINFILE_DATA', PlainFileBuilder.DATA)
-        self.add_global('PLAINFILE_PREFIX', PlainFileBuilder.PREFIX)
         self.add_global('PLAINFILE', getattr(self, 'PLAINFILE'))
         pass
 
-    def PLAINFILE(self, filename, installtype, installdir):
+    def PLAINFILE(self, filename, datadir=None, prefixdir=None):
         if type(filename) is not types.StringType:
             raise Error('PLAINFILE(): filename must be a string')
-        if installtype not in [PlainFileBuilder.DATA, PlainFileBuilder.PREFIX]:
-            raise Error('PLAINFILE(): installtype must be one of PLAINFILE_DATA or PLAINFILE_PREFIX')
-        if type(installdir) is not types.ListType:
-            raise Error('PLAINFILE(): installdir must be a list of path components')
-
+        if (datadir is not None and prefixdir is not None) or \
+           (datadir is None and prefixdir is None):
+            raise Error('PLAINFILE('+filename+'): specify either datadir or prefixdir')
+        the_datadir = the_prefixdir = None
+        if datadir is not None:
+            if type(datadir) is types.StringType:
+                the_datadir = os.path.split(datadir)
+            elif type(datadir) is types.ListType:
+                the_datadir = datadir
+            else:
+                raise Error('PLAINFILE('+filename+'): datadir must either be a string or list of path components')
+            pass
+        if prefixdir is not None:
+            if type(prefixdir) is types.StringType:
+                the_prefixdir = os.path.split(prefixdir)
+            elif type(prefixdir) is types.ListType:
+                the_prefixdir = prefixdir
+            else:
+                raise Error('PLAINFILE('+filename+'): prefixdir must either be a string or list of path components')
+            pass
+        
         file = self.object_.directory().find([filename])
         if file is None:
             raise Error('PLAINFILE('+filename+'): no such file or directory')
@@ -51,6 +66,6 @@ class PLAINFILE_InterfaceProxy(InterfaceProxy):
             PlainFileBuilder(file=file,
                              parentbuilder=self.object_,
                              package=self.object_.package(),
-                             installtype=installtype,
-                             installdir=installdir))
+                             datadir=the_datadir,
+                             prefixdir=the_prefixdir))
         pass

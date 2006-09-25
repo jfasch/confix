@@ -21,39 +21,35 @@ import types
 from libconfix.core.filebuilder import FileBuilder
 
 class PlainFileBuilder(FileBuilder):
-
-    DATA = 0
-    PREFIX = 1
-
     def __init__(self,
                  file,
                  parentbuilder,
                  package,
-                 installtype,
-                 installdir):
-        assert installtype in [PlainFileBuilder.DATA, PlainFileBuilder.PREFIX]
-
+                 datadir=None,
+                 prefixdir=None):
+        assert (datadir is not None and prefixdir is None) or \
+               (datadir is None and prefixdir is not None)
+        assert datadir is None or type(datadir) in (types.ListType, types.TupleType)
+        assert prefixdir is None or type(prefixdir) in (types.ListType, types.TupleType)
         FileBuilder.__init__(self,
                              file=file,
                              parentbuilder=parentbuilder,
                              package=package)
-
-        self.installtype_ = installtype
-        self.installdir_ = installdir
-
+        self.datadir_ = datadir
+        self.prefixdir_ = prefixdir
         pass
 
     def output(self):
         FileBuilder.output(self)
 
-        if self.installtype_ == PlainFileBuilder.DATA:
+        if self.datadir_ is not None:
             self.parentbuilder().file_installer().add_datafile(
                 filename=self.file().name(),
-                dir=self.installdir_)
-        elif self.installtype_ == PlainFileBuilder.PREFIX:
+                dir=self.datadir_)
+        elif self.prefixdir_ is not None:
             self.parentbuilder().file_installer().add_prefixfile(
                 filename=self.file().name(),
-                dir=self.installdir_)
+                dir=self.prefixdir_)
         else:
             assert 0
             pass

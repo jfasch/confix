@@ -86,7 +86,6 @@ class LocalPackage(Package):
                 raise Error(const.CONFIX2_DIR+' missing in '+os.sep.join(rootdirectory.abspath()))
             if not isinstance(confix2_dir_file, File):
                 raise Error(os.sep.join(confix2_dir_file.abspath())+' is not a file')
-
             confix2_dir = Confix2_dir(file=confix2_dir_file, parentbuilder=self.rootbuilder_, package=self)
             self.rootbuilder_.set_configurator(confix2_dir)
         except Error, e:

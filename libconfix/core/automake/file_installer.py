@@ -463,7 +463,7 @@ class FileInstaller:
         return helper_automake.automake_name(FileInstaller.re_subst.sub('', str))
 
     def add_to_file2dirdict_(self, file2dirdict, filetype_errmsg, filename, dir):
-        assert type(dir) is types.ListType
+        assert type(dir) in (types.ListType, types.TupleType)
         the_dir = os.sep.join(dir)
         if the_dir is None:
             the_dir = ''
