@@ -18,7 +18,8 @@
 
 import unittest, os, sys, shutil
 
-from libconfix.core.automake import bootstrap, configure, make, repo_automake
+from libconfix.core.automake import bootstrap, configure, make
+from libconfix.core.automake.repo_automake import AutomakeCascadedPackageRepository
 from libconfix.core.filesys.directory import Directory
 from libconfix.core.filesys.file import File
 from libconfix.core.filesys.filesys import FileSystem
@@ -156,17 +157,14 @@ class InterPackageBuildBase(PersistentTestCase):
                 args=['install'])
 
             # read repo from prefix
-            
-            automake_repo = repo_automake.AutomakePackageRepository(
-                prefix=self.installdir_)
-            ext_nodes = []
-            for p in automake_repo.packages():
-                ext_nodes.extend(p.nodes())
-                pass
+
+            repo = AutomakeCascadedPackageRepository(
+                prefix=self.installdir_,
+                readonly_prefixes=[])
 
             # confixize, bootstrap, and install package 'hi'
 
-            self.hi_package_.enlarge(external_nodes=ext_nodes)
+            self.hi_package_.enlarge(external_nodes=repo.nodes())
             self.hi_package_.output()
             self.hi_fs_.sync()
 

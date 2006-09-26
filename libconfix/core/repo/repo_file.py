@@ -16,12 +16,16 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 # USA
 
-class PackageRepository:
-    
-    def __init__(self): pass
+from repo import PackageRepository
+from package_file import PackageFile
 
-    def packages(self): assert 0 # abstract
-
-    def nodes(self): assert 0 # abstract
-
+class PackageFileRepository(PackageRepository):
+    def __init__(self, file):
+        PackageRepository.__init__(self)
+        self.package_ = PackageFile(file).load()
+        pass
+    def packages(self):
+        return [self.package_]
+    def nodes(self):
+        return self.package_.nodes()
     pass

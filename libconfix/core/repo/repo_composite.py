@@ -21,30 +21,35 @@ from libconfix.core.utils.error import Error
 from repo import PackageRepository
 
 class CompositePackageRepository(PackageRepository):
-
     def __init__(self):
-
         PackageRepository.__init__(self)
         self.repositories_ = []
-
-    def description(self):
-
-        return 'Composite: '+','.join([r.description() for r in self.repositories()])
+        pass
 
     def add_repo(self, repo):
-
         self.repositories_.append(repo)
+        pass
 
     def packages(self):
-
         ret_packages = []
-        have_packages = {}
+        have_packages = set()
 
         for r in self.repositories_:
             for p in r.packages():
-                if have_packages.has_key(p.name()):
+                if p.name() in have_packages:
                     continue
-                have_packages[p.name()] = 1
+                have_packages.add(p.name())
                 ret_packages.append(p)
+                pass
+            pass
 
         return ret_packages
+
+    def nodes(self):
+        ret_nodes = []
+        for p in self.packages():
+            ret_nodes.extend(p.nodes())
+            pass
+        return ret_nodes
+
+    pass

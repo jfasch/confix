@@ -30,4 +30,6 @@ they're ok, and then simply forget about the whole tree.
 (Take a look at the tests, they are full of `filesys.FileSystem`,
 `file.File`, and `directory.Directory` usage.)
 
+.. classtree:: filesys.Entry
+
 """

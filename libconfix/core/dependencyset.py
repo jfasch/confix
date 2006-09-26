@@ -18,12 +18,14 @@
 
 from libconfix.core.repo.marshalling import Unmarshallable
 
+from provide_string import Provide_String
+
 class DependencySet(Unmarshallable):
 
     """ A template class (if this were C++) that is suppoed to hold
     either Require or Provide objects. Has special handling for the
-    special purpose high performance *_String incarnations of either
-    of them. """
+    special purpose high performance `Provide_String` incarnations of either
+    of them."""
 
     def __init__(self, klass, string_klass):
         self.klass_ = klass

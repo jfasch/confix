@@ -16,10 +16,9 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 # USA
 
+import pickle
+
 from libconfix.core.utils.error import Error
-
-from sets import Set
-
 
 # use this like debug.trace([marshalling.REPOVERSION_TRACENAME], 'Upgrading class XXX from version 3 to version 100')
 REPOVERSION_TRACENAME = 'repoversion'
@@ -31,12 +30,10 @@ class Marshallable:
     requires every class that want to take part in this game to derive
     from it.
 
-    The functionality is based on L{pickle's<pickle>} C{__setstate__}
-    and C{__getstate__} which is provided by L{Marshallable}. Derived
-    classes must implement two methods,
-    L{get_marshalling_data<get_marshalling_data>} and
-    L{set_marshalling_data<set_marshalling_data>}, to be able to
-    operate meaningfully. """
+    The functionality is based on `pickle`'s __setstate__ and
+    __getstate__ which is provided by `Marshallable`. Derived classes
+    must implement two methods, `get_marshalling_data` and
+    `set_marshalling_data`, to be able to operate meaningfully."""
 
     GENERATING_CLASS = 'generating_class'
     VERSIONS = 'versions'
@@ -44,20 +41,25 @@ class Marshallable:
 
     def get_marshalling_data(self):
 
-        """ Return marshalling data for my attributes. Called
-        indirectly by L{pickle's<pickle>} L{__getstate__<pickle>}.
+        """ Return marshalling data for my attributes.
 
-        @return: a dictionary object that contains relatively
-        anonymous data which represents the object to be
-        marshalled. The dictionary is composed by derived classes and
-        must look as follows:
+        To be implemented by derived classes.
         
-        {
-           'generating_class': <class object of generating object>,
-           'versions': <versions of contributions>,
-           'attributes': <dictionary with direct attributes key/value pairs>,
-        }
+        The returned marshalling data is a dictionary object that
+        contains relatively anonymous data which represents the object
+        to be marshalled. The dictionary is composed by derived
+        classes and must look as follows:
 
+        ::
+        
+           {
+              'generating_class': <class object of generating object>,
+              'versions': <versions of contributions>,
+              'attributes': <dictionary with direct attributes key/value pairs>,
+           }
+
+        Called indirectly by `__getstate__`.
+   
         """
 
         assert 0, 'abstract'
@@ -126,13 +128,13 @@ def update_marshalling_data(marshalling_data,
                             attributes,
                             version):
     # don't let attribute conflicts get through
-    lhs_attr_keys = Set(marshalling_data[Marshallable.ATTRIBUTES].keys())
-    rhs_attr_keys = Set(attributes.keys())
+    lhs_attr_keys = set(marshalling_data[Marshallable.ATTRIBUTES].keys())
+    rhs_attr_keys = set(attributes.keys())
     assert len(lhs_attr_keys & rhs_attr_keys) == 0
 
     # same for version conflicts
-    lhs_version_keys = Set(marshalling_data[Marshallable.VERSIONS].keys())
-    rhs_version_keys = Set(version.keys())
+    lhs_version_keys = set(marshalling_data[Marshallable.VERSIONS].keys())
+    rhs_version_keys = set(version.keys())
     assert len(lhs_version_keys & rhs_version_keys) == 0
 
     marshalling_data[Marshallable.GENERATING_CLASS] = generating_class

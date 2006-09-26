@@ -28,7 +28,7 @@ from libconfix.core.automake.acinclude_m4 import ACInclude_m4
 from libconfix.core.digraph.digraph import DirectedGraph
 from libconfix.core.filesys.directory import Directory
 from libconfix.core.filesys.file import File
-from libconfix.core.repo.repofile import RepositoryFile
+from libconfix.core.repo.package_file import PackageFile
 from libconfix.core.utils import const
 from libconfix.core.utils.error import Error
 from libconfix.core.iface.proxy import InterfaceProxy
@@ -293,7 +293,7 @@ class LocalPackage(Package):
             repofile.truncate()
             pass
 
-        RepositoryFile(file=repofile).dump(package=self.install())
+        PackageFile(file=repofile).dump(package=self.install())
 
         self.rootbuilder_.makefile_am().define_install_directory(
             symbolicname='confixrepo',

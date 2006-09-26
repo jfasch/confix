@@ -21,8 +21,15 @@ from libconfix.core.utils import helper_pickle
 
 import os
 
-class RepositoryFile:
+class PackageFile:
 
+    """ A utility class that helps us storing a package into a file,
+    and reading it back from it.
+
+    :todo: to functions suffice; shouldn't force the user to create
+    and destroy an object for that purpose.
+    
+    """
     VERSION = 1
 
     def __init__(self, file):
@@ -37,22 +44,23 @@ class RepositoryFile:
             # whole buffer. to make this more efficient, we'd need
             # something like File.content().
             obj = helper_pickle.load_object_from_string('\n'.join(self.file_.lines()))
-            if obj['version'] != RepositoryFile.VERSION:
+            if obj['version'] != PackageFile.VERSION:
                 raise Error('Version mismatch in repository file '+os.sep.join(self.file_.abspath())+''
                             ' (file: '+str(obj['version'])+','
-                            ' current: '+str(RepositoryFile.VERSION)+')')
+                            ' current: '+str(PackageFile.VERSION)+')')
             return obj['package']
         except Error, e:
-            raise Error('Could not read repository file '+os.sep.join(self.file_.abspath()), [e])
+            raise Error('Could not read package file '+os.sep.join(self.file_.abspath()), [e])
         pass
     
     def dump(self, package):
         try:
             self.file_.truncate()
             self.file_.add_line(helper_pickle.dump_object_to_string(
-                {'version': RepositoryFile.VERSION,
+                {'version': PackageFile.VERSION,
                  'package': package}))
         except Error, e:
-            raise Error('Could not write repository file '+os.sep.join(self.file_.abspath()), [e])
+            raise Error('Could not write package file '+os.sep.join(self.file_.abspath()), [e])
         pass
     
+    pass

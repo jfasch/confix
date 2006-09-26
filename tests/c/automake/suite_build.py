@@ -21,6 +21,7 @@ from intra_package_build import IntraPackageBuildSuite
 from inter_package_build import InterPackageBuildSuite
 from check_build import CheckProgramBuildSuite
 from autoconf_archive import AutoConfArchiveSuite
+from readonly_prefixes_build import ReadonlyPrefixesBuildSuite
 
 import unittest
 
@@ -32,6 +33,7 @@ class AutomakeCSuiteBuild(unittest.TestSuite):
         self.addTest(InterPackageBuildSuite())
         self.addTest(CheckProgramBuildSuite())
         self.addTest(AutoConfArchiveSuite())
+        self.addTest(ReadonlyPrefixesBuildSuite())
         pass
     pass
 
