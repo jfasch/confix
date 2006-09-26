@@ -68,7 +68,8 @@ class PlainFileBuildTest(PersistentTestCase):
         configure.configure(
             packageroot=self.rootpath() + ['source'],
             builddir=self.rootpath() + ['build'],
-            prefix=self.rootpath() + ['install'])
+            prefix=self.rootpath() + ['install'],
+            readonly_prefixes=[])
         make.make(builddir=self.rootpath() + ['build'], args=['install'])
         
         self.failUnless(os.path.isfile(os.sep.join(
