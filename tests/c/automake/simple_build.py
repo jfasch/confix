@@ -89,7 +89,8 @@ class SimpleBuildBase(PersistentTestCase):
             configure.configure(
                 packageroot=self.sourcerootpath_,
                 builddir=self.buildrootpath_,
-                prefix='/dev/null'.split(os.sep))
+                prefix='/dev/null'.split(os.sep),
+                readonly_prefixes=[])
             make.make(
                 builddir=self.buildrootpath_,
                 args=[])
