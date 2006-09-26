@@ -16,6 +16,8 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 # USA
 
+import os
+
 from config import Configuration
 
 class DefaultConfiguration(Configuration):
@@ -24,7 +26,7 @@ class DefaultConfiguration(Configuration):
         pass
 
     def setups(self): return None
-    def packageroot(self): return None
+    def packageroot(self): return os.getcwd()
     def packagename(self): return None
     def packageversion(self): return None
     def prefix(self): return None
