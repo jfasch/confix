@@ -35,6 +35,7 @@ from libconfix.core.iface.proxy import InterfaceProxy
 from libconfix.core.iface.executor import InterfaceExecutor
 from libconfix.core.hierarchy.confix2_dir import Confix2_dir
 from libconfix.core.hierarchy.dirbuilder import DirectoryBuilder
+from libconfix.core import readonly_prefixes
 
 from package import Package
 from installed_package import InstalledPackage
@@ -238,6 +239,12 @@ class LocalPackage(Package):
         self.rootbuilder_.makefile_am().add_automake_options('dist-bzip2')
         self.rootbuilder_.makefile_am().add_automake_options('dist-shar')
         self.rootbuilder_.makefile_am().add_automake_options('dist-zip')
+
+        # the ubiquitous readonly-prefixes: add the configure option
+        # and stuff.
+        self.configure_ac_.add_paragraph(
+            paragraph=readonly_prefixes.commandline_option_paragraph,
+            order=Configure_ac.OPTIONS)
         pass
 
     def output_subdirs_(self):

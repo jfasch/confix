@@ -42,6 +42,7 @@ class CompositeConfigTest(unittest.TestCase):
             packagename='packagename',
             packageversion='packageversion',
             prefix='/the/prefix',
+            readonly_prefixes=['/one/readonly/prefix', '/two/readonly/prefixes'],
             buildroot='/build/root',
             builddir=None,
             short_libnames=None,
@@ -88,6 +89,7 @@ class CompositeConfigTest(unittest.TestCase):
         self.failUnlessEqual(config.packagename(), 'packagename') # cmdline
         self.failUnlessEqual(config.packageversion(), 'packageversion') # cmdline
         self.failUnlessEqual(config.prefix(), '/the/prefix') # cmdline overriding profile
+        self.failUnlessEqual(config.readonly_prefixes(), ['/one/readonly/prefix', '/two/readonly/prefixes']) # cmdline overriding profile
         self.failUnlessEqual(config.buildroot(), '/build/root') # cmdline
         self.failUnless(config.builddir() is None) # not set at all
         self.failUnless(config.short_libnames() is True) # profile

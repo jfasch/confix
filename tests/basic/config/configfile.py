@@ -68,6 +68,7 @@ class ConfigFileTest(unittest.TestCase):
         self.failIf(profile is None)
 
         self.failUnlessEqual(profile.prefix(), '/some/prefix')
+        self.failUnlessEqual(profile.readonly_prefixes(), ['/some/prefix', '/some/other/prefix'])
         self.failUnlessEqual(profile.buildroot(), '/some/build/dir')
         self.failUnlessEqual(profile.short_libnames(), True)
         self.failUnlessEqual(profile.use_libtool(), True)

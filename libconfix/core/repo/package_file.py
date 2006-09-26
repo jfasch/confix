@@ -28,7 +28,7 @@ class PackageFile:
 
     :todo: to functions suffice; shouldn't force the user to create
     and destroy an object for that purpose.
-    
+
     """
     VERSION = 1
 

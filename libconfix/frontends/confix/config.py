@@ -29,6 +29,7 @@ class Configuration:
     def builddir(self): assert 0, str(self.__class__)
     
     def prefix(self): assert 0, str(self.__class__)
+    def readonly_prefixes(self): assert 0, str(self.__class__)
     def buildroot(self): assert 0, str(self.__class__)
     def short_libnames(self): assert 0, str(self.__class__)
     def use_libtool(self): assert 0, str(self.__class__)

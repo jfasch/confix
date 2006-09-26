@@ -151,7 +151,8 @@ class InterPackageBuildBase(PersistentTestCase):
             configure.configure(
                 packageroot=self.lo_sourcedir_,
                 builddir=self.lo_builddir_,
-                prefix=self.installdir_)
+                prefix=self.installdir_,
+                readonly_prefixes=[])
             make.make(
                 builddir=self.lo_builddir_,
                 args=['install'])
@@ -177,7 +178,8 @@ class InterPackageBuildBase(PersistentTestCase):
             configure.configure(
                 packageroot=self.hi_sourcedir_,
                 builddir=self.hi_builddir_,
-                prefix=self.installdir_)
+                prefix=self.installdir_,
+                readonly_prefixes=[])
             make.make(
                 builddir=self.hi_builddir_,
                 args=['install'])
@@ -276,7 +278,8 @@ class InstalledIncludeDirTest(PersistentTestCase):
         configure.configure(
             packageroot=lo_source.abspath(),
             builddir=lo_build.abspath(),
-            prefix=prefix.abspath())
+            prefix=prefix.abspath(),
+            readonly_prefixes=[])
         make.make(
             builddir=lo_build.abspath(),
             args=['install'])
@@ -308,7 +311,8 @@ class InstalledIncludeDirTest(PersistentTestCase):
         configure.configure(
             packageroot=hi_source.abspath(),
             builddir=hi_build.abspath(),
-            prefix=prefix.abspath())
+            prefix=prefix.abspath(),
+            readonly_prefixes=[])
         make.make(
             builddir=hi_build.abspath(),
             args=[])

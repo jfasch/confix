@@ -18,6 +18,7 @@
 
 from libconfix.core.utils import const
 from libconfix.core.iface.proxy import InterfaceProxy
+from libconfix.core import readonly_prefixes
 
 from base import CBaseBuilder
 from buildinfo import \
@@ -109,6 +110,8 @@ class CompiledCBuilder(CBaseBuilder):
         if self.buildinfo_includepath_native_installed_ > 0:
             self.parentbuilder().makefile_am().add_includepath(
                 '-I$(includedir)')
+            self.parentbuilder().makefile_am().add_includepath(
+                readonly_prefixes.incpath_subst)
             pass
         # external includes.
         for p in self.external_include_path_:

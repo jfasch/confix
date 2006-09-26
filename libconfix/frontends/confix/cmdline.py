@@ -73,6 +73,10 @@ def parse(args):
     parser.add_option('--prefix',
                       metavar='DIR',
                       help='Use DIR as the installation prefix.')
+    parser.add_option('--readonly-prefixes',
+                      metavar='DIR-LIST',
+                      help='Look in DIR-LIST (a comma separated list of directory names) for '
+                      'installed packages.')
     parser.add_option('--advanced',
                       action='store_true',
                       help='Create build directory if necessary.')
@@ -115,15 +119,24 @@ def parse(args):
     if len(args):
         raise Error('Positional arguments are not understood')
 
+    readonly_prefixes = None
+    if opts.readonly_prefixes is not None:
+        readonly_prefixes = opts.readonly_prefixes.split(',')
+        pass
+    make_args = None
+    if opts.make_args is not None:
+        make_args = opts.make_args.split(',')
+        pass
+
     # collect parameters
     config = CommandlineConfiguration(
         configdir=opts.configdir,
         profile=opts.profile,
-        
         packageroot=opts.packageroot,
         packagename=opts.packagename,
         packageversion=opts.packageversion,
         prefix=opts.prefix,
+        readonly_prefixes=readonly_prefixes,
         buildroot=opts.buildroot,
         builddir=opts.builddir,
         short_libnames=opts.short_libnames,
@@ -134,7 +147,7 @@ def parse(args):
         verbosity=opts.verbosity,
         message_prefix=opts.message_prefix,
         advanced=opts.advanced,
-        make_args=opts.make_args.split(),
+        make_args=make_args,
         )
 
     # collect actions

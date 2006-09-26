@@ -78,7 +78,8 @@ class IntraPackageBuildBase(PersistentTestCase):
             configure.configure(
                 packageroot=self.sourcerootpath_,
                 builddir=self.buildrootpath_,
-                prefix='/dev/null'.split(os.sep))
+                prefix='/dev/null'.split(os.sep),
+                readonly_prefixes=[])
             make.make(builddir=self.buildrootpath_, args=[])
         except Error, e:
             sys.stderr.write(`e`+'\n')
@@ -173,7 +174,9 @@ class LocalIncludeDirTest(PersistentTestCase):
             argv0=sys.argv[0])
         configure.configure(
             packageroot=source.abspath(),
-            builddir=build.abspath())
+            builddir=build.abspath(),
+            prefix='/dev/null'.split(os.sep),
+            readonly_prefixes=[])
         make.make(
             builddir=build.abspath(),
             args=[])

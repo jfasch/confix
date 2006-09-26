@@ -26,6 +26,7 @@ class CommandlineConfiguration(Configuration):
                  packagename,
                  packageversion,
                  prefix,
+                 readonly_prefixes,
                  buildroot,
                  builddir,
                  short_libnames,
@@ -44,6 +45,7 @@ class CommandlineConfiguration(Configuration):
         self.packagename_ = packagename
         self.packageversion_ = packageversion
         self.prefix_ = prefix
+        self.readonly_prefixes_ = readonly_prefixes
         self.buildroot_ = buildroot
         self.builddir_ = builddir
         self.short_libnames_ = short_libnames
@@ -68,6 +70,7 @@ class CommandlineConfiguration(Configuration):
     def packagename(self): return self.packagename_
     def packageversion(self): return self.packageversion_
     def prefix(self): return self.prefix_
+    def readonly_prefixes(self): return self.readonly_prefixes_
     def buildroot(self): return self.buildroot_
     def builddir(self): return self.builddir_
     def short_libnames(self): return self.short_libnames_

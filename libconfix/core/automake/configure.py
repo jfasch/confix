@@ -20,14 +20,25 @@ import os, types
 
 from libconfix.core.utils import external_cmd
 
-def configure(packageroot, builddir, prefix=None, args=None, env=None):
+def configure(packageroot, builddir, prefix, readonly_prefixes, args=None, env=None):
     assert type(packageroot) in [types.ListType, types.TupleType]
     assert type(builddir) in [types.ListType, types.TupleType]
     assert type(prefix) in [types.NoneType, types.ListType, types.TupleType]
+    assert type(readonly_prefixes) in [types.NoneType, types.ListType, types.TupleType]
     
     argv = []
     if prefix is not None:
         argv.append('--prefix='+os.sep.join(prefix))
+        pass
+    if readonly_prefixes is not None:
+        ro_args = []
+        for rp in readonly_prefixes:
+            assert type(rp) in [types.ListType, types.TupleType]
+            ro_args.append(os.sep.join(rp))
+            pass
+        if len(ro_args):
+            argv.append('--with-readonly-prefixes='+','.join(ro_args))
+            pass
         pass
     if args is not None:
         argv.extend(args)

@@ -250,13 +250,15 @@ def CONFIGURE():
         os.makedirs(builddir)
         pass
     
-##     if ARGS.has_key(const.ARG_READONLY_PREFIXES) and len(ARGS[const.ARG_READONLY_PREFIXES]):
-##         cmdline.append('--with-readonly-prefixes='+','.join(ARGS[const.ARG_READONLY_PREFIXES]))
-
     try:
+        ro_pfxs = []
+        for p in CONFIG.readonly_prefixes():
+            ro_pfxs.append(p.split(os.sep))
+            pass
         configure.configure(packageroot=CONFIG.packageroot().split(os.sep),
                             builddir=builddir.split(os.sep),
                             prefix=CONFIG.prefix().split(os.sep),
+                            readonly_prefixes=ro_pfxs,
                             args=CONFIG.configure_args(),
                             env=CONFIG.configure_env())
     except Error, e:

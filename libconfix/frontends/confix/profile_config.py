@@ -20,8 +20,9 @@ from config import Configuration
 
 class ProfileConfiguration(Configuration):
 
-    SETUPS = 'setups'
+    SETUPS = 'SETUPS'
     PREFIX = 'PREFIX'
+    READONLY_PREFIXES = 'READONLY_PREFIXES'
     BUILDROOT = 'BUILDROOT'
     SHORT_LIBNAMES = 'SHORT_LIBNAMES'
     USE_LIBTOOL = 'USE_LIBTOOL'
@@ -44,6 +45,8 @@ class ProfileConfiguration(Configuration):
         return self.dictionary_.get(ProfileConfiguration.SETUPS)
     def prefix(self):
         return self.dictionary_.get(ProfileConfiguration.PREFIX)
+    def readonly_prefixes(self):
+        return self.dictionary_.get(ProfileConfiguration.READONLY_PREFIXES)
     def buildroot(self):
         return self.dictionary_.get(ProfileConfiguration.BUILDROOT)
     def short_libnames(self):

@@ -16,12 +16,16 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 # USA
 
+import os
+
 from libconfix.core.builder import Builder
 import libconfix.core.filesys
 
 from h import HeaderBuilder
 from c import CBuilder
 from cxx import CXXBuilder
+from lex import LexBuilder
+from yacc import YaccBuilder
 
 class Creator(Builder):
     def __init__(self, parentbuilder, package):
@@ -40,27 +44,36 @@ class Creator(Builder):
                 continue
             if entry in self.handled_entries_:
                 continue
-            if name.endswith('.h') or \
-               name.endswith('.hh') or \
-               name.endswith('.hpp'):
+            root, ext = os.path.splitext(name)
+            if ext in ['.h', '.hh', '.hpp']:
                 newbuilders.append((entry,
                                     HeaderBuilder(file=entry,
                                                   parentbuilder=self.parentbuilder(),
                                                   package=self.package())))
                 continue
-            if entry.name().endswith('.c'):
+            if ext in ['.c']:
                 newbuilders.append((entry,
                                     CBuilder(file=entry,
                                              parentbuilder=self.parentbuilder(),
                                              package=self.package())))
                 continue
-            if entry.name().endswith('.cpp') or \
-               entry.name().endswith('.cc') or \
-               entry.name().endswith('.cxx'):
+            if ext in ['.cpp', '.cc', '.cxx']:
                 newbuilders.append((entry,
                                     CXXBuilder(file=entry,
                                                parentbuilder=self.parentbuilder(),
                                                package=self.package())))
+                continue
+            if ext in ['.l', '.ll']:
+                newbuilders.append((entry,
+                                    LexBuilder(file=entry,
+                                               parentbuilder=self.parentbuilder(),
+                                               package=self.package())))
+                continue
+            if ext in ['.y', '.yy']:
+                newbuilders.append((entry,
+                                    YaccBuilder(file=entry,
+                                                parentbuilder=self.parentbuilder(),
+                                                package=self.package())))
                 continue
             pass
         for entry, b in newbuilders:

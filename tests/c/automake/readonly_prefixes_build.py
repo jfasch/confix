@@ -36,15 +36,11 @@ class ReadonlyPrefixesBuildSuite(unittest.TestSuite):
     def __init__(self):
         unittest.TestSuite.__init__(self)
         self.addTest(ReadonlyPrefixesBuildWithoutLibtool('test'))
-#        self.addTest(ReadonlyPrefixesBuildWithLibtool('test'))
+        self.addTest(ReadonlyPrefixesBuildWithLibtool('test'))
         pass
     pass
 
 class ReadonlyPrefixesBuildBase(PersistentTestCase):
-    def tearDown(self):
-        print 'WAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA tearDown'
-        pass
-    
     def __init__(self, str):
         PersistentTestCase.__init__(self, str)
         pass
@@ -103,7 +99,8 @@ class ReadonlyPrefixesBuildBase(PersistentTestCase):
         configure.configure(
             packageroot=lo_sourcedir,
             builddir=lo_builddir,
-            prefix=lo_installdir)
+            prefix=lo_installdir,
+            readonly_prefixes=[])
         make.make(
             builddir=lo_builddir,
             args=['install'])
@@ -187,7 +184,8 @@ class ReadonlyPrefixesBuildBase(PersistentTestCase):
         configure.configure(
             packageroot=hi_sourcedir,
             builddir=hi_builddir,
-            prefix=hi_installdir)
+            prefix=hi_installdir,
+            readonly_prefixes=[lo_installdir])
         make.make(
             builddir=hi_builddir,
             args=['install'])

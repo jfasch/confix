@@ -33,6 +33,7 @@ class CompositeConfiguration(Configuration):
     def packagename(self): return self.search_param_('packagename')
     def packageversion(self): return self.search_param_('packageversion')
     def prefix(self): return self.search_param_('prefix')
+    def readonly_prefixes(self): return self.search_param_('readonly_prefixes')
     def buildroot(self): return self.search_param_('buildroot')
     def builddir(self): return self.search_param_('builddir')
     def short_libnames(self): return self.search_param_('short_libnames')

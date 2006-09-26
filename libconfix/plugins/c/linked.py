@@ -16,15 +16,16 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 # USA
 
-from buildinfo import \
-     BuildInfo_CLibrary_NativeLocal, \
-     BuildInfo_CLibrary_NativeInstalled, \
-     BuildInfo_CLibrary_External
-
 from libconfix.core.utils.paragraph import Paragraph, OrderedParagraphSet
 from libconfix.core.filebuilder import FileBuilder
 from libconfix.core.builder import Builder, BuilderSet
 from libconfix.core.automake.configure_ac import Configure_ac
+from libconfix.core import readonly_prefixes
+
+from buildinfo import \
+     BuildInfo_CLibrary_NativeLocal, \
+     BuildInfo_CLibrary_NativeInstalled, \
+     BuildInfo_CLibrary_External
 
 class LinkedBuilder(Builder):
     def __init__(self, id, parentbuilder, package, use_libtool):
@@ -143,6 +144,7 @@ class LinkedBuilder(Builder):
 
         if using_installed_library:
             paths.append('-L$(libdir)')
+            paths.append(readonly_prefixes.libpath_subst)
             pass
 
         return paths + libraries
