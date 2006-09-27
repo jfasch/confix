@@ -83,6 +83,7 @@ class LinkedBuilder(Builder):
                     continue
                 pass
             pass
+        
         for n in topolist:
             for bi in n.buildinfos():
                 if isinstance(bi, BuildInfo_CLibrary_NativeLocal):
@@ -115,8 +116,9 @@ class LinkedBuilder(Builder):
         pass
 
     def get_linkline(self):
-        paths = []
-        libraries = []
+        native_paths = []
+        native_libraries = []
+        external_linkline = []
         using_installed_library = False
 
         if self.use_libtool_:
@@ -124,30 +126,38 @@ class LinkedBuilder(Builder):
             # specify the whole topologically sorted list of
             # dependencies - libtool does that by itself. we only
             # specify the direct dependencies.
-            libs_to_use = self.buildinfo_direct_dependent_native_libs_
+            native_libs_to_use = self.buildinfo_direct_dependent_native_libs_
         else:
             # not using libtool; have to toposort ourselves
-            libs_to_use = self.buildinfo_topo_dependent_native_libs_
+            native_libs_to_use = self.buildinfo_topo_dependent_native_libs_
             pass
 
-        for bi in libs_to_use:
+        for bi in native_libs_to_use:
             if isinstance(bi, BuildInfo_CLibrary_NativeLocal):
-                paths.append('-L'+'/'.join(['$(top_builddir)']+bi.dir()))
-                libraries.append('-l'+bi.name())
+                native_paths.append('-L'+'/'.join(['$(top_builddir)']+bi.dir()))
+                native_libraries.append('-l'+bi.name())
                 continue
             if isinstance(bi, BuildInfo_CLibrary_NativeInstalled):
                 using_installed_library = True
-                libraries.append('-l'+bi.name())
+                native_libraries.append('-l'+bi.name())
                 continue
             assert 0
             pass
 
         if using_installed_library:
-            paths.append('-L$(libdir)')
-            paths.append(readonly_prefixes.libpath_subst)
+            native_paths.append('-L$(libdir)')
+            native_paths.append(readonly_prefixes.libpath_subst)
             pass
 
-        return paths + libraries
+        # in either case (libtool or not), we have to link all
+        # external libraries. we cannot decide whether they are built
+        # with libtool or not, so we cannot rely on libtool making our
+        # toposort. (note both are lists of lists...)
+        for elem in self.external_libpath_ + self.external_libraries_:
+            external_linkline.extend(elem)
+            pass
+            
+        return native_paths + native_libraries + external_linkline
     
     def __init_buildinfo(self):
         self.buildinfo_direct_dependent_native_libs_ = []

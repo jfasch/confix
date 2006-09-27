@@ -78,7 +78,7 @@ class BuildInfo_CIncludePath_External(BuildInformation):
 
     def __init__(self, incpath):
         BuildInformation.__init__(self)
-        self.incpath_ = incpath[:]
+        self.incpath_ = incpath
         pass
     def unique_key(self):
         return self.__class__.__name__ + ':' + '.'.join(self.incpath_)
@@ -154,7 +154,7 @@ class BuildInfo_CLibrary_External(BuildInformation):
 
     def __init__(self, libpath, libs):
         BuildInformation.__init__(self)
-        self.libpath_ = libpath[:]
+        self.libpath_ = libpath
         self.libs_ = libs
         pass
     def unique_key(self):

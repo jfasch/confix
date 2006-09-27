@@ -86,16 +86,6 @@ def READ_REPO():
         prefixes.append(CONFIG.prefix())
         pass
 
-##     if ARGS.has_key(const.ARG_REPOSITORY) and len(ARGS[const.ARG_REPOSITORY]):
-##         if ARGS.has_key(const.ARG_READONLY_PREFIXES) and len(ARGS[const.ARG_READONLY_PREFIXES]):
-##             core.debug.warn('both repositories and readonly-prefixes specified; '
-##                             'taking only repositories ('+','.join(ARGS[const.ARG_REPOSITORY])+')')
-##             repodirs.extend(ARGS[const.ARG_REPOSITORY][:])
-##         elif ARGS.has_key(const.ARG_READONLY_PREFIXES) and len(ARGS[const.ARG_READONLY_PREFIXES]):
-##             repodirs.extend([repo_automake.dir(prefix) for prefix in ARGS[const.ARG_READONLY_PREFIXES]])
-##             pass
-##         pass
-
     # make sure we don't read the same repo twice
     have = {}
     unique_prefixes = []

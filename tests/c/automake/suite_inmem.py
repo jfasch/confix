@@ -23,6 +23,7 @@ from header_install import HeaderInstallSuite
 from libtool_version import LibtoolVersionSuite
 from intra_package_inmem import IntraPackageInMemorySuite
 from check_inmem import CheckProgramInMemorySuite
+from external_library import ExternalLibraryInMemorySuite
 
 import unittest
 
@@ -36,6 +37,7 @@ class AutomakeCSuiteInMemory(unittest.TestSuite):
         self.addTest(HeaderInstallSuite())
         self.addTest(IntraPackageInMemorySuite())
         self.addTest(CheckProgramInMemorySuite())
+        self.addTest(ExternalLibraryInMemorySuite())
         pass
     pass
 

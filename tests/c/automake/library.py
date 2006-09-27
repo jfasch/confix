@@ -17,6 +17,7 @@
 # USA
 
 from libconfix.testutils import dirhier, find
+from libconfix.core.filesys.filesys import FileSystem
 from libconfix.core.filesys.directory import Directory
 from libconfix.core.filesys.file import File
 from libconfix.core.utils import const
@@ -34,6 +35,8 @@ class LibrarySuite(unittest.TestSuite):
         self.addTest(LibtoolLibrary('test_version'))
         self.addTest(ArchiveLibrary('test_library_alone'))
         self.addTest(ArchiveLibrary('test_AC_PROG_RANLIB'))
+        self.addTest(LIBADD('test_libtool'))
+        self.addTest(LIBADD('test_no_libtool'))
         pass
     pass
 
@@ -128,6 +131,62 @@ class ArchiveLibrary(LibraryBase):
             pass
         self.failUnless(found_AC_PROG_RANLIB)
         pass
+    pass
+
+class LIBADD(unittest.TestCase):
+    def setUp(self):
+        self.fs_ = FileSystem(path=['don\'t', 'care'])
+        self.fs_.rootdirectory().add(
+            name=const.CONFIX2_PKG,
+            entry=File(lines=["PACKAGE_NAME('LIBADD')",
+                              "PACKAGE_VERSION('1.2.3')"]))
+        self.fs_.rootdirectory().add(
+            name=const.CONFIX2_DIR,
+            entry=File())
+        lo = self.fs_.rootdirectory().add(
+            name='lo',
+            entry=Directory())
+        lo.add(
+            name=const.CONFIX2_DIR,
+            entry=File())
+        lo.add(
+            name='lo.h',
+            entry=File())
+        lo.add(
+            name='lo.c',
+            entry=File())
+
+        hi = self.fs_.rootdirectory().add(
+            name='hi',
+            entry=Directory())
+        hi.add(
+            name=const.CONFIX2_DIR,
+            entry=File())
+        hi.add(
+            name='hi.c',
+            entry=File(lines=['#include <lo.h>']))
+        pass
+
+    def test_libtool(self):
+        package = LocalPackage(rootdirectory=self.fs_.rootdirectory(),
+                               setups=[DirectorySetup(), CSetup(use_libtool=True, short_libnames=False)])
+        package.enlarge(external_nodes=[])
+        package.output()
+
+        hidir_builder = find.find_entrybuilder(rootbuilder=package.rootbuilder(), path=['hi'])
+        self.failUnless('-lLIBADD_lo' in hidir_builder.makefile_am().compound_libadd('libLIBADD_hi_la'))
+        pass
+
+    def test_no_libtool(self):
+        package = LocalPackage(rootdirectory=self.fs_.rootdirectory(),
+                               setups=[DirectorySetup(), CSetup(use_libtool=False, short_libnames=False)])
+        package.enlarge(external_nodes=[])
+        package.output()
+
+        hidir_builder = find.find_entrybuilder(rootbuilder=package.rootbuilder(), path=['hi'])
+        self.failIf(len(hidir_builder.makefile_am().compound_libadd('libLIBADD_hi_a')))
+        pass
+
     pass
 
 if __name__ == '__main__':

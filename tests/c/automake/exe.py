@@ -17,6 +17,7 @@
 # USA
 
 from libconfix.testutils import dirhier, find
+from libconfix.core.filesys.filesys import FileSystem
 from libconfix.core.filesys.directory import Directory
 from libconfix.core.filesys.file import File
 from libconfix.core.utils import const
@@ -36,6 +37,8 @@ class ExecutableSuite(unittest.TestSuite):
         self.addTest(LibtoolExecutable('test'))
         self.addTest(StandardExecutable('test'))
         self.addTest(CheckAndNoinstProgram('test'))
+        self.addTest(LDADD('test_libtool'))
+        self.addTest(LDADD('test_no_libtool'))
         pass
     pass
 
@@ -165,6 +168,63 @@ class CheckAndNoinstProgram(unittest.TestCase):
         self.failUnless('blah__check_proggy' in package.rootbuilder().makefile_am().check_programs())
         self.failUnless('blah__proggy' in package.rootbuilder().makefile_am().noinst_programs())
         pass
+    pass
+
+class LDADD(unittest.TestCase):
+    def setUp(self):
+        self.fs_ = FileSystem(path=['don\'t', 'care'])
+        self.fs_.rootdirectory().add(
+            name=const.CONFIX2_PKG,
+            entry=File(lines=["PACKAGE_NAME('LDADD')",
+                              "PACKAGE_VERSION('1.2.3')"]))
+        self.fs_.rootdirectory().add(
+            name=const.CONFIX2_DIR,
+            entry=File())
+        lib = self.fs_.rootdirectory().add(
+            name='lib',
+            entry=Directory())
+        lib.add(
+            name=const.CONFIX2_DIR,
+            entry=File())
+        lib.add(
+            name='lib.h',
+            entry=File())
+        lib.add(
+            name='lib.c',
+            entry=File())
+
+        exe = self.fs_.rootdirectory().add(
+            name='exe',
+            entry=Directory())
+        exe.add(
+            name=const.CONFIX2_DIR,
+            entry=File())
+        exe.add(
+            name='exe.c',
+            entry=File(lines=['#include <lib.h>',
+                              'int main() {}']))
+        pass
+
+    def test_libtool(self):
+        package = LocalPackage(rootdirectory=self.fs_.rootdirectory(),
+                               setups=[DirectorySetup(), CSetup(use_libtool=True, short_libnames=False)])
+        package.enlarge(external_nodes=[])
+        package.output()
+
+        exedir_builder = find.find_entrybuilder(rootbuilder=package.rootbuilder(), path=['exe'])
+        self.failUnless('-lLDADD_lib' in exedir_builder.makefile_am().compound_ldadd('LDADD_exe_exe'))
+        pass
+
+    def test_no_libtool(self):
+        package = LocalPackage(rootdirectory=self.fs_.rootdirectory(),
+                               setups=[DirectorySetup(), CSetup(use_libtool=False, short_libnames=False)])
+        package.enlarge(external_nodes=[])
+        package.output()
+
+        exedir_builder = find.find_entrybuilder(rootbuilder=package.rootbuilder(), path=['exe'])
+        self.failUnless('-lLDADD_lib' in exedir_builder.makefile_am().compound_ldadd('LDADD_exe_exe'))
+        pass
+
     pass
 
 if __name__ == '__main__':

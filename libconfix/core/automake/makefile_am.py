@@ -503,6 +503,7 @@ class CompoundList:
             pass
         pass
     def add(self, member):
+        assert type(member) is types.StringType, str(member)
         if self.have_ is not None:
             if member in self.have_:
                 raise Error('Duplicate addition of "'+member+'"')

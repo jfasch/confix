@@ -27,20 +27,20 @@ from libconfix.core.repo.package_file import PackageFile
 
 import unittest
 
-class RepoFileSuite(unittest.TestSuite):
+class PackageFileSuite(unittest.TestSuite):
     def __init__(self):
         unittest.TestSuite.__init__(self)
-        self.addTest(RepoFileTest('test'))
+        self.addTest(PackageFileTest('test'))
         pass
     pass
 
-class RepoFileTest(unittest.TestCase):
+class PackageFileTest(unittest.TestCase):
     def test(self):
         package = InstalledPackage(
-            name='RepoFileTestPackage',
+            name='PackageFileTestPackage',
             version='1.2.3',
             nodes=[InstalledNode(provides=[Provide_Symbol(symbol='beitl')],
-                                 requires=[Require_Symbol(symbol='sack', found_in=['RepoFileTest'])],
+                                 requires=[Require_Symbol(symbol='sack', found_in=['PackageFileTest'])],
                                  buildinfos=[])])
         fs = FileSystem(path=['', 'tmp'])
         pkgfile = fs.rootdirectory().add(name='test.repo', entry=File())
@@ -62,5 +62,5 @@ class RepoFileTest(unittest.TestCase):
     pass
         
 if __name__ == '__main__':
-    unittest.TextTestRunner().run(RepoFileSuite())
+    unittest.TextTestRunner().run(PackageFileSuite())
     pass
