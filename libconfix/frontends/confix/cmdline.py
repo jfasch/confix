@@ -125,7 +125,7 @@ def parse(args):
         pass
     make_args = None
     if opts.make_args is not None:
-        make_args = opts.make_args.split(',')
+        make_args = opts.make_args.split()
         pass
 
     # collect parameters
