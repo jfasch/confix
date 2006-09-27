@@ -23,7 +23,7 @@ from libconfix.core.require_symbol import Require_Symbol
 from libconfix.core.installed_node import InstalledNode
 from libconfix.core.filesys.file import File
 from libconfix.core.filesys.filesys import FileSystem
-from libconfix.core.repo.repofile import RepositoryFile
+from libconfix.core.repo.package_file import PackageFile
 
 import unittest
 
@@ -47,9 +47,9 @@ class RepoFileTest(unittest.TestCase):
 
         # dump package to a file, and re-read it from that
         # file. perform placebo checks.
-        repo = RepositoryFile(file=pkgfile)
+        repo = PackageFile(file=pkgfile)
         repo.dump(package=package)
-        repo = RepositoryFile(file=pkgfile)
+        repo = PackageFile(file=pkgfile)
         package = repo.load()
 
         self.failUnless(len(package.nodes()) == 1)
