@@ -30,6 +30,7 @@ class DefaultConfiguration(Configuration):
     def packagename(self): return None
     def packageversion(self): return None
     def prefix(self): return None
+    def readonly_prefixes(self): return []
     def buildroot(self): return None
     def builddir(self): return None
     def short_libnames(self): return False

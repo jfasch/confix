@@ -39,7 +39,8 @@ class PackageFileTest(unittest.TestCase):
         package = InstalledPackage(
             name='PackageFileTestPackage',
             version='1.2.3',
-            nodes=[InstalledNode(provides=[Provide_Symbol(symbol='beitl')],
+            nodes=[InstalledNode(name=['a','b'],
+                                 provides=[Provide_Symbol(symbol='beitl')],
                                  requires=[Require_Symbol(symbol='sack', found_in=['PackageFileTest'])],
                                  buildinfos=[])])
         fs = FileSystem(path=['', 'tmp'])

@@ -100,6 +100,8 @@ class LocalNode(Node):
         pass
 
     def install(self):
-        return InstalledNode(provides=self.dependency_info_.provides(),
-                             requires=self.dependency_info_.requires(),
-                             buildinfos=[b.install() for b in self.buildinfos_])
+        return InstalledNode(
+            name=self.responsible_builder_.directory().relpath(self.responsible_builder_.package().rootdirectory()),
+            provides=self.dependency_info_.provides(),
+            requires=self.dependency_info_.requires(),
+            buildinfos=[b.install() for b in self.buildinfos_])

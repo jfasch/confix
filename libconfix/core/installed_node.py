@@ -24,13 +24,17 @@ from node import Node
 
 class InstalledNode(Node):
     def get_marshalling_data(self):
+        assert self.package_ is not None
+        assert type(self.name_) is types.ListType
         assert type(self.provides_) is types.ListType
         assert type(self.requires_) is types.ListType
         assert type(self.buildinfos_) is types.ListType
         return update_marshalling_data(
             marshalling_data=Node.get_marshalling_data(self),
             generating_class=InstalledNode,
-            attributes={'provides': self.provides_,
+            attributes={'package': self.package_,
+                        'name': self.name_,
+                        'provides': self.provides_,
                         'requires': self.requires_,
                         'buildinfos': self.buildinfos_},
             version={'InstalledNode': 1})
@@ -41,6 +45,8 @@ class InstalledNode(Node):
                 klass=self.__class__,
                 marshalled_version=version,
                 current_version=1)
+        self.package_ = data[Marshallable.ATTRIBUTES]['package']
+        self.name_ = data[Marshallable.ATTRIBUTES]['name']
         self.provides_ = data[Marshallable.ATTRIBUTES]['provides']
         self.requires_ = data[Marshallable.ATTRIBUTES]['requires']
         self.buildinfos_ = data[Marshallable.ATTRIBUTES]['buildinfos']
@@ -50,15 +56,28 @@ class InstalledNode(Node):
         Node.set_marshalling_data(self, data)
         pass
     
-    def __init__(self, provides, requires, buildinfos):
+    def __init__(self, name, provides, requires, buildinfos):
+        assert type(name) is types.ListType
+        self.package_ = None
+        self.name_ = name
         self.provides_ = provides
         self.requires_ = requires
         self.buildinfos_ = buildinfos
         pass
+    def __str__(self):
+        return '.'.join([self.package_.name()]+self.name_)
+    def package(self):
+        return self.package_
+    def name(self):
+        return self.name_
     def provides(self):
         return self.provides_
     def requires(self):
         return self.requires_
     def buildinfos(self):
         return self.buildinfos_
+
+    def set_package(self, package):
+        self.package_ = package
+        pass
     pass

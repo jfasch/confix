@@ -48,7 +48,8 @@ class DirectoryEntry:
         return self.parent_.entryname(self)
 
     def abspath(self):
-        assert self.filesystem_ is not None
+        if self.filesystem_ is None:
+            return []
         if self.parent_ is None:
             return self.filesystem_.path()
         return self.parent_.abspath() + [self.parent_.entryname(self)]

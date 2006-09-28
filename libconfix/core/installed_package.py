@@ -1,4 +1,5 @@
 # Copyright (C) 2002-2006 Salomon Automation
+# Copyright (C) 2006 Joerg Faschingbauer
 
 # This library is free software; you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as
@@ -15,11 +16,11 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 # USA
 
-from package import Package
+import types
 
 from libconfix.core.repo.marshalling import Marshallable, update_marshalling_data
 
-import types
+from package import Package
 
 class InstalledPackage(Package):
     def get_marshalling_data(self):
@@ -49,6 +50,10 @@ class InstalledPackage(Package):
         self.name_ = name
         self.version_ = version
         self.nodes_ = nodes
+
+        for n in self.nodes_:
+            n.set_package(self)
+            pass
 
         # <paranoia>
         assert type(name) is types.StringType
