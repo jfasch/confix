@@ -21,25 +21,38 @@ from libconfix.core.repo.marshalling import Unmarshallable
 from provide_string import Provide_String
 
 class DependencySet(Unmarshallable):
-
-    """ A template class (if this were C++) that is suppoed to hold
-    either Require or Provide objects. Has special handling for the
-    special purpose high performance `Provide_String` incarnations of either
-    of them."""
-
     def __init__(self, klass, string_klass):
         self.klass_ = klass
         self.string_klass_ = string_klass
+
+        # objects of type string_klass. sorted into a dictionary
+        # {type -> {obj.string() -> obj}}
         self.string_ = {}
-        self.rest_ = []
         pass
 
     def size(self):
-        n = len(self.rest_)
+        n = 0
         for k, v in self.string_.iteritems():
             n += len(v)
             pass
         return n
+
+    def has(self, obj):
+        assert isinstance(obj, self.klass_)
+        if isinstance(obj, self.string_klass_):
+            klass_dict = self.string_.get(obj.__class__)
+            if klass_dict is None:
+                return False
+            existing_obj = klass_dict.get(obj.string())
+            if existing_obj is None:
+                return False
+            if obj is existing_obj:
+                return True
+            return existing_obj.is_equal(obj)
+        else:
+            assert 0, 'not supported anymore (should be refactored)'
+            pass
+        pass
 
     def add(self, obj):
         assert isinstance(obj, self.klass_)
@@ -56,11 +69,7 @@ class DependencySet(Unmarshallable):
                 pass
             pass
         else:
-            for o in self.rest_:
-                if obj is o or o.update(obj):
-                    return
-                pass
-            self.rest_.append(obj)
+            assert 0, 'not supported anymore (should be refactored)'
             pass
         pass
 
@@ -75,5 +84,15 @@ class DependencySet(Unmarshallable):
         for klass, klass_dict in self.string_.iteritems():
             ret.extend(klass_dict.values())
             pass
-        ret.extend(self.rest_)
         return ret
+
+    def is_equal(self, other):
+        if self.size() != other.size():
+            return False
+        for obj in self.values():
+            if not other.has(obj):
+                return False
+            pass
+        return True
+
+    pass

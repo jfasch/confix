@@ -60,6 +60,8 @@ class Installer(Builder):
         return self.files_installed_as_[filename]
 
     def enlarge(self):
+        super(Installer, self).enlarge()
+        
         for b in self.parentbuilder().builders():
             if not isinstance(b, HeaderBuilder):
                 continue
@@ -106,8 +108,7 @@ class Installer(Builder):
                 self.buildinfo_passed_ = True
                 pass
             pass
-
-        return Builder.enlarge(self)
+        pass
 
     def output(self):
         Builder.output(self)

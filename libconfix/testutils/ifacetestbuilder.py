@@ -47,24 +47,21 @@ class FileInterfaceTestCreator(Builder):
         pass
 
     def enlarge(self):
-        newbuilders = []
+        super(FileInterfaceTestCreator, self).enlarge()
         for name, entry in self.parentbuilder().entries():
             if not isinstance(entry, File):
                 continue
             if entry in self.handled_entries_:
                 continue
             if name.endswith('.iface'):
-                newbuilders.append((entry,
-                                    FileInterfaceTestBuilder(file=entry,
-                                                             parentbuilder=self.parentbuilder(),
-                                                             package=self.package())))
+                self.parentbuilder().add_builder(FileInterfaceTestBuilder(
+                    file=entry,
+                    parentbuilder=self.parentbuilder(),
+                    package=self.package()))
+                self.handled_entries_.add(entry)
                 continue
             pass
-        for entry, b in newbuilders:
-            self.parentbuilder().add_builder(b)
-            self.handled_entries_.add(entry)
-            pass
-        return len(newbuilders) + Builder.enlarge(self)
+        pass
     pass
 
 class FileInterfaceTestBuilder(FileBuilder):

@@ -38,49 +38,39 @@ class Creator(Builder):
         pass
     
     def enlarge(self):
-        newbuilders = []
+        super(Creator, self).enlarge()
         for name, entry in self.parentbuilder().entries():
             if not isinstance(entry, libconfix.core.filesys.file.File):
                 continue
             if entry in self.handled_entries_:
                 continue
             root, ext = os.path.splitext(name)
+            builder = None
             if ext in ['.h', '.hh', '.hpp']:
-                newbuilders.append((entry,
-                                    HeaderBuilder(file=entry,
-                                                  parentbuilder=self.parentbuilder(),
-                                                  package=self.package())))
+                builder = HeaderBuilder(file=entry,
+                                        parentbuilder=self.parentbuilder(),
+                                        package=self.package())
+            elif ext in ['.c']:
+                builder = CBuilder(file=entry,
+                                   parentbuilder=self.parentbuilder(),
+                                   package=self.package())
+            elif ext in ['.cpp', '.cc', '.cxx']:
+                builder = CXXBuilder(file=entry,
+                                     parentbuilder=self.parentbuilder(),
+                                     package=self.package())
+            elif ext in ['.l', '.ll']:
+                builder = LexBuilder(file=entry,
+                                     parentbuilder=self.parentbuilder(),
+                                     package=self.package())
+            elif ext in ['.y', '.yy']:
+                builder = YaccBuilder(file=entry,
+                                      parentbuilder=self.parentbuilder(),
+                                      package=self.package())
+            else:
                 continue
-            if ext in ['.c']:
-                newbuilders.append((entry,
-                                    CBuilder(file=entry,
-                                             parentbuilder=self.parentbuilder(),
-                                             package=self.package())))
-                continue
-            if ext in ['.cpp', '.cc', '.cxx']:
-                newbuilders.append((entry,
-                                    CXXBuilder(file=entry,
-                                               parentbuilder=self.parentbuilder(),
-                                               package=self.package())))
-                continue
-            if ext in ['.l', '.ll']:
-                newbuilders.append((entry,
-                                    LexBuilder(file=entry,
-                                               parentbuilder=self.parentbuilder(),
-                                               package=self.package())))
-                continue
-            if ext in ['.y', '.yy']:
-                newbuilders.append((entry,
-                                    YaccBuilder(file=entry,
-                                                parentbuilder=self.parentbuilder(),
-                                                package=self.package())))
-                continue
-            pass
-        for entry, b in newbuilders:
-            self.parentbuilder().add_builder(b)
+            
             self.handled_entries_.add(entry)
+            self.parentbuilder().add_builder(builder)
             pass
-
-        return len(newbuilders) + Builder.enlarge(self)
-
+        pass
     pass

@@ -36,8 +36,12 @@ class SubdirectoryRecognizer(Builder):
         self.recognized_directories_ = set()
         pass
 
+    def relate(self, node, digraph, topolist):
+        Builder.relate(self, node, digraph, topolist)
+
     def enlarge(self):
-        newbuilders = []
+        Builder.enlarge(self)
+
         errors = []
         for name, entry in self.parentbuilder().entries():
             if not isinstance(entry, Directory):
@@ -62,7 +66,8 @@ class SubdirectoryRecognizer(Builder):
                 for setup in self.package().setups():
                     setup.setup_directory(directory_builder=dirbuilder)
                     pass
-                newbuilders.append((entry, dirbuilder))
+                self.recognized_directories_.add(entry)
+                self.parentbuilder().add_builder(dirbuilder)
             except Error, e:
                 errors.append(Error('Error executing '+os.sep.join(confix2_dir_file.relpath()), [e]))
                 pass
@@ -70,11 +75,7 @@ class SubdirectoryRecognizer(Builder):
         if len(errors):
             raise Error('There were errors in directory '+\
                         os.sep.join(self.parentbuilder().directory().relpath()), errors)
-        for dir, b in newbuilders:
-            self.recognized_directories_.add(dir)
-            self.parentbuilder().add_builder(b)
-            pass
-        return len(newbuilders) + Builder.enlarge(self)
+        pass
     
     pass
 

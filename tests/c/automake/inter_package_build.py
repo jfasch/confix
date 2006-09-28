@@ -286,12 +286,9 @@ class InstalledIncludeDirTest(PersistentTestCase):
 
         # read repo that we need for hi
             
-        automake_repo = repo_automake.AutomakePackageRepository(
-            prefix=prefix.abspath())
-        ext_nodes = []
-        for p in automake_repo.packages():
-            ext_nodes.extend(p.nodes())
-            pass
+        repo = AutomakeCascadedPackageRepository(
+            prefix=prefix.abspath(),
+            readonly_prefixes=[])
 
         # bootstrap ... make hi
 

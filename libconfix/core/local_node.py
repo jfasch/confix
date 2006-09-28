@@ -37,7 +37,7 @@ class LocalNode(Node):
         self.dependency_info_ = DependencyInformation()
         self.buildinfos_ = BuildInformationSet()
 
-        # calculate dependency information ...
+        # collect dependency information ...
 
         # add all but internal provide objects to the node's
         # dependency info.

@@ -40,10 +40,10 @@ class Confix2_dir(FileBuilder):
         pass
 
     def enlarge(self):
-        FileBuilder.enlarge(self)
+        super(Confix2_dir, self).enlarge()
         
         if self.executed_:
-            return 0
+            return
         self.executed_ = True
         
         try:
@@ -54,14 +54,13 @@ class Confix2_dir(FileBuilder):
             iface_pieces = self.external_ifaces_ + self.parentbuilder().iface_pieces()
             execer = InterfaceExecutor(iface_pieces=iface_pieces)
             execer.execute_file(file=self.file())
-            return 1
         except Error, e:
             raise Error('Could not execute file "'+\
                         os.sep.join(self.file().relpath(self.package().rootdirectory()))+'"', [e])
         pass
 
     def output(self):
-        FileBuilder.output(self)
+        super(Confix2_dir, self).output()
         self.parentbuilder().makefile_am().add_extra_dist(self.file().name())
         pass
 

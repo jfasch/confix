@@ -49,7 +49,6 @@ class Require_Symbol(Require_String):
         assert type(found_in) in [types.ListType, types.TupleType]
         Require_String.__init__(
             self,
-            id=symbol,
             string=symbol,
             found_in=found_in,
             urgency=urgency)

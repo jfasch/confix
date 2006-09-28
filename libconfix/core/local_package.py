@@ -35,12 +35,13 @@ from libconfix.core.iface.proxy import InterfaceProxy
 from libconfix.core.iface.executor import InterfaceExecutor
 from libconfix.core.hierarchy.confix2_dir import Confix2_dir
 from libconfix.core.hierarchy.dirbuilder import DirectoryBuilder
-from libconfix.core import readonly_prefixes
 
+from builder import BuilderSet
 from package import Package
 from installed_package import InstalledPackage
 from edgefinder import EdgeFinder
 from filebuilder import FileBuilder
+import readonly_prefixes
 
 class LocalPackage(Package):
 
@@ -148,27 +149,41 @@ class LocalPackage(Package):
         return self.local_nodes_
 
     def enlarge(self, external_nodes):
-        self.rootbuilder_.enlarge()
-
         while True:
-            self.local_nodes_ = self.rootbuilder_.nodes()
+            current_builders = self.collect_builders_()
+            for b in current_builders:
+                x = b.enlarge()
+                assert b.base_enlarge_called(), b
+                assert x is None, b # remove this once everything is
+                                    # working
+                pass
+
+            self.local_nodes_ = []
+            for b in current_builders:
+                node = b.node()
+                if node is not None:
+                    self.local_nodes_.append(node)
+                    pass
+                pass
+
             all_nodes = set(self.local_nodes_)
             for n in external_nodes:
                 all_nodes.add(n)
                 pass
-            self.digraph_ = DirectedGraph(nodes=all_nodes, edgefinder=EdgeFinder(all_nodes))
+
+            self.digraph_ = DirectedGraph(nodes=all_nodes,
+                                          edgefinder=EdgeFinder(all_nodes))
+
             for n in self.local_nodes_:
                 n.relate(digraph=self.digraph_)
                 pass
-            if self.rootbuilder_.enlarge() == 0:
-                break
+
+            old_builders = current_builders
+            current_builders = self.collect_builders_()
+            if not old_builders.is_equal(current_builders):
+                continue
+
             pass
-            
-        # <paranoia>
-        for b in self.collect_builders_():
-            assert b.base_relate_called() == True, str(b)
-            pass
-        # </paranoia>
         pass
 
     def output(self):
@@ -347,7 +362,7 @@ class LocalPackage(Package):
         pass
 
     def collect_builders_(self):
-        builders = set()
+        builders = BuilderSet()
         self.collect_builders_recursive_(self.rootbuilder_, builders)
         return builders
 

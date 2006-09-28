@@ -1,6 +1,5 @@
-# $Id: depinfo.py,v 1.4 2006/03/26 19:12:46 jfasch Exp $
-
-# Copyright (C) 2005 Salomon Automation
+# Copyright (C) 2002-2006 Salomon Automation
+# Copyright (C) 2006 Joerg Faschingbauer
 
 # This library is free software; you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as
@@ -16,6 +15,7 @@
 # License along with this library; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 # USA
+
 
 from require import Require
 from require_string import Require_String
@@ -55,26 +55,11 @@ class DependencyInformation(Unmarshallable):
 
     def requires(self): return self.requires_.values()
     def provides(self): return self.provides_.values()
-##     def public_provides(self):
-##         debug.warn(str(self.__class__)+'.public_provides() is deprecated')
-##         return self.provides_.values()
-##     def package_provides(self):
-##         debug.warn(str(self.__class__)+'.package_provides() is deprecated')
-##         return []
     def internal_provides(self): return self.internal_provides_.values()
 
     def add_require(self, r): self.requires_.add(r)
     def add_provide(self, p): self.provides_.add(p)
     def add_internal_provide(self, p): self.internal_provides_.add(p)
-
-##     def add_public_provide(self, p):
-##         debug.warn(str(self.__class__)+'.add_public_provide() is deprecated')
-##         self.provides_.add(p)
-##         pass
-##     def add_package_provide(self, p):
-##         debug.warn(str(self.__class__)+'.add_package_provide() is deprecated')
-##         self.provides_.add(p)
-##         pass
 
     def add_requires(self, rs):
         for r in rs:
@@ -96,5 +81,10 @@ class DependencyInformation(Unmarshallable):
         self.provides_.merge(other.provides_)
         self.internal_provides_.merge(other.internal_provides_)
         pass
+
+    def is_equal(self, other):
+        return self.provides_.is_equal(other.provides_) and \
+               self.internal_provides_.is_equal(other.internal_provides_) and \
+               self.requires_.is_equal(other.requires_)
     pass
 

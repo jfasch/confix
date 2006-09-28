@@ -106,51 +106,22 @@ class DirectoryBuilder(EntryBuilder):
         pass
 
     def enlarge(self):
-        # first of all, have myself configured
+        super(DirectoryBuilder, self).enlarge()
+        # have my configurator fiddle with me
         if self.configurator_ is not None:
             self.configurator_.enlarge()
             pass
-        
-        total_more = 0
-        while True:
-            more = 0
-            # copy what we will be iterating over because we will
-            # enlarge self.builders_ as we go.
-            builders = self.builders_.values()[:]
-            for b in builders:
-                more += b.enlarge()
-                assert b.base_enlarge_called(), str(b)
-                pass
-            if more == 0:
-                break
-            total_more += more
-            pass
-        return total_more + EntryBuilder.enlarge(self)
+        pass
 
-    def nodes(self):
-
-        ret_nodes = set()
-        
-        all_builders = set([self] + self.builders().values())
-        builders_with_nodes = set()
-
-        # collect nodes of builders which have their own nodes.
-
-        for b in self.builders():
-            nodes = b.nodes()
-            if len(nodes):
-                ret_nodes |= nodes
-                builders_with_nodes.add(b)
+    def node(self):
+        managed_builders = []
+        for b in self.builders_:
+            if not isinstance(b, DirectoryBuilder):
+                managed_builders.append(b)
                 pass
             pass
-        
-        # compose our own node that will manage our builders which
-        # don't have their own node.
-
-        ret_nodes.add(LocalNode(responsible_builder=self,
-                                managed_builders=all_builders-builders_with_nodes))
-
-        return ret_nodes
+        return LocalNode(responsible_builder=self,
+                         managed_builders=managed_builders)
 
     def output(self):
         EntryBuilder.output(self)

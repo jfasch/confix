@@ -17,6 +17,7 @@
 # USA
 
 from naked_package import NakedPackageSuite
+from depinfo import DependencyInformationSuite
 from dirsetup import BasicDirectorySetupSuite
 from filesystests import FileSystemTestSuite
 from ignored_entries import IgnoredEntriesSuite
@@ -36,6 +37,7 @@ class BasicTestSuite(unittest.TestSuite):
         unittest.TestSuite.__init__(self)
 
         self.addTest(NakedPackageSuite())
+        self.addTest(DependencyInformationSuite())
         self.addTest(FileSystemTestSuite())
         self.addTest(BasicDirectorySetupSuite())
         self.addTest(IgnoredEntriesSuite())

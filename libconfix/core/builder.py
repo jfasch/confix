@@ -38,20 +38,20 @@ from require_symbol import Require_Symbol
 from require_callable import Require_Callable
 from buildinfoset import BuildInformationSet
 
-class Builder:
+class Builder(object):
     def __init__(self, id, parentbuilder, package):
         self.id_ = id
         self.parentbuilder_ = parentbuilder
         self.package_ = package
 
-        self.dep_info_ = DependencyInformation()
-        self.num_announced_dep_info_ = 0
+##         self.dep_info_ = DependencyInformation()
 
         self.buildinfos_ = BuildInformationSet()
 
         # flags to ensure that every derived builder's methods have
         # called their immediate base's methods that they overload,
         # and that the chain did reach the base of all builders.
+        self.base_get_dependency_info_called_ = False
         self.base_enlarge_called_ = False
         self.base_relate_called_ = False
         self.base_output_called_ = False
@@ -66,21 +66,25 @@ class Builder:
     def package(self):
         return self.package_
 
-    def add_require(self, r):
-        self.dep_info_.add_require(r)
+##     def add_require(self, r):
+##         self.dep_info_.add_require(r)
+##         pass
+##     def add_provide(self, p):
+##         self.dep_info_.add_provide(p)
+##         pass
+##     def add_internal_provide(self, p):
+##         self.dep_info_.add_internal_provide(p)
+##         pass
+##     def requires(self):
+##         return self.dep_info_.requires()
+##     def provides(self):
+##         return self.dep_info_.provides()
+##     def dependency_info(self):
+##         return self.dep_info_
+
+    def get_dependency_info(self):
+        self.get_dependency_info_called_ = True
         pass
-    def add_provide(self, p):
-        self.dep_info_.add_provide(p)
-        pass
-    def add_internal_provide(self, p):
-        self.dep_info_.add_internal_provide(p)
-        pass
-    def requires(self):
-        return self.dep_info_.requires()
-    def provides(self):
-        return self.dep_info_.provides()
-    def dependency_info(self):
-        return self.dep_info_
 
     def add_buildinfo(self, b):
         self.buildinfos_.add(b)
@@ -91,12 +95,7 @@ class Builder:
     
     def enlarge(self):
         self.base_enlarge_called_ = True
-
-        if self.num_announced_dep_info_ < self.dep_info_.size():
-            diff = self.dep_info_.size() - self.num_announced_dep_info_
-            self.num_announced_dep_info_ = self.dep_info_.size()
-            return diff
-        return 0
+        pass
     
     def relate(self, node, digraph, topolist):
         self.base_relate_called_ = True
@@ -116,8 +115,8 @@ class Builder:
             pass
         pass
 
-    def nodes(self):
-        return []
+    def node(self):
+        return None
     
     def output(self):
         self.base_output_called_ = True
@@ -128,9 +127,26 @@ class Builder:
 
     # these are mainly for use by test programs, and serve no real
     # functionality
-    def base_enlarge_called(self): return self.base_enlarge_called_
-    def base_relate_called(self): return self.base_relate_called_
-    def base_output_called(self): return self.base_output_called_
+    def base_get_dependency_info_called(self):
+        if self.base_get_dependency_info_called_:
+            self.base_get_dependency_info_called_ = False
+            return True
+        return False
+    def base_enlarge_called(self):
+        if self.base_enlarge_called_:
+            self.base_enlarge_called_ = False
+            return True
+        return False
+    def base_relate_called(self):
+        if self.base_relate_called_:
+            self.base_relate_called_ = False
+            return True
+        return False
+    def base_output_called(self):
+        if self.base_output_called_:
+            self.base_output_called_ = False
+            return True
+        return False
     
     pass
 
@@ -257,7 +273,7 @@ class BuilderInterfaceProxy(InterfaceProxy):
         pass
     pass
 
-class BuilderSet:
+class BuilderSet(object):
     def __init__(self):
         # dictionary: builder id->builder
         self.builders_ = {}
@@ -284,4 +300,14 @@ class BuilderSet:
         assert self.builders_.has_key(b.id()), str(b)
         del self.builders_[b.id()]
         pass
+
+    def is_equal(self, other):
+        if len(self.builders_) != len(other.builders_):
+            return False
+        for id in self.builders_.keys():
+            if not other.builders_.has_key(id):
+                return False
+            pass
+        return True
+        
     pass

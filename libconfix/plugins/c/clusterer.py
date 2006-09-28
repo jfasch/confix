@@ -49,7 +49,7 @@ class CClusterer(Builder):
         pass
 
     def enlarge(self):
-        ret = 0
+        super(CClusterer, self).enlarge()
         # copy what we will be iterating over because we will change
         # its size
         for b in self.parentbuilder().builders().values()[:]:
@@ -83,7 +83,6 @@ class CClusterer(Builder):
                     what=what)
                 self.parentbuilder().add_builder(exe)
                 self.executables_[b] = exe
-                ret += 1
                 if self.library_ is not None:
                     self.parentbuilder().remove_builder(self.library_)
                     for m in self.library_.members():
@@ -103,25 +102,20 @@ class CClusterer(Builder):
                         use_libtool=self.use_libtool_,
                         libtool_version_info=self.libtool_version_info_)
                     self.parentbuilder().add_builder(self.library_)
-                    ret += 1
                     pass
                 if self.library_ is not None:
                     if b not in self.library_.members():
                         self.library_.add_member(b)
-                        ret += 1
                         pass
                     pass
                 for e in self.executables_.values():
                     if b not in e.members():
                         e.add_member(b)
-                        ret += 1
                         pass
                     pass
                 pass
             pass
-
-        return ret + Builder.enlarge(self)
-
+        pass
     pass
 
 class CClustererInterfaceProxy(InterfaceProxy):
