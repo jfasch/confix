@@ -20,7 +20,7 @@ from libconfix.core.setup import Setup
 from libconfix.core.hierarchy.setup import DirectorySetup
 
 from libconfix.plugins.c.setup import CSetup
-from libconfix.plugins.plainfile.setup import PlainFileSetup
+from libconfix.plugins.plainfile.setup import PlainFileInterfaceSetup
 from libconfix.plugins.script.setup import ScriptSetup
 
 class ConfixSetup(Setup):
@@ -31,7 +31,7 @@ class ConfixSetup(Setup):
         self.setups_ = [DirectorySetup(),
                         CSetup(short_libnames=short_libnames, use_libtool=use_libtool),
                         ScriptSetup(),
-                        PlainFileSetup()]
+                        PlainFileInterfaceSetup()]
         pass
 
     def setup_directory(self, directory_builder):

@@ -16,7 +16,7 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 # USA
 
-from naked_package import NakedPackageSuite
+from package_iface import PackageInterfaceSuite
 from dependencyset import DependencySetSuite
 from depinfo import DependencyInformationSuite
 from dirsetup import BasicDirectorySetupSuite
@@ -37,7 +37,7 @@ class BasicTestSuite(unittest.TestSuite):
     def __init__(self):
         unittest.TestSuite.__init__(self)
 
-        self.addTest(NakedPackageSuite())
+        self.addTest(PackageInterfaceSuite())
         self.addTest(DependencySetSuite())
         self.addTest(DependencyInformationSuite())
         self.addTest(FileSystemTestSuite())

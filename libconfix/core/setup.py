@@ -16,7 +16,7 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 # USA
 
-class Setup:
+class Setup(object):
     def __init__(self):
         pass
     def setup_directory(self, directory_builder):

@@ -39,6 +39,12 @@ class PlainFileBuilder(FileBuilder):
         self.prefixdir_ = prefixdir
         pass
 
+    def datadir(self):
+        return self.datadir_
+
+    def prefixdir(self):
+        return self.prefixdir_
+
     def output(self):
         FileBuilder.output(self)
 

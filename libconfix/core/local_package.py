@@ -36,6 +36,7 @@ from libconfix.core.iface.executor import InterfaceExecutor
 from libconfix.core.hierarchy.confix2_dir import Confix2_dir
 from libconfix.core.hierarchy.dirbuilder import DirectoryBuilder
 
+from setup import Setup
 from builder import BuilderSet
 from package import Package
 from local_node import LocalNode
@@ -65,10 +66,7 @@ class LocalPackage(Package):
         pkgdeffile = self.rootdirectory_.find([const.CONFIX2_PKG])
         if pkgdeffile is None:
             raise Error(const.CONFIX2_PKG+' missing in '+os.sep.join(self.rootdirectory_.abspath()))
-        pkgdef = PackageDefinition()
-        InterfaceExecutor(iface_pieces=[PackageDefinitionInterfaceProxy(pkgdef=pkgdef)]).execute_file(pkgdeffile)
-        self.name_ = pkgdef.name()
-        self.version_ = pkgdef.version()
+        InterfaceExecutor(iface_pieces=[PackageInterfaceProxy(package=self)]).execute_file(pkgdeffile)
         if self.name_ is None:
             raise Error(const.CONFIX2_PKG+': package name has not been set')
         if self.version_ is None:
@@ -116,16 +114,8 @@ class LocalPackage(Package):
     
     def name(self):
         return self.name_
-    def set_name(self, name):
-        assert self.name_ is None
-        self.name_ = name
-        pass
     def version(self):
         return self.version_
-    def set_version(self, version):
-        assert self.version_ is None
-        self.version_ = version
-        pass
 
     def rootdirectory(self):
         return self.rootdirectory_
@@ -436,30 +426,34 @@ class PackageDefinition:
         return self.version_
     pass
 
-class PackageDefinitionInterfaceProxy(InterfaceProxy):
-    def __init__(self, pkgdef):
+class PackageInterfaceProxy(InterfaceProxy):
+    def __init__(self, package):
         InterfaceProxy.__init__(self)
 
-        self.pkgdef_ = pkgdef
+        self.package_ = package
 
         self.add_global('PACKAGE_NAME', getattr(self, 'PACKAGE_NAME'))
         self.add_global('PACKAGE_VERSION', getattr(self, 'PACKAGE_VERSION'))
-
+        self.add_global('ADD_SETUP', getattr(self, 'ADD_SETUP'))
+        
         pass
-
-    def name(self): return self.name_
-    def version(self): return self.version_
 
     def PACKAGE_NAME(self, name):
         if type(name) is not types.StringType:
             raise Error('PACKAGE_NAME(): argument must be a string')
-        self.pkgdef_.set_name(name)
+        self.package_.name_ = name
         pass
 
     def PACKAGE_VERSION(self, version):
         if type(version) is not types.StringType:
             raise Error('PACKAGE_VERSION(): argument must be a string')
-        self.pkgdef_.set_version(version)
+        self.package_.version_ = version
+        pass
+
+    def ADD_SETUP(self, setup):
+        if not isinstance(setup, Setup):
+            raise Error('ADD_SETUP(): argument must be a Setup object')
+        self.package_.setups_.append(setup)
         pass
         
     pass

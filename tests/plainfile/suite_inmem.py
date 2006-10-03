@@ -20,10 +20,12 @@ import unittest
 
 from libconfix.core.local_package import LocalPackage
 from libconfix.core.filesys.filesys import FileSystem
+from libconfix.core.filesys.file import File
+from libconfix.core.utils import const
 from libconfix.testutils import find
 
 from libconfix.plugins.plainfile.builder import PlainFileBuilder
-from libconfix.plugins.plainfile.setup import PlainFileSetup
+from libconfix.plugins.plainfile.setup import PlainFileInterfaceSetup
 
 from package import make_package
 
@@ -31,6 +33,7 @@ class PlainFileSuiteInMemory(unittest.TestSuite):
     def __init__(self):
         unittest.TestSuite.__init__(self)
         self.addTest(PlainFileInMemoryTest('test'))
+        self.addTest(PlainFileCreatorTest('test'))
         pass
     pass
 
@@ -38,7 +41,7 @@ class PlainFileInMemoryTest(unittest.TestCase):
     def test(self):
         fs = FileSystem(path=['don\'t', 'care'], rootdirectory=make_package())
         
-        package = LocalPackage(rootdirectory=fs.rootdirectory(), setups=[PlainFileSetup()])
+        package = LocalPackage(rootdirectory=fs.rootdirectory(), setups=[PlainFileInterfaceSetup()])
         package.boil(external_nodes=[])
         
         plainfile_data = find.find_entrybuilder(rootbuilder=package.rootbuilder(), path=['plainfile_data'])
@@ -48,8 +51,52 @@ class PlainFileInMemoryTest(unittest.TestCase):
         self.failUnless(isinstance(plainfile_data, PlainFileBuilder))
         self.failUnless(isinstance(plainfile_prefix, PlainFileBuilder))
         pass
-    pass        
+    pass
 
+class PlainFileCreatorTest(unittest.TestCase):
+    def test(self):
+        fs = FileSystem(path=['don\'t', 'care'])
+        fs.rootdirectory().add(
+            name=const.CONFIX2_PKG,
+            entry=File(lines=["from libconfix.plugins.plainfile.setup import PlainFileCreatorSetup",
+
+                              "PACKAGE_NAME('PlainFileCreatorTest')",
+                              "PACKAGE_VERSION('1.2.3')",
+
+                              "ADD_SETUP(PlainFileCreatorSetup(",
+                              "             patterns=[{'regex': '\.data$',",
+                              "                        'datadir': ['the', 'data', 'dir']",
+                              "                       },",
+                              "                       {'regex': '\.prefix$',",
+                              "                        'prefixdir': ['the', 'prefix', 'dir']",
+                              "                       }]))"]))
+        fs.rootdirectory().add(
+            name=const.CONFIX2_DIR,
+            entry=File())
+        fs.rootdirectory().add(
+            name='file.data',
+            entry=File())
+        fs.rootdirectory().add(
+            name='file.prefix',
+            entry=File())
+
+        package = LocalPackage(rootdirectory=fs.rootdirectory(), setups=[])
+        package.boil(external_nodes=[])
+
+        databuilder = find.find_entrybuilder(rootbuilder=package.rootbuilder(),
+                                             path=['file.data'])
+        prefixbuilder = find.find_entrybuilder(rootbuilder=package.rootbuilder(),
+                                               path=['file.prefix'])
+        self.failIf(databuilder is None)
+        self.failIf(prefixbuilder is None)
+
+        self.failUnless(databuilder.datadir() == ['the', 'data', 'dir'])
+        self.failUnless(databuilder.prefixdir() is None)
+        self.failUnless(prefixbuilder.prefixdir() == ['the', 'prefix', 'dir'])
+        self.failUnless(prefixbuilder.datadir() is None)
+        pass
+    pass
+    
 if __name__ == '__main__':
     unittest.TextTestRunner().run(PlainFileSuiteInMemory())
     pass
