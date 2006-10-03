@@ -39,7 +39,7 @@ class PlainFileInMemoryTest(unittest.TestCase):
         fs = FileSystem(path=['don\'t', 'care'], rootdirectory=make_package())
         
         package = LocalPackage(rootdirectory=fs.rootdirectory(), setups=[PlainFileSetup()])
-        package.enlarge(external_nodes=[])
+        package.boil(external_nodes=[])
         
         plainfile_data = find.find_entrybuilder(rootbuilder=package.rootbuilder(), path=['plainfile_data'])
         plainfile_prefix = find.find_entrybuilder(rootbuilder=package.rootbuilder(), path=['plainfile_prefix'])

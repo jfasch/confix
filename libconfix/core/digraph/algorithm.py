@@ -42,6 +42,7 @@ def subgraph(digraph, nodes):
     """ From digraph, select nodes and remaining edges to form a new
     digraph. Return the new digraph. """
 
+    assert nodes.issubset(digraph.nodes())
     return DirectedGraph(
         nodes=nodes,
         edges=select_containing_edges(nodes=nodes,

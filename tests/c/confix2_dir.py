@@ -66,18 +66,14 @@ class ProvideRequireInclude(unittest.TestCase):
                                setups=[DirectorySetup(),
                                        CSetup(use_libtool=False,
                                               short_libnames=False)])
-        package.enlarge(external_nodes=[])
+        package.boil(external_nodes=[])
 
         lo_builder = find.find_entrybuilder(rootbuilder=package.rootbuilder(),
                                             path=['lo'])
         hi_builder = find.find_entrybuilder(rootbuilder=package.rootbuilder(),
                                             path=['hi'])
-        lo_node = find.find_managing_node_of_builder(nodes=package.digraph().nodes(),
-                                                     builder=lo_builder)
-        hi_node = find.find_managing_node_of_builder(nodes=package.digraph().nodes(),
-                                                     builder=hi_builder)
 
-        self.failUnless(lo_node in package.digraph().successors(hi_node))
+        self.failUnless(lo_builder in package.digraph().successors(hi_builder))
         pass
     pass
         

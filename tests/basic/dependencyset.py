@@ -18,34 +18,37 @@
 
 import unittest
 
-from libconfix.core.filesys.filesys import FileSystem
-from libconfix.core.local_package import LocalPackage
-from libconfix.testutils import find
+from libconfix.core.provide import Provide
+from libconfix.core.provide_string import Provide_String
+from libconfix.core.dependencyset import DependencySet
 
-from libconfix.plugins.script.setup import ScriptSetup
-
-from package import make_package
-
-class ScriptSuiteInMemory(unittest.TestSuite):
+class DependencySetSuite(unittest.TestSuite):
     def __init__(self):
         unittest.TestSuite.__init__(self)
-        self.addTest(ScriptInMemoryTest('test'))
+        self.addTest(DependencySetTest('test'))
         pass
     pass
 
-class ScriptInMemoryTest(unittest.TestCase):
+class DependencySetTest(unittest.TestCase):
     def test(self):
-        fs = FileSystem(path=['don\'t', 'care'], rootdirectory=make_package())
-        package = LocalPackage(rootdirectory=fs.rootdirectory(),
-                               setups=[ScriptSetup()])
-        package.boil(external_nodes=[])
-        package.output()
+        a = Provide_String('a')
+        b = Provide_String('b')
+        c = Provide_String('c')
+        
+        s = DependencySet(klass=Provide, string_klass=Provide_String)
+        s.add(a)
+        s.add(b)
+        s.add(c)
 
-        script = find.find_entrybuilder(rootbuilder=package.rootbuilder(), path=['script'])
-        self.failIf(script is None)
+        found_a = found_b = found_c = None
+        elements_of_s = [e for e in s]
+        self.failUnless(a in elements_of_s)
+        self.failUnless(b in elements_of_s)
+        self.failUnless(c in elements_of_s)
         pass
     pass
 
 if __name__ == '__main__':
-    unittest.TextTestRunner().run(ScriptSuiteInMemory())
+    unittest.TextTestRunner().run(DependencySetSuite())
     pass
+

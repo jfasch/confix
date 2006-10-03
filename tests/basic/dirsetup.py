@@ -43,7 +43,7 @@ class BasicDirectorySetup(unittest.TestCase):
         package = LocalPackage(
             rootdirectory=fs.rootdirectory(),
             setups=[DirectorySetup()])
-        package.enlarge(external_nodes=[])
+        package.boil(external_nodes=[])
 
         self.assertEqual(package.rootbuilder().directory().find(['a']), subdir)
         self.assertEqual(package.rootbuilder().directory().find(['a', 'a']), subsubdir)

@@ -43,7 +43,7 @@ class IntraPackageInMemoryTest(unittest.TestCase):
                                      setups=[DirectorySetup(),
                                              CSetup(short_libnames=False,
                                                     use_libtool=False)])
-        self.package_.enlarge(external_nodes=[])
+        self.package_.boil(external_nodes=[])
         self.package_.output()
         pass
 

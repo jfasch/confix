@@ -44,7 +44,7 @@ class BasicHeaderInstallTest(unittest.TestCase):
         package = LocalPackage(rootdirectory=fs.rootdirectory(),
                                setups=[CSetup(short_libnames=False,
                                               use_libtool=False)])
-        package.enlarge(external_nodes=[])
+        package.boil(external_nodes=[])
         package.output()
 
         directory_definition = package.rootbuilder().makefile_am().install_directories().get('')
@@ -97,7 +97,7 @@ class BasicHeaderInstallTest(unittest.TestCase):
         package = LocalPackage(rootdirectory=fs.rootdirectory(),
                                setups=[CSetup(short_libnames=False,
                                               use_libtool=False)])
-        package.enlarge(external_nodes=[])
+        package.boil(external_nodes=[])
         package.output()
 
         directory_definition = package.rootbuilder().makefile_am().install_directories().get('publicheader_xxx')
@@ -115,7 +115,7 @@ class BasicHeaderInstallTest(unittest.TestCase):
         package = LocalPackage(rootdirectory=fs.rootdirectory(),
                                setups=[CSetup(short_libnames=False,
                                               use_libtool=False)])
-        package.enlarge(external_nodes=[])
+        package.boil(external_nodes=[])
         package.output()
 
         directory_definition = package.rootbuilder().makefile_am().install_directories().get('publicheader_xxxyyy')

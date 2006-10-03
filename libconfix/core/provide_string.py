@@ -84,13 +84,6 @@ class Provide_String(Provide):
                 return 0
         return 1
 
-##     def update(self, other):
-##         if not isinstance(other, self. __class__):
-##             return False
-##         if self.string_ != other.string_:
-##             return False
-##         return True
-
     def is_equal(self, other):
         if not isinstance(other, self.__class__):
             return False
@@ -99,3 +92,6 @@ class Provide_String(Provide):
     def can_match_classes(self):
         assert 0
         pass
+
+    pass
+

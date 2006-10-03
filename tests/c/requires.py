@@ -54,13 +54,13 @@ class ScanTest(unittest.TestCase):
                               ]))
         package = LocalPackage(rootdirectory=fs.rootdirectory(), setups=[])
         builder = CBuilder(file=file, parentbuilder=None, package=package)
-        self.assertEqual(len(builder.requires()), 5)
+        self.assertEqual(len(builder.dependency_info().requires()), 5)
         inc1 = None
         inc2 = None
         inc3 = None
         inc4 = None
         inc5 = None
-        for r in builder.requires():
+        for r in builder.dependency_info().requires():
             self.assert_(isinstance(r, Require_CInclude))
             if r.filename() == 'inc1':
                 inc1 = r
@@ -111,12 +111,12 @@ class IfaceTest(unittest.TestCase):
                               "// CONFIX:REQUIRE_H(filename='inc4', urgency=URGENCY_ERROR)"]))
         package = LocalPackage(rootdirectory=fs.rootdirectory(), setups=[])
         builder = CBuilder(file=file, parentbuilder=None, package=package)
-        self.assertEqual(len(builder.requires()), 4)
+        self.assertEqual(len(builder.dependency_info().requires()), 4)
         inc1 = None
         inc2 = None
         inc3 = None
         inc4 = None
-        for r in builder.requires():
+        for r in builder.dependency_info().requires():
             self.assert_(isinstance(r, Require_CInclude))
             if r.filename() == 'inc1':
                 inc1 = r

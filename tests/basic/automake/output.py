@@ -32,12 +32,12 @@ class AutomakeOutputSuite(unittest.TestSuite):
     def __init__(self):
         unittest.TestSuite.__init__(self)
         self.addTest(AutomakeOutputTest('test_subdirs'))
-##         self.addTest(AutomakeOutputTest('test_configure_ac'))
-##         self.addTest(AutomakeOutputTest('test_auxdir'))
-##         self.addTest(AutomakeOutputTest('test_toplevel_makefile_am'))
-##         self.addTest(AutomakeOutputTest('test_subdir1_makefile_am'))
-##         self.addTest(AutomakeOutputTest('test_subdir2_makefile_am'))
-##         self.addTest(AutomakeOutputTest('test_subdir3_makefile_am'))
+        self.addTest(AutomakeOutputTest('test_configure_ac'))
+        self.addTest(AutomakeOutputTest('test_auxdir'))
+        self.addTest(AutomakeOutputTest('test_toplevel_makefile_am'))
+        self.addTest(AutomakeOutputTest('test_subdir1_makefile_am'))
+        self.addTest(AutomakeOutputTest('test_subdir2_makefile_am'))
+        self.addTest(AutomakeOutputTest('test_subdir3_makefile_am'))
         pass
     pass
 
@@ -58,7 +58,7 @@ class AutomakeOutputTest(unittest.TestCase):
         
         self.package_ = LocalPackage(rootdirectory=self.fs_.rootdirectory(),
                                      setups=[DirectorySetup()])
-        self.package_.enlarge(external_nodes=[])
+        self.package_.boil(external_nodes=[])
         self.package_.output()
 
         self.subdir1_builder_ = find.find_entrybuilder(self.package_.rootbuilder(), ['subdir1'])

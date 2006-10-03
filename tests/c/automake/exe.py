@@ -82,7 +82,7 @@ class ExecutableBase(unittest.TestCase):
         self.package_ = LocalPackage(rootdirectory=self.fs_.rootdirectory(),
                                      setups=[DirectorySetup(),
                                              CSetup(short_libnames=False, use_libtool=self.use_libtool())])
-        self.package_.enlarge(external_nodes=[])
+        self.package_.boil(external_nodes=[])
         self.package_.output()
 
         self.lodir_builder_ = find.find_entrybuilder(self.package_.rootbuilder(), ['lo'])
@@ -162,7 +162,7 @@ class CheckAndNoinstProgram(unittest.TestCase):
                                entry=File(lines=['int main(void) { return 0; }']))
         package = LocalPackage(rootdirectory=fs.rootdirectory(),
                                setups=[CSetup(short_libnames=False, use_libtool=False)])
-        package.enlarge(external_nodes=[])
+        package.boil(external_nodes=[])
         package.output()
 
         self.failUnless('blah__check_proggy' in package.rootbuilder().makefile_am().check_programs())
@@ -208,7 +208,7 @@ class LDADD(unittest.TestCase):
     def test_libtool(self):
         package = LocalPackage(rootdirectory=self.fs_.rootdirectory(),
                                setups=[DirectorySetup(), CSetup(use_libtool=True, short_libnames=False)])
-        package.enlarge(external_nodes=[])
+        package.boil(external_nodes=[])
         package.output()
 
         exedir_builder = find.find_entrybuilder(rootbuilder=package.rootbuilder(), path=['exe'])
@@ -218,7 +218,7 @@ class LDADD(unittest.TestCase):
     def test_no_libtool(self):
         package = LocalPackage(rootdirectory=self.fs_.rootdirectory(),
                                setups=[DirectorySetup(), CSetup(use_libtool=False, short_libnames=False)])
-        package.enlarge(external_nodes=[])
+        package.boil(external_nodes=[])
         package.output()
 
         exedir_builder = find.find_entrybuilder(rootbuilder=package.rootbuilder(), path=['exe'])

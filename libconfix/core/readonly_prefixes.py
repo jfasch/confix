@@ -18,9 +18,6 @@
 
 from libconfix.core.utils.paragraph import Paragraph
 
-## readonly_prefixes_var = 'readonly_prefixes'
-## readonly_prefixes_subst = '@'+readonly_prefixes_var+'@'
-
 incdirs_var = 'readonly_prefixes_incdirs'
 incdirs_subst = '@'+incdirs_var+'@'
 
@@ -33,42 +30,26 @@ libdirs_subst = '@'+libdirs_var+'@'
 libpath_var = 'readonly_prefixes_libpath'
 libpath_subst = '@'+libpath_var+'@'
 
-## datadirs_var = 'readonly_prefixes_datadirs'
-## datadirs_subst = '@'+datadirs_var+'@'
-
-## # for backward compatibility with salomon plugins
-## datapath_var = 'readonly_prefixes_datapath'
-## datapath_subst = '@'+datapath_var+'@'
-
 commandline_option_paragraph = Paragraph([
     'AC_ARG_WITH(readonly-prefixes,',
     '            AC_HELP_STRING([--with-readonly-prefixes=<comma-separated list of prefixes>],',
     '                           [blah]),',
     '                           [',
     '                           if test x$withval != xno; then',
-#    '                               '+readonly_prefixes_var+'=',
     '                               '+incdirs_var+'=',
     '                               '+incpath_var+'=',
     '                               '+libdirs_var+'=',
     '                               '+libpath_var+'=',
-#    '                               '+datadirs_var+'=',
-#    '                               '+datapath_var+'=',
     '                               for loc in `echo $withval | sed \'s/,/ /g\'`; do',
-#    '                                   '+readonly_prefixes_var+'="${'+readonly_prefixes_var+'} $loc"',
     '                                   '+incdirs_var+'="${'+incdirs_var+'} $loc/include"',
     '                                   '+incpath_var+'="${'+incpath_var+'} -I$loc/include"',
     '                                   '+libdirs_var+'="${'+libdirs_var+'} $loc/lib"',
     '                                   '+libpath_var+'="${'+libpath_var+'} -L$loc/lib"',
-#    '                                   '+datadirs_var+'="${'+datadirs_var+'} $loc/share"',
-#    '                                   '+datapath_var+'="${'+datapath_var+'} $loc/share"',
     '                               done',
-#    '                               AC_SUBST('+readonly_prefixes_var+')',
     '                               AC_SUBST('+incdirs_var+')',
     '                               AC_SUBST('+incpath_var+')',
     '                               AC_SUBST('+libdirs_var+')',
     '                               AC_SUBST('+libpath_var+')',
-#    '                               AC_SUBST('+datadirs_var+')',
-#    '                               AC_SUBST('+datapath_var+')',
     '                           fi',
     '                           ]',
     '                           )'

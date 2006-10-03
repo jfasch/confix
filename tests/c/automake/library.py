@@ -61,7 +61,7 @@ class LibraryBase(unittest.TestCase):
             setups=[DirectorySetup(),
                     CSetup(short_libnames=False, # there is already a test for it, elsewhere
                            use_libtool=self.use_libtool())])
-        self.package_.enlarge(external_nodes=[])
+        self.package_.boil(external_nodes=[])
         self.package_.output()
 
         self.lodir_builder_ = find.find_entrybuilder(self.package_.rootbuilder(), ['lo'])
@@ -170,7 +170,7 @@ class LIBADD(unittest.TestCase):
     def test_libtool(self):
         package = LocalPackage(rootdirectory=self.fs_.rootdirectory(),
                                setups=[DirectorySetup(), CSetup(use_libtool=True, short_libnames=False)])
-        package.enlarge(external_nodes=[])
+        package.boil(external_nodes=[])
         package.output()
 
         hidir_builder = find.find_entrybuilder(rootbuilder=package.rootbuilder(), path=['hi'])
@@ -180,7 +180,7 @@ class LIBADD(unittest.TestCase):
     def test_no_libtool(self):
         package = LocalPackage(rootdirectory=self.fs_.rootdirectory(),
                                setups=[DirectorySetup(), CSetup(use_libtool=False, short_libnames=False)])
-        package.enlarge(external_nodes=[])
+        package.boil(external_nodes=[])
         package.output()
 
         hidir_builder = find.find_entrybuilder(rootbuilder=package.rootbuilder(), path=['hi'])

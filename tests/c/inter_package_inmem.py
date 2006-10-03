@@ -39,7 +39,7 @@ class InterPackageRelate(unittest.TestCase):
         lofs.rootdirectory().add(name='lo.c', entry=File())
         local_lopkg = LocalPackage(rootdirectory=lofs.rootdirectory(),
                                    setups=[CSetup(short_libnames=False, use_libtool=False)])
-        local_lopkg.enlarge(external_nodes=[])
+        local_lopkg.boil(external_nodes=[])
         installed_lopkg = local_lopkg.install()
 
         hifs = dirhier.packageroot(name='hi', version='1.2.3')
@@ -47,7 +47,7 @@ class InterPackageRelate(unittest.TestCase):
                                  entry=File(lines=['#include <lo.h>']))
         local_hipkg = LocalPackage(rootdirectory=hifs.rootdirectory(),
                                    setups=[CSetup(short_libnames=False, use_libtool=False)])
-        local_hipkg.enlarge(external_nodes=installed_lopkg.nodes())
+        local_hipkg.boil(external_nodes=installed_lopkg.nodes())
 
         lo_h_builder = find.find_entrybuilder(rootbuilder=local_lopkg.rootbuilder(), path=['lo.h'])
         lo_c_builder = find.find_entrybuilder(rootbuilder=local_lopkg.rootbuilder(), path=['lo.c'])

@@ -30,6 +30,7 @@ class DependencySet(Unmarshallable):
         self.string_ = {}
         pass
 
+    def __len__(self): return self.size()
     def size(self):
         n = 0
         for k, v in self.string_.iteritems():
@@ -38,7 +39,7 @@ class DependencySet(Unmarshallable):
         return n
 
     def has(self, obj):
-        assert isinstance(obj, self.klass_)
+        assert isinstance(obj, self.klass_), obj
         if isinstance(obj, self.string_klass_):
             klass_dict = self.string_.get(obj.__class__)
             if klass_dict is None:
@@ -55,7 +56,7 @@ class DependencySet(Unmarshallable):
         pass
 
     def add(self, obj):
-        assert isinstance(obj, self.klass_)
+        assert isinstance(obj, self.klass_), obj
         if isinstance(obj, self.string_klass_):
             klass_dict = self.string_.setdefault(obj.__class__, {})
             existing_obj = klass_dict.get(obj.string())
@@ -79,6 +80,7 @@ class DependencySet(Unmarshallable):
             pass
         pass
 
+    def __iter__(self): return self.values().__iter__()
     def values(self):
         ret = []
         for klass, klass_dict in self.string_.iteritems():

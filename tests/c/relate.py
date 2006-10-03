@@ -54,10 +54,8 @@ class InternalRequires(unittest.TestCase):
         package = LocalPackage(rootdirectory=fs.rootdirectory(),
                                setups=[CSetup(short_libnames=False,
                                               use_libtool=False)])
-        package.enlarge(external_nodes=[])
-        rootnode = find.find_managing_node_of_builder(nodes=package.digraph().nodes(),
-                                                      builder=package.rootbuilder())
-        self.failUnlessEqual(len(rootnode.requires()), 0)
+        package.boil(external_nodes=[])
+        self.failUnlessEqual(len(package.rootbuilder().requires()), 0)
         pass
     pass        
 
@@ -70,7 +68,7 @@ class RelateBasic(unittest.TestCase):
                                      setups=[DirectorySetup(),
                                              CSetup(short_libnames=False,
                                                     use_libtool=False)])
-        self.package_.enlarge(external_nodes=[])
+        self.package_.boil(external_nodes=[])
 
         # from here on, we collect things that we will need in the
         # test cases.
@@ -139,25 +137,6 @@ class RelateBasic(unittest.TestCase):
                 pass
             pass
 
-        # nodes
-
-        self.lodir_node_ = find.find_managing_node_of_builder(
-            self.package_.digraph().nodes(), self.lodir_builder_)
-        self.hi1dir_node_ = find.find_managing_node_of_builder(
-            self.package_.digraph().nodes(), self.hi1dir_builder_)
-        self.hi2dir_node_ = find.find_managing_node_of_builder(
-            self.package_.digraph().nodes(), self.hi2dir_builder_)
-        self.highestdir_node_ = find.find_managing_node_of_builder(
-            self.package_.digraph().nodes(), self.highestdir_builder_)
-        self.exedir_node_ = find.find_managing_node_of_builder(
-            self.package_.digraph().nodes(), self.exedir_builder_)
-
-        self.failIf(self.lodir_node_ is None)
-        self.failIf(self.hi1dir_node_ is None)
-        self.failIf(self.hi2dir_node_ is None)
-        self.failIf(self.highestdir_node_ is None)
-        self.failIf(self.exedir_node_ is None)
-
         # relevant build information
 
         self.lodir_lib_libinfo_ = None
@@ -199,12 +178,12 @@ class RelateBasic(unittest.TestCase):
         pass
                                     
     def testGraph(self):
-        self.failUnless(self.lodir_node_ in self.package_.digraph().successors(self.hi1dir_node_))
-        self.failUnless(self.lodir_node_ in self.package_.digraph().successors(self.hi2dir_node_))
-        self.failUnless(self.hi1dir_node_ in self.package_.digraph().successors(self.highestdir_node_))
-        self.failUnless(self.hi2dir_node_ in self.package_.digraph().successors(self.highestdir_node_))
-        self.failUnless(self.hi1dir_node_ in self.package_.digraph().successors(self.exedir_node_))
-        self.failUnless(self.hi2dir_node_ in self.package_.digraph().successors(self.exedir_node_))
+        self.failUnless(self.lodir_builder_ in self.package_.digraph().successors(self.hi1dir_builder_))
+        self.failUnless(self.lodir_builder_ in self.package_.digraph().successors(self.hi2dir_builder_))
+        self.failUnless(self.hi1dir_builder_ in self.package_.digraph().successors(self.highestdir_builder_))
+        self.failUnless(self.hi2dir_builder_ in self.package_.digraph().successors(self.highestdir_builder_))
+        self.failUnless(self.hi1dir_builder_ in self.package_.digraph().successors(self.exedir_builder_))
+        self.failUnless(self.hi2dir_builder_ in self.package_.digraph().successors(self.exedir_builder_))
         pass
 
     def testLocalBuildInfo(self):
@@ -347,6 +326,5 @@ class RelateBasic(unittest.TestCase):
     pass
         
 if __name__ == '__main__':
-    unittest.main()
+    unittest.TextTestRunner().run(RelateSuite())
     pass
-    

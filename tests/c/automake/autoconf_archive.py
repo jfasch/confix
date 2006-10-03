@@ -51,7 +51,7 @@ class AutoConfArchiveTest(PersistentTestCase):
             entry=File(lines=["CONFIGURE_AC(lines=['AC_CXX_NAMESPACES'],",
                               "             order=AC_PROGRAMS)"]))
         package = LocalPackage(rootdirectory=fs.rootdirectory(), setups=[])
-        package.enlarge(external_nodes=[])
+        package.boil(external_nodes=[])
         package.output()
         fs.sync()
 

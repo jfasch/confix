@@ -56,7 +56,7 @@ class PlainFileBuildTest(PersistentTestCase):
 
         package = LocalPackage(rootdirectory=source,
                                setups=[DirectorySetup(), PlainFileSetup()])
-        package.enlarge(external_nodes=[])
+        package.boil(external_nodes=[])
         package.output()
         fs.sync()
 

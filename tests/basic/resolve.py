@@ -52,7 +52,7 @@ class BasicResolveTest(unittest.TestCase):
         package = LocalPackage(rootdirectory=fs.rootdirectory(),
                                setups=[DirectorySetup(),
                                        FileInterfaceTestSetup()])
-        package.enlarge(external_nodes=[])
+        package.boil(external_nodes=[])
 
         lodirbuilder = find.find_entrybuilder(package.rootbuilder(), ['lo'])
         hidirbuilder = find.find_entrybuilder(package.rootbuilder(), ['hi'])
@@ -64,13 +64,13 @@ class BasicResolveTest(unittest.TestCase):
         lonode = None
         hinode = None
         for n in package.digraph().nodes():
-            if n.responsible_builder() is package.rootbuilder():
+            if n is package.rootbuilder():
                 rootnode = n
                 continue
-            if n.responsible_builder() is lodirbuilder:
+            if n is lodirbuilder:
                 lonode = n
                 continue
-            if n.responsible_builder() is hidirbuilder:
+            if n is hidirbuilder:
                 hinode = n
                 continue
             pass
@@ -94,10 +94,10 @@ class NotResolvedTest(unittest.TestCase):
                                setups=[FileInterfaceTestSetup()])
 
         try:
-            package.enlarge(external_nodes=[])
+            package.boil(external_nodes=[])
             pass
         except EdgeFinder.SuccessorNotFound, e:
-            self.assert_(e.node().responsible_builder() is package.rootbuilder())
+            self.assert_(e.node() is package.rootbuilder())
             self.assert_(isinstance(e.errors()[0], EdgeFinder.RequireNotResolved))
             self.assert_(isinstance(e.errors()[0].require(), Require_Symbol))
             self.assert_(e.errors()[0].require().symbol() == 'unknown_symbol')
@@ -127,7 +127,7 @@ class CycleTest(unittest.TestCase):
                                setups=[DirectorySetup(),
                                        FileInterfaceTestSetup()])
         try:
-            package.enlarge(external_nodes=[])
+            package.boil(external_nodes=[])
         except CycleError:
             return
         self.fail()

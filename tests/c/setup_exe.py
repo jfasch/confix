@@ -63,7 +63,7 @@ class ExecutableSetupTest(unittest.TestCase):
         package = LocalPackage(rootdirectory=fs.rootdirectory(),
                                setups=[CSetup(short_libnames=False,
                                               use_libtool=False)])
-        package.enlarge(external_nodes=[])
+        package.boil(external_nodes=[])
 
         file_h_builder = None
         file_c_builder = None

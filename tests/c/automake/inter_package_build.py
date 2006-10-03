@@ -138,7 +138,7 @@ class InterPackageBuildBase(PersistentTestCase):
         try:
             # confixize, bootstrap, and install package 'lo'
 
-            self.lo_package_.enlarge(external_nodes=[])
+            self.lo_package_.boil(external_nodes=[])
             self.lo_package_.output()
             self.lo_fs_.sync()
 
@@ -165,7 +165,7 @@ class InterPackageBuildBase(PersistentTestCase):
 
             # confixize, bootstrap, and install package 'hi'
 
-            self.hi_package_.enlarge(external_nodes=repo.nodes())
+            self.hi_package_.boil(external_nodes=repo.nodes())
             self.hi_package_.output()
             self.hi_fs_.sync()
 
@@ -266,7 +266,7 @@ class InstalledIncludeDirTest(PersistentTestCase):
         package = LocalPackage(rootdirectory=lo_source,
                                setups=[CSetup(short_libnames=False,
                                               use_libtool=False)])
-        package.enlarge(external_nodes=[])
+        package.boil(external_nodes=[])
         package.output()
         fs.sync()
 
@@ -296,7 +296,7 @@ class InstalledIncludeDirTest(PersistentTestCase):
         package = LocalPackage(rootdirectory=hi_source,
                                setups=[CSetup(short_libnames=False,
                                               use_libtool=False)])
-        package.enlarge(external_nodes=ext_nodes)
+        package.boil(external_nodes=repo.nodes())
         package.output()
         fs.sync()
 

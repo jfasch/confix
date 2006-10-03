@@ -47,7 +47,7 @@ class LibrarySetupBasic(unittest.TestCase):
 
         package = LocalPackage(rootdirectory=fs.rootdirectory(),
                                setups=[CSetup(short_libnames=False, use_libtool=False)])
-        package.enlarge(external_nodes=[])
+        package.boil(external_nodes=[])
 
         file_h_builder = None
         file_c_builder = None
@@ -93,7 +93,7 @@ class LibraryNames(unittest.TestCase):
                                setups=[DirectorySetup(),
                                        CSetup(short_libnames=False,
                                               use_libtool=False)])
-        package.enlarge(external_nodes=[])
+        package.boil(external_nodes=[])
 
         dir3lib_builder = None
         for b in find.find_entrybuilder(package.rootbuilder(), ['dir1', 'dir2', 'dir3']).builders():
@@ -113,7 +113,7 @@ class LibraryNames(unittest.TestCase):
                                setups=[DirectorySetup(),
                                        CSetup(short_libnames=True,
                                               use_libtool=False)])
-        package.enlarge(external_nodes=[])
+        package.boil(external_nodes=[])
 
         dir3lib_builder = None
         for b in find.find_entrybuilder(package.rootbuilder(), ['dir1', 'dir2', 'dir3']).builders():

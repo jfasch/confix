@@ -86,7 +86,7 @@ class ReadonlyPrefixesBuildBase(PersistentTestCase):
         lo_package = LocalPackage(rootdirectory=lo_fs.rootdirectory(),
                                   setups=[CSetup(short_libnames=False,
                                                  use_libtool=self.use_libtool())])
-        lo_package.enlarge(external_nodes=[])
+        lo_package.boil(external_nodes=[])
         lo_package.output()
         lo_fs.sync()
 
@@ -171,7 +171,7 @@ class ReadonlyPrefixesBuildBase(PersistentTestCase):
                                   setups=[DirectorySetup(),
                                           CSetup(short_libnames=False,
                                                  use_libtool=self.use_libtool())])
-        hi_package.enlarge(external_nodes=repo.nodes())
+        hi_package.boil(external_nodes=repo.nodes())
         hi_package.output()
         hi_fs.sync()
 

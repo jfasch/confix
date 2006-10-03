@@ -60,7 +60,7 @@ class LexYaccSetupTest(unittest.TestCase):
 
         package = LocalPackage(rootdirectory=fs.rootdirectory(),
                                setups=[CSetup(use_libtool=False, short_libnames=False)])
-        package.enlarge(external_nodes=[])
+        package.boil(external_nodes=[])
         package.output()
 
         clex = cxxlex = cyacc = cxxyacc = lib = None

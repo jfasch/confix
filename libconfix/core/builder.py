@@ -40,65 +40,66 @@ from buildinfoset import BuildInformationSet
 
 class Builder(object):
     def __init__(self, id, parentbuilder, package):
-        self.id_ = id
-        self.parentbuilder_ = parentbuilder
-        self.package_ = package
+        self.__id = id
+        self.__parentbuilder = parentbuilder
+        self.__package = package
 
-##         self.dep_info_ = DependencyInformation()
+        self.__dependency_info = DependencyInformation()
 
-        self.buildinfos_ = BuildInformationSet()
+        self.__buildinfos = BuildInformationSet()
 
         # flags to ensure that every derived builder's methods have
         # called their immediate base's methods that they overload,
         # and that the chain did reach the base of all builders.
-        self.base_get_dependency_info_called_ = False
-        self.base_enlarge_called_ = False
-        self.base_relate_called_ = False
-        self.base_output_called_ = False
+        self.__base_configure_called = False
+        self.__base_enlarge_called = False
+        self.__base_dependency_info_called = False
+        self.__base_relate_called = False
+        self.__base_output_called = False
         
         pass
     
-    def id(self): return self.id_
-    def __str__(self): return self.id_
+    def id(self): return self.__id
+
+    def __str__(self): return self.__id
 
     def parentbuilder(self):
-        return self.parentbuilder_
+        return self.__parentbuilder
     def package(self):
-        return self.package_
+        return self.__package
 
-##     def add_require(self, r):
-##         self.dep_info_.add_require(r)
-##         pass
-##     def add_provide(self, p):
-##         self.dep_info_.add_provide(p)
-##         pass
-##     def add_internal_provide(self, p):
-##         self.dep_info_.add_internal_provide(p)
-##         pass
-##     def requires(self):
-##         return self.dep_info_.requires()
-##     def provides(self):
-##         return self.dep_info_.provides()
-##     def dependency_info(self):
-##         return self.dep_info_
+    def add_require(self, r):
+        self.__dependency_info.add_require(r)
+        pass
+    def add_provide(self, p):
+        self.__dependency_info.add_provide(p)
+        pass
+    def add_internal_provide(self, p):
+        self.__dependency_info.add_internal_provide(p)
+        pass
 
-    def get_dependency_info(self):
-        self.get_dependency_info_called_ = True
+    def dependency_info(self):
+        self.__base_dependency_info_called = True
+        return self.__dependency_info
         pass
 
     def add_buildinfo(self, b):
-        self.buildinfos_.add(b)
+        self.__buildinfos.add(b)
         pass
 
     def buildinfos(self):
-        return self.buildinfos_
+        return self.__buildinfos
+
+    def configure(self):
+        self.__base_configure_called = True
+        pass
     
     def enlarge(self):
-        self.base_enlarge_called_ = True
+        self.__base_enlarge_called = True
         pass
     
     def relate(self, node, digraph, topolist):
-        self.base_relate_called_ = True
+        self.__base_relate_called = True
 
         for n in topolist:
             for bi in n.buildinfos():
@@ -119,7 +120,7 @@ class Builder(object):
         return None
     
     def output(self):
-        self.base_output_called_ = True
+        self.__base_output_called = True
         pass
 
     def iface_pieces(self):
@@ -127,24 +128,29 @@ class Builder(object):
 
     # these are mainly for use by test programs, and serve no real
     # functionality
-    def base_get_dependency_info_called(self):
-        if self.base_get_dependency_info_called_:
-            self.base_get_dependency_info_called_ = False
+    def base_configure_called(self):
+        if self.__base_configure_called:
+            self.__base_configure_called = False
+            return True
+        return False
+    def base_dependency_info_called(self):
+        if self.__base_dependency_info_called:
+            self.__base_dependency_info_called = False
             return True
         return False
     def base_enlarge_called(self):
-        if self.base_enlarge_called_:
-            self.base_enlarge_called_ = False
+        if self.__base_enlarge_called:
+            self.__base_enlarge_called = False
             return True
         return False
     def base_relate_called(self):
-        if self.base_relate_called_:
-            self.base_relate_called_ = False
+        if self.__base_relate_called:
+            self.__base_relate_called = False
             return True
         return False
     def base_output_called(self):
-        if self.base_output_called_:
-            self.base_output_called_ = False
+        if self.__base_output_called:
+            self.__base_output_called = False
             return True
         return False
     

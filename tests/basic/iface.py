@@ -89,13 +89,13 @@ class BuilderInterface(unittest.TestCase):
         builder = FileInterfaceTestBuilder(file=file,
                                            parentbuilder=None,
                                            package=package)
-        self.assertEqual(len(builder.requires()), 5)
+        self.assertEqual(len(builder.dependency_info().requires()), 5)
         sym1 = None
         sym2 = None
         sym3 = None
         sym4 = None
         sym5 = None
-        for r in builder.requires():
+        for r in builder.dependency_info().requires():
             self.assert_(isinstance(r, Require_Symbol))
             if r.symbol() == 'sym1':
                 sym1 = r
@@ -146,13 +146,13 @@ class BuilderInterface(unittest.TestCase):
         builder = FileInterfaceTestBuilder(file=file,
                                            parentbuilder=None,
                                            package=package)
-        self.assertEqual(len(builder.provides()), 5)
+        self.assertEqual(len(builder.dependency_info().provides()), 5)
         sym1 = None
         sym2 = None
         sym3 = None
         sym4 = None
         sym5 = None
-        for p in builder.provides():
+        for p in builder.dependency_info().provides():
             self.assert_(isinstance(p, Provide_Symbol))
             if p.symbol() == 'sym1':
                 sym1 = p

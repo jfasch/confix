@@ -90,7 +90,7 @@ class NamesBase(unittest.TestCase):
                                setups=[DirectorySetup(),
                                        CSetup(use_libtool=self.use_libtool(),
                                               short_libnames=self.short_libnames())])
-        package.enlarge(external_nodes=[])
+        package.boil(external_nodes=[])
 
         libdir_builder = find.find_entrybuilder(rootbuilder=package.rootbuilder(),
                                                 path=['lib1', 'lib2'])

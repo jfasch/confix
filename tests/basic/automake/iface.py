@@ -55,7 +55,7 @@ class CONFIGURE_AC_ACINCLUDE_M4(unittest.TestCase):
                               "             flags=[LOCAL])"]))
         package = LocalPackage(rootdirectory=fs.rootdirectory(),
                                setups=[])
-        package.enlarge(external_nodes=[])
+        package.boil(external_nodes=[])
         package.output()
 
         configure_ac = fs.rootdirectory().find(['configure.ac'])
@@ -114,7 +114,7 @@ class CONFIGURE_AC_ACINCLUDE_M4(unittest.TestCase):
 
         package = LocalPackage(rootdirectory=fs.rootdirectory(),
                                setups=[DirectorySetup()])
-        package.enlarge(external_nodes=[])
+        package.boil(external_nodes=[])
         package.output()
 
         configure_ac = fs.rootdirectory().find(['configure.ac'])
@@ -169,7 +169,7 @@ class CONFIGURE_AC_ACINCLUDE_M4(unittest.TestCase):
 
         package = LocalPackage(rootdirectory=fs.rootdirectory(),
                                setups=[DirectorySetup()])
-        package.enlarge(external_nodes=[])
+        package.boil(external_nodes=[])
         package.output()
 
         configure_ac = fs.rootdirectory().find(['configure.ac'])

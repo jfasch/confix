@@ -23,10 +23,20 @@ from libconfix.core.builder import BuilderSet
 from libconfix.core.automake.makefile_am import Makefile_am
 from libconfix.core.automake.file_installer import FileInstaller
 from libconfix.core.local_node import LocalNode
+from libconfix.core.node import Node
+from libconfix.core.dependencyset import DependencySet
+from libconfix.core.depindex import ProvideMap
+from libconfix.core.provide import Provide
+from libconfix.core.require import Require
+from libconfix.core.provide_string import Provide_String
+from libconfix.core.require_string import Require_String
+from libconfix.core.buildinfoset import BuildInformationSet
+from libconfix.core.digraph import toposort
+from libconfix.core.installed_node import InstalledNode
 
 from iface import DirectoryBuilderInterfaceProxy
 
-class DirectoryBuilder(EntryBuilder):
+class DirectoryBuilder(EntryBuilder, LocalNode):
     def __init__(self,
                  directory,
                  parentbuilder,
@@ -40,20 +50,23 @@ class DirectoryBuilder(EntryBuilder):
             parentbuilder=parentbuilder,
             package=package)
         
-        self.directory_ = directory
-        self.configurator_ = None
-        self.builders_ = BuilderSet()
+        self.__directory = directory
+        self.__configurator = None
+        self.__builders = BuilderSet()
         
         # names of files and directories that are to be ignored
-        self.ignored_entries_ = set()
+        self.__ignored_entries = set()
 
         # the (contents of the) Makefile.am we will be writing on
         # output()
-        self.makefile_am_ = Makefile_am()
+        self.__makefile_am = Makefile_am()
 
         # a helper that we use to install files intelligently (well,
         # more or less so).
-        self.file_installer_ = FileInstaller()
+        self.__file_installer = FileInstaller()
+
+        # initialize collected dependency information
+        self.__init_dep_info()
 
         pass
 
@@ -61,29 +74,29 @@ class DirectoryBuilder(EntryBuilder):
         return self.entry()
 
     def makefile_am(self):
-        return self.makefile_am_
+        return self.__makefile_am
 
     def file_installer(self):
-        return self.file_installer_
+        return self.__file_installer
 
     def add_ignored_entries(self, names):
-        self.ignored_entries_ |= set(names)
+        self.__ignored_entries |= set(names)
         pass
 
     def entries(self):
         ret = []
         for name, entry in self.directory().entries():
-            if name not in self.ignored_entries_:
+            if name not in self.__ignored_entries:
                 ret.append((name, entry))
                 pass
             pass
         return ret
 
     def builders(self):
-        return self.builders_
+        return self.__builders
 
     def add_builder(self, b):
-        self.builders_.add(b)
+        self.__builders.add(b)
         pass
 
     def add_builders(self, builderlist):
@@ -93,46 +106,36 @@ class DirectoryBuilder(EntryBuilder):
         pass
 
     def remove_builder(self, b):
-        self.builders_.remove(b)
+        self.__builders.remove(b)
         pass
 
     def configurator(self):
-        return self.configurator_
+        return self.__configurator
 
     def set_configurator(self, c):
-        assert self.configurator_ is None
-        self.configurator_ = c
+        assert self.__configurator is None
+        self.__configurator = c
         self.add_builder(c)
         pass
 
-    def enlarge(self):
-        super(DirectoryBuilder, self).enlarge()
+    def configure(self):
+        super(DirectoryBuilder, self).configure()
         # have my configurator fiddle with me
-        if self.configurator_ is not None:
-            self.configurator_.enlarge()
+        if self.__configurator is not None:
+            self.__configurator.enlarge()
             pass
         pass
 
-    def node(self):
-        managed_builders = []
-        for b in self.builders_:
-            if not isinstance(b, DirectoryBuilder):
-                managed_builders.append(b)
-                pass
-            pass
-        return LocalNode(responsible_builder=self,
-                         managed_builders=managed_builders)
-
     def output(self):
         EntryBuilder.output(self)
-
+        
         # 'make maintainer-clean' should remove the file we generate
 
-        self.makefile_am_.add_maintainercleanfiles('Makefile.am')
-        self.makefile_am_.add_maintainercleanfiles('Makefile.in')
+        self.__makefile_am.add_maintainercleanfiles('Makefile.am')
+        self.__makefile_am.add_maintainercleanfiles('Makefile.in')
 
         # let our builders write their output, recursively
-        for b in self.builders_:
+        for b in self.__builders:
             b.output()
             assert b.base_output_called() == True, str(b)
             pass
@@ -141,30 +144,127 @@ class DirectoryBuilder(EntryBuilder):
         # builders from having to care of how files are installed. our
         # builders use it to format their install wishes down to our
         # Makefile.am. so, basically, what I want to say is that we
-        # have to flush the file installer into self.makefile_am_
+        # have to flush the file installer into self.__makefile_am
         # *after* flushing the builders, and before flushing
-        # self.makefile_am_
+        # self.__makefile_am
 
         # prepare the raw file object, and wrap a Makefile_am instance
         # around it.
 
-        self.file_installer_.output(makefile_am=self.makefile_am_)
+        self.__file_installer.output(makefile_am=self.__makefile_am)
 
         # finally, write our Makefile.am.
         
-        mf_am = self.directory_.find(['Makefile.am'])
+        mf_am = self.__directory.find(['Makefile.am'])
         if mf_am is None:
             mf_am = File()
-            self.directory_.add(name='Makefile.am', entry=mf_am)
+            self.__directory.add(name='Makefile.am', entry=mf_am)
         else:
             mf_am.truncate()
             pass
 
-        mf_am.add_lines(self.makefile_am_.lines())
+        mf_am.add_lines(self.__makefile_am.lines())
 
         pass
      
     def iface_pieces(self):
         return EntryBuilder.iface_pieces(self) + \
                [DirectoryBuilderInterfaceProxy(directory_builder=self)]
+
+    # Node
+
+    def recollect_dependency_info(self):
+        self.prev_provides_ = self.provides_
+        self.prev_requires_ = self.requires_
+
+        self.__init_dep_info()
+        
+        # collect dependency information. we sort out requires that
+        # are resolved internally (i.e. within our builders).
+        
+        # collect build information.
+
+        internal_provides = ProvideMap(permissive=False)
+        requires = DependencySet(klass=Require, string_klass=Require_String)
+
+        for b in self.node_managed_builders():
+            builder_dependency_info = b.dependency_info()
+            assert b.base_dependency_info_called(), str(b)
+
+            # we provide these anyway, so add them immediately
+            self.provides_.merge(builder_dependency_info.provides())
+
+            # index all provides, to sort out the requires later on.
+            for p in builder_dependency_info.provides():
+                internal_provides.add(p, 666)
+                pass
+            for p in builder_dependency_info.internal_provides():            
+                internal_provides.add(p, 666)
+                pass
+            requires.merge(builder_dependency_info.requires())
+
+            pass
+
+        # add require objects that are not internally resolved to the
+        # node's dependency info.
+        for r in requires:
+            found_nodes = internal_provides.find_match(r)
+            if len(found_nodes) == 0:
+                self.requires_.add(r)
+                pass
+            pass
+        pass
+
+    def node_dependency_info_changed(self):
+        return not (self.prev_provides_.is_equal(self.provides_) and self.prev_requires_.is_equal(self.requires_))
+
+    def node_managed_builders(self):
+        ret = set()
+        ret.add(self)
+        for b in self.__builders:
+            if not isinstance(b, Node):
+                ret.add(b)
+                pass
+            pass
+        return ret
+
+    def node_relate_managed_builders(self, digraph):
+        topolist = toposort.toposort(digraph=digraph, nodes=[self])
+        assert topolist[-1] is self
+        topolist = topolist[0:-1]
+        for b in self.node_managed_builders():
+            b.relate(node=self, digraph=digraph, topolist=topolist)
+            assert b.base_relate_called(), str(b)
+            pass
+        pass
+
+    def provides(self):
+        return self.provides_
+        pass
+    
+    def requires(self):
+        return self.requires_
+
+    def buildinfos(self):
+        ret = BuildInformationSet()
+        ret.merge(EntryBuilder.buildinfos(self))
+        for b in self.__builders:
+            if not isinstance(b, Node):
+                ret.merge(b.buildinfos())
+                pass
+            pass
+        return ret
+
+    def install(self):
+        return InstalledNode(
+            name=self.__directory.relpath(self.package().rootdirectory()),
+            provides=[p for p in self.provides_],
+            requires=[r for r in self.requires_],
+            buildinfos=[b.install() for b in self.buildinfos()])
+
+    def __init_dep_info(self):
+        self.provides_ = DependencySet(klass=Provide, string_klass=Provide_String)
+        self.requires_ = DependencySet(klass=Require, string_klass=Require_String)
+        pass
+    
     pass

@@ -50,7 +50,7 @@ class LibtoolVersionTest(unittest.TestCase):
         package = LocalPackage(rootdirectory=fs.rootdirectory(),
                                setups=[CSetup(short_libnames=False,
                                               use_libtool=True)])
-        package.enlarge(external_nodes=[])
+        package.boil(external_nodes=[])
 
         for b in package.rootbuilder().builders():
             if isinstance(b, LibraryBuilder):

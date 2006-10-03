@@ -85,7 +85,7 @@ class ExternalLibraryTest(unittest.TestCase):
         package = LocalPackage(rootdirectory=fs.rootdirectory(),
                                setups=[DirectorySetup(),
                                        CSetup(use_libtool=True, short_libnames=False)])
-        package.enlarge(external_nodes=[])
+        package.boil(external_nodes=[])
         package.output()
         
         hidir_builder = find.find_entrybuilder(rootbuilder=package.rootbuilder(),

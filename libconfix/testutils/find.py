@@ -45,13 +45,6 @@ def find_entrybuilder(rootbuilder, path):
         pass
     return None
 
-def find_managing_node_of_builder(nodes, builder):
-    for n in nodes:
-        if builder in n.managed_builders():
-            return n
-        pass
-    return None
-
 def find_installer(rootbuilder, path):
     dirbuilder = find_entrybuilder(rootbuilder, path)
     assert isinstance(dirbuilder, DirectoryBuilder)

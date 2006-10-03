@@ -75,7 +75,7 @@ class IgnoredEntries(unittest.TestCase):
         filewatcher = FileWatcher(parentbuilder=package.rootbuilder(),
                                   package=package)
         package.rootbuilder().add_builder(filewatcher)
-        package.enlarge(external_nodes=[])
+        package.boil(external_nodes=[])
 
         self.failIf('file1' in filewatcher.seen_names())
         self.failIf('file2' in filewatcher.seen_names())

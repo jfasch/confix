@@ -53,9 +53,9 @@ class DependencyInformation(Unmarshallable):
                self.provides_.size() + \
                self.internal_provides_.size()
 
-    def requires(self): return self.requires_.values()
-    def provides(self): return self.provides_.values()
-    def internal_provides(self): return self.internal_provides_.values()
+    def requires(self): return self.requires_
+    def provides(self): return self.provides_
+    def internal_provides(self): return self.internal_provides_
 
     def add_require(self, r): self.requires_.add(r)
     def add_provide(self, p): self.provides_.add(p)
@@ -80,7 +80,7 @@ class DependencyInformation(Unmarshallable):
         self.requires_.merge(other.requires_)
         self.provides_.merge(other.provides_)
         self.internal_provides_.merge(other.internal_provides_)
-        pass
+        return self
 
     def is_equal(self, other):
         return self.provides_.is_equal(other.provides_) and \

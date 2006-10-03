@@ -20,7 +20,7 @@ import os
 import types
 
 from libconfix.core.digraph import algorithm
-from libconfix.core.digraph import algorithm, toposort
+from libconfix.core.digraph import toposort
 from libconfix.core.automake import repo_automake
 from libconfix.core.automake.auxdir import AutoconfAuxDir
 from libconfix.core.automake.configure_ac import Configure_ac 
@@ -38,6 +38,7 @@ from libconfix.core.hierarchy.dirbuilder import DirectoryBuilder
 
 from builder import BuilderSet
 from package import Package
+from local_node import LocalNode
 from installed_package import InstalledPackage
 from edgefinder import EdgeFinder
 from filebuilder import FileBuilder
@@ -141,47 +142,83 @@ class LocalPackage(Package):
         return self.rootbuilder_
 
     def digraph(self):
-        assert self.digraph_ is not None, 'FIXME: nothing enlarged'
-        return self.digraph_
+        return self.current_digraph_
 
-    def nodes(self):
-        assert self.digraph_ is not None, 'FIXME: nothing enlarged'
-        return self.local_nodes_
+    def boil(self, external_nodes):
+        builders = self.__collect_builders()
+        nodes = set()
+        depinfo_per_node = {}
 
-    def enlarge(self, external_nodes):
         while True:
-            current_builders = self.collect_builders_()
-            for b in current_builders:
-                x = b.enlarge()
-                assert b.base_enlarge_called(), b
-                assert x is None, b # remove this once everything is
-                                    # working
+            something_new = False
+            
+            # Enlarge builders so long as changes occur. If changes have
+            # occurred, remember that.
+
+            loop_count = 0
+            while True:
+                loop_count += 1
+                if loop_count > 1000:
+                    raise Error('Enlarge-loop entered for a ridiculously large number of times '
+                                '(some Builder must be misbehaving)')
+
+                for b in builders:
+                    b.configure()
+                    pass
+                for b in builders:
+                    x = b.enlarge()
+                    assert b.base_enlarge_called(), b
+                    assert x is None, b # remove this once everything is working
+                    pass
+
+                # re-collect our builders, and see if anything has
+                # changed in the current run.
+                prev_builders = builders
+                builders = self.__collect_builders()
+                if prev_builders.is_equal(builders):
+                    builders = prev_builders
+                    break
+
+                something_new = True
                 pass
 
-            self.local_nodes_ = []
-            for b in current_builders:
-                node = b.node()
-                if node is not None:
-                    self.local_nodes_.append(node)
+            # re-collect current nodes and sort their dependency info
+            # by the node's responsible builders.
+            prev_nodes = nodes
+            nodes = set()
+            for b in builders:
+                if isinstance(b, LocalNode):
+                    if b not in prev_nodes:
+                        something_new = True
+                        pass
+                    nodes.add(b)
+                    # empty cache from previous run.
+                    b.recollect_dependency_info()
                     pass
                 pass
 
-            all_nodes = set(self.local_nodes_)
-            for n in external_nodes:
-                all_nodes.add(n)
+            # if the nodes themselves haven't changed, their
+            # dependency information might have.
+            if not something_new:
+                for n in nodes:
+                    if n.node_dependency_info_changed():
+                        something_new = True
+                        break
+                    pass
                 pass
 
-            self.digraph_ = DirectedGraph(nodes=all_nodes,
-                                          edgefinder=EdgeFinder(all_nodes))
+            if not something_new:
+                return
 
-            for n in self.local_nodes_:
-                n.relate(digraph=self.digraph_)
+            # something seems to be new. go calculate the dependency
+            # graph.
+            all_nodes = nodes.union(set(external_nodes))
+            self.current_digraph_ = DirectedGraph(nodes=all_nodes, edgefinder=EdgeFinder(all_nodes))
+
+            # let the nodes communicate with each other.
+            for n in nodes:
+                n.node_relate_managed_builders(digraph=self.current_digraph_)
                 pass
-
-            old_builders = current_builders
-            current_builders = self.collect_builders_()
-            if not old_builders.is_equal(current_builders):
-                continue
 
             pass
         pass
@@ -226,10 +263,16 @@ class LocalPackage(Package):
         pass
 
     def install(self):
+        installed_nodes = []
+        for b in self.__collect_builders():
+            if isinstance(b, LocalNode):
+                installed_nodes.append(b.install())
+                pass
+            pass
         return InstalledPackage(
             name=self.name(),
             version=self.version(),
-            nodes=[n.install() for n in self.nodes()])
+            nodes=installed_nodes)
     
     def output_stock_autoconf_(self):
         self.configure_ac_.set_packagename(self.name())
@@ -277,21 +320,20 @@ class LocalPackage(Package):
         # the topological order, and from that list, generate the
         # output.
 
-        dirbuilders = self.collect_dirbuilders_()
-
         subdir_nodes = set()
-        for n in self.local_nodes_:
-            if n.responsible_builder() in dirbuilders:
-                subdir_nodes.add(n)
+        for b in self.__collect_builders():
+            if isinstance(b, LocalNode):
+                assert isinstance(b, DirectoryBuilder)
+                subdir_nodes.add(b)
                 pass
             pass
 
-        graph = algorithm.subgraph(digraph=self.digraph_,
+        graph = algorithm.subgraph(digraph=self.current_digraph_,
                                    nodes=subdir_nodes)
-        for n in toposort.toposort(digraph=graph, nodes=subdir_nodes):
-            dirbuilder = n.responsible_builder()
-            assert isinstance(dirbuilder, DirectoryBuilder)
-            relpath = dirbuilder.directory().relpath(self.rootdirectory_)
+        
+        for dirnode in toposort.toposort(digraph=graph, nodes=subdir_nodes):
+            assert isinstance(dirnode, DirectoryBuilder)
+            relpath = dirnode.directory().relpath(self.rootdirectory_)
             if len(relpath):
                 dirstr = '/'.join(relpath)
             else:
@@ -336,7 +378,7 @@ class LocalPackage(Package):
         # AC_CONFIG_SRCDIR.
 
         goodfile = notsogoodfile = None
-        for b in self.collect_builders_():
+        for b in self.__collect_builders():
             if not isinstance(b, FileBuilder):
                 continue
             goodfile = None
@@ -361,26 +403,16 @@ class LocalPackage(Package):
         self.configure_ac_.set_unique_file_in_srcdir('/'.join(unique_file.relpath(self.rootdirectory_)))
         pass
 
-    def collect_builders_(self):
+    def __collect_builders(self):
         builders = BuilderSet()
-        self.collect_builders_recursive_(self.rootbuilder_, builders)
+        self.__collect_builders_recursive(self.rootbuilder_, builders)
         return builders
 
-    def collect_dirbuilders_(self):
-        # argh. this could be done much more intelligently
-        dirbuilders = set()
-        for b in self.collect_builders_():
-            if isinstance(b, DirectoryBuilder):
-                dirbuilders.add(b)
-                pass
-            pass
-        return dirbuilders
-    
-    def collect_builders_recursive_(self, builder, found):
+    def __collect_builders_recursive(self, builder, found):
         found.add(builder)
         if isinstance(builder, DirectoryBuilder):
             for b in builder.builders():
-                self.collect_builders_recursive_(b, found)
+                self.__collect_builders_recursive(b, found)
                 pass
             pass
         pass

@@ -62,7 +62,7 @@ class IntraPackageBuildBase(PersistentTestCase):
                                      setups=[DirectorySetup(),
                                              CSetup(short_libnames=False,
                                                     use_libtool=self.use_libtool())])
-        self.package_.enlarge(external_nodes=[])
+        self.package_.boil(external_nodes=[])
         self.package_.output()
         self.fs_.sync()
         pass
@@ -162,7 +162,7 @@ class LocalIncludeDirTest(PersistentTestCase):
         package = LocalPackage(rootdirectory=source,
                                setups=[DirectorySetup(),
                                        CSetup(use_libtool=False, short_libnames=False)])
-        package.enlarge(external_nodes=[])
+        package.boil(external_nodes=[])
         package.output()
 
         fs.sync()

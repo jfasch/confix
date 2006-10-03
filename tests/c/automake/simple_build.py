@@ -70,7 +70,7 @@ class SimpleBuildBase(PersistentTestCase):
             
             self.package_ = LocalPackage(rootdirectory=self.fs_.rootdirectory(),
                                          setups=[CSetup(short_libnames=False, use_libtool=self.use_libtool())])
-            self.package_.enlarge(external_nodes=[])
+            self.package_.boil(external_nodes=[])
             self.package_.output()
             self.fs_.sync()
         except Error, e:

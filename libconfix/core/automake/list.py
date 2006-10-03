@@ -45,6 +45,8 @@ class List(MakefileElement):
         self.values_ = values[:]
         self.mitigate_ = mitigate
         pass
+    def __str__(self):
+        return self.name_ + '=' + str(self.values_)
     def __iter__(self):
         return self.values_.__iter__()
     def __len__(self):

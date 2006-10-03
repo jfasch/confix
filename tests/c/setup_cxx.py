@@ -74,7 +74,7 @@ class CXXSetupTest(unittest.TestCase):
                                setups=[DirectorySetup(),
                                        CSetup(use_libtool=False,
                                               short_libnames=False)])
-        package.enlarge(external_nodes=[])
+        package.boil(external_nodes=[])
         package.output()
 
         lib_dirbuilder = find.find_entrybuilder(package.rootbuilder(), ['lib'])

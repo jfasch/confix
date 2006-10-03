@@ -50,7 +50,7 @@ class CTest(unittest.TestCase):
             setups=[DirectorySetup(),
                     CSetup(short_libnames=False,
                            use_libtool=False)])
-        package.enlarge(external_nodes=[])
+        package.boil(external_nodes=[])
         package.output()
 
         conf_ac = fs.rootdirectory().find(['configure.ac'])

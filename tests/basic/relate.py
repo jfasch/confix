@@ -54,23 +54,19 @@ class RelateBasic(unittest.TestCase):
         package = LocalPackage(rootdirectory=fs.rootdirectory(),
                                setups=[DirectorySetup(),
                                        FileInterfaceTestSetup()])
-        package.enlarge(external_nodes=[])
+        package.boil(external_nodes=[])
 
         lodirbuilder = find.find_entrybuilder(package.rootbuilder(), ['lo'])
         hidirbuilder = find.find_entrybuilder(package.rootbuilder(), ['hi'])
         lofilebuilder = find.find_entrybuilder(package.rootbuilder(), ['lo', 'lo.iface'])
         hifilebuilder = find.find_entrybuilder(package.rootbuilder(), ['hi', 'hi.iface'])
 
-        rootnode = find.find_managing_node_of_builder(package.digraph().nodes(), package.rootbuilder())
-        lonode = find.find_managing_node_of_builder(package.digraph().nodes(), lodirbuilder)
-        hinode = find.find_managing_node_of_builder(package.digraph().nodes(), hidirbuilder)
-
         self.failIf(lofilebuilder.successors() is None)
         self.failUnlessEqual(len(lofilebuilder.successors()), 0)
         self.failUnlessEqual(len(hifilebuilder.successors()), 1)
-        self.failUnless(lonode in hifilebuilder.successors())
-        self.failUnless(lofilebuilder.node() is lonode)
-        self.failUnless(hifilebuilder.node() is hinode)
+        self.failUnless(lodirbuilder in hifilebuilder.successors())
+        self.failUnless(lofilebuilder.node() is lodirbuilder)
+        self.failUnless(hifilebuilder.node() is hidirbuilder)
         self.failUnlessEqual(lofilebuilder.relate_calls(), 1)
         self.failUnlessEqual(hifilebuilder.relate_calls(), 1)
         
@@ -95,15 +91,13 @@ class InternalRequires(unittest.TestCase):
         package = LocalPackage(rootdirectory=fs.rootdirectory(),
                                setups=[DirectorySetup(),
                                        FileInterfaceTestSetup()])
-        package.enlarge(external_nodes=[])
+        package.boil(external_nodes=[])
 
-        rootnode = find.find_managing_node_of_builder(nodes=package.digraph().nodes(),
-                                                      builder=package.rootbuilder())
-        self.failUnlessEqual(len(rootnode.requires()), 0)
+        self.failUnlessEqual(len(package.rootbuilder().requires()), 0)
         pass
     pass
 
 if __name__ == '__main__':
-    unittest.main()
+    unittest.TextTestRunner().run(RelateTestSuite())
     pass
 
