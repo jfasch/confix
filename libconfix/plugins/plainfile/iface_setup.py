@@ -20,7 +20,7 @@ from libconfix.core.setup import Setup
 
 from iface import PLAINFILE_InterfaceProxy
 
-class PlainFileSetup(Setup):
+class PlainFileInterfaceSetup(Setup):
     def setup_directory(self, directory_builder):
         Setup.setup_directory(self, directory_builder)
         directory_builder.configurator().add_method(
