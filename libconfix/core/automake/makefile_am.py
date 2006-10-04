@@ -16,20 +16,19 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 # USA
 
-from rule import Rule
-from list import List
-import helper_automake
+import types
 
 from libconfix.core.utils import helper, const
 from libconfix.core.utils.error import Error
 
-import os
-import re
-import types
+from rule import Rule
+from list import List
+from set import Set
+import helper_automake
 
-class Makefile_am:
+class Makefile_am(object):
 
-    class DirectoryDefinition:
+    class DirectoryDefinition(object):
         def __init__(self, dirname):
             self.dirname_ = dirname
             self.family_files_ = {}
@@ -54,7 +53,7 @@ class Makefile_am:
 
         # AUTOMAKE_OPTIONS.
 
-        self.automake_options_ = List(name='AUTOMAKE_OPTIONS', values=[], mitigate=False)
+        self.automake_options_ = Set(name='AUTOMAKE_OPTIONS', values=[], mitigate=False)
 
         # SUBDIRS.
 
@@ -68,20 +67,20 @@ class Makefile_am:
         # MOSTLYCLEANFILES, CLEANFILES, DISTCLEANFILES, and
         # MAINTAINERCLEANFILES, respectively.
 
-        self.extra_dist_ = List(name='EXTRA_DIST', values=[], mitigate=True)
-        self.mostlycleanfiles_ = List(name='MOSTLYCLEANFILES', values=[], mitigate=True)
-        self.cleanfiles_ = List(name='CLEANFILES', values=[], mitigate=True)
-        self.distcleanfiles_ = List(name='DISTCLEANFILES', values=[], mitigate=True)
-        self.maintainercleanfiles_ = List(name='MAINTAINERCLEANFILES', values=[], mitigate=True)
+        self.extra_dist_ = Set(name='EXTRA_DIST', values=[], mitigate=True)
+        self.mostlycleanfiles_ = Set(name='MOSTLYCLEANFILES', values=[], mitigate=True)
+        self.cleanfiles_ = Set(name='CLEANFILES', values=[], mitigate=True)
+        self.distcleanfiles_ = Set(name='DISTCLEANFILES', values=[], mitigate=True)
+        self.maintainercleanfiles_ = Set(name='MAINTAINERCLEANFILES', values=[], mitigate=True)
 
         # AM_CFLAGS, AM_CXXFLAGS, AM_LFLAGS, AM_YFLAGS. we collect
         # them in a dictionary to keep them unique. (keys are the
         # flags themselves, data is irrelevant.)
 
-        self.am_cflags_ = List(name='AM_CFLAGS', values=[], mitigate=True)
-        self.am_cxxflags_ = List(name='AM_CXXFLAGS', values=[], mitigate=True)
-        self.am_lflags_ = List(name='AM_LFLAGS', values=[], mitigate=True)
-        self.am_yflags_ = List(name='AM_YFLAGS', values=[], mitigate=True)
+        self.am_cflags_ = Set(name='AM_CFLAGS', values=[], mitigate=True)
+        self.am_cxxflags_ = Set(name='AM_CXXFLAGS', values=[], mitigate=True)
+        self.am_lflags_ = Set(name='AM_LFLAGS', values=[], mitigate=True)
+        self.am_yflags_ = Set(name='AM_YFLAGS', values=[], mitigate=True)
 
         # source files (_SOURCES) of compound objects (i.e. libraries
         # and executables).
@@ -149,7 +148,7 @@ class Makefile_am:
         # BUILT_SOURCES. list of files that must be built before
         # everything else is built.
 
-        self.built_sources_ = List(name='BUILT_SOURCES', values=[], mitigate=True)
+        self.built_sources_ = Set(name='BUILT_SOURCES', values=[], mitigate=True)
 
         # hook-targets to be made after the local (module) thing is
         # over. see the "all-local:" and "clean-local:" hook target
@@ -170,35 +169,35 @@ class Makefile_am:
 
     
     def automake_options(self): return self.automake_options_
-    def add_automake_options(self, option): self.automake_options_.add_value(option)
+    def add_automake_options(self, option): self.automake_options_.add(option)
 
     def subdirs(self): return self.subdirs_
-    def add_subdir(self, subdir): self.subdirs_.add_value(subdir)
+    def add_subdir(self, subdir): self.subdirs_.append(subdir)
 
     def elements(self): return self.elements_
     def add_element(self, e): self.elements_.append(e)
 
     def extra_dist(self): return self.extra_dist_
-    def add_extra_dist(self, name): self.extra_dist_.add_value(name)
+    def add_extra_dist(self, name): self.extra_dist_.add(name)
 
-    def add_mostlycleanfiles(self, name): self.mostlycleanfiles_.add_value(name)
+    def add_mostlycleanfiles(self, name): self.mostlycleanfiles_.add(name)
 
-    def add_cleanfiles(self, name): self.cleanfiles_.add_value(name)
+    def add_cleanfiles(self, name): self.cleanfiles_.add(name)
 
-    def add_distcleanfiles(self, name): self.distcleanfiles_.add_value(name)
+    def add_distcleanfiles(self, name): self.distcleanfiles_.add(name)
 
     def maintainercleanfiles(self): return self.maintainercleanfiles_
-    def add_maintainercleanfiles(self, name): self.maintainercleanfiles_.add_value(name)
+    def add_maintainercleanfiles(self, name): self.maintainercleanfiles_.add(name)
 
     def am_cflags(self): return self.am_cflags_
-    def add_am_cflags(self, f): self.am_cflags_.add_value(f)
+    def add_am_cflags(self, f): self.am_cflags_.add(f)
 
     def am_cxxflags(self): return self.am_cxxflags_
-    def add_am_cxxflags(self, f): self.am_cxxflags_.add_value(f)
+    def add_am_cxxflags(self, f): self.am_cxxflags_.add(f)
 
-    def add_am_lflags(self, f): self.am_lflags_.add_value(f)
+    def add_am_lflags(self, f): self.am_lflags_.add(f)
 
-    def add_am_yflags(self, f): self.am_yflags_.add_value(f)
+    def add_am_yflags(self, f): self.am_yflags_.add(f)
 
     def compound_sources(self, compound_name):
         return self.compound_sources_.list(compound_name)
@@ -340,7 +339,7 @@ class Makefile_am:
         pass
 
     def add_built_sources(self, filename):
-        self.built_sources_.add_value(filename)
+        self.built_sources_.add(filename)
         pass
 
     def all_local(self): return self.all_local_
@@ -412,7 +411,7 @@ class Makefile_am:
             if self.cmdlinemacros_[m] is not None:
                 macro = macro + '=' + self.cmdlinemacros_[m]
                 pass
-            am_cppflags.add_value(macro)
+            am_cppflags.append(macro)
             pass
         lines.extend(am_cppflags.lines())
  

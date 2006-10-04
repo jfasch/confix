@@ -31,16 +31,17 @@ from libconfix.testutils import find
 class BuildInfoSuite(unittest.TestSuite):
     def __init__(self):
         unittest.TestSuite.__init__(self)
-        self.addTest(BuildInfoTest('test'))
+        self.addTest(BasicBuildInfoTest('test'))
+        self.addTest(UniqueFlags_n_MacrosTest('test'))
         pass
     pass
 
-class BuildInfoTest(unittest.TestCase):
+class BasicBuildInfoTest(unittest.TestCase):
     def test(self):
         fs = FileSystem(path=['', 'path', 'to', 'it'])
         fs.rootdirectory().add(
             name=const.CONFIX2_PKG,
-            entry=File(lines=["PACKAGE_NAME('BuildInfoTest')",
+            entry=File(lines=["PACKAGE_NAME('BasicBuildInfoTest')",
                               "PACKAGE_VERSION('1.2.3')"]))
         fs.rootdirectory().add(
             name=const.CONFIX2_DIR,
@@ -113,6 +114,128 @@ class BuildInfoTest(unittest.TestCase):
         self.failUnless('some_other_cflag' in hidir_builder.makefile_am().am_cflags())
         self.failUnless('some_cxxflag' in hidir_builder.makefile_am().am_cxxflags())
         self.failUnless('some_other_cxxflag' in hidir_builder.makefile_am().am_cxxflags())
+        pass
+    pass
+
+class UniqueFlags_n_MacrosTest(unittest.TestCase):
+
+    # buildinformation (in the case of C: cflags, cxxflags,
+    # cmdlinemacros) may float to the receiver over multiple
+    # paths. (lo, mid1, hi) and (lo, mid2, hi) in this testcase.
+
+    # the receiver is responsible for sorting out duplicates.
+    
+    def test(self):
+        fs = FileSystem(path=[])
+        fs.rootdirectory().add(
+            name=const.CONFIX2_PKG,
+            entry=File(lines=["PACKAGE_NAME('UniqueFlags_n_MacrosTest')",
+                              "PACKAGE_VERSION('1.2.3')"]))
+        fs.rootdirectory().add(
+            name=const.CONFIX2_DIR,
+            entry=File())
+
+        lo = fs.rootdirectory().add(
+            name='lo',
+            entry=Directory())
+        lo.add(
+            name=const.CONFIX2_DIR,
+            entry=File(lines=["PROVIDE_SYMBOL('lo')",
+                              "EXTERNAL_LIBRARY(",
+                              "    cflags=['cflags_token'],",
+                              "    cxxflags=['cxxflags_token'],",
+                              "    cmdlinemacros={",
+                              "        'key': 'value'",
+                              "       })"]))
+
+        mid1 = fs.rootdirectory().add(
+            name='mid1',
+            entry=Directory())
+        mid1.add(
+            name=const.CONFIX2_DIR,
+            entry=File(lines=["PROVIDE_SYMBOL('mid1')",
+                              "REQUIRE_SYMBOL('lo')"]))
+        mid2 = fs.rootdirectory().add(
+            name='mid2',
+            entry=Directory())
+        mid2.add(
+            name=const.CONFIX2_DIR,
+            entry=File(lines=["PROVIDE_SYMBOL('mid2')",
+                              "REQUIRE_SYMBOL('lo')"]))
+
+        hi = fs.rootdirectory().add(
+            name='hi',
+            entry=Directory())
+        hi.add(
+            name=const.CONFIX2_DIR,
+            entry=File(lines=["REQUIRE_SYMBOL('mid1')",
+                              "REQUIRE_SYMBOL('mid2')"]))
+        hi.add(
+            name='file1.cc',
+            entry=File())
+        hi.add(
+            name='file2.cc',
+            entry=File())
+
+        package = LocalPackage(rootdirectory=fs.rootdirectory(),
+                               setups=[DirectorySetup(),
+                                       CSetup(use_libtool=False, short_libnames=False)])
+        package.boil(external_nodes=[])
+
+        hi_file1_cc_builder = find.find_entrybuilder(rootbuilder=package.rootbuilder(),
+                                                     path=['hi', 'file1.cc'])
+        hi_file2_cc_builder = find.find_entrybuilder(rootbuilder=package.rootbuilder(),
+                                                     path=['hi', 'file1.cc'])
+        
+        # see if each cxx file builder has a unique set of flags.
+
+        for builder in [hi_file1_cc_builder, hi_file2_cc_builder]:
+            unique_cflags = set()
+            for f in builder.cflags():
+                self.failIf(f in unique_cflags)
+                unique_cflags.add(f)
+                pass
+            self.failUnless('cflags_token' in unique_cflags)
+            unique_cxxflags = set()
+            for f in builder.cxxflags():
+                self.failIf(f in unique_cxxflags)
+                unique_cxxflags.add(f)
+                pass
+            self.failUnless('cxxflags_token' in unique_cxxflags)
+            cmdlinemacros = {}
+            for macro, value in builder.cmdlinemacros().iteritems():
+                self.failIf(macro in cmdlinemacros)
+                cmdlinemacros[macro] = value
+                pass
+            self.failUnless(cmdlinemacros['key'] == 'value')
+            pass
+        
+        # so each of hi's two cxx builders has it unique copy of lo's
+        # build information. see if we manage to sort out duplicates
+        # on the way into hi's Makefile.am.
+
+        package.output()
+
+        hi_builder = find.find_entrybuilder(rootbuilder=package.rootbuilder(), path=['hi'])
+
+        unique_cflags = set()
+        for f in hi_builder.makefile_am().am_cflags():
+            self.failIf(f in unique_cflags)
+            unique_cflags.add(f)
+            pass
+
+        unique_cxxflags = set()
+        for f in hi_builder.makefile_am().am_cxxflags():
+            self.failIf(f in unique_cxxflags)
+            unique_cxxflags.add(f)
+            pass
+
+        cmdlinemacros = {}
+        for macro, value in hi_builder.makefile_am().cmdlinemacros().iteritems():
+            self.failIf(macro in cmdlinemacros)
+            cmdlinemacros[macro] = value
+            pass
+        
         pass
     pass
     

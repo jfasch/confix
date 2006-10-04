@@ -20,10 +20,10 @@ from element import MakefileElement
 import helper_automake
 from backslash import BACKSLASH_MITIGATOR
 
-class List(MakefileElement):
+class Set(MakefileElement):
     def __init__(self, name, values, mitigate):
         self.name_ = name
-        self.values_ = values[:]
+        self.values_ = set(values)
         self.mitigate_ = mitigate
         pass
     def __str__(self):
@@ -32,23 +32,23 @@ class List(MakefileElement):
         return self.values_.__iter__()
     def __len__(self):
         return self.values_.__len__()
-    def __getitem__(self, index):
-        return self.values_.__getitem__(index)
+    def __contains__(self, value):
+        return self.values_.__contains__(value)
     def name(self):
         return self.name_
     def values(self):
         return self.values_
-    def append(self, value):
-        self.values_.append(value)
+    def add(self, value):
+        self.values_.add(value)
         pass
     def lines(self):
         if len(self.values_) == 0:
             return []
-        wordlist = [self.name_+' ='] + self.values_
+        values = list(self.values_)
+        values.sort()
+        wordlist = [self.name_+' ='] + values
         if self.mitigate_:
-            wordlist.append(BACKSLASH_MITIGATOR)
+            wordlist.append('$(CONFIX_BACKSLASH_MITIGATOR)')
             pass
         return helper_automake.format_word_list(wordlist)
     pass
-
-

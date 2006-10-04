@@ -102,32 +102,32 @@ class MakefileAmTest(unittest.TestCase):
         lines = mf_am.lines()
         elements = makefileparser.parse_makefile(lines=lines)
 
-        self.failUnlessEqual(makefileparser.find_list(name='the_program_SOURCES', elements=elements).values(),
-                             ['source.h', 'source.c'])
+        self.failUnlessEqual(set(makefileparser.find_list(name='the_program_SOURCES', elements=elements).values()),
+                             set(['source.h', 'source.c']))
         self.failUnlessEqual(makefileparser.find_list(name='the_program_LDFLAGS', elements=elements).values(),
                              ['-some-flag', '-some-other-flag'])
         self.failUnlessEqual(makefileparser.find_list(name='libsome_ltlibrary_la_LIBADD', elements=elements).values(),
                              ['some_library', 'some_other_library'])
         self.failUnlessEqual(makefileparser.find_list(name='the_program_LDADD', elements=elements).values(),
                              ['some_library', 'some_other_library'])
-        self.failUnlessEqual(makefileparser.find_list(name='AM_CFLAGS', elements=elements).values(),
-                             ['-some-cflag', '-some-other-cflag'])
-        self.failUnlessEqual(makefileparser.find_list(name='AM_CXXFLAGS', elements=elements).values(),
-                             ['-some-cxxflag', '-some-other-cxxflag'])
-        self.failUnlessEqual(makefileparser.find_list(name='AM_LFLAGS', elements=elements).values(),
-                             ['-some-lflag', '-some-other-lflag'])
-        self.failUnlessEqual(makefileparser.find_list(name='AM_YFLAGS', elements=elements).values(),
-                             ['-some-yflag', '-some-other-yflag'])
-        self.failUnlessEqual(makefileparser.find_list(name='EXTRA_DIST', elements=elements).values(),
-                             ['some-extra-dist-file', 'some-other-extra-dist-file'])
-        self.failUnlessEqual(makefileparser.find_list(name='MOSTLYCLEANFILES', elements=elements).values(),
-                             ['some-mostlycleanfile', 'some-other-mostlycleanfile'])
-        self.failUnlessEqual(makefileparser.find_list(name='CLEANFILES', elements=elements).values(),
-                             ['some-cleanfile', 'some-other-cleanfile'])
-        self.failUnlessEqual(makefileparser.find_list(name='DISTCLEANFILES', elements=elements).values(),
-                             ['some-distcleanfile', 'some-other-distcleanfile'])
-        self.failUnlessEqual(makefileparser.find_list(name='MAINTAINERCLEANFILES', elements=elements).values(),
-                             ['some-maintainercleanfiles', 'some-other-maintainercleanfiles'])
+        self.failUnlessEqual(set(makefileparser.find_list(name='AM_CFLAGS', elements=elements).values()),
+                             set(['-some-cflag', '-some-other-cflag']))
+        self.failUnlessEqual(set(makefileparser.find_list(name='AM_CXXFLAGS', elements=elements).values()),
+                             set(['-some-cxxflag', '-some-other-cxxflag']))
+        self.failUnlessEqual(set(makefileparser.find_list(name='AM_LFLAGS', elements=elements).values()),
+                             set(['-some-lflag', '-some-other-lflag']))
+        self.failUnlessEqual(set(makefileparser.find_list(name='AM_YFLAGS', elements=elements).values()),
+                             set(['-some-yflag', '-some-other-yflag']))
+        self.failUnlessEqual(set(makefileparser.find_list(name='EXTRA_DIST', elements=elements).values()),
+                             set(['some-extra-dist-file', 'some-other-extra-dist-file']))
+        self.failUnlessEqual(set(makefileparser.find_list(name='MOSTLYCLEANFILES', elements=elements).values()),
+                             set(['some-mostlycleanfile', 'some-other-mostlycleanfile']))
+        self.failUnlessEqual(set(makefileparser.find_list(name='CLEANFILES', elements=elements).values()),
+                             set(['some-cleanfile', 'some-other-cleanfile']))
+        self.failUnlessEqual(set(makefileparser.find_list(name='DISTCLEANFILES', elements=elements).values()),
+                             set(['some-distcleanfile', 'some-other-distcleanfile']))
+        self.failUnlessEqual(set(makefileparser.find_list(name='MAINTAINERCLEANFILES', elements=elements).values()),
+                             set(['some-maintainercleanfiles', 'some-other-maintainercleanfiles']))
         self.failUnlessEqual(makefileparser.find_list(name='lib_LTLIBRARIES', elements=elements).values(),
                              ['libsome-ltlibrary.la', 'libsome-other-ltlibrary.la'])
         self.failUnlessEqual(makefileparser.find_list(name='lib_LIBRARIES', elements=elements).values(),
@@ -142,8 +142,8 @@ class MakefileAmTest(unittest.TestCase):
                              ['some-xxx-YYY-thing', 'some-other-xxx-YYY-thing'])
         self.failUnlessEqual(makefileparser.find_list(name='aaa_YYY', elements=elements).values(),
                              ['some-aaa-YYY-thing', 'some-other-aaa-YYY-thing'])
-        self.failUnlessEqual(makefileparser.find_list(name='BUILT_SOURCES', elements=elements).values(),
-                             ['some-built-source', 'some-other-built-source'])
+        self.failUnlessEqual(set(makefileparser.find_list(name='BUILT_SOURCES', elements=elements).values()),
+                             set(['some-built-source', 'some-other-built-source']))
 
         # mf_am.add_includepath() and add_cmdlinemacro() goes into
         # AM_CPPFLAGS
