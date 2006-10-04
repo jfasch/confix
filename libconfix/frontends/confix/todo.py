@@ -108,13 +108,13 @@ def READ_REPO():
     DONE_READREPO = 1
     return 0
 
-DONE_ENLARGE = 0
-def ENLARGE():
-    global DONE_ENLARGE
+DONE_BOIL = 0
+def BOIL():
+    global DONE_BOIL
     global repository
     global package
 
-    if DONE_ENLARGE: return 0
+    if DONE_BOIL: return 0
 
     if PACKAGE(): return -1
     if READ_REPO(): return -1
@@ -130,7 +130,7 @@ def ENLARGE():
 
     debug.message("massaging package ...", CONFIG.verbosity())
     try:
-        package.enlarge(external_nodes=external_nodes)
+        package.boil(external_nodes=external_nodes)
     except CycleError, e:
         for l in core.helper.format_cycle_error(e):
             sys.stderr.write(l+'\n')
@@ -144,7 +144,7 @@ DONE_DUMPGRAPH = 0
 def DUMPGRAPH():
     global package
     global repository
-    if ENLARGE(): return -1
+    if BOIL(): return -1
     if READ_REPO(): return -1
 
     repo = CompositePackageRepository()
@@ -185,7 +185,7 @@ def OUTPUT():
 
     if DONE_OUTPUT: return 0
 
-    if ENLARGE(): return -1
+    if BOIL(): return -1
 
     debug.message("generating output ...", CONFIG.verbosity())
     package.output()

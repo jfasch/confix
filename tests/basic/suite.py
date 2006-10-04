@@ -29,6 +29,7 @@ from relate import RelateTestSuite
 from package_file import PackageFileSuite
 from automake.suite import AutomakeSuite
 from config.suite import ConfigSuite
+from misc import MiscellaneousSuite
 
 import unittest
 
@@ -50,6 +51,7 @@ class BasicTestSuite(unittest.TestSuite):
         self.addTest(PackageFileSuite())
         self.addTest(AutomakeSuite())
         self.addTest(ConfigSuite())
+        self.addTest(MiscellaneousSuite())
         pass
     pass
 

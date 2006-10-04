@@ -17,29 +17,13 @@
 # USA
 
 from libconfix.core.setup import Setup
-from libconfix.core.hierarchy.setup import DirectorySetup
 
-from libconfix.plugins.c.setup import CSetup
-from libconfix.plugins.plainfile.setup import PlainFileInterfaceSetup
-from libconfix.plugins.script.setup import ScriptSetup
-from libconfix.plugins.idl.setup import IDLSetup
+from creator import IDLCreator
 
-class ConfixSetup(Setup):
-    def __init__(self,
-                 use_libtool,
-                 short_libnames):
-        Setup.__init__(self)
-        self.setups_ = [DirectorySetup(),
-                        CSetup(short_libnames=short_libnames, use_libtool=use_libtool),
-                        ScriptSetup(),
-                        IDLSetup(),
-                        PlainFileInterfaceSetup()]
-        pass
-
+class IDLSetup(Setup):
     def setup_directory(self, directory_builder):
-        Setup.setup_directory(self, directory_builder)
-        for setup in self.setups_:
-            setup.setup_directory(directory_builder)
-            pass
+        directory_builder.add_builder(
+            IDLCreator(parentbuilder=directory_builder,
+                       package=directory_builder.package()))
         pass
     pass

@@ -19,7 +19,7 @@
 import os
 
 from libconfix.core.builder import Builder
-import libconfix.core.filesys
+from libconfix.core.filesys.file import File
 
 from h import HeaderBuilder
 from c import CBuilder
@@ -40,7 +40,7 @@ class Creator(Builder):
     def enlarge(self):
         super(Creator, self).enlarge()
         for name, entry in self.parentbuilder().entries():
-            if not isinstance(entry, libconfix.core.filesys.file.File):
+            if not isinstance(entry, File):
                 continue
             if entry in self.handled_entries_:
                 continue

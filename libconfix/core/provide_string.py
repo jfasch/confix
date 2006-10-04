@@ -84,6 +84,13 @@ class Provide_String(Provide):
                 return 0
         return 1
 
+    def update(self, other):
+        if not isinstance(other, self. __class__):
+            return False
+        if self.string_ != other.string_:
+            return False
+        return True
+
     def is_equal(self, other):
         if not isinstance(other, self.__class__):
             return False

@@ -34,7 +34,7 @@ def parse(args):
     parser.add_option('--output',
                       action='store_true',
                       help='Generate build instructions (no autotools invoked).')
-    parser.add_option('--enlarge',
+    parser.add_option('--boil',
                       action='store_true',
                       help='Dry run. Massage the package as if it was for real, '
                       'but do not generate any output.')
@@ -161,8 +161,8 @@ def parse(args):
     if opts.make is not None:
         actions.append(todo.MAKE)
         pass
-    if opts.enlarge is not None:
-        actions.append(todo.ENLARGE)
+    if opts.boil is not None:
+        actions.append(todo.BOIL)
         pass
     if opts.output is not None:
         actions.append(todo.OUTPUT)

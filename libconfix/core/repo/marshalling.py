@@ -87,7 +87,7 @@ class Marshallable:
         # implementor forgot to overload get_marshalling_data().
 
         # delete the member since it is only to catch errors during
-        # the marshallling phase, and thus need not be marshalled.
+        # the marshalling phase, and thus need not be marshalled.
 
         assert md[Marshallable.GENERATING_CLASS] is self.__class__, \
                'Generating class: '+str(md[Marshallable.GENERATING_CLASS])+\

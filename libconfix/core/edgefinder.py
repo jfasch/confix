@@ -16,11 +16,12 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 # USA
 
+from libconfix.core.digraph import digraph
+from libconfix.core.utils.error import Error
 
 from depindex import ProvideMap
 from require import Require
-from libconfix.core.digraph import digraph
-from libconfix.core.utils.error import Error
+from libconfix.core.utils import debug
 
 class EdgeFinder(digraph.EdgeFinder):
 

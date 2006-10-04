@@ -18,6 +18,7 @@
 
 import types
 
+from libconfix.core.builder import Builder
 from libconfix.core.iface.proxy import InterfaceProxy
 from libconfix.core.utils.error import Error
 
@@ -28,8 +29,11 @@ class DirectoryBuilderInterfaceProxy(InterfaceProxy):
         self.add_global('DIRECTORY', self.directory_builder_)
         self.add_global('IGNORE_ENTRIES', getattr(self, 'IGNORE_ENTRIES'))
         self.add_global('IGNORE_FILE', getattr(self, 'IGNORE_FILE'))
+        self.add_global('FIND_ENTRY', getattr(self, 'FIND_ENTRY'))
+        self.add_global('ENTRIES', getattr(self, 'ENTRIES'))
         self.add_global('EXTRA_DIST', getattr(self, 'EXTRA_DIST'))
         self.add_global('MAKEFILE_AM', getattr(self, 'MAKEFILE_AM'))
+        self.add_global('BUILDER', getattr(self, 'BUILDER'))
         self.add_global('FILE_PROPERTIES', getattr(self, 'FILE_PROPERTIES'))
         self.add_global('FILE_PROPERTY', getattr(self, 'FILE_PROPERTY'))
         pass
@@ -44,11 +48,25 @@ class DirectoryBuilderInterfaceProxy(InterfaceProxy):
             raise Error('IGNORE_FILE() expects a string')
         self.directory_builder_.add_ignored_entries([name])
         pass
+    def FIND_ENTRY(self, name):
+        for ename, entry in self.directory_builder_.entries():
+            if ename == name:
+                return entry
+            pass
+        return None
+    def ENTRIES(self):
+        return self.directory_builder_.entries()
     def EXTRA_DIST(self, filename):
         self.directory_builder_.makefile_am().add_extra_dist(filename)
         pass
     def MAKEFILE_AM(self, line):
         self.directory_builder_.makefile_am().add_line(line)
+        pass
+
+    def BUILDER(self, builder):
+        if not isinstance(builder, Builder):
+            raise Error('BUILDER(): parameter must be a Builder')
+        self.directory_builder_.add_builder(builder)
         pass
 
     def FILE_PROPERTIES(self, filename, properties):

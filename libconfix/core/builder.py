@@ -162,6 +162,10 @@ class BuilderInterfaceProxy(InterfaceProxy):
 
         self.builder_ = builder
         
+        # the most basic ones
+        self.add_global('PARENTBUILDER', getattr(self, 'PARENTBUILDER'))
+        self.add_global('PACKAGE', getattr(self, 'PACKAGE'))
+
         # PROVIDE, PROVIDE_SYMBOL, and associated flag values
         self.add_global('URGENCY_IGNORE', Require.URGENCY_IGNORE)
         self.add_global('URGENCY_WARN', Require.URGENCY_WARN)
@@ -197,6 +201,11 @@ class BuilderInterfaceProxy(InterfaceProxy):
         self.add_global('ACINCLUDE_M4', getattr(self, 'ACINCLUDE_M4'))        
         
         pass
+
+    def PARENTBUILDER(self):
+        return self.builder_.parentbuilder()
+    def PACKAGE(self):
+        return self.builder_.package()
 
     def PROVIDE(self, provide):
         if not isinstance(provide, Provide):

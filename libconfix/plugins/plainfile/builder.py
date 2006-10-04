@@ -19,6 +19,8 @@
 import types
 
 from libconfix.core.filebuilder import FileBuilder
+from libconfix.core.utils.error import Error
+from libconfix.core.utils import helper
 
 class PlainFileBuilder(FileBuilder):
     def __init__(self,
@@ -29,14 +31,25 @@ class PlainFileBuilder(FileBuilder):
                  prefixdir=None):
         assert (datadir is not None and prefixdir is None) or \
                (datadir is None and prefixdir is not None)
-        assert datadir is None or type(datadir) in (types.ListType, types.TupleType)
-        assert prefixdir is None or type(prefixdir) in (types.ListType, types.TupleType)
         FileBuilder.__init__(self,
                              file=file,
                              parentbuilder=parentbuilder,
                              package=package)
-        self.datadir_ = datadir
-        self.prefixdir_ = prefixdir
+        self.datadir_ = None
+        self.prefixdir_ = None
+        
+        if datadir is not None:        
+            try:
+                self.datadir_ = helper.make_path(datadir)
+            except Error, e:
+                raise Error('PlainFileBuilder: datadir conversion', [e])
+            pass
+        if prefixdir is not None:
+            try:
+                self.prefixdir_ = helper.make_path(prefixdir)
+            except Error, e:
+                raise Error('PlainFileBuilder: prefixdir conversion', [e])
+            pass
         pass
 
     def datadir(self):

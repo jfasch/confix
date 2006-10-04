@@ -18,78 +18,79 @@
 
 import unittest
 
-from libconfix.plugins.c.setup import CSetup
-
 from libconfix.core.filesys.filesys import FileSystem
 from libconfix.core.filesys.file import File
 from libconfix.core.utils import const
 from libconfix.core.local_package import LocalPackage
+
 from libconfix.testutils import find
 
-class MiscellaneousSuite(unittest.TestSuite):
+from libconfix.plugins.idl.setup import IDLSetup
+
+class BasicIDLSuiteInMemory(unittest.TestSuite):
     def __init__(self):
         unittest.TestSuite.__init__(self)
-        self.addTest(IgnoredEntriesTest('test'))
+        self.addTest(BasicIDLTest('test'))
         self.addTest(NoInternalRequiresTest('test'))
         pass
     pass
 
-class IgnoredEntriesTest(unittest.TestCase):
-
-    # a regression I had one day. turned out that IGNORE_FILE() passed
-    # a string to DirectoryBuilder's add_ignored_entries() which
-    # expects a list.
-    
+class BasicIDLTest(unittest.TestCase):
     def test(self):
-        fs = FileSystem(path=[])
+        fs = FileSystem(path=['don\'t', 'care'])
         fs.rootdirectory().add(
             name=const.CONFIX2_PKG,
-            entry=File(lines=["PACKAGE_NAME('IgnoredEntriesTest')",
+            entry=File(lines=["PACKAGE_NAME('BasicIDLTest')",
                               "PACKAGE_VERSION('1.2.3')"]))
         fs.rootdirectory().add(
             name=const.CONFIX2_DIR,
-            entry=File(lines=["IGNORE_FILE('x.cc')"]))
-        fs.rootdirectory().add(
-            name='x.cc',
             entry=File())
 
-        package = LocalPackage(rootdirectory=fs.rootdirectory(),
-                               setups=[CSetup(use_libtool=False, short_libnames=False)])
-        package.boil(external_nodes=[])
+        fs.rootdirectory().add(
+            name='file.idl',
+            entry=File(lines=["module A {",
+                              "  module B {",
+                              "    // ...",
+                              "  }; // /module",
+                              "}; // /module"]))
 
-        self.failIf(find.find_entrybuilder(rootbuilder=package.rootbuilder(), path=['x.cc']) is not None)
+        package = LocalPackage(rootdirectory=fs.rootdirectory(),
+                               setups=[IDLSetup()])
+        package.boil(external_nodes=[])
+        idl_builder = find.find_entrybuilder(rootbuilder=package.rootbuilder(),
+                                             path=['file.idl'])
+        self.failIf(idl_builder is None)
+        self.failUnless(idl_builder.install_path() == ['A', 'B'])
         pass
     pass
 
 class NoInternalRequiresTest(unittest.TestCase):
-
-    # a node must eliminate require objects that can be resolved
-    # internally, before it gets to dependency calculation.
-    
     def test(self):
-        fs = FileSystem(path=[])
+        fs = FileSystem(path=['don\'t', 'care'])
         fs.rootdirectory().add(
             name=const.CONFIX2_PKG,
-            entry=File(lines=["PACKAGE_NAME('NoInternalRequiresTest')",
+            entry=File(lines=["PACKAGE_NAME('BasicIDLTest')",
                               "PACKAGE_VERSION('1.2.3')"]))
         fs.rootdirectory().add(
             name=const.CONFIX2_DIR,
             entry=File())
+
         fs.rootdirectory().add(
-            name='file1.h',
-            entry=File(lines=["#include <file2.h>"]))
+            name='file1.idl',
+            entry=File(lines=["#include <file2.idl>"]))
         fs.rootdirectory().add(
-            name='file2.h',
+            name='file2.idl',
             entry=File())
 
         package = LocalPackage(rootdirectory=fs.rootdirectory(),
-                               setups=[CSetup(use_libtool=False, short_libnames=False)])
+                               setups=[IDLSetup()])
         package.boil(external_nodes=[])
+        print str([str(r) for r in package.rootbuilder().requires()])
         self.failIf(len(package.rootbuilder().requires()) != 0)
         pass
     pass
-
+    
 if __name__ == '__main__':
-    unittest.TextTestRunner().run(MiscellaneousSuite())
+    unittest.TextTestRunner().run(BasicIDLSuiteInMemory())
     pass
 

@@ -16,28 +16,17 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 # USA
 
+import unittest
 
-from libconfix.core.repo.marshalling import Marshallable
+from basic import BasicIDLSuiteInMemory
 
-class Package(Marshallable):
-    def get_marshalling_data(self):
-        return {Marshallable.GENERATING_CLASS: Package,
-                Marshallable.VERSIONS: {'Package': 1},
-                Marshallable.ATTRIBUTES: {}}
-    def set_marshalling_data(self, data):
-        version = data[Marshallable.VERSIONS]['Package']
-        if version != 1:
-            raise MarshalledVersionUnknownError(
-                klass=self.__class__,
-                marshalled_version=version,
-                current_version=1)
-        pass
-    
+class IDLSuiteInMemory(unittest.TestSuite):
     def __init__(self):
+        unittest.TestSuite.__init__(self)
+        self.addTest(BasicIDLSuiteInMemory())
         pass
+    pass
 
-    def name(self): assert 0, 'abstract'
-    def version(self): assert 0, 'abstract'
-    def nodes(self): assert 0, 'abstract'
-    
+if __name__ == '__main__':
+    unittest.TextTestRunner().run(IDLSuiteInMemory())
     pass

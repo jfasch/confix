@@ -20,6 +20,7 @@ import os
 import types
 
 from libconfix.core.utils.error import Error
+from libconfix.core.utils import helper
 from libconfix.core.iface.proxy import InterfaceProxy
 from libconfix.core.filesys.file import File
 
@@ -40,20 +41,16 @@ class PLAINFILE_InterfaceProxy(InterfaceProxy):
             raise Error('PLAINFILE('+filename+'): specify either datadir or prefixdir')
         the_datadir = the_prefixdir = None
         if datadir is not None:
-            if type(datadir) is types.StringType:
-                the_datadir = os.path.split(datadir)
-            elif type(datadir) is types.ListType:
-                the_datadir = datadir
-            else:
-                raise Error('PLAINFILE('+filename+'): datadir must either be a string or list of path components')
+            try:
+                the_datadir = helper.make_path(datadir)
+            except Error, e:
+                raise Error('PLAINFILE('+filename+'): datadir', [e])
             pass
         if prefixdir is not None:
-            if type(prefixdir) is types.StringType:
-                the_prefixdir = os.path.split(prefixdir)
-            elif type(prefixdir) is types.ListType:
-                the_prefixdir = prefixdir
-            else:
-                raise Error('PLAINFILE('+filename+'): prefixdir must either be a string or list of path components')
+            try:
+                the_prefixdir = helper.make_path(prefixdir)
+            except Error, e:
+                raise Error('PLAINFILE('+filename+'): prefixdir', [e])
             pass
         
         file = self.object_.directory().find([filename])

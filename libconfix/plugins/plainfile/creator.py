@@ -40,9 +40,16 @@ class PlainFileCreator(Builder):
                 compiled_regex = re.compile(regex)
             except Exception, e:
                 raise Error('Error compiling regex "'+regex+'"', [e])
+
+            datadir = p.get('datadir')
+            prefixdir = p.get('prefixdir')
+            assert (datadir is None or prefixdir is None and \
+                    datadir is not None or prefixdir is not None), \
+                   'prefixdir: '+str(prefixdir) + ', datadir: '+str(datadir)
+            
             self.patterns_.append({'regex': compiled_regex,
-                                   'datadir': p.get('datadir'),
-                                   'prefixdir': p.get('prefixdir')})
+                                   'datadir': datadir,
+                                   'prefixdir': prefixdir})
             pass
         self.handled_entries_ = set()
         pass

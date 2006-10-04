@@ -220,3 +220,10 @@ def clone_value(v):
         return ret
 
     return v
+
+def make_path(str_or_list):
+    if isinstance(str_or_list, types.StringType):
+        return str_or_list.split(os.sep)
+    if isinstance(str_or_list, (list, tuple)):
+        return str_or_list
+    raise Error('Cannot make a path (list of strings) out of a '+str(str_or_list.__class__))
