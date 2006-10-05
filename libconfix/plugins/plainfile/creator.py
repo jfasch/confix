@@ -25,32 +25,24 @@ from libconfix.core.filesys.file import File
 from builder import PlainFileBuilder
 
 class PlainFileCreator(Builder):
-    def __init__(self, parentbuilder, package, patterns):
+    def __init__(self, parentbuilder, package, regex, prefixdir, datadir):
         Builder.__init__(
             self,
-            id=str(self.__class__)+'('+str(parentbuilder)+')',
+            id=str(self.__class__)+'('+regex+')'+'('+str(parentbuilder)+')',
             parentbuilder=parentbuilder,
             package=package)
         
-        self.patterns_ = []
-        for p in patterns:
-            regex = p.get('regex')
-            assert regex is not None
-            try:
-                compiled_regex = re.compile(regex)
-            except Exception, e:
-                raise Error('Error compiling regex "'+regex+'"', [e])
+        try:
+            self.compiled_regex_ = re.compile(regex)
+        except Exception, e:
+            raise Error('Error compiling regex "'+regex+'"', [e])
 
-            datadir = p.get('datadir')
-            prefixdir = p.get('prefixdir')
-            assert (datadir is None or prefixdir is None and \
-                    datadir is not None or prefixdir is not None), \
-                   'prefixdir: '+str(prefixdir) + ', datadir: '+str(datadir)
-            
-            self.patterns_.append({'regex': compiled_regex,
-                                   'datadir': datadir,
-                                   'prefixdir': prefixdir})
-            pass
+        self.datadir_ = datadir
+        self.prefixdir_ = prefixdir
+        assert (datadir is None or prefixdir is None and \
+                datadir is not None or prefixdir is not None), \
+                'prefixdir: '+str(prefixdir) + ', datadir: '+str(datadir)
+
         self.handled_entries_ = set()
         pass
 
@@ -61,16 +53,15 @@ class PlainFileCreator(Builder):
                 continue
             if name in self.handled_entries_:
                 continue
-            for p in self.patterns_:
-                if p.get('regex').search(name):
-                    self.parentbuilder().add_builder(
-                        PlainFileBuilder(file=entry,
-                                         parentbuilder=self.parentbuilder(),
-                                         package=self.package(),
-                                         datadir=p.get('datadir'),
-                                         prefixdir=p.get('prefixdir')))
-                    self.handled_entries_.add(name)
-                    break
-                pass
+            if self.compiled_regex_.search(name):
+                self.parentbuilder().add_builder(
+                    PlainFileBuilder(file=entry,
+                                     parentbuilder=self.parentbuilder(),
+                                     package=self.package(),
+                                     datadir=self.datadir_,
+                                     prefixdir=self.prefixdir_))
+                self.handled_entries_.add(name)
+                break
             pass
         pass
+    pass

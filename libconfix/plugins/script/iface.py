@@ -23,22 +23,22 @@ from libconfix.core.iface.proxy import InterfaceProxy
 
 from builder import ScriptBuilder
 
-class SCRIPT_InterfaceProxy(InterfaceProxy):
+class ADD_SCRIPT_InterfaceProxy(InterfaceProxy):
     def __init__(self, object):
         InterfaceProxy.__init__(self)
         self.object_ = object
-        self.add_global('SCRIPT', getattr(self, 'SCRIPT'))
+        self.add_global('ADD_SCRIPT', getattr(self, 'ADD_SCRIPT'))
         pass
 
-    def SCRIPT(self, filename):
+    def ADD_SCRIPT(self, filename):
         if type(filename) is not types.StringType:
-            raise Error('SCRIPT(): filename must be a string')
+            raise Error('ADD_SCRIPT(): filename must be a string')
 
         file = self.object_.directory().find([filename])
         if file is None:
-            raise Error('SCRIPT('+filename+'): no such file or directory')
+            raise Error('ADD_SCRIPT('+filename+'): no such file or directory')
         if not isinstance(file, File):
-            raise Error('SCRIPT('+filename+'): not a file')
+            raise Error('ADD_SCRIPT('+filename+'): not a file')
 
         self.object_.add_builder(
             ScriptBuilder(file=file,

@@ -44,22 +44,23 @@ class FileBuilderInterfaceProxy(InterfaceProxy):
 
         self.builder_ = builder
         
-        self.add_global('FILE_PROPERTIES', getattr(self, 'FILE_PROPERTIES'))
-        self.add_global('FILE_PROPERTY', getattr(self, 'FILE_PROPERTY'))
+        self.add_global('SET_FILE_PROPERTIES', getattr(self, 'SET_FILE_PROPERTIES'))
+        self.add_global('SET_FILE_PROPERTY', getattr(self, 'SET_FILE_PROPERTY'))
         pass
 
-    def FILE_PROPERTIES(self, properties):
+    def SET_FILE_PROPERTIES(self, properties):
         if properties is None:
-            raise Error("FILE_PROPERTIES(): 'properties' parameter cannot be None")
+            raise Error("SET_FILE_PROPERTIES(): 'properties' parameter cannot be None")
         if not type(properties) is types.DictionaryType:
-            raise Error("FILE_PROPERTIES(): 'properties' parameter must be a dictionary")
+            raise Error("SET_FILE_PROPERTIES(): 'properties' parameter must be a dictionary")
         for name, value in properties.iteritems():
             self.builder_.file().set_property(name=name, value=value)
             pass
         pass
 
-    def FILE_PROPERTY(self, name, value):
+    def SET_FILE_PROPERTY(self, name, value):
         if type(name) is not types.StringType:
-            raise Error("FILE_PROPERTY(): 'name' must be a string")
+            raise Error("SET_FILE_PROPERTY(): 'name' must be a string")
         self.builder_.file().set_property(name, value)
         pass
+    

@@ -18,12 +18,14 @@
 
 from libconfix.core.setup import Setup
 
-from iface import SCRIPT_InterfaceProxy
+from iface import ADD_SCRIPT_InterfaceProxy
 
 class ScriptSetup(Setup):
     def setup_directory(self, directory_builder):
         Setup.setup_directory(self, directory_builder)
-        directory_builder.configurator().add_method(
-            SCRIPT_InterfaceProxy(object=directory_builder))
+        if directory_builder.configurator() is not None:
+            directory_builder.configurator().add_method(
+                ADD_SCRIPT_InterfaceProxy(object=directory_builder))
+            pass
         pass
     pass

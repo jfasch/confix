@@ -26,38 +26,38 @@ from libconfix.core.filesys.file import File
 
 from builder import PlainFileBuilder
 
-class PLAINFILE_InterfaceProxy(InterfaceProxy):
+class ADD_PLAINFILE_InterfaceProxy(InterfaceProxy):
     def __init__(self, object):
         InterfaceProxy.__init__(self)
         self.object_ = object
-        self.add_global('PLAINFILE', getattr(self, 'PLAINFILE'))
+        self.add_global('ADD_PLAINFILE', getattr(self, 'ADD_PLAINFILE'))
         pass
 
-    def PLAINFILE(self, filename, datadir=None, prefixdir=None):
+    def ADD_PLAINFILE(self, filename, datadir=None, prefixdir=None):
         if type(filename) is not types.StringType:
-            raise Error('PLAINFILE(): filename must be a string')
+            raise Error('ADD_PLAINFILE(): filename must be a string')
         if (datadir is not None and prefixdir is not None) or \
            (datadir is None and prefixdir is None):
-            raise Error('PLAINFILE('+filename+'): specify either datadir or prefixdir')
+            raise Error('ADD_PLAINFILE('+filename+'): specify either datadir or prefixdir')
         the_datadir = the_prefixdir = None
         if datadir is not None:
             try:
                 the_datadir = helper.make_path(datadir)
             except Error, e:
-                raise Error('PLAINFILE('+filename+'): datadir', [e])
+                raise Error('ADD_PLAINFILE('+filename+'): datadir', [e])
             pass
         if prefixdir is not None:
             try:
                 the_prefixdir = helper.make_path(prefixdir)
             except Error, e:
-                raise Error('PLAINFILE('+filename+'): prefixdir', [e])
+                raise Error('ADD_PLAINFILE('+filename+'): prefixdir', [e])
             pass
         
         file = self.object_.directory().find([filename])
         if file is None:
-            raise Error('PLAINFILE('+filename+'): no such file or directory')
+            raise Error('ADD_PLAINFILE('+filename+'): no such file or directory')
         if not isinstance(file, File):
-            raise Error('PLAINFILE('+filename+'): not a file')
+            raise Error('ADD_PLAINFILE('+filename+'): not a file')
 
         self.object_.add_builder(
             PlainFileBuilder(file=file,

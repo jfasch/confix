@@ -85,7 +85,6 @@ class NoInternalRequiresTest(unittest.TestCase):
         package = LocalPackage(rootdirectory=fs.rootdirectory(),
                                setups=[IDLSetup()])
         package.boil(external_nodes=[])
-        print str([str(r) for r in package.rootbuilder().requires()])
         self.failIf(len(package.rootbuilder().requires()) != 0)
         pass
     pass

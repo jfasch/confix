@@ -289,6 +289,11 @@ class BuilderInterfaceProxy(InterfaceProxy):
     pass
 
 class BuilderSet(object):
+
+    """ A set-like datatype that contains Builder objects. Builder
+    comparison is not done by object identity, but rather by comparing
+    the return values of the respective Builders' id() method."""
+    
     def __init__(self):
         # dictionary: builder id->builder
         self.builders_ = {}
@@ -307,13 +312,9 @@ class BuilderSet(object):
         return self.builders_.values()
 
     def add(self, b):
-        assert not self.builders_.has_key(b.id()), str(b)
+        have = self.builders_.get(b.id())
+        assert not have, 'have: '+str(have)+', new: '+str(b)
         self.builders_[b.id()] = b
-        pass
-
-    def remove(self, b):
-        assert self.builders_.has_key(b.id()), str(b)
-        del self.builders_[b.id()]
         pass
 
     def is_equal(self, other):

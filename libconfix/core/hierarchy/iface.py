@@ -26,17 +26,25 @@ class DirectoryBuilderInterfaceProxy(InterfaceProxy):
     def __init__(self, directory_builder):
         InterfaceProxy.__init__(self)
         self.directory_builder_ = directory_builder
-        self.add_global('DIRECTORY', self.directory_builder_)
+        self.add_global('CURRENT_DIRECTORY', getattr(self, 'CURRENT_DIRECTORY'))
+        self.add_global('ADD_DIRECTORY', getattr(self, 'ADD_DIRECTORY'))
         self.add_global('IGNORE_ENTRIES', getattr(self, 'IGNORE_ENTRIES'))
         self.add_global('IGNORE_FILE', getattr(self, 'IGNORE_FILE'))
         self.add_global('FIND_ENTRY', getattr(self, 'FIND_ENTRY'))
-        self.add_global('ENTRIES', getattr(self, 'ENTRIES'))
-        self.add_global('EXTRA_DIST', getattr(self, 'EXTRA_DIST'))
+        self.add_global('GET_ENTRIES', getattr(self, 'GET_ENTRIES'))
+        self.add_global('ADD_EXTRA_DIST', getattr(self, 'ADD_EXTRA_DIST'))
         self.add_global('MAKEFILE_AM', getattr(self, 'MAKEFILE_AM'))
-        self.add_global('BUILDER', getattr(self, 'BUILDER'))
-        self.add_global('FILE_PROPERTIES', getattr(self, 'FILE_PROPERTIES'))
-        self.add_global('FILE_PROPERTY', getattr(self, 'FILE_PROPERTY'))
+        self.add_global('ADD_BUILDER', getattr(self, 'ADD_BUILDER'))
+        self.add_global('SET_FILE_PROPERTIES', getattr(self, 'SET_FILE_PROPERTIES'))
+        self.add_global('SET_FILE_PROPERTY', getattr(self, 'SET_FILE_PROPERTY'))
         pass
+
+    def CURRENT_DIRECTORY(self):
+        return self.directory_builder_.directory()
+    def ADD_DIRECTORY(self, name):
+        return self.directory_builder_.directory().add(
+            name=name,
+            entry=Directory())
     def IGNORE_ENTRIES(self, names):
         if type(names) not in [types.ListType, types.TupleType]:
             raise Error('IGNORE_ENTRIES() expects a list')
@@ -54,27 +62,27 @@ class DirectoryBuilderInterfaceProxy(InterfaceProxy):
                 return entry
             pass
         return None
-    def ENTRIES(self):
+    def GET_ENTRIES(self):
         return self.directory_builder_.entries()
-    def EXTRA_DIST(self, filename):
+    def ADD_EXTRA_DIST(self, filename):
         self.directory_builder_.makefile_am().add_extra_dist(filename)
         pass
     def MAKEFILE_AM(self, line):
         self.directory_builder_.makefile_am().add_line(line)
         pass
 
-    def BUILDER(self, builder):
+    def ADD_BUILDER(self, builder):
         if not isinstance(builder, Builder):
-            raise Error('BUILDER(): parameter must be a Builder')
+            raise Error('ADD_BUILDER(): parameter must be a Builder')
         self.directory_builder_.add_builder(builder)
         pass
 
-    def FILE_PROPERTIES(self, filename, properties):
+    def SET_FILE_PROPERTIES(self, filename, properties):
         if type(properties) is not types.DictionaryType:
-            raise Error('FILE_PROPERTIES(): properties parameter must be a dictionary')
+            raise Error('SET_FILE_PROPERTIES(): properties parameter must be a dictionary')
         file = self.directory_builder_.directory().find([filename])
         if file is None:
-            raise Error('FILE_PROPERTIES(): '
+            raise Error('SET_FILE_PROPERTIES(): '
                         'file "'+filename+'" not found in directory "'+\
                         os.sep.join(self.directory_builder_.directory().relpath())+'"')
         errors = []
@@ -86,19 +94,19 @@ class DirectoryBuilderInterfaceProxy(InterfaceProxy):
                 pass
             pass
         if len(errors):
-            raise Error('FILE_PROPERTIES('+filename+'): could not set properties', errors)
+            raise Error('SET_FILE_PROPERTIES('+filename+'): could not set properties', errors)
         pass
 
-    def FILE_PROPERTY(self, filename, name, value):
+    def SET_FILE_PROPERTY(self, filename, name, value):
         file = self.directory_builder_.directory().find([filename])
         if file is None:
-            raise Error('FILE_PROPERTY(): '
+            raise Error('SET_FILE_PROPERTY(): '
                         'file "'+filename+'" not found in directory "'+\
                         os.sep.join(self.directory_builder_.directory().relpath())+'"')
         try:
             file.set_property(name, value)
         except Error, e:
-            raise Error('FILE_PROPERTY('+filename+'): could not set property "'+name+'"', [e])
+            raise Error('SET_FILE_PROPERTY('+filename+'): could not set property "'+name+'"', [e])
         pass
         
     pass

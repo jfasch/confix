@@ -57,23 +57,26 @@ class CSetup(Setup):
             parentbuilder=directory_builder,
             package=directory_builder.package())
 
-        directory_builder.configurator().add_method(
-            CClustererInterfaceProxy(object=clusterer))
-        directory_builder.configurator().add_method(
-            InstallerInterfaceProxy(object=installer))
-        directory_builder.configurator().add_method(
-            EXTERNAL_LIBRARY_InterfaceProxy(object=directory_builder.configurator()))
-        directory_builder.configurator().add_method(
-            REQUIRE_H_InterfaceProxy(object=directory_builder.configurator()))
-        directory_builder.configurator().add_method(
-            PROVIDE_H_InterfaceProxy(object=directory_builder.configurator()))
-        directory_builder.configurator().add_method(
-            TESTS_ENVIRONMENT_InterfaceProxy(object=directory_builder.configurator()))
-
         directory_builder.add_builders([Creator(parentbuilder=directory_builder,
                                                 package=directory_builder.package()),
                                         clusterer,
                                         installer])
+
+        if directory_builder.configurator() is not None:
+            directory_builder.configurator().add_method(
+                CClustererInterfaceProxy(object=clusterer))
+            directory_builder.configurator().add_method(
+                InstallerInterfaceProxy(object=installer))
+            directory_builder.configurator().add_method(
+                EXTERNAL_LIBRARY_InterfaceProxy(object=directory_builder.configurator()))
+            directory_builder.configurator().add_method(
+                REQUIRE_H_InterfaceProxy(object=directory_builder.configurator()))
+            directory_builder.configurator().add_method(
+                PROVIDE_H_InterfaceProxy(object=directory_builder.configurator()))
+            directory_builder.configurator().add_method(
+                TESTS_ENVIRONMENT_InterfaceProxy(object=directory_builder.configurator()))
+            pass
+        
         pass
 
     pass    

@@ -18,28 +18,34 @@
 
 from libconfix.core.setup import Setup
 
-from iface import PLAINFILE_InterfaceProxy
+from iface import ADD_PLAINFILE_InterfaceProxy
 from creator import PlainFileCreator
 
 class PlainFileInterfaceSetup(Setup):
     def setup_directory(self, directory_builder):
         Setup.setup_directory(self, directory_builder)
-        directory_builder.configurator().add_method(
-            PLAINFILE_InterfaceProxy(object=directory_builder))
+        if directory_builder.configurator() is not None:
+            directory_builder.configurator().add_method(
+                ADD_PLAINFILE_InterfaceProxy(object=directory_builder))
+            pass
         pass
-    pass    
+    pass
 
 class PlainFileCreatorSetup(Setup):
-    def __init__(self, patterns):
+    def __init__(self, regex, prefixdir=None, datadir=None):
         Setup.__init__(self)
-        self.patterns_ = patterns
+        self.regex_ = regex
+        self.prefixdir_ = prefixdir
+        self.datadir_ = datadir
         pass
     def setup_directory(self, directory_builder):
         Setup.setup_directory(self, directory_builder)
         directory_builder.add_builder(
             PlainFileCreator(parentbuilder=directory_builder,
                              package=directory_builder.package(),
-                             patterns=self.patterns_))
+                             regex=self.regex_,
+                             prefixdir=self.prefixdir_,
+                             datadir=self.datadir_))
         pass
     pass
 

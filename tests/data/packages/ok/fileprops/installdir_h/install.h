@@ -1,3 +1,0 @@
-namespace nspace {
-
-}; // /namespace

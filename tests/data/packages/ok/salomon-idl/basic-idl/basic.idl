@@ -1,9 +1,0 @@
-#ifndef salomon_idl_basic_idl_basic_idl
-#define salomon_idl_basic_idl_basic_idl
-
-struct Basic {
-    string the_string;
-};
-
-
-#endif

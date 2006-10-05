@@ -28,7 +28,7 @@ from libconfix.core.hierarchy.setup import DirectorySetup
 from libconfix.core.automake import bootstrap, configure, make
 
 from libconfix.plugins.plainfile.builder import PlainFileBuilder
-from libconfix.plugins.plainfile.setup import PlainFileSetup
+from libconfix.plugins.plainfile.setup import PlainFileInterfaceSetup
 
 from package import make_package
 
@@ -55,7 +55,7 @@ class PlainFileBuildTest(PersistentTestCase):
             entry=Directory())
 
         package = LocalPackage(rootdirectory=source,
-                               setups=[DirectorySetup(), PlainFileSetup()])
+                               setups=[DirectorySetup(), PlainFileInterfaceSetup()])
         package.boil(external_nodes=[])
         package.output()
         fs.sync()

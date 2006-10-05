@@ -52,8 +52,8 @@ class BuilderInterface(unittest.TestCase):
             entry=File())
         file = fs.rootdirectory().add(
             name='file',
-            entry=File(lines=["FILE_PROPERTY(name='XXX', value=666)",
-                              "FILE_PROPERTIES({'YYY': 777})"]))
+            entry=File(lines=["SET_FILE_PROPERTY(name='XXX', value=666)",
+                              "SET_FILE_PROPERTIES({'YYY': 777})"]))
         package = LocalPackage(rootdirectory=fs.rootdirectory(), setups=[])
         builder = FileInterfaceTestBuilder(file=file,
                                            parentbuilder=None,
