@@ -212,7 +212,7 @@ class Namespace(unittest.TestCase):
                                entry=File(lines=["PACKAGE_NAME('xxx')",
                                                  "PACKAGE_VERSION('6.6.6')"]))
         fs.rootdirectory().add(name=const.CONFIX2_DIR,
-                               entry=File(lines=["FILE_PROPERTY(",
+                               entry=File(lines=["SET_FILE_PROPERTY(",
                                                  "    filename='file.h', ",
                                                  "    name='INSTALLPATH_CINCLUDE',",
                                                  "    value=['xxx'])"]))

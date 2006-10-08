@@ -64,12 +64,11 @@ class PlainFileCreatorTest(unittest.TestCase):
                               "PACKAGE_VERSION('1.2.3')",
 
                               "ADD_SETUP(PlainFileCreatorSetup(",
-                              "             patterns=[{'regex': '\.data$',",
-                              "                        'datadir': ['the', 'data', 'dir']",
-                              "                       },",
-                              "                       {'regex': '\.prefix$',",
-                              "                        'prefixdir': ['the', 'prefix', 'dir']",
-                              "                       }]))"]))
+                              "    regex=r'\.data$',",
+                              "    datadir=['the', 'data', 'dir']))",
+                              "ADD_SETUP(PlainFileCreatorSetup(",
+                              "    regex=r'\.prefix$',",
+                              "    prefixdir=['the', 'prefix', 'dir']))"]))
         fs.rootdirectory().add(
             name=const.CONFIX2_DIR,
             entry=File())

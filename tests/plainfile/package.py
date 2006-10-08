@@ -28,10 +28,10 @@ def make_package():
                           "PACKAGE_VERSION('1.2.3')"]))
     root.add(
         name=const.CONFIX2_DIR,
-        entry=File(lines=["PLAINFILE(filename='plainfile_data', ",
-                          "          datadir=['subdir', 'data'])", # list of path components
-                          "PLAINFILE(filename='plainfile_prefix',",
-                          "          prefixdir='subdir/prefix')", # string
+        entry=File(lines=["ADD_PLAINFILE(filename='plainfile_data', ",
+                          "              datadir=['subdir', 'data'])", # list of path components
+                          "ADD_PLAINFILE(filename='plainfile_prefix',",
+                          "              prefixdir='subdir/prefix')", # string
                           ]))
     root.add(
         name='plainfile_data',

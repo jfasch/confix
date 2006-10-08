@@ -26,6 +26,7 @@ class DirectoryBuilderInterfaceProxy(InterfaceProxy):
     def __init__(self, directory_builder):
         InterfaceProxy.__init__(self)
         self.directory_builder_ = directory_builder
+        self.add_global('CURRENT_BUILDER', getattr(self, 'CURRENT_BUILDER'))
         self.add_global('CURRENT_DIRECTORY', getattr(self, 'CURRENT_DIRECTORY'))
         self.add_global('ADD_DIRECTORY', getattr(self, 'ADD_DIRECTORY'))
         self.add_global('IGNORE_ENTRIES', getattr(self, 'IGNORE_ENTRIES'))
@@ -41,6 +42,8 @@ class DirectoryBuilderInterfaceProxy(InterfaceProxy):
 
     def CURRENT_DIRECTORY(self):
         return self.directory_builder_.directory()
+    def CURRENT_BUILDER(self):
+        return self.directory_builder_
     def ADD_DIRECTORY(self, name):
         return self.directory_builder_.directory().add(
             name=name,

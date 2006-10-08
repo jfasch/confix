@@ -28,7 +28,7 @@ def make_package():
                           "PACKAGE_VERSION('1.2.3')"]))
     root.add(
         name=const.CONFIX2_DIR,
-        entry=File(lines=["SCRIPT(filename='script')"]))
+        entry=File(lines=["ADD_SCRIPT(filename='script')"]))
     root.add(
         name='script',
         entry=File())

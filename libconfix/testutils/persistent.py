@@ -27,16 +27,18 @@ class PersistentTestCase(unittest.TestCase):
         pass
 
     def rootpath(self):
-        return self.my_rootpath_
+        return self.__my_rootpath
 
     def setUp(self):
-        self.my_rootpath_ = ['', 'tmp',
-                             'confix.'+str(os.getpid())+'.'+str(PersistentTestCase.sequential_number)+'.'+self.__class__.__name__]
+        self.__my_rootpath = ['', 'tmp',
+                              'confix.'+str(os.getpid())+'.'+ \
+                              str(PersistentTestCase.sequential_number)+'.'+ \
+                              self.__class__.__name__]
         PersistentTestCase.sequential_number += 1
         pass
     
     def tearDown(self):
-        dir = os.sep.join(self.my_rootpath_)
+        dir = os.sep.join(self.__my_rootpath)
         if os.path.isdir(dir):
             shutil.rmtree(dir)
             pass

@@ -41,13 +41,12 @@ class Require_Callable(Require_String):
         pass
 
     def __init__(self, exename, found_in, urgency):
-        
         Require_String.__init__(
             self,
-            id=exename,
             string=exename,
             found_in=found_in,
             urgency=urgency)
+        pass
 
-    def __repr__(self):
-        return self.__class__.__name__ + ':' + self.string()
+    def __str__(self):
+        return str(self.__class__)+':'+self.string()

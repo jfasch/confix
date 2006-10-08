@@ -29,13 +29,13 @@ def find_archive_root(argv0):
         pass
 
     # first the uninstalled case. (we know programs to be either in
-    # the tests subsidrectory or in the scripts subdirectory.)
+    # the tests subdirectory or in the scripts subdirectory.)
     idx = dir.find(os.path.join('confix', 'tests'))
     if idx == -1:
         idx = dir.find(os.path.join('confix', 'scripts'))
         pass
     if idx != -1:
-        retdir = os.path.join(dir[0:idx], 'confix', 'autoconf-archive')
+        retdir = os.path.join(dir[0:idx], 'confix', 'share', 'confix', 'autoconf-archive')
         if not os.path.isdir(retdir):
             raise Error('"'+retdir+'" is not a directory '
                         '(searching the autoconf macro archive the uninstalled way)')

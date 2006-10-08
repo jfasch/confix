@@ -29,6 +29,7 @@ class FileState:
     SYNC_INMEM = 1
     SYNC_CLEAR = 2
     DIRTY = 3
+    VIRTUAL = 4
     pass
 
 class File(DirectoryEntry):
@@ -45,18 +46,19 @@ class File(DirectoryEntry):
                 pass
             pass
         elif self.state_ == FileState.SYNC_INMEM:
-            assert self.lines_ is not None, 'SYNC_INMEM implies lines != None'
+            assert self.lines_ is not None, 'SYNC_INMEM implies lines not None'
             pass
         elif self.state_ == FileState.SYNC_CLEAR:
-            assert self.lines_ is None, 'SYNC_CLEAR implies line == None'
+            assert self.lines_ is None, 'SYNC_CLEAR implies line not None'
             pass
         elif self.state_ == FileState.DIRTY:
-            assert self.lines_ is not None, 'DIRTY implies lines != None'
+            assert self.lines_ is not None, 'DIRTY implies lines not None'
             pass
+        elif self.state_ == FileState.VIRTUAL:
+            assert self.lines_ is not None, 'VIRTUAL implies lines not None'
         else:
             assert 0
             pass
-            
         pass
 
     def state(self):
@@ -91,6 +93,9 @@ class File(DirectoryEntry):
             return
         if self.state_ == FileState.DIRTY:
             return
+        if self.state_ == FileState.VIRTUAL:
+            return
+        assert 0
         pass
 
     def add_line(self, line):
@@ -155,6 +160,9 @@ class File(DirectoryEntry):
                 self.state_ = FileState.SYNC_INMEM
                 pass
             return
+
+        if self.state_ == FileState.VIRTUAL:
+            return
         assert 0
         pass
 
@@ -188,6 +196,8 @@ class File(DirectoryEntry):
             self.state_ = FileState.SYNC_INMEM
             return
         if self.state_ == FileState.DIRTY:
+            return
+        if self.state_ == FileState.VIRTUAL:
             return
         assert 0
         pass

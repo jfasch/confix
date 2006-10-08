@@ -42,35 +42,41 @@ class Creator(Builder):
         for name, entry in self.parentbuilder().entries():
             if not isinstance(entry, File):
                 continue
-            if entry in self.handled_entries_:
+            if name in self.handled_entries_:
                 continue
-            root, ext = os.path.splitext(name)
-            builder = None
-            if ext in ['.h', '.hh', '.hpp']:
-                builder = HeaderBuilder(file=entry,
+            builder = do_create_builder(name=name,
+                                        entry=entry,
                                         parentbuilder=self.parentbuilder(),
                                         package=self.package())
-            elif ext in ['.c']:
-                builder = CBuilder(file=entry,
-                                   parentbuilder=self.parentbuilder(),
-                                   package=self.package())
-            elif ext in ['.cpp', '.cc', '.cxx']:
-                builder = CXXBuilder(file=entry,
-                                     parentbuilder=self.parentbuilder(),
-                                     package=self.package())
-            elif ext in ['.l', '.ll']:
-                builder = LexBuilder(file=entry,
-                                     parentbuilder=self.parentbuilder(),
-                                     package=self.package())
-            elif ext in ['.y', '.yy']:
-                builder = YaccBuilder(file=entry,
-                                      parentbuilder=self.parentbuilder(),
-                                      package=self.package())
-            else:
+            if builder is None:
                 continue
-            
-            self.handled_entries_.add(entry)
+            self.handled_entries_.add(name)
             self.parentbuilder().add_builder(builder)
             pass
         pass
     pass
+
+def do_create_builder(name, entry, parentbuilder, package):
+    root, ext = os.path.splitext(name)
+    if ext in ['.h', '.hh', '.hpp']:
+        return HeaderBuilder(file=entry,
+                             parentbuilder=parentbuilder,
+                             package=package)
+    if ext in ['.c']:
+        return CBuilder(file=entry,
+                        parentbuilder=parentbuilder,
+                        package=package)
+    if ext in ['.cpp', '.cc', '.cxx']:
+        return CXXBuilder(file=entry,
+                          parentbuilder=parentbuilder,
+                          package=package)
+    if ext in ['.l', '.ll']:
+        return LexBuilder(file=entry,
+                          parentbuilder=parentbuilder,
+                          package=package)
+    if ext in ['.y', '.yy']:
+        return YaccBuilder(file=entry,
+                           parentbuilder=parentbuilder,
+                           package=package)
+    return None
+        

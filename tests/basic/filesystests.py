@@ -22,6 +22,8 @@ from libconfix.core.filesys.file import File, FileState
 from libconfix.core.filesys.scan import scan_filesystem
 from libconfix.core.utils.error import Error
 
+from libconfix.testutils.persistent import PersistentTestCase
+
 import unittest, os, stat, shutil, sys
 
 class FileSystemTestSuite(unittest.TestSuite):
@@ -36,6 +38,7 @@ class FileSystemTestSuite(unittest.TestSuite):
         self.addTest(Sync('test_file_clear_on_sync_true'))
         self.addTest(Sync('test_file_truncate_persistent'))
         self.addTest(Sync_RootMoreThanOneDirectoryDeep('test'))
+        self.addTest(VirtualFile('test'))
         pass
     pass
 
@@ -199,26 +202,38 @@ class Sync(unittest.TestCase):
 
     pass
 
-class Sync_RootMoreThanOneDirectoryDeep(unittest.TestCase):
+class VirtualFile(PersistentTestCase):
+    def test(self):
+        fs = FileSystem(path=self.rootpath())
+        dir = fs.rootdirectory().add(
+            name='dir',
+            entry=Directory())
+        file = dir.add(
+            name='file',
+            entry=File(state=FileState.VIRTUAL,
+                       lines=['some token']))
+        file.add_line('some other token')
+        
+        fs.sync()
+
+        self.failIf(os.path.exists(os.sep.join(file.abspath())))
+        self.failUnless(file.state() == FileState.VIRTUAL)
+        self.failIf(file.lines_ is None)
+        self.failUnless(file.lines() == ['some token', 'some other token'])
+        pass
+    pass            
+
+class Sync_RootMoreThanOneDirectoryDeep(PersistentTestCase):
 
     # the above tests only test syncing an in-memory filesystem whose
     # root is only one directory apart from a physical directory. here
     # we test whether it work with two directory entries in the air as
     # well.
 
-    def setUp(self):
-        self.rootpath_ = ['', 'tmp', 'confix.FileSystem.'+str(self.__class__.__name__)+'.'+str(os.getpid())]
-        pass
-    def tearDown(self):
-        dir = os.sep.join(self.rootpath_)
-        if os.path.isdir(dir):
-            shutil.rmtree(dir)
-            pass
-        pass
     def test(self):
-        fs = FileSystem(path=self.rootpath_)
+        fs = FileSystem(path=self.rootpath())
         fs.sync()
-        self.failUnless(os.path.isdir(os.sep.join(self.rootpath_)))
+        self.failUnless(os.path.isdir(os.sep.join(self.rootpath())))
         pass
     pass
 
