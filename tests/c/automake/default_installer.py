@@ -20,19 +20,18 @@ from libconfix.core.filesys.filesys import FileSystem
 from libconfix.core.filesys.file import File
 from libconfix.core.local_package import LocalPackage
 from libconfix.core.utils import const
-from libconfix.plugins.c.setup import CSetup
-from libconfix.plugins.c.installer import Installer
+from libconfix.plugins.c.setup import DefaultCSetup
+from libconfix.plugins.c.default_installer import DefaultInstaller
 from libconfix.testutils import dirhier, makefileparser
 
 import unittest
 
-class HeaderInstallSuite(unittest.TestSuite):
+class DefaultInstallerSuite(unittest.TestSuite):
     def __init__(self):
         unittest.TestSuite.__init__(self)
         self.addTest(BasicHeaderInstallTest('test_zerodeep'))
         self.addTest(BasicHeaderInstallTest('test_onedeep'))
         self.addTest(BasicHeaderInstallTest('test_twodeep'))
-        self.addTest(BasicHeaderInstallTest('test_notinstalled'))
         pass
     pass
 
@@ -43,7 +42,7 @@ class BasicHeaderInstallTest(unittest.TestCase):
                                         entry=File())
         file_h.set_property(name='INSTALLPATH_CINCLUDE', value=[])
         package = LocalPackage(rootdirectory=fs.rootdirectory(),
-                               setups=[CSetup(short_libnames=False,
+                               setups=[DefaultCSetup(short_libnames=False,
                                               use_libtool=False)])
         package.boil(external_nodes=[])
         package.output()
@@ -96,7 +95,7 @@ class BasicHeaderInstallTest(unittest.TestCase):
                                         entry=File())
         file_h.set_property(name='INSTALLPATH_CINCLUDE', value=['xxx'])
         package = LocalPackage(rootdirectory=fs.rootdirectory(),
-                               setups=[CSetup(short_libnames=False,
+                               setups=[DefaultCSetup(short_libnames=False,
                                               use_libtool=False)])
         package.boil(external_nodes=[])
         package.output()
@@ -114,7 +113,7 @@ class BasicHeaderInstallTest(unittest.TestCase):
                                         entry=File())
         file_h.set_property(name='INSTALLPATH_CINCLUDE', value=['xxx/yyy'])
         package = LocalPackage(rootdirectory=fs.rootdirectory(),
-                               setups=[CSetup(short_libnames=False,
+                               setups=[DefaultCSetup(short_libnames=False,
                                               use_libtool=False)])
         package.boil(external_nodes=[])
         package.output()
@@ -129,5 +128,5 @@ class BasicHeaderInstallTest(unittest.TestCase):
     pass
 
 if __name__ == '__main__':
-    unittest.TextTestRunner().run(HeaderInstallSuite())
+    unittest.TextTestRunner().run(DefaultInstallerSuite())
     pass

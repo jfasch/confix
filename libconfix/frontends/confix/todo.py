@@ -28,7 +28,7 @@ from libconfix.core.digraph.cycle import CycleError
 from libconfix.core.automake import bootstrap, configure, make
 from libconfix.core.automake.repo_automake import AutomakePackageRepository
 
-from libconfix.plugins.c.setup import CSetup
+from libconfix.plugins.c.setup import DefaultCSetup
 
 from confix_setup import ConfixSetup
 
@@ -133,7 +133,7 @@ def BOIL():
             pass
         pass
 
-    debug.message("massaging package ...", CONFIG.verbosity())
+    debug.message("boiling package ...", CONFIG.verbosity())
     try:
         package.boil(external_nodes=external_nodes)
     except CycleError, e:

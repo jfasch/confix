@@ -27,7 +27,7 @@ from libconfix.core.hierarchy.setup import DirectorySetup
 
 from libconfix.testutils import find
 
-from libconfix.plugins.c.setup import CSetup
+from libconfix.plugins.c.setup import DefaultCSetup
 from libconfix.plugins.c.library import LibraryBuilder
 
 class Confix2_dir_Suite(unittest.TestSuite):
@@ -64,8 +64,8 @@ class ProvideRequireInclude(unittest.TestCase):
 
         package = LocalPackage(rootdirectory=fs.rootdirectory(),
                                setups=[DirectorySetup(),
-                                       CSetup(use_libtool=False,
-                                              short_libnames=False)])
+                                       DefaultCSetup(use_libtool=False,
+                                                     short_libnames=False)])
         package.boil(external_nodes=[])
 
         lo_builder = find.find_entrybuilder(rootbuilder=package.rootbuilder(),

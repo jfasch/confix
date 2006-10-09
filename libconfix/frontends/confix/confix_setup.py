@@ -19,7 +19,7 @@
 from libconfix.core.setup import Setup
 from libconfix.core.hierarchy.setup import DirectorySetup
 
-from libconfix.plugins.c.setup import CSetup
+from libconfix.plugins.c.setup import DefaultCSetup
 from libconfix.plugins.plainfile.setup import PlainFileInterfaceSetup
 from libconfix.plugins.script.setup import ScriptSetup
 from libconfix.plugins.idl.setup import IDLSetup
@@ -30,7 +30,7 @@ class ConfixSetup(Setup):
                  short_libnames):
         Setup.__init__(self)
         self.setups_ = [DirectorySetup(),
-                        CSetup(short_libnames=short_libnames, use_libtool=use_libtool),
+                        DefaultCSetup(short_libnames=short_libnames, use_libtool=use_libtool),
                         ScriptSetup(),
                         IDLSetup(),
                         PlainFileInterfaceSetup()]

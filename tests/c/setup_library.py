@@ -23,7 +23,7 @@ from libconfix.core.hierarchy.setup import DirectorySetup
 from libconfix.core.local_package import LocalPackage
 from libconfix.core.utils import const
 
-from libconfix.plugins.c.setup import CSetup
+from libconfix.plugins.c.setup import DefaultCSetup
 from libconfix.plugins.c.h import HeaderBuilder
 from libconfix.plugins.c.c import CBuilder
 from libconfix.plugins.c.library import LibraryBuilder
@@ -46,7 +46,7 @@ class LibrarySetupBasic(unittest.TestCase):
         fs.rootdirectory().add(name='file.c', entry=File(lines=[]))
 
         package = LocalPackage(rootdirectory=fs.rootdirectory(),
-                               setups=[CSetup(short_libnames=False, use_libtool=False)])
+                               setups=[DefaultCSetup(short_libnames=False, use_libtool=False)])
         package.boil(external_nodes=[])
 
         file_h_builder = None
@@ -91,7 +91,7 @@ class LibraryNames(unittest.TestCase):
         
         package = LocalPackage(rootdirectory=self.fs_.rootdirectory(),
                                setups=[DirectorySetup(),
-                                       CSetup(short_libnames=False,
+                                       DefaultCSetup(short_libnames=False,
                                               use_libtool=False)])
         package.boil(external_nodes=[])
 
@@ -111,7 +111,7 @@ class LibraryNames(unittest.TestCase):
         
         package = LocalPackage(rootdirectory=self.fs_.rootdirectory(),
                                setups=[DirectorySetup(),
-                                       CSetup(short_libnames=True,
+                                       DefaultCSetup(short_libnames=True,
                                               use_libtool=False)])
         package.boil(external_nodes=[])
 

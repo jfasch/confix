@@ -27,7 +27,7 @@ from libconfix.core.local_package import LocalPackage
 
 from libconfix.testutils import find
 
-from libconfix.plugins.c.setup import CSetup
+from libconfix.plugins.c.setup import DefaultCSetup
 from libconfix.plugins.c.library import LibraryBuilder
 from libconfix.plugins.c.executable import ExecutableBuilder
 from libconfix.plugins.c.cxx import CXXBuilder
@@ -72,8 +72,8 @@ class CXXSetupTest(unittest.TestCase):
         
         package = LocalPackage(rootdirectory=fs.rootdirectory(),
                                setups=[DirectorySetup(),
-                                       CSetup(use_libtool=False,
-                                              short_libnames=False)])
+                                       DefaultCSetup(use_libtool=False,
+                                                     short_libnames=False)])
         package.boil(external_nodes=[])
         package.output()
 

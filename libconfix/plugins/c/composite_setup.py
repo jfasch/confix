@@ -1,4 +1,5 @@
-# Copyright (C) 2005 Salomon Automation
+# Copyright (C) 2002-2006 Salomon Automation
+# Copyright (C) 2006 Joerg Faschingbauer
 
 # This library is free software; you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as
@@ -15,20 +16,20 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 # USA
 
-import toposort
-from digraph import Edge, DirectedGraph
+from libconfix.core.setup import Setup
 
-def reached_from(digraph, entrypoints):
+class CompositeSetup(Setup):
+    def __init__(self, setups):
+        Setup.__init__(self)
+        self.setups_ = setups
+        pass
 
-    unique_nodes = set()
+    def setup_directory(self, directory_builder):
+        super(CompositeSetup, self).setup_directory(directory_builder)
 
-    for e in entrypoints:
-        for n in toposort.toposort(digraph, [e]):
-            unique_nodes.add(n)
+        for s in self.setups_:
+            s.setup_directory(directory_builder)
+            pass
+        pass
 
-    edges = []
-    for tail in unique_nodes:
-        for head in digraph.successors(tail):
-            edges.append(Edge(tail=tail, head=head))
-
-    return DirectedGraph(nodes=[n for n in unique_nodes], edges=edges)
+    pass

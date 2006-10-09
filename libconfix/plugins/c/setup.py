@@ -18,65 +18,40 @@
 
 import types
 
-from libconfix.core.setup import Setup
+from composite_setup import CompositeSetup
+from creator import CreatorSetup
+from clusterer import CClustererSetup
+from default_installer import DefaultInstallerSetup
+from graph_installer import GraphInstallerSetup
+from iface import InterfaceSetup
 
-from creator import Creator
-from clusterer import CClusterer, CClustererInterfaceProxy
-from installer import Installer, InstallerInterfaceProxy
-from namefinder import LongNameFinder, ShortNameFinder
-from iface import \
-     EXTERNAL_LIBRARY_InterfaceProxy, \
-     REQUIRE_H_InterfaceProxy, \
-     PROVIDE_H_InterfaceProxy, \
-     TESTS_ENVIRONMENT_InterfaceProxy
-
-class CSetup(Setup):
+class DefaultCSetup(CompositeSetup):
     def __init__(self,
                  short_libnames,
                  use_libtool):
-        Setup.__init__(self)
-
-        if short_libnames == True:
-            self.namefinder_ = ShortNameFinder()
-        else:
-            self.namefinder_ = LongNameFinder()
-            pass
-        self.use_libtool_ = use_libtool
-
+        CompositeSetup.__init__(
+            self,
+            setups=[CClustererSetup(short_libnames=short_libnames, use_libtool=use_libtool),
+                    DefaultInstallerSetup(),
+                    CreatorSetup(),
+                    InterfaceSetup(),
+                    ])
         pass
+    
+    pass
 
-    def setup_directory(self, directory_builder):
-        Setup.setup_directory(self, directory_builder)
-        
-        clusterer = CClusterer(
-            parentbuilder=directory_builder,
-            package=directory_builder.package(),
-            namefinder=self.namefinder_,
-            use_libtool=self.use_libtool_)
-        installer = Installer(
-            parentbuilder=directory_builder,
-            package=directory_builder.package())
-
-        directory_builder.add_builders([Creator(parentbuilder=directory_builder,
-                                                package=directory_builder.package()),
-                                        clusterer,
-                                        installer])
-
-        if directory_builder.configurator() is not None:
-            directory_builder.configurator().add_method(
-                CClustererInterfaceProxy(object=clusterer))
-            directory_builder.configurator().add_method(
-                InstallerInterfaceProxy(object=installer))
-            directory_builder.configurator().add_method(
-                EXTERNAL_LIBRARY_InterfaceProxy(object=directory_builder.configurator()))
-            directory_builder.configurator().add_method(
-                REQUIRE_H_InterfaceProxy(object=directory_builder.configurator()))
-            directory_builder.configurator().add_method(
-                PROVIDE_H_InterfaceProxy(object=directory_builder.configurator()))
-            directory_builder.configurator().add_method(
-                TESTS_ENVIRONMENT_InterfaceProxy(object=directory_builder.configurator()))
-            pass
-        
+class GraphSetup(CompositeSetup):
+    def __init__(self,
+                 short_libnames,
+                 use_libtool):
+        CompositeSetup.__init__(
+            self,
+            setups=[CClustererSetup(short_libnames=short_libnames, use_libtool=use_libtool),
+                    GraphInstallerSetup(),
+                    CreatorSetup(),
+                    InterfaceSetup(),
+                    ])
         pass
+    
+    pass
 
-    pass    

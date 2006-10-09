@@ -36,7 +36,7 @@ class ProvideMap(Unmarshallable):
 
         self.string_indexes_ = {}
 
-        # list of tuples (provide-object, Node)
+        # list of tuples (provide-object, Node) (use is deprecated)
         
         self.rest_ = []
 

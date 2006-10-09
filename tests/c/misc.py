@@ -18,7 +18,7 @@
 
 import unittest
 
-from libconfix.plugins.c.setup import CSetup
+from libconfix.plugins.c.setup import DefaultCSetup
 
 from libconfix.core.filesys.filesys import FileSystem
 from libconfix.core.filesys.file import File
@@ -54,7 +54,7 @@ class IgnoredEntriesTest(unittest.TestCase):
             entry=File())
 
         package = LocalPackage(rootdirectory=fs.rootdirectory(),
-                               setups=[CSetup(use_libtool=False, short_libnames=False)])
+                               setups=[DefaultCSetup(use_libtool=False, short_libnames=False)])
         package.boil(external_nodes=[])
 
         self.failIf(find.find_entrybuilder(rootbuilder=package.rootbuilder(), path=['x.cc']) is not None)
@@ -83,7 +83,7 @@ class NoInternalRequiresTest(unittest.TestCase):
             entry=File())
 
         package = LocalPackage(rootdirectory=fs.rootdirectory(),
-                               setups=[CSetup(use_libtool=False, short_libnames=False)])
+                               setups=[DefaultCSetup(use_libtool=False, short_libnames=False)])
         package.boil(external_nodes=[])
         self.failIf(len(package.rootbuilder().requires()) != 0)
         pass

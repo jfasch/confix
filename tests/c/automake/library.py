@@ -23,7 +23,7 @@ from libconfix.core.filesys.file import File
 from libconfix.core.utils import const
 from libconfix.core.local_package import LocalPackage
 from libconfix.core.hierarchy.setup import DirectorySetup
-from libconfix.plugins.c.setup import CSetup
+from libconfix.plugins.c.setup import DefaultCSetup
 from libconfix.plugins.c.library import LibraryBuilder
 
 import unittest
@@ -59,7 +59,7 @@ class LibraryBase(unittest.TestCase):
         self.package_ = LocalPackage(
             rootdirectory=self.fs_.rootdirectory(),
             setups=[DirectorySetup(),
-                    CSetup(short_libnames=False, # there is already a test for it, elsewhere
+                    DefaultCSetup(short_libnames=False, # there is already a test for it, elsewhere
                            use_libtool=self.use_libtool())])
         self.package_.boil(external_nodes=[])
         self.package_.output()
@@ -169,7 +169,7 @@ class LIBADD(unittest.TestCase):
 
     def test_libtool(self):
         package = LocalPackage(rootdirectory=self.fs_.rootdirectory(),
-                               setups=[DirectorySetup(), CSetup(use_libtool=True, short_libnames=False)])
+                               setups=[DirectorySetup(), DefaultCSetup(use_libtool=True, short_libnames=False)])
         package.boil(external_nodes=[])
         package.output()
 
@@ -179,7 +179,7 @@ class LIBADD(unittest.TestCase):
 
     def test_no_libtool(self):
         package = LocalPackage(rootdirectory=self.fs_.rootdirectory(),
-                               setups=[DirectorySetup(), CSetup(use_libtool=False, short_libnames=False)])
+                               setups=[DirectorySetup(), DefaultCSetup(use_libtool=False, short_libnames=False)])
         package.boil(external_nodes=[])
         package.output()
 

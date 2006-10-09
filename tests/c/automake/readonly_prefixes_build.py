@@ -30,7 +30,7 @@ from libconfix.core.hierarchy.setup import DirectorySetup
 from libconfix.core.automake import bootstrap, configure, make
 from libconfix.core.automake.repo_automake import AutomakeCascadedPackageRepository
 
-from libconfix.plugins.c.setup import CSetup
+from libconfix.plugins.c.setup import DefaultCSetup
 
 class ReadonlyPrefixesBuildSuite(unittest.TestSuite):
     def __init__(self):
@@ -84,7 +84,7 @@ class ReadonlyPrefixesBuildBase(PersistentTestCase):
                               'void lo() {}']))
 
         lo_package = LocalPackage(rootdirectory=lo_fs.rootdirectory(),
-                                  setups=[CSetup(short_libnames=False,
+                                  setups=[DefaultCSetup(short_libnames=False,
                                                  use_libtool=self.use_libtool())])
         lo_package.boil(external_nodes=[])
         lo_package.output()
@@ -169,7 +169,7 @@ class ReadonlyPrefixesBuildBase(PersistentTestCase):
 
         hi_package = LocalPackage(rootdirectory=hi_fs.rootdirectory(),
                                   setups=[DirectorySetup(),
-                                          CSetup(short_libnames=False,
+                                          DefaultCSetup(short_libnames=False,
                                                  use_libtool=self.use_libtool())])
         hi_package.boil(external_nodes=repo.nodes())
         hi_package.output()

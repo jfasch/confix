@@ -24,7 +24,7 @@ from libconfix.core.filesys.directory import Directory
 from libconfix.core.utils import const
 from libconfix.core.local_package import LocalPackage
 
-from libconfix.plugins.c.setup import CSetup
+from libconfix.plugins.c.setup import DefaultCSetup
 from libconfix.plugins.c.library import LibraryBuilder
 
 class LibtoolVersionSuite(unittest.TestSuite):
@@ -48,7 +48,7 @@ class LibtoolVersionTest(unittest.TestCase):
             name='file.c',
             entry=File())
         package = LocalPackage(rootdirectory=fs.rootdirectory(),
-                               setups=[CSetup(short_libnames=False,
+                               setups=[DefaultCSetup(short_libnames=False,
                                               use_libtool=True)])
         package.boil(external_nodes=[])
 

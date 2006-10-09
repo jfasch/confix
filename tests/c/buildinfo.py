@@ -18,7 +18,7 @@
 
 import unittest
 
-from libconfix.plugins.c.setup import CSetup
+from libconfix.plugins.c.setup import DefaultCSetup
 
 from libconfix.core.filesys.filesys import FileSystem
 from libconfix.core.filesys.file import File
@@ -76,7 +76,7 @@ class BasicBuildInfoTest(unittest.TestCase):
 
         package = LocalPackage(rootdirectory=fs.rootdirectory(),
                                setups=[DirectorySetup(),
-                                       CSetup(use_libtool=False, short_libnames=False)])
+                                       DefaultCSetup(use_libtool=False, short_libnames=False)])
         package.boil(external_nodes=[])
         package.output()
 
@@ -179,7 +179,7 @@ class UniqueFlags_n_MacrosTest(unittest.TestCase):
 
         package = LocalPackage(rootdirectory=fs.rootdirectory(),
                                setups=[DirectorySetup(),
-                                       CSetup(use_libtool=False, short_libnames=False)])
+                                       DefaultCSetup(use_libtool=False, short_libnames=False)])
         package.boil(external_nodes=[])
 
         hi_file1_cc_builder = find.find_entrybuilder(rootbuilder=package.rootbuilder(),

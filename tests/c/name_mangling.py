@@ -25,7 +25,7 @@ from libconfix.core.utils import const
 from libconfix.core.local_package import LocalPackage
 from libconfix.core.hierarchy.setup import DirectorySetup
 
-from libconfix.plugins.c.setup import CSetup
+from libconfix.plugins.c.setup import DefaultCSetup
 from libconfix.plugins.c.library import LibraryBuilder
 from libconfix.plugins.c.executable import ExecutableBuilder
 
@@ -88,8 +88,8 @@ class NamesBase(unittest.TestCase):
 
         package = LocalPackage(rootdirectory=fs.rootdirectory(),
                                setups=[DirectorySetup(),
-                                       CSetup(use_libtool=self.use_libtool(),
-                                              short_libnames=self.short_libnames())])
+                                       DefaultCSetup(use_libtool=self.use_libtool(),
+                                                     short_libnames=self.short_libnames())])
         package.boil(external_nodes=[])
 
         libdir_builder = find.find_entrybuilder(rootbuilder=package.rootbuilder(),

@@ -20,12 +20,14 @@ import os
 import types
 
 from libconfix.core.builder import Builder
+from libconfix.core.setup import Setup
 from libconfix.core.iface.proxy import InterfaceProxy
 
 from base import CBaseBuilder
 from compiled import CompiledCBuilder
 from executable import ExecutableBuilder
 from library import LibraryBuilder
+from namefinder import ShortNameFinder, LongNameFinder
 import helper
 
 class CClusterer(Builder):
@@ -138,3 +140,31 @@ class CClustererInterfaceProxy(InterfaceProxy):
         pass
 
     pass
+
+class CClustererSetup(Setup):
+    def __init__(self, use_libtool, short_libnames):
+        Setup.__init__(self)
+        if short_libnames == True:
+            self.namefinder_ = ShortNameFinder()
+        else:
+            self.namefinder_ = LongNameFinder()
+            pass
+        self.use_libtool_ = use_libtool
+        pass
+        
+    def setup_directory(self, directory_builder):
+        super(CClustererSetup, self).setup_directory(directory_builder)
+        
+        clusterer = CClusterer(
+            parentbuilder=directory_builder,
+            package=directory_builder.package(),
+            namefinder=self.namefinder_,
+            use_libtool=self.use_libtool_)
+
+        if directory_builder.configurator() is not None:
+            directory_builder.configurator().add_method(
+                CClustererInterfaceProxy(object=clusterer))
+            pass
+
+        directory_builder.add_builder(clusterer)
+        pass

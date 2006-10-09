@@ -27,7 +27,8 @@ from setup_lexyacc import LexYaccSetupSuite
 from main_search import MainSearchSuite
 from name_mangling import NameManglingSuite
 from requires import RequireTestSuite
-from install_path import InstallPathSuite
+from default_installer import DefaultInstallerSuite
+from graph_installer import GraphInstallerSuite
 from relate import RelateSuite
 from buildinfo import BuildInfoSuite
 from confix2_dir import Confix2_dir_Suite
@@ -45,7 +46,8 @@ class CTestSuiteInMemory(unittest.TestSuite):
         self.addTest(MainSearchSuite())
         self.addTest(NameManglingSuite())
         self.addTest(RequireTestSuite())
-        self.addTest(InstallPathSuite())
+        self.addTest(DefaultInstallerSuite())
+        self.addTest(GraphInstallerSuite())
         self.addTest(RelateSuite())
         self.addTest(BuildInfoSuite())
         self.addTest(Confix2_dir_Suite())

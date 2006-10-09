@@ -19,6 +19,7 @@
 import os
 
 from libconfix.core.builder import Builder
+from libconfix.core.setup import Setup
 from libconfix.core.filesys.file import File
 
 from h import HeaderBuilder
@@ -79,4 +80,12 @@ def do_create_builder(name, entry, parentbuilder, package):
                            parentbuilder=parentbuilder,
                            package=package)
     return None
-        
+
+class CreatorSetup(Setup):
+    def setup_directory(self, directory_builder):
+        super(CreatorSetup, self).setup_directory(directory_builder)
+
+        directory_builder.add_builder(Creator(parentbuilder=directory_builder,
+                                              package=directory_builder.package()))
+        pass
+    pass

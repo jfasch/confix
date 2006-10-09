@@ -19,7 +19,7 @@
 from libconfix.core.filesys.file import File
 from libconfix.core.local_package import LocalPackage
 from libconfix.core.filebuilder import FileBuilder
-from libconfix.plugins.c.setup import CSetup
+from libconfix.plugins.c.setup import DefaultCSetup
 from libconfix.plugins.c.h import HeaderBuilder
 from libconfix.plugins.c.c import CBuilder
 from libconfix.plugins.c.executable import ExecutableBuilder
@@ -61,8 +61,8 @@ class ExecutableSetupTest(unittest.TestCase):
             entry=File(lines=['// CONFIX:EXENAME("main2")']))
         
         package = LocalPackage(rootdirectory=fs.rootdirectory(),
-                               setups=[CSetup(short_libnames=False,
-                                              use_libtool=False)])
+                               setups=[DefaultCSetup(short_libnames=False,
+                                                     use_libtool=False)])
         package.boil(external_nodes=[])
 
         file_h_builder = None

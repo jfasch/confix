@@ -30,7 +30,7 @@ from libconfix.core.utils.error import Error
 
 from libconfix.testutils.persistent import PersistentTestCase
 
-from libconfix.plugins.c.setup import CSetup
+from libconfix.plugins.c.setup import DefaultCSetup
 
 class InterPackageBuildSuite(unittest.TestSuite):
     def __init__(self):
@@ -83,7 +83,7 @@ class InterPackageBuildBase(PersistentTestCase):
         self.lo_fs_ = FileSystem(path=self.lo_sourcedir_, rootdirectory=lo_root)
 
         self.lo_package_ = LocalPackage(rootdirectory=self.lo_fs_.rootdirectory(),
-                                        setups=[CSetup(short_libnames=False,
+                                        setups=[DefaultCSetup(short_libnames=False,
                                                               use_libtool=self.use_libtool())])
         
         
@@ -129,7 +129,7 @@ class InterPackageBuildBase(PersistentTestCase):
         self.hi_fs_ = FileSystem(path=self.hi_sourcedir_, rootdirectory=hi_root)
         self.hi_package_ = LocalPackage(rootdirectory=self.hi_fs_.rootdirectory(),
                                         setups=[DirectorySetup(),
-                                                CSetup(short_libnames=False,
+                                                DefaultCSetup(short_libnames=False,
                                                        use_libtool=self.use_libtool())])
         
         pass
@@ -264,7 +264,7 @@ class InstalledIncludeDirTest(PersistentTestCase):
 
         # bootstrap ... install lo
         package = LocalPackage(rootdirectory=lo_source,
-                               setups=[CSetup(short_libnames=False,
+                               setups=[DefaultCSetup(short_libnames=False,
                                               use_libtool=False)])
         package.boil(external_nodes=[])
         package.output()
@@ -294,7 +294,7 @@ class InstalledIncludeDirTest(PersistentTestCase):
 
         
         package = LocalPackage(rootdirectory=hi_source,
-                               setups=[CSetup(short_libnames=False,
+                               setups=[DefaultCSetup(short_libnames=False,
                                               use_libtool=False)])
         package.boil(external_nodes=repo.nodes())
         package.output()

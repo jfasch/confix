@@ -19,7 +19,7 @@
 from c import CSuite
 from library import LibrarySuite
 from exe import ExecutableSuite
-from header_install import HeaderInstallSuite
+from default_installer import DefaultInstallerSuite
 from libtool_version import LibtoolVersionSuite
 from intra_package_inmem import IntraPackageInMemorySuite
 from check_inmem import CheckProgramInMemorySuite
@@ -34,7 +34,7 @@ class AutomakeCSuiteInMemory(unittest.TestSuite):
         self.addTest(LibrarySuite())
         self.addTest(LibtoolVersionSuite())
         self.addTest(ExecutableSuite())
-        self.addTest(HeaderInstallSuite())
+        self.addTest(DefaultInstallerSuite())
         self.addTest(IntraPackageInMemorySuite())
         self.addTest(CheckProgramInMemorySuite())
         self.addTest(ExternalLibraryInMemorySuite())

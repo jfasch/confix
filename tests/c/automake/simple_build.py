@@ -30,7 +30,7 @@ from libconfix.core.utils.error import Error
 
 from libconfix.testutils.persistent import PersistentTestCase
 
-from libconfix.plugins.c.setup import CSetup
+from libconfix.plugins.c.setup import DefaultCSetup
 
 class SimpleBuildSuite(unittest.TestSuite):
     def __init__(self):
@@ -69,7 +69,7 @@ class SimpleBuildBase(PersistentTestCase):
                                                            ]))
             
             self.package_ = LocalPackage(rootdirectory=self.fs_.rootdirectory(),
-                                         setups=[CSetup(short_libnames=False, use_libtool=self.use_libtool())])
+                                         setups=[DefaultCSetup(short_libnames=False, use_libtool=self.use_libtool())])
             self.package_.boil(external_nodes=[])
             self.package_.output()
             self.fs_.sync()

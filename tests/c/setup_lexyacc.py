@@ -23,7 +23,7 @@ from libconfix.core.filesys.file import File
 from libconfix.core.utils import const
 from libconfix.core.local_package import LocalPackage
 
-from libconfix.plugins.c.setup import CSetup
+from libconfix.plugins.c.setup import DefaultCSetup
 from libconfix.plugins.c.lex import LexBuilder
 from libconfix.plugins.c.yacc import YaccBuilder
 from libconfix.plugins.c.library import LibraryBuilder
@@ -59,7 +59,7 @@ class LexYaccSetupTest(unittest.TestCase):
             entry=File())
 
         package = LocalPackage(rootdirectory=fs.rootdirectory(),
-                               setups=[CSetup(use_libtool=False, short_libnames=False)])
+                               setups=[DefaultCSetup(use_libtool=False, short_libnames=False)])
         package.boil(external_nodes=[])
         package.output()
 

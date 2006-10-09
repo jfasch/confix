@@ -19,6 +19,7 @@
 import os, types
 
 from libconfix.core.builder import Builder
+from libconfix.core.setup import Setup
 from libconfix.core.iface.proxy import InterfaceProxy
 from libconfix.core.require import Require
 from libconfix.core.provide_string import Provide_String
@@ -136,5 +137,22 @@ class TESTS_ENVIRONMENT_InterfaceProxy(InterfaceProxy):
         if type(value) is not types.StringType:
             raise Error('TESTS_ENVIRONMENT(): value must be a string')
         self.object_.parentbuilder().makefile_am().add_tests_environment(name, value)
+        pass
+    pass
+
+class InterfaceSetup(Setup):
+    def setup_directory(self, directory_builder):
+        super(InterfaceSetup, self).setup_directory(directory_builder)
+
+        if directory_builder.configurator() is not None:
+            directory_builder.configurator().add_method(
+                EXTERNAL_LIBRARY_InterfaceProxy(object=directory_builder.configurator()))
+            directory_builder.configurator().add_method(
+                REQUIRE_H_InterfaceProxy(object=directory_builder.configurator()))
+            directory_builder.configurator().add_method(
+                PROVIDE_H_InterfaceProxy(object=directory_builder.configurator()))
+            directory_builder.configurator().add_method(
+                TESTS_ENVIRONMENT_InterfaceProxy(object=directory_builder.configurator()))
+            pass
         pass
     pass

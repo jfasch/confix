@@ -24,7 +24,7 @@ from libconfix.core.filesys.file import File
 from libconfix.core.filesys.filesys import FileSystem
 from libconfix.core.local_package import LocalPackage
 from libconfix.core.hierarchy.setup import DirectorySetup
-from libconfix.plugins.c.setup import CSetup
+from libconfix.plugins.c.setup import DefaultCSetup
 from libconfix.plugins.c.library import LibraryBuilder
 from libconfix.plugins.c.executable import ExecutableBuilder
 from libconfix.plugins.c.buildinfo import BuildInfo_CIncludePath_NativeLocal, BuildInfo_CLibrary_NativeLocal
@@ -52,7 +52,7 @@ class InternalRequires(unittest.TestCase):
         fs.rootdirectory().add(name='file.c',
                                entry=File(lines=['#include "file.h"']))
         package = LocalPackage(rootdirectory=fs.rootdirectory(),
-                               setups=[CSetup(short_libnames=False,
+                               setups=[DefaultCSetup(short_libnames=False,
                                               use_libtool=False)])
         package.boil(external_nodes=[])
         self.failUnlessEqual(len(package.rootbuilder().requires()), 0)
@@ -66,7 +66,7 @@ class RelateBasic(unittest.TestCase):
         
         self.package_ = LocalPackage(rootdirectory=fs.rootdirectory(),
                                      setups=[DirectorySetup(),
-                                             CSetup(short_libnames=False,
+                                             DefaultCSetup(short_libnames=False,
                                                     use_libtool=False)])
         self.package_.boil(external_nodes=[])
 
@@ -190,7 +190,7 @@ class RelateBasic(unittest.TestCase):
         # see if everyone who is involved in the game has the right
         # buildinfo.
 
-        for bi in find.find_installer(rootbuilder=self.lodir_builder_, path=[]).buildinfos():
+        for bi in find.find_default_installer(rootbuilder=self.lodir_builder_, path=[]).buildinfos():
             if isinstance(bi, BuildInfo_CIncludePath_NativeLocal):
                 break
             pass
@@ -214,7 +214,7 @@ class RelateBasic(unittest.TestCase):
             self.fail()
             pass
         
-        for bi in find.find_installer(rootbuilder=self.hi1dir_builder_, path=[]).buildinfos():
+        for bi in find.find_default_installer(rootbuilder=self.hi1dir_builder_, path=[]).buildinfos():
             if isinstance(bi, BuildInfo_CIncludePath_NativeLocal):
                 break
             pass
@@ -228,7 +228,7 @@ class RelateBasic(unittest.TestCase):
                 continue
             pass
 
-        for bi in find.find_installer(rootbuilder=self.hi2dir_builder_, path=[]).buildinfos():
+        for bi in find.find_default_installer(rootbuilder=self.hi2dir_builder_, path=[]).buildinfos():
             if isinstance(bi, BuildInfo_CIncludePath_NativeLocal):
                 break
             pass

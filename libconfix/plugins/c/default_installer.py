@@ -21,6 +21,7 @@ import types
 
 from libconfix.core.utils.error import Error
 from libconfix.core.builder import Builder
+from libconfix.core.setup import Setup
 from libconfix.core.automake import helper_automake
 from libconfix.core.automake.rule import Rule
 from libconfix.core.utils import const
@@ -30,7 +31,7 @@ from dependency import Provide_CInclude
 from h import HeaderBuilder
 import buildinfo
 
-class Installer(Builder):
+class DefaultInstaller(Builder):
 
     class InstallPathConflict(Error):
         def __init__(self, msg):
@@ -60,7 +61,7 @@ class Installer(Builder):
         return self.files_installed_as_[filename]
 
     def enlarge(self):
-        super(Installer, self).enlarge()
+        super(DefaultInstaller, self).enlarge()
         
         for b in self.parentbuilder().builders():
             if not isinstance(b, HeaderBuilder):
@@ -111,7 +112,7 @@ class Installer(Builder):
         pass
 
     def output(self):
-        Builder.output(self)
+        super(DefaultInstaller, self).output()
         for filename, instdir in self.files_installed_as_.iteritems():
             # fixme: is it right to not distinguish between public and
             # private?
@@ -142,7 +143,7 @@ class Installer(Builder):
             pass
 
         if len(defined_in) > 1:
-            raise Installer.InstallPathConflict(
+            raise DefaultInstaller.InstallPathConflict(
                 'Install path ambiguously defined: '+\
                 ','.join([msg+'('+'/'.join(loc)+')' for msg, loc in defined_in]))
         
@@ -157,7 +158,7 @@ class Installer(Builder):
 
     pass        
 
-class InstallerInterfaceProxy(InterfaceProxy):
+class DefaultInstallerInterfaceProxy(InterfaceProxy):
     def __init__(self, object):
         InterfaceProxy.__init__(self)
         self.object_ = object
@@ -171,5 +172,22 @@ class InstallerInterfaceProxy(InterfaceProxy):
         else:
             raise Error('INSTALLDIR_H(): dir argument must either be a string or a list of path components')
         self.object_.set_installdir(the_dir)
+        pass
+    pass
+
+class DefaultInstallerSetup(Setup):
+    def setup_directory(self, directory_builder):
+        super(DefaultInstallerSetup, self).setup_directory(directory_builder)
+
+        installer = DefaultInstaller(
+            parentbuilder=directory_builder,
+            package=directory_builder.package())
+
+        directory_builder.add_builder(installer)
+        
+        if directory_builder.configurator() is not None:
+            directory_builder.configurator().add_method(
+                DefaultInstallerInterfaceProxy(object=installer))
+            pass
         pass
     pass

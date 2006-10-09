@@ -92,8 +92,10 @@ class LocalPackage(Package):
         except Error, e:
             raise Error('Cannot initialize package in '+'/'.join(rootdirectory.abspath()), [e])
 
-        # setup the rootbuilder
-        for setup in setups:
+        # setup the rootbuilder. be careful to use self.setups_
+        # instead of the __init__ parameter setups -- the config file
+        # may have changed it under the hood.
+        for setup in self.setups_:
             setup.setup_directory(directory_builder=self.rootbuilder_)
             pass
 
@@ -435,6 +437,7 @@ class PackageInterfaceProxy(InterfaceProxy):
         self.add_global('PACKAGE_NAME', getattr(self, 'PACKAGE_NAME'))
         self.add_global('PACKAGE_VERSION', getattr(self, 'PACKAGE_VERSION'))
         self.add_global('ADD_SETUP', getattr(self, 'ADD_SETUP'))
+        self.add_global('SETUPS', getattr(self, 'SETUPS'))
         
         pass
 
@@ -454,6 +457,16 @@ class PackageInterfaceProxy(InterfaceProxy):
         if not isinstance(setup, Setup):
             raise Error('ADD_SETUP(): argument must be a Setup object')
         self.package_.setups_.append(setup)
+        pass
+
+    def SETUPS(self, setups):
+        if type(setups) not in [types.ListType, types.TupleType]:
+            raise Error('SETUPS(): parameter must by a list')
+        for s in setups:
+            if not isinstance(s, Setup):
+                raise Error('SETUPS(): all list members must be Setup objects')
+            pass
+        self.package_.setups_ = setups
         pass
         
     pass

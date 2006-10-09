@@ -30,7 +30,7 @@ from libconfix.core.utils import const
 from libconfix.testutils import packages
 from libconfix.testutils.persistent import PersistentTestCase
 
-from libconfix.plugins.c.setup import CSetup
+from libconfix.plugins.c.setup import DefaultCSetup
 
 class IntraPackageBuildSuite(unittest.TestSuite):
     def __init__(self):
@@ -60,7 +60,7 @@ class IntraPackageBuildBase(PersistentTestCase):
         
         self.package_ = LocalPackage(rootdirectory=self.fs_.rootdirectory(),
                                      setups=[DirectorySetup(),
-                                             CSetup(short_libnames=False,
+                                             DefaultCSetup(short_libnames=False,
                                                     use_libtool=self.use_libtool())])
         self.package_.boil(external_nodes=[])
         self.package_.output()
@@ -161,7 +161,7 @@ class LocalIncludeDirTest(PersistentTestCase):
 
         package = LocalPackage(rootdirectory=source,
                                setups=[DirectorySetup(),
-                                       CSetup(use_libtool=False, short_libnames=False)])
+                                       DefaultCSetup(use_libtool=False, short_libnames=False)])
         package.boil(external_nodes=[])
         package.output()
 

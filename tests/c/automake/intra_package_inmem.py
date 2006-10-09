@@ -21,7 +21,7 @@ from libconfix.core.local_package import LocalPackage
 from libconfix.core.hierarchy.setup import DirectorySetup
 from libconfix.core.utils.error import Error
 
-from libconfix.plugins.c.setup import CSetup
+from libconfix.plugins.c.setup import DefaultCSetup
 from libconfix.testutils import packages, find
 
 import unittest, os, sys, shutil
@@ -41,7 +41,7 @@ class IntraPackageInMemoryTest(unittest.TestCase):
         
         self.package_ = LocalPackage(rootdirectory=self.fs_.rootdirectory(),
                                      setups=[DirectorySetup(),
-                                             CSetup(short_libnames=False,
+                                             DefaultCSetup(short_libnames=False,
                                                     use_libtool=False)])
         self.package_.boil(external_nodes=[])
         self.package_.output()
