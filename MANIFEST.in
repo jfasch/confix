@@ -2,7 +2,7 @@ recursive-include libconfix *.py
 include scripts/*.py
 include ChangeLog*
 
-recursive-include autoconf-archive *
+recursive-include share *
 
 recursive-include tests *
 

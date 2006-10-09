@@ -317,6 +317,11 @@ class BuilderSet(object):
         self.builders_[b.id()] = b
         pass
 
+    def remove(self, b):
+        assert self.builders_.has_key(b.id()), str(b)
+        del self.builders_[b.id()]
+        pass
+
     def is_equal(self, other):
         if len(self.builders_) != len(other.builders_):
             return False

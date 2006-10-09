@@ -38,6 +38,7 @@ class DefaultConfiguration(Configuration):
     def use_bulk_install(self): return False
     def use_kde_hack(self): return False
     def verbosity(self): return 0
+    def trace(self): return []
     def print_timings(self): return False
     def message_prefix(self): return None
     def advanced(self): return False

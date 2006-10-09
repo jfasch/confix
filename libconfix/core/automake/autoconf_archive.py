@@ -45,7 +45,7 @@ def find_archive_root(argv0):
     # it ought to work as long as people don't go around messing with
     # the relative locations of installation dirs.
 
-    if os.path.dirname(dir).endswith('bin'):
+    if dir.endswith('bin'):
         prefixdir = os.path.dirname(dir)
         retdir = os.path.join(prefixdir, 'share', 'confix', 'autoconf-archive')
         if not os.path.isdir(retdir):

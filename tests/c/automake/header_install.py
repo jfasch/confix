@@ -32,6 +32,7 @@ class HeaderInstallSuite(unittest.TestSuite):
         self.addTest(BasicHeaderInstallTest('test_zerodeep'))
         self.addTest(BasicHeaderInstallTest('test_onedeep'))
         self.addTest(BasicHeaderInstallTest('test_twodeep'))
+        self.addTest(BasicHeaderInstallTest('test_notinstalled'))
         pass
     pass
 
@@ -124,6 +125,7 @@ class BasicHeaderInstallTest(unittest.TestCase):
         self.failIf(directory_definition.files('HEADERS') is None)
         self.failUnless(directory_definition.files('HEADERS') == ['file.h'])
         pass
+        
     pass
 
 if __name__ == '__main__':

@@ -35,6 +35,7 @@ class CommandlineConfiguration(Configuration):
                  use_kde_hack,
                  print_timings,
                  verbosity,
+                 trace,
                  message_prefix,
                  advanced,
                  make_args
@@ -54,6 +55,7 @@ class CommandlineConfiguration(Configuration):
         self.use_kde_hack_ = use_kde_hack
         self.print_timings_ = print_timings
         self.verbosity_ = verbosity
+        self.trace_ = trace
         self.message_prefix_ = message_prefix
         self.advanced_ = advanced
         self.make_args_ = make_args
@@ -79,6 +81,7 @@ class CommandlineConfiguration(Configuration):
     def use_kde_hack(self): return self.use_kde_hack_
     def print_timings(self): return self.print_timings_
     def verbosity(self): return self.verbosity_
+    def trace(self): return self.trace_
     def message_prefix(self): return self.message_prefix_
     def advanced(self): return self.advanced_
 

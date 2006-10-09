@@ -55,6 +55,8 @@ def PACKAGE():
 
     if DONE_PACKAGE: return 0
 
+    SETTINGS()
+
     debug.message("scanning package in %s ..." % CONFIG.packageroot(),
                   CONFIG.verbosity())
 
@@ -77,6 +79,8 @@ def READ_REPO():
     global ARGS
 
     if DONE_READREPO: return 0
+
+    SETTINGS()
 
     # collect list of repositories to use
 
@@ -118,6 +122,7 @@ def BOIL():
 
     if PACKAGE(): return -1
     if READ_REPO(): return -1
+    SETTINGS()
 
     # as input for the dependency graph calculation, extract all nodes
     # from our package repository.
@@ -146,6 +151,7 @@ def DUMPGRAPH():
     global repository
     if BOIL(): return -1
     if READ_REPO(): return -1
+    SETTINGS()
 
     repo = CompositePackageRepository()
     repo.add_repo(LocalPackageRepository(package.install()))
@@ -166,6 +172,7 @@ def BOOTSTRAP():
 
     if DONE_BOOTSTRAP: return 0
 
+    SETTINGS()
     if OUTPUT(): return -1
 
     debug.message('bootstrapping in '+CONFIG.packageroot()+' ...')
@@ -186,6 +193,7 @@ def OUTPUT():
     if DONE_OUTPUT: return 0
 
     if BOIL(): return -1
+    SETTINGS()
 
     debug.message("generating output ...", CONFIG.verbosity())
     package.output()
@@ -202,6 +210,7 @@ def BUILDDIR():
     if ARGS.has_key(const.ARG_BUILDDIR): return 0
 
     if PACKAGE(): return -1
+    SETTINGS()
 
     if not ARGS.has_key(const.ARG_BUILDROOT):
         raise Error("Cannot determine build directory because root of "
@@ -220,6 +229,8 @@ DONE_CONFIGURE = 0
 def CONFIGURE():
     global DONE_CONFIGURE
     if DONE_CONFIGURE: return 0
+
+    SETTINGS()
 
     cmdline = []
     env = {}
@@ -262,6 +273,8 @@ def MAKE():
     global DONE_MAKE
     if DONE_MAKE: return 0
 
+    SETTINGS()
+
     cmdline = []
     env = {}
     env.update(os.environ)
@@ -287,7 +300,16 @@ def MAKE():
     DONE_MAKE = 1
     return 0
 
+DONE_SETTINGS = 0
+def SETTINGS():
+    global DONE_SETTINGS
+    if DONE_SETTINGS: return 0
 
+    trace = CONFIG.trace()
+    if trace is not None:
+        debug.set_trace(trace)
+        pass
+    pass
 
 def deduce_builddir():
     builddir = CONFIG.builddir()

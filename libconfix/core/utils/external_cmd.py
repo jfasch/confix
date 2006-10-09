@@ -19,6 +19,7 @@
 import os, types
 
 from error import Error
+import debug
 
 def exec_program(program, dir, args=None, env=None, path=None):
     assert type(dir) in [types.ListType, types.TupleType]
@@ -46,6 +47,7 @@ def exec_program(program, dir, args=None, env=None, path=None):
     chdirbackto = os.getcwd()
     os.chdir(os.sep.join(dir))
     try:
+        debug.trace(['exec'], 'Calling program: '+str([the_program]+the_args))
         rv = os.spawnve(os.P_WAIT, the_program, [the_program] + the_args, the_env)
         if rv != 0:
             raise Error("spawnve("+the_program+") returned non-null ("+str(rv)+")")

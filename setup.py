@@ -40,7 +40,7 @@ def recdir(dir, suffix, result):
         pass
     return result
 
-datafiles = recdir('autoconf-archive', '.m4', [])
+datafiles = recdir('share', '.m4', [])
 
 # this should be imported from the current directory ...
 from libconfix.core.utils import const

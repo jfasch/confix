@@ -277,7 +277,6 @@ class InstallPriorities(unittest.TestCase):
         package = LocalPackage(rootdirectory=fs.rootdirectory(),
                                setups=[CSetup(use_libtool=False, short_libnames=False)])
         package.boil(external_nodes=[])
-        package.output()
 
         self.failUnlessEqual(find.find_installer(rootbuilder=package.rootbuilder(),
                                                  path=[]).

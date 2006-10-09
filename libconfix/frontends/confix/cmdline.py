@@ -127,6 +127,10 @@ def parse(args):
     if opts.make_args is not None:
         make_args = opts.make_args.split()
         pass
+    trace = None
+    if opts.trace is not None:
+        trace = opts.trace.split(',')
+        pass
 
     # collect parameters
     config = CommandlineConfiguration(
@@ -145,6 +149,7 @@ def parse(args):
         use_kde_hack=opts.use_kde_hack,
         print_timings=opts.print_timings,
         verbosity=opts.verbosity,
+        trace=trace,
         message_prefix=opts.message_prefix,
         advanced=opts.advanced,
         make_args=make_args,

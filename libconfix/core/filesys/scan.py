@@ -1,6 +1,5 @@
-# $Id: scan.py,v 1.2 2006/06/23 13:08:46 jfasch Exp $
-
 # Copyright (C) 2002-2006 Salomon Automation
+# Copyright (C) 2006 Joerg Faschingbauer
 
 # This library is free software; you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as
@@ -17,11 +16,13 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 # USA
 
+import sys, os
+
+from libconfix.core.utils.error import Error
+
 from filesys import FileSystem
 from directory import Directory, DirectoryState
 from file import File, FileState
-
-import sys, os
 
 def scan_filesystem(path):
     return FileSystem(path=path, rootdirectory=scan_dir(path))
