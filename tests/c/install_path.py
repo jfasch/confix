@@ -31,7 +31,7 @@ from libconfix.plugins.c.setup import CSetup
 from libconfix.plugins.c.installer import Installer
 import libconfix.plugins.c.namespace
 
-class InstallPathSuite(unittest.TestSuite):
+class DefaultInstallerSuite(unittest.TestSuite):
     def __init__(self):
         unittest.TestSuite.__init__(self)
         self.addTest(FilePropertyOnly('test'))
