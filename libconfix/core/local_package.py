@@ -158,9 +158,7 @@ class LocalPackage(Package):
                     b.configure()
                     pass
                 for b in builders:
-                    x = b.enlarge()
-                    assert b.base_enlarge_called(), b
-                    assert x is None, b # remove this once everything is working
+                    b.enlarge()
                     pass
 
                 # re-collect our builders, and see if anything has

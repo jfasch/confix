@@ -59,6 +59,9 @@ class GraphInstallerTest(unittest.TestCase):
         fs.rootdirectory().add(
             name='level2.h',
             entry=File())
+        fs.rootdirectory().add(
+            name='intern.h',
+            entry=File())
 
         package=LocalPackage(rootdirectory=fs.rootdirectory(),
                              # we set setups form inside the package
@@ -72,6 +75,7 @@ class GraphInstallerTest(unittest.TestCase):
         self.failUnlessEqual(installer.installpath_of_headerfile('level1a.h'), ['some', 'subdir'])
         self.failUnlessEqual(installer.installpath_of_headerfile('level1b.h'), ['some', 'subdir'])
         self.failUnlessEqual(installer.installpath_of_headerfile('level2.h'), ['some', 'subdir'])
+        self.failIfEqual(installer.installpath_of_headerfile('intern.h'), ['some', 'subdir'])
 
         pass
 
