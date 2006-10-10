@@ -21,6 +21,7 @@ import namespace
 
 from libconfix.core.iface.proxy import InterfaceProxy
 from libconfix.core.utils.error import Error
+from libconfix.core.utils import helper
 
 import os
 
@@ -69,6 +70,6 @@ class HeaderBuilderInterfaceProxy(InterfaceProxy):
         self.add_global('INSTALLPATH', getattr(self, 'INSTALLPATH'))
         pass
     def INSTALLPATH(self, path):
-        self.object_.set_iface_install_path(path)
+        self.object_.set_iface_install_path(helper.make_path(path))
         pass
     pass
