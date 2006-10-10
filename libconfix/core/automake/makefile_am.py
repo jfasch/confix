@@ -533,7 +533,7 @@ class CompoundListManager:
         try:
             compound_list.add(member)
         except Error, e:
-            raise Error('Cannot add member "'+member+'" to "'+compound_name+'_'+self.extension_+'"')
+            raise Error('Cannot add member "'+member+'" to "'+compound_name+'_'+self.extension_+'"', [e])
         pass
     def list(self, compound_name):
         canonic_name = helper_automake.automake_name(compound_name)

@@ -76,6 +76,9 @@ class Require_String(Require):
 
         return True
 
+    def is_equal(self, other):
+        return isinstance(other, self.__class__) and self.string_ == other.string_
+
     def string(self): return self.string_
 
     def found_in(self): return self.found_in_

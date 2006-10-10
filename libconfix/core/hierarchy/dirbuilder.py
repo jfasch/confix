@@ -189,6 +189,7 @@ class DirectoryBuilder(EntryBuilder, LocalNode):
 
         for b in self.node_managed_builders():
             builder_dependency_info = b.dependency_info()
+            assert builder_dependency_info is not None, str(b)
             assert b.base_dependency_info_called(), str(b)
 
             # we provide these anyway, so add them immediately

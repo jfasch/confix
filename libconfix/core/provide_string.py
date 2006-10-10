@@ -85,11 +85,7 @@ class Provide_String(Provide):
         return 1
 
     def update(self, other):
-        if not isinstance(other, self. __class__):
-            return False
-        if self.string_ != other.string_:
-            return False
-        return True
+        return isinstance(other, self. __class__) and self.string_ == other.string_
 
     def is_equal(self, other):
         if not isinstance(other, self.__class__):
