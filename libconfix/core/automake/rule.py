@@ -16,13 +16,14 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 # USA
 
+import types
+
 from element import MakefileElement
 import helper_automake
 
-import types
-
 class Rule(MakefileElement):
     def __init__(self, targets, prerequisites=[], commands=[]):
+        assert type(targets) is types.ListType
         assert len(targets)
         self.targets_ = targets[:]
         self.prerequisites_ = prerequisites[:]
@@ -55,7 +56,7 @@ class Rule(MakefileElement):
                 if type(c) is types.StringType:
                     commandlist.append('\t'+c)
                 elif (type(c) is types.ListType) or (type(c) is types.TupleType):
-                    commandlist.extend(['\t'+l for l in __format_word_list(c)])
+                    commandlist.extend(['\t'+l for l in helper_automake.format_word_list(c)])
                 else: assert 0
                 pass
             pass

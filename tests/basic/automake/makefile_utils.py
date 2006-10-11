@@ -31,6 +31,7 @@ class MakefileUtilsSuite(unittest.TestSuite):
         self.addTest(RuleTest('test_ok1'))
         self.addTest(RuleTest('test_ok2'))
         self.addTest(RuleTest('test_error'))
+        self.addTest(RuleTest('test_command_as_list'))
         pass
     pass
 
@@ -136,6 +137,15 @@ class RuleTest(unittest.TestCase):
                               makefileparser.parse_makefile,
                               lines=['xxx: yyy',
                                      'zzz'])
+        pass
+
+    def test_command_as_list(self):
+        rule = Rule(targets=['target'],
+                    commands=[['cmd1', 'cmd2'], ['cmd3']])
+        elements = makefileparser.parse_makefile(lines=rule.lines())
+        found_rule = makefileparser.find_rule(targets=['target'], elements=elements)
+        self.failIf(found_rule is None)
+        self.failUnlessEqual(found_rule.commands(), ['cmd1 cmd2', 'cmd3'])
         pass
 
     pass
