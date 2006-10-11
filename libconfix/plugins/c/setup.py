@@ -24,6 +24,7 @@ from clusterer import CClustererSetup
 from default_installer import DefaultInstallerSetup
 from graph_installer import GraphInstallerSetup
 from iface import InterfaceSetup
+from interix import InterixSetup
 
 class DefaultCSetup(CompositeSetup):
     def __init__(self,
@@ -35,6 +36,7 @@ class DefaultCSetup(CompositeSetup):
                     DefaultInstallerSetup(),
                     CreatorSetup(),
                     InterfaceSetup(),
+                    InterixSetup()
                     ])
         pass
     
@@ -50,6 +52,7 @@ class GraphSetup(CompositeSetup):
                     GraphInstallerSetup(),
                     CreatorSetup(),
                     InterfaceSetup(),
+                    InterixSetup()
                     ])
         pass
     
