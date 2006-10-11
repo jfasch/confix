@@ -325,8 +325,8 @@ class FileInstaller:
                 targetfile = '/'.join([targetdir, f])
                 makefile_am.add_element(
                     Rule(targets=[targetfile],
-                         prerequisites=[targetdir, f],
-                         commands=['cp -fp $(srcdir)/'+f+' '+targetdir,
+                         prerequisites=[f, targetdir],
+                         commands=['cp -fp $< '+targetdir,
                                    'chmod 0444 '+targetfile]))
                 makefile_am.add_element(
                     Rule(targets=[targetfile+'-clean'],
