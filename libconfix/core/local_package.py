@@ -27,7 +27,7 @@ from libconfix.core.automake.configure_ac import Configure_ac
 from libconfix.core.automake.acinclude_m4 import ACInclude_m4 
 from libconfix.core.digraph.digraph import DirectedGraph
 from libconfix.core.filesys.directory import Directory
-from libconfix.core.filesys.file import File
+from libconfix.core.filesys.file import File, FileState
 from libconfix.core.repo.package_file import PackageFile
 from libconfix.core.utils import const
 from libconfix.core.utils.error import Error
@@ -370,6 +370,8 @@ class LocalPackage(Package):
         goodfile = notsogoodfile = None
         for b in self.__collect_builders():
             if not isinstance(b, FileBuilder):
+                continue
+            if b.file().state() == FileState.VIRTUAL:
                 continue
             goodfile = None
             notsogoodfile = None
