@@ -73,8 +73,8 @@ class ProvideMap(Unmarshallable):
         # to the anti-performant section.
 
         if not isinstance(provide, Provide_String):
-            self.rest_.append((provide, node))
-            return
+            raise Error('Indexing of provide objects that are not derived '
+                        'from Provide_String is not supported anymore')
 
         # else, create an index for its type (if not yet available),
         # and add it there.

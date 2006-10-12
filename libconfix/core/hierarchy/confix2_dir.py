@@ -41,7 +41,7 @@ class Confix2_dir(FileBuilder):
 
     def enlarge(self):
         super(Confix2_dir, self).enlarge()
-        
+
         if self.executed_:
             return
         self.executed_ = True

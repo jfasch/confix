@@ -313,7 +313,8 @@ class BuilderSet(object):
 
     def add(self, b):
         have = self.builders_.get(b.id())
-        assert not have, 'have: '+str(have)+', new: '+str(b)
+        if have:
+            raise Error('Duplicate builder id "'+b.id()+'"; have: '+str(have)+', new: '+str(b))
         self.builders_[b.id()] = b
         pass
 
