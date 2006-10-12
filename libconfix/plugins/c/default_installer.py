@@ -24,7 +24,7 @@ from libconfix.core.builder import Builder
 from libconfix.core.setup import Setup
 from libconfix.core.automake import helper_automake
 from libconfix.core.automake.rule import Rule
-from libconfix.core.utils import const
+from libconfix.core.utils import const, helper
 from libconfix.core.iface.proxy import InterfaceProxy
 
 from dependency import Provide_CInclude
@@ -53,6 +53,7 @@ class DefaultInstaller(Builder):
         pass
 
     def set_installdir(self, dir):
+        assert type(dir) is list
         self.global_installdir_ = dir
         pass
 
@@ -165,12 +166,11 @@ class DefaultInstallerInterfaceProxy(InterfaceProxy):
         self.add_global('INSTALLDIR_H', getattr(self, 'INSTALLDIR_H'))
         pass
     def INSTALLDIR_H(self, dir):
-        if type(dir) is types.StringType:
-            the_dir = dir.split(os.sep)
-        elif type(dir) in (types.ListType, types.TupleType):
-            the_dir = dir
-        else:
-            raise Error('INSTALLDIR_H(): dir argument must either be a string or a list of path components')
+        try:
+            the_dir = helper.make_path(dir)
+        except Error, e:
+            raise Error('INSTALLDIR_H(): dir argument must either '
+                        'be a string or a list of path components', [e])
         self.object_.set_installdir(the_dir)
         pass
     pass

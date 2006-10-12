@@ -23,6 +23,7 @@ from libconfix.core.filesys.file import File
 from libconfix.core.filesys.filesys import FileSystem
 from libconfix.core.local_package import LocalPackage
 from libconfix.core.utils import const
+from libconfix.core.hierarchy.setup import DirectorySetup
 
 from libconfix.testutils import find
 
@@ -44,6 +45,7 @@ class DefaultInstallerSuite(unittest.TestSuite):
         self.addTest(Namespace('testAmbiguousNested'))
         self.addTest(Namespace('testDirectory'))
         self.addTest(InstallPriorities('test'))
+        self.addTest(INSTALLDIR_H_EmptyString('test'))
         pass
     pass
 
@@ -284,6 +286,48 @@ class InstallPriorities(unittest.TestCase):
                              ['install','from','dir','iface'])
         pass
     pass
+
+class INSTALLDIR_H_EmptyString(unittest.TestCase):
+
+    # this comes out of a regression I had one day. INSTALLDIR_H('')
+    # led to headerfiles being provided as '/file.h' rather than
+    # 'file.h'.
+    
+    def test(self):
+        fs = FileSystem(path=['don\'t', 'care'])
+        fs.rootdirectory().add(
+            name=const.CONFIX2_PKG,
+            entry=File(lines=["PACKAGE_NAME('HeaderInstallInterfaceTest')",
+                              "PACKAGE_VERSION('1.2.3')"]))
+        fs.rootdirectory().add(
+            name=const.CONFIX2_DIR,
+            entry=File())
+
+        lo = fs.rootdirectory().add(
+            name='lo',
+            entry=Directory())
+        lo.add(
+            name=const.CONFIX2_DIR,
+            entry=File(lines=["INSTALLDIR_H('')"]))
+        lo.add(
+            name='lo.h',
+            entry=File())
+        
+        hi = fs.rootdirectory().add(
+            name='hi',
+            entry=Directory())
+        hi.add(
+            name=const.CONFIX2_DIR,
+            entry=File(lines=[]))
+        hi.add(
+            name='hi.cc',
+            entry=File(lines=["//CONFIX:REQUIRE_H('lo.h', REQUIRED)"]))
+
+        package = LocalPackage(rootdirectory=fs.rootdirectory(),
+                               setups=[DirectorySetup(),
+                                       DefaultCSetup(use_libtool=False, short_libnames=False)])
+        package.boil(external_nodes=[])
+        
 
 if __name__ == '__main__':
     unittest.TextTestRunner().run(DefaultInstallerSuite())
