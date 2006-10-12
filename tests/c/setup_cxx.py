@@ -31,20 +31,22 @@ from libconfix.plugins.c.setup import DefaultCSetup
 from libconfix.plugins.c.library import LibraryBuilder
 from libconfix.plugins.c.executable import ExecutableBuilder
 from libconfix.plugins.c.cxx import CXXBuilder
+from libconfix.plugins.c.h import HeaderBuilder
 
 class CXXSetupSuite(unittest.TestSuite):
     def __init__(self):
         unittest.TestSuite.__init__(self)
-        self.addTest(CXXSetupTest('test'))
+        self.addTest(BasicCXXSetup('test'))
+        self.addTest(HeadersOnlyMakeNoLibrary('test'))
         pass
     pass
 
-class CXXSetupTest(unittest.TestCase):
+class BasicCXXSetup(unittest.TestCase):
     def test(self):
         fs = FileSystem(path=['', 'path', 'to', 'package'])
         fs.rootdirectory().add(
             name=const.CONFIX2_PKG,
-            entry=File(lines=["PACKAGE_NAME('test')",
+            entry=File(lines=["PACKAGE_NAME('BasicCXXSetup')",
                               "PACKAGE_VERSION('1.2.3')"]))
         fs.rootdirectory().add(
             name=const.CONFIX2_DIR,
@@ -55,6 +57,9 @@ class CXXSetupTest(unittest.TestCase):
             entry=Directory())
         lib.add(
             name=const.CONFIX2_DIR,
+            entry=File())
+        lib.add(
+            name='lib.h',
             entry=File())
         lib.add(
             name='lib.cc',
@@ -85,13 +90,18 @@ class CXXSetupTest(unittest.TestCase):
 
         for b in lib_dirbuilder.builders():
             if isinstance(b, LibraryBuilder):
+                found_lib_h = False
+                found_lib_cc = False
                 for member in b.members():
+                    if isinstance(member, HeaderBuilder) and member.file().name() == 'lib.h':
+                        found_lib_h = True
+                        continue
                     if isinstance(member, CXXBuilder) and member.file().name() == 'lib.cc':
-                        break
+                        found_lib_cc = True
+                        continue
                     pass
-                else:
-                    self.fail()
-                    pass
+                self.failUnless(found_lib_h)
+                self.failUnless(found_lib_cc)
                 break
             pass
         else:
@@ -106,6 +116,37 @@ class CXXSetupTest(unittest.TestCase):
             pass
         else:
             self.fail()
+            pass
+        pass
+    pass
+
+class HeadersOnlyMakeNoLibrary(unittest.TestCase):
+
+    # if a directory contains only header file and no real code,
+    # there's no need to build a library there.
+    
+    def test(self):
+        fs = FileSystem(path=['', 'path', 'to', 'package'])
+        fs.rootdirectory().add(
+            name=const.CONFIX2_PKG,
+            entry=File(lines=["PACKAGE_NAME('HeadersOnlyMakesNoLibrary')",
+                              "PACKAGE_VERSION('1.2.3')"]))
+        fs.rootdirectory().add(
+            name=const.CONFIX2_DIR,
+            entry=File())
+
+        fs.rootdirectory().add(
+            name='file.h',
+            entry=File())
+
+        package = LocalPackage(rootdirectory=fs.rootdirectory(),
+                               setups=[DefaultCSetup(use_libtool=False, short_libnames=False)])
+        package.boil(external_nodes=[])
+
+        for b in package.rootbuilder().builders():
+            if isinstance(b, LibraryBuilder):
+                self.fail()
+                pass
             pass
         pass
     pass

@@ -25,6 +25,7 @@ from libconfix.core.iface.proxy import InterfaceProxy
 
 from base import CBaseBuilder
 from compiled import CompiledCBuilder
+from h import HeaderBuilder
 from executable import ExecutableBuilder
 from library import LibraryBuilder
 from namefinder import ShortNameFinder, LongNameFinder
@@ -57,7 +58,19 @@ class CClusterer(Builder):
         for b in self.parentbuilder().builders().values()[:]:
             if not isinstance(b, CBaseBuilder):
                 continue
-            if isinstance(b, CompiledCBuilder) and (helper.has_main(b.file()) or b.exename() is not None):
+
+            # add headers to library if any
+            if isinstance(b, HeaderBuilder):
+                if self.library_ is not None:
+                    if b not in self.library_.members():
+                        self.library_.add_member(b)
+                        pass
+                    pass
+                continue
+
+            # main C file. wrap an ExecutableBuilder around
+            # it. liquidate a library in favor of the executable.
+            if helper.has_main(b.file()) or b.exename() is not None:
                 if self.executables_.has_key(b):
                     # already got that one.
                     continue
@@ -92,28 +105,28 @@ class CClusterer(Builder):
                         pass
                     self.library_ = None
                     pass
+                continue
+
+            # a compiled C builder
+            assert not (self.library_ and len(self.executables_))
+            if not self.library_ and len(self.executables_) == 0:
+                self.library_ = LibraryBuilder(
+                    parentbuilder=self.parentbuilder(),
+                    package=self.package(),
+                    basename=self.namefinder_.find_libname(packagename=self.package().name(),
+                                                           path=self.parentbuilder().directory().relpath(self.package().rootdirectory())),
+                    use_libtool=self.use_libtool_,
+                    libtool_version_info=self.libtool_version_info_)
+                self.parentbuilder().add_builder(self.library_)
                 pass
-            else:
-                assert not (self.library_ and len(self.executables_))
-                if not self.library_ and len(self.executables_) == 0:
-                    self.library_ = LibraryBuilder(
-                        parentbuilder=self.parentbuilder(),
-                        package=self.package(),
-                        basename=self.namefinder_.find_libname(packagename=self.package().name(),
-                                                               path=self.parentbuilder().directory().relpath(self.package().rootdirectory())),
-                        use_libtool=self.use_libtool_,
-                        libtool_version_info=self.libtool_version_info_)
-                    self.parentbuilder().add_builder(self.library_)
+            if self.library_ is not None:
+                if b not in self.library_.members():
+                    self.library_.add_member(b)
                     pass
-                if self.library_ is not None:
-                    if b not in self.library_.members():
-                        self.library_.add_member(b)
-                        pass
-                    pass
-                for e in self.executables_.values():
-                    if b not in e.members():
-                        e.add_member(b)
-                        pass
+                pass
+            for e in self.executables_.values():
+                if b not in e.members():
+                    e.add_member(b)
                     pass
                 pass
             pass
