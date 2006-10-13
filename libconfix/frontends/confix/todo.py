@@ -245,7 +245,10 @@ def CONFIGURE():
         env.update(configure_env)
         pass
 
-    builddir = deduce_builddir()
+    try:
+        builddir = deduce_builddir()
+    except Error, e:
+        raise Error('Cannot call configure: build directory unknown', [e])
     
     if CONFIG.advanced() and not os.path.exists(builddir):
         os.makedirs(builddir)
@@ -288,8 +291,11 @@ def MAKE():
         env.update(make_env)
         pass
 
-    builddir = deduce_builddir()
-
+    try:
+        builddir = deduce_builddir()
+    except Error, e:
+        raise Error('Cannot call make: build directory unknown', [e])
+    
     try:
         make.make(builddir=builddir.split(os.sep),
                   args=make_args,
