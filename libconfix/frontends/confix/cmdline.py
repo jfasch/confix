@@ -48,6 +48,9 @@ def parse(args):
     parser.add_option('--configdir',
                       metavar='DIRECTORY',
                       help='Directory that contains the configuration file \'config\'.')
+    parser.add_option('--configfile',
+                      metavar='FILE',
+                      help='The configuration file.')
     parser.add_option('--profile',
                       metavar='NAME',
                       help='NAME of the profile to take configuration from.')
@@ -135,6 +138,7 @@ def parse(args):
     # collect parameters
     config = CommandlineConfiguration(
         configdir=opts.configdir,
+        configfile=opts.configfile,
         profile=opts.profile,
         packageroot=opts.packageroot,
         packagename=opts.packagename,

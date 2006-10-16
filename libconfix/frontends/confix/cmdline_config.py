@@ -21,6 +21,7 @@ from config import Configuration
 class CommandlineConfiguration(Configuration):
     def __init__(self,
                  configdir,
+                 configfile,
                  profile,
                  packageroot,
                  packagename,
@@ -41,6 +42,7 @@ class CommandlineConfiguration(Configuration):
                  make_args
                  ):
         self.configdir_ = configdir
+        self.configfile_ = configfile
         self.profile_ = profile
         self.packageroot_ = packageroot
         self.packagename_ = packagename
@@ -64,6 +66,7 @@ class CommandlineConfiguration(Configuration):
     # things that we read in order for other to have entry points into
     # *their* configuration
     def configdir(self): return self.configdir_
+    def configfile(self): return self.configfile_
     def profile(self): return self.profile_
 
     # Configuration interface

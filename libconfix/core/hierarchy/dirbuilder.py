@@ -33,6 +33,9 @@ from libconfix.core.require_string import Require_String
 from libconfix.core.buildinfoset import BuildInformationSet
 from libconfix.core.digraph import toposort
 from libconfix.core.installed_node import InstalledNode
+from libconfix.core.pseudo_handwritten import PseudoHandWrittenFileManager
+from libconfix.core.utils import const
+from libconfix.core.utils.error import Error
 
 from iface import DirectoryBuilderInterfaceProxy
 
@@ -65,6 +68,8 @@ class DirectoryBuilder(EntryBuilder, LocalNode):
         # more or less so).
         self.__file_installer = FileInstaller()
 
+        self.__pseudo_handwritten_mgr = PseudoHandWrittenFileManager(directory)
+
         # initialize collected dependency information
         self.__init_dep_info()
 
@@ -96,7 +101,10 @@ class DirectoryBuilder(EntryBuilder, LocalNode):
         return self.__builders
 
     def add_builder(self, b):
-        self.__builders.add(b)
+        try:
+            self.__builders.add(b)
+        except Error, e:
+            raise Error('Cannot add builder "'+str(b), [e])
         pass
 
     def add_builders(self, builderlist):
@@ -130,7 +138,7 @@ class DirectoryBuilder(EntryBuilder, LocalNode):
         EntryBuilder.output(self)
         
         # 'make maintainer-clean' should remove the file we generate
-
+        
         self.__makefile_am.add_maintainercleanfiles('Makefile.am')
         self.__makefile_am.add_maintainercleanfiles('Makefile.in')
 
@@ -139,6 +147,11 @@ class DirectoryBuilder(EntryBuilder, LocalNode):
             b.output()
             assert b.base_output_called() == True, str(b)
             pass
+
+        # ... comment needed badly ...
+        prev_registry_file = self.__directory.get(const.PSEUDO_HANDWRITTEN_LIST_FILENAME)
+        # what to do here?
+        # ...
 
         # the file installer is a little helper that relieves our
         # builders from having to care of how files are installed. our
@@ -174,8 +187,8 @@ class DirectoryBuilder(EntryBuilder, LocalNode):
     # Node
 
     def recollect_dependency_info(self):
-        self.prev_provides_ = self.provides_
-        self.prev_requires_ = self.requires_
+        self.__prev_provides = self.__provides
+        self.__prev_requires = self.__requires
 
         self.__init_dep_info()
         
@@ -193,7 +206,7 @@ class DirectoryBuilder(EntryBuilder, LocalNode):
             assert b.base_dependency_info_called(), str(b)
 
             # we provide these anyway, so add them immediately
-            self.provides_.merge(builder_dependency_info.provides())
+            self.__provides.merge(builder_dependency_info.provides())
 
             # index all provides, to sort out the requires later on.
             for p in builder_dependency_info.provides():
@@ -211,13 +224,14 @@ class DirectoryBuilder(EntryBuilder, LocalNode):
         for r in requires:
             found_nodes = internal_provides.find_match(r)
             if len(found_nodes) == 0:
-                self.requires_.add(r)
+                self.__requires.add(r)
                 pass
             pass
         pass
 
     def node_dependency_info_changed(self):
-        return not (self.prev_provides_.is_equal(self.provides_) and self.prev_requires_.is_equal(self.requires_))
+        return not (self.__prev_provides.is_equal(self.__provides) and \
+                    self.__prev_requires.is_equal(self.__requires))
 
     def node_managed_builders(self):
         ret = set()
@@ -240,11 +254,11 @@ class DirectoryBuilder(EntryBuilder, LocalNode):
         pass
 
     def provides(self):
-        return self.provides_
+        return self.__provides
         pass
     
     def requires(self):
-        return self.requires_
+        return self.__requires
 
     def buildinfos(self):
         ret = BuildInformationSet()
@@ -259,13 +273,16 @@ class DirectoryBuilder(EntryBuilder, LocalNode):
     def install(self):
         return InstalledNode(
             name=self.__directory.relpath(self.package().rootdirectory()),
-            provides=[p for p in self.provides_],
-            requires=[r for r in self.requires_],
+            provides=[p for p in self.__provides],
+            requires=[r for r in self.__requires],
             buildinfos=[b.install() for b in self.buildinfos()])
 
+    def create_pseudo_handwritten_file(self, filename):
+        return self.__pseudo_handwritten_mgr.create_file(filename)
+
     def __init_dep_info(self):
-        self.provides_ = DependencySet(klass=Provide, string_klass=Provide_String)
-        self.requires_ = DependencySet(klass=Require, string_klass=Require_String)
+        self.__provides = DependencySet(klass=Provide, string_klass=Provide_String)
+        self.__requires = DependencySet(klass=Require, string_klass=Require_String)
         pass
     
     pass

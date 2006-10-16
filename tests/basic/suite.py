@@ -27,6 +27,7 @@ from iface import BuilderInterfaceTestSuite
 from resolve import ResolveTestSuite
 from relate import RelateTestSuite
 from package_file import PackageFileSuite
+from pseudo_handwritten import PseudoHandwrittenSuite
 from automake.suite import AutomakeSuite
 from config.suite import ConfigSuite
 from misc import MiscellaneousSuite
@@ -49,6 +50,7 @@ class BasicTestSuite(unittest.TestSuite):
         self.addTest(ResolveTestSuite())
         self.addTest(RelateTestSuite())
         self.addTest(PackageFileSuite())
+        self.addTest(PseudoHandwrittenSuite())
         self.addTest(AutomakeSuite())
         self.addTest(ConfigSuite())
         self.addTest(MiscellaneousSuite())

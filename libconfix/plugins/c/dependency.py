@@ -61,6 +61,7 @@ class Require_CInclude(Require_String):
 
     def filename(self):
         return self.string()
+    pass
 
 class Provide_CInclude(Provide_String):
     def get_marshalling_data(self):
