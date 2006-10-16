@@ -1,3 +1,12 @@
+2006-10-16 Joerg Faschingbauer <jfasch@salomon.at>
+
+	* plugins.c.clusterer: explicit LIBNAME()
+	* 2.0.0pre6
+
+2006-0{6,7,8,9,10}-* Joerg Faschingbauer <jfasch@salomon.at>
+
+	* ongoing rewrite ...
+
 2006-06-21 Joerg Faschingbauer <jfasch@salomon.at>
 
 	* merged from 1.5 (merge-release-1_5-2006-06-21 there):

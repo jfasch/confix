@@ -37,6 +37,7 @@ class CompositeConfigTest(unittest.TestCase):
         config = CompositeConfiguration()
         config.add(CommandlineConfiguration(
             configdir='not that interesting since not part of Configuration interface',
+            configfile=None,
             profile='not that interesting since not part of Configuration interface',
             packageroot='/package/root',
             packagename='packagename',

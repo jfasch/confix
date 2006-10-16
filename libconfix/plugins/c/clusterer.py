@@ -40,11 +40,16 @@ class CClusterer(Builder):
             package=package)
         self.namefinder_ = namefinder
         self.use_libtool_ = use_libtool
+        self.libname_ = None
         self.libtool_version_info_ = (0,0,0)
 
         self.library_ = None
         # ExecutableBuilder objects, indexed by their center builders
         self.executables_ = {}
+        pass
+
+    def set_libname(self, name):
+        self.libname_ = name
         pass
 
     def set_libtool_version_info(self, version_tuple):
@@ -110,11 +115,18 @@ class CClusterer(Builder):
             # a compiled C builder
             assert not (self.library_ and len(self.executables_))
             if not self.library_ and len(self.executables_) == 0:
+                if self.libname_ is None:
+                    libname = self.namefinder_.find_libname(
+                        packagename=self.package().name(),
+                        path=self.parentbuilder().directory().relpath(self.package().rootdirectory()))
+                else:
+                    libname = self.libname_
+                    pass
+                
                 self.library_ = LibraryBuilder(
                     parentbuilder=self.parentbuilder(),
                     package=self.package(),
-                    basename=self.namefinder_.find_libname(packagename=self.package().name(),
-                                                           path=self.parentbuilder().directory().relpath(self.package().rootdirectory())),
+                    basename=libname,
                     use_libtool=self.use_libtool_,
                     libtool_version_info=self.libtool_version_info_)
                 self.parentbuilder().add_builder(self.library_)
@@ -137,17 +149,24 @@ class CClustererInterfaceProxy(InterfaceProxy):
     def __init__(self, object):
         InterfaceProxy.__init__(self)
         self.object_ = object
+        self.add_global('LIBNAME', getattr(self, 'LIBNAME'))
         self.add_global('LIBTOOL_LIBRARY_VERSION', getattr(self, 'LIBTOOL_LIBRARY_VERSION'))
+        pass
+
+    def LIBNAME(self, name):
+        if type(name) is not types.StringType:
+            raise Error("LIBNAME(): 'name' argument must be a string")
+        self.object_.set_libname(name)
         pass
 
     def LIBTOOL_LIBRARY_VERSION(self, version):
         if type(version) not in [types.ListType, types.TupleType]:
-            raise Error("LIBTOOL_LIBRARY_VERSION: 'version' argument must be a tuple")
+            raise Error("LIBTOOL_LIBRARY_VERSION(): 'version' argument must be a tuple")
         if len(version) != 3:
-            raise Error("LIBTOOL_LIBRARY_VERSION: 'version' argument must be a tuple of 3 integers")
+            raise Error("LIBTOOL_LIBRARY_VERSION(): 'version' argument must be a tuple of 3 integers")
         for i in range(len(version)):
             if type(version[i]) is not types.IntType:
-                raise Error("LIBTOOL_LIBRARY_VERSION: part "+str(i)+" of version is not an integer")
+                raise Error("LIBTOOL_LIBRARY_VERSION(): part "+str(i)+" of version is not an integer")
             pass
         self.object_.set_libtool_version_info(version)
         pass

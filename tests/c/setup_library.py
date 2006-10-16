@@ -17,6 +17,7 @@
 # USA
 
 from libconfix.core.filebuilder import FileBuilder
+from libconfix.core.filesys.filesys import FileSystem
 from libconfix.core.filesys.directory import Directory
 from libconfix.core.filesys.file import File
 from libconfix.core.hierarchy.setup import DirectorySetup
@@ -36,6 +37,8 @@ class LibrarySetupSuite(unittest.TestSuite):
         unittest.TestSuite.__init__(self)
         self.addTest(LibrarySetupBasic('test'))
         self.addTest(LibraryNames('testLongName'))
+        self.addTest(LibraryNames('testShortName'))
+        self.addTest(LibraryNames('testExplicitName'))
         pass
     pass        
 
@@ -126,7 +129,35 @@ class LibraryNames(unittest.TestCase):
         self.failUnlessEqual(dir3lib_builder.basename(),
                              '_'.join([package.name(), self.dir3_.name()]))
         pass
+
+    def testExplicitName(self):
+        fs = FileSystem(path=['don\'t', 'care'])
+        fs.rootdirectory().add(
+            name=const.CONFIX2_PKG,
+            entry=File(lines=["PACKAGE_NAME('LibraryNames.testExplicitName')",
+                              "PACKAGE_VERSION('1.2.3')"]))
+        fs.rootdirectory().add(
+            name=const.CONFIX2_DIR,
+            entry=File(lines=["LIBNAME('myownname')"]))
+        fs.rootdirectory().add(
+            name='file.c',
+            entry=File())
+
+        package = LocalPackage(rootdirectory=fs.rootdirectory(),
+                               setups=[DefaultCSetup(use_libtool=False, short_libnames=False)])
+        package.boil(external_nodes=[])
+
+        for b in package.rootbuilder().builders():
+            if isinstance(b, LibraryBuilder):
+                self.failUnlessEqual(b.basename(), 'myownname')
+                break
+            pass
+        else:
+            self.fail()
+            pass
+        pass
     pass
     
 if __name__ == '__main__':
-    unittest.main()
+    unittest.TextTestRunner().run(LibrarySetupSuite())
+    pass
