@@ -121,16 +121,23 @@ class LinkedBuilder(Builder):
         external_linkline = []
         using_installed_library = False
 
-        if self.use_libtool_:
-            # when linking anything with libtool, we don't need to
-            # specify the whole topologically sorted list of
-            # dependencies - libtool does that by itself. we only
-            # specify the direct dependencies.
-            native_libs_to_use = self.buildinfo_direct_dependent_native_libs_
-        else:
-            # not using libtool; have to toposort ourselves
-            native_libs_to_use = self.buildinfo_topo_dependent_native_libs_
-            pass
+        # arghh. if the direct dependent nodes do not have a library,
+        # but rather only header files, I don't see indirect libraries
+        # this way.
+
+        # THIS NEEDS FIXING BADLY.
+
+##         if self.use_libtool_:
+##             # when linking anything with libtool, we don't need to
+##             # specify the whole topologically sorted list of
+##             # dependencies - libtool does that by itself. we only
+##             # specify the direct dependencies.
+##             native_libs_to_use = self.buildinfo_direct_dependent_native_libs_
+##         else:
+##             # not using libtool; have to toposort ourselves
+##             native_libs_to_use = self.buildinfo_topo_dependent_native_libs_
+##             pass
+        native_libs_to_use = self.buildinfo_topo_dependent_native_libs_
 
         for bi in native_libs_to_use:
             if isinstance(bi, BuildInfo_CLibrary_NativeLocal):

@@ -1,5 +1,11 @@
 2006-10-16 Joerg Faschingbauer <jfasch@salomon.at>
 
+	* plugins.c.linked: add full grapoh to te linker commandline,
+	  regardless of libtool usage (see the comment there).
+	* 2.0.0pre7
+
+2006-10-16 Joerg Faschingbauer <jfasch@salomon.at>
+
 	* plugins.c.clusterer: explicit LIBNAME()
 	* 2.0.0pre6
 
