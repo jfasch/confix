@@ -104,7 +104,7 @@ def READ_REPO():
 
     # finally, do our job
     repository = CompositePackageRepository()
-    for prefix in prefixes:
+    for prefix in prefixes + CONFIG.readonly_prefixes():
         debug.message("reading repository "+prefix+" ...", CONFIG.verbosity())
         repository.add_repo(AutomakePackageRepository(prefix=prefix.split(os.sep)))
         pass
