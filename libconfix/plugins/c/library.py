@@ -31,10 +31,18 @@ class LibraryBuilder(LinkedBuilder):
                  package,
                  basename,
                  use_libtool,
-                 libtool_version_info):
+                 libtool_version_info,
+                 libtool_release_info):
 
-        assert type(libtool_version_info) in [types.ListType, types.TupleType]
-        assert len(libtool_version_info) == 3
+        # libtool version information; to be passed to libtool
+        # -version-info <current>:<revision>:<age>
+        assert libtool_version_info is None or \
+               type(libtool_version_info) in [types.ListType, types.TupleType] and len(libtool_version_info) == 3
+
+        # libtool release information; to be passed as -release
+        # <package-version>
+        assert libtool_release_info is None or \
+               type(libtool_release_info) is types.StringType
         
         LinkedBuilder.__init__(
             self,
@@ -43,26 +51,30 @@ class LibraryBuilder(LinkedBuilder):
             package=package,
             use_libtool=use_libtool)
 
-        self.basename_ = basename
-        self.libtool_version_info_ = libtool_version_info
+        self.__basename = basename
+        self.__libtool_version_info = libtool_version_info
+        self.__libtool_release_info = libtool_release_info
         
         self.add_buildinfo(BuildInfo_CLibrary_NativeLocal(
             dir=self.parentbuilder().directory().relpath(package.rootdirectory()),
-            name=self.basename_))
+            name=self.__basename))
         pass
 
     def basename(self):
-        return self.basename_
+        return self.__basename
 
     def libname(self):
         if self.use_libtool():
-            return 'lib'+self.basename_+'.la'
+            return 'lib'+self.__basename+'.la'
         else:
-            return 'lib'+self.basename_+'.a'
+            return 'lib'+self.__basename+'.a'
         pass
 
     def libtool_version_info(self):
-        return self.libtool_version_info_
+        return self.__libtool_version_info
+
+    def libtool_release_info(self):
+        return self.__libtool_release_info
 
     def output(self):
         LinkedBuilder.output(self)
@@ -73,8 +85,10 @@ class LibraryBuilder(LinkedBuilder):
 
         if self.use_libtool():
             mf_am.add_ltlibrary(self.libname())
-            if self.libtool_version_info_ is not None:
-                mf_am.add_compound_ldflags(am_libname, '-version-info %d:%d:%d' % self.libtool_version_info_)
+            if self.__libtool_version_info is not None:
+                mf_am.add_compound_ldflags(am_libname, '-version-info %d:%d:%d' % self.__libtool_version_info)
+            elif self.__libtool_release_info is not None:
+                mf_am.add_compound_ldflags(am_libname, '-release %d:%d:%d' % self.__libtool_release_info)
                 pass
             pass
         else:

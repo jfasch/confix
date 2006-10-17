@@ -69,7 +69,7 @@ class ExplicitLibtoolVersionTest(unittest.TestCase):
     pass
 
 class DefaultLibtoolVersionTest(unittest.TestCase):
-    def make_package_and_return_libtool_library_version(self, package_version):
+    def make_package_and_return_libtool_release_version(self, package_version):
         fs = FileSystem(path=[])
         fs.rootdirectory().add(
             name=const.CONFIX2_PKG,
@@ -88,7 +88,7 @@ class DefaultLibtoolVersionTest(unittest.TestCase):
 
         for b in package.rootbuilder().builders():
             if isinstance(b, LibraryBuilder):
-                return b.libtool_version_info()
+                return b.libtool_release_info()
                 break
             pass
         else:
@@ -98,14 +98,14 @@ class DefaultLibtoolVersionTest(unittest.TestCase):
     pass
 
     def testExactPackageVersion(self):
-        self.failUnlessEqual(self.make_package_and_return_libtool_library_version('1.2.3'), (1,2,3))
+        self.failUnlessEqual(self.make_package_and_return_libtool_release_version('1.2.3'), '1.2.3')
         pass
     def testPostfixedPackageVersion(self):
-        self.failUnlessEqual(self.make_package_and_return_libtool_library_version('2.0.0pre7'), (2,0,0))
+        self.failUnlessEqual(self.make_package_and_return_libtool_release_version('2.0.0pre7'), '2.0.0pre7')
         pass
     def testUnparseablePackageVersion(self):
-        self.failUnlessEqual(self.make_package_and_return_libtool_library_version('unparseable'), (0,0,0))
-        self.failUnlessEqual(self.make_package_and_return_libtool_library_version('2.0'), (0,0,0))
+        self.failUnlessEqual(self.make_package_and_return_libtool_release_version('unparseable'), 'unparseable')
+        self.failUnlessEqual(self.make_package_and_return_libtool_release_version('2.0'), '2.0')
         pass
     pass
 

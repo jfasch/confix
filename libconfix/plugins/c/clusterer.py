@@ -37,22 +37,23 @@ class CClusterer(Builder):
             id=str(self.__class__)+'('+str(parentbuilder)+')',
             parentbuilder=parentbuilder,
             package=package)
-        self.namefinder_ = namefinder
-        self.use_libtool_ = use_libtool
-        self.libname_ = None
-        self.libtool_version_info_ = self.__make_default_libtool_version_info()
+        self.__namefinder = namefinder
+        self.__use_libtool = use_libtool
+        self.__libname = None
+        self.__libtool_version_info = None
+        self.__libtool_release_info = self.package().version()
 
-        self.library_ = None
+        self.__library = None
         # ExecutableBuilder objects, indexed by their center builders
-        self.executables_ = {}
+        self.__executables = {}
         pass
 
     def set_libname(self, name):
-        self.libname_ = name
+        self.__libname = name
         pass
 
     def set_libtool_version_info(self, version_tuple):
-        self.libtool_version_info_ = version_tuple
+        self.__libtool_version_info = version_tuple
         pass
 
     def enlarge(self):
@@ -65,9 +66,9 @@ class CClusterer(Builder):
 
             # add headers to library if any
             if isinstance(b, HeaderBuilder):
-                if self.library_ is not None:
-                    if b not in self.library_.members():
-                        self.library_.add_member(b)
+                if self.__library is not None:
+                    if b not in self.__library.members():
+                        self.__library.add_member(b)
                         pass
                     pass
                 continue
@@ -75,7 +76,7 @@ class CClusterer(Builder):
             # main C file. wrap an ExecutableBuilder around
             # it. liquidate a library in favor of the executable.
             if helper.has_main(b.file()) or b.exename() is not None:
-                if self.executables_.has_key(b):
+                if self.__executables.has_key(b):
                     # already got that one.
                     continue
                 center_stem, center_ext = os.path.splitext(b.file().name())
@@ -88,7 +89,7 @@ class CClusterer(Builder):
                     pass
                 exename = b.exename()
                 if exename is None:
-                    exename = self.namefinder_.find_exename(
+                    exename = self.__namefinder.find_exename(
                         packagename=self.package().name(),
                         path=self.parentbuilder().directory().relpath(self.package().rootdirectory()),
                         centername=center_stem)
@@ -98,44 +99,45 @@ class CClusterer(Builder):
                     package=self.package(),
                     center=b,
                     exename=exename,
-                    use_libtool=self.use_libtool_,
+                    use_libtool=self.__use_libtool,
                     what=what)
                 self.parentbuilder().add_builder(exe)
-                self.executables_[b] = exe
-                if self.library_ is not None:
-                    self.parentbuilder().remove_builder(self.library_)
-                    for m in self.library_.members():
+                self.__executables[b] = exe
+                if self.__library is not None:
+                    self.parentbuilder().remove_builder(self.__library)
+                    for m in self.__library.members():
                         exe.add_member(m)
                         pass
-                    self.library_ = None
+                    self.__library = None
                     pass
                 continue
 
             # a compiled C builder
-            assert not (self.library_ and len(self.executables_))
-            if not self.library_ and len(self.executables_) == 0:
-                if self.libname_ is None:
-                    libname = self.namefinder_.find_libname(
+            assert not (self.__library and len(self.__executables))
+            if not self.__library and len(self.__executables) == 0:
+                if self.__libname is None:
+                    libname = self.__namefinder.find_libname(
                         packagename=self.package().name(),
                         path=self.parentbuilder().directory().relpath(self.package().rootdirectory()))
                 else:
-                    libname = self.libname_
+                    libname = self.__libname
                     pass
                 
-                self.library_ = LibraryBuilder(
+                self.__library = LibraryBuilder(
                     parentbuilder=self.parentbuilder(),
                     package=self.package(),
                     basename=libname,
-                    use_libtool=self.use_libtool_,
-                    libtool_version_info=self.libtool_version_info_)
-                self.parentbuilder().add_builder(self.library_)
+                    use_libtool=self.__use_libtool,
+                    libtool_version_info=self.__libtool_version_info,
+                    libtool_release_info=self.__libtool_release_info)
+                self.parentbuilder().add_builder(self.__library)
                 pass
-            if self.library_ is not None:
-                if b not in self.library_.members():
-                    self.library_.add_member(b)
+            if self.__library is not None:
+                if b not in self.__library.members():
+                    self.__library.add_member(b)
                     pass
                 pass
-            for e in self.executables_.values():
+            for e in self.__executables.values():
                 if b not in e.members():
                     e.add_member(b)
                     pass
@@ -143,13 +145,6 @@ class CClusterer(Builder):
             pass
         pass
 
-    RE_PACKAGE_TO_LT_VERSION = re.compile(r'^(\d+).(\d+).(\d+)')
-    
-    def __make_default_libtool_version_info(self):
-        match = self.RE_PACKAGE_TO_LT_VERSION.search(self.package().version())
-        if not match:
-            return (0,0,0)
-        return (int(match.group(1)), int(match.group(2)), int(match.group(3)))
     pass
 
 class CClustererInterfaceProxy(InterfaceProxy):
@@ -184,11 +179,11 @@ class CClustererSetup(Setup):
     def __init__(self, use_libtool, short_libnames):
         Setup.__init__(self)
         if short_libnames == True:
-            self.namefinder_ = ShortNameFinder()
+            self.__namefinder = ShortNameFinder()
         else:
-            self.namefinder_ = LongNameFinder()
+            self.__namefinder = LongNameFinder()
             pass
-        self.use_libtool_ = use_libtool
+        self.__use_libtool = use_libtool
         pass
         
     def setup_directory(self, directory_builder):
@@ -197,8 +192,8 @@ class CClustererSetup(Setup):
         clusterer = CClusterer(
             parentbuilder=directory_builder,
             package=directory_builder.package(),
-            namefinder=self.namefinder_,
-            use_libtool=self.use_libtool_)
+            namefinder=self.__namefinder,
+            use_libtool=self.__use_libtool)
 
         if directory_builder.configurator() is not None:
             directory_builder.configurator().add_method(
