@@ -83,6 +83,7 @@ class Provide_CInclude(Provide_String):
     EXACT_MATCH = Provide_String.EXACT_MATCH
     PREFIX_MATCH = Provide_String.PREFIX_MATCH
     GLOB_MATCH = Provide_String.GLOB_MATCH
+    AUTO_MATCH = Provide_String.AUTO_MATCH
 
     MATCH_CLASSES = [Require_CInclude]
 

@@ -81,7 +81,6 @@ class Builder(object):
     def dependency_info(self):
         self.__base_dependency_info_called = True
         return self.__dependency_info
-        pass
 
     def add_buildinfo(self, b):
         self.__buildinfos.add(b)
@@ -174,6 +173,7 @@ class BuilderInterfaceProxy(InterfaceProxy):
         self.add_global('EXACT_MATCH', Provide_String.EXACT_MATCH)
         self.add_global('PREFIX_MATCH', Provide_String.PREFIX_MATCH)
         self.add_global('GLOB_MATCH', Provide_String.GLOB_MATCH)
+        self.add_global('AUTO_MATCH', Provide_String.AUTO_MATCH)
 
         self.add_global('PROVIDE', getattr(self, 'PROVIDE'))
         self.add_global('REQUIRE', getattr(self, 'REQUIRE'))

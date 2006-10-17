@@ -49,14 +49,25 @@ class Provide_String(Provide):
     EXACT_MATCH = 0
     PREFIX_MATCH = 1
     GLOB_MATCH = 2
+    AUTO_MATCH = 3
 
     def __init__(self, string, match=EXACT_MATCH):
-        assert match in [Provide_String.EXACT_MATCH,
-                         Provide_String.PREFIX_MATCH,
-                         Provide_String.GLOB_MATCH]
+        assert match in [self.EXACT_MATCH,
+                         self.PREFIX_MATCH,
+                         self.GLOB_MATCH,
+                         self.AUTO_MATCH]
         Provide.__init__(self)
         self.string_ = string
-        self.match_ = match
+        if match == self.AUTO_MATCH:
+            if ('*' in string) or ('?' in string) or ('[' in string) or (']' in string):
+                self.match_ = self.GLOB_MATCH
+            else:
+                self.match_ = self.EXACT_MATCH
+                pass
+            pass
+        else:
+            self.match_ = match
+            pass
         pass
     def string(self):
         return self.string_
@@ -70,19 +81,18 @@ class Provide_String(Provide):
         for c in self.can_match_classes():
             if c is req.__class__:
                 break
+            pass
         else:
-            return 0
+            return False
 
         if self.match_ == Provide_String.EXACT_MATCH:
-            if req.string() != self.string_:
-                return 0
-        elif self.match_ == Provide_String.PREFIX_MATCH:
-            if req.string().find(self.string_) != 0:
-                return 0
-        elif self.match_ == Provide_String.GLOB_MATCH:
-            if not fnmatch.fnmatchcase(req.string(), self.string_):
-                return 0
-        return 1
+            return req.string_ == self.string_
+        if self.match_ == Provide_String.PREFIX_MATCH:
+            return req.string_.startswith(self.string_)
+        if self.match_ == Provide_String.GLOB_MATCH:
+            return fnmatch.fnmatchcase(req.string(), self.string_)
+        assert False
+        pass
 
     def update(self, other):
         return isinstance(other, self. __class__) and self.string_ == other.string_

@@ -20,6 +20,7 @@ import unittest
 
 from automake.suite_inmem import AutomakeCSuiteInMemory
 
+from provide_require import Provide_CInclude_and_Require_CInclude_Suite
 from setup_library import LibrarySetupSuite
 from setup_exe import ExecutableSetupSuite
 from setup_cxx import CXXSetupSuite
@@ -39,6 +40,7 @@ class CTestSuiteInMemory(unittest.TestSuite):
     def __init__(self):
         unittest.TestSuite.__init__(self)
 
+        self.addTest(Provide_CInclude_and_Require_CInclude_Suite())
         self.addTest(LibrarySetupSuite())
         self.addTest(ExecutableSetupSuite())
         self.addTest(CXXSetupSuite())

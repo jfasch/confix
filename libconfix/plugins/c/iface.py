@@ -116,11 +116,14 @@ class PROVIDE_H_InterfaceProxy(InterfaceProxy):
         self.object_ = object
         self.add_global('PROVIDE_H', getattr(self, 'PROVIDE_H'))
         pass
-    def PROVIDE_H(self, filename, match=Provide_String.GLOB_MATCH):
+    def PROVIDE_H(self, filename, match=Provide_String.AUTO_MATCH):
         if not filename or len(filename)==0:
             raise Error('PROVIDE_H(): need a non-zero filename parameter')
-        if match not in [Provide_String.EXACT_MATCH, Provide_String.PREFIX_MATCH, Provide_String.GLOB_MATCH]:
-            raise Error('PROVIDE_H(): match parameter must be one of EXACT_MATCH, PREFIX_MATCH, GLOB_MATCH')
+        if match not in [Provide_String.EXACT_MATCH,
+                         Provide_String.PREFIX_MATCH,
+                         Provide_String.GLOB_MATCH,
+                         Provide_String.AUTO_MATCH]:
+            raise Error('PROVIDE_H(): match parameter must be one of EXACT_MATCH, PREFIX_MATCH, GLOB_MATCH, AUTO_MATCH')
         self.object_.add_provide(Provide_CInclude(filename, match))
         pass
     pass
