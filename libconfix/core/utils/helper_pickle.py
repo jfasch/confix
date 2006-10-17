@@ -23,8 +23,8 @@ import sys
 # pickle segfaults on interix
 mypickle = None
 if sys.platform.startswith('interix'):
-    import core.debug
-    core.debug.warn('using pickle instead of cPickle on interix')
+    from libconfix.core.utils import debug
+    debug.warn('using pickle instead of cPickle on interix')
     import pickle
     mypickle = pickle
 else:
