@@ -110,7 +110,7 @@ class HeaderInstallPath(unittest.TestCase):
         self.failUnlessEqual(file_h_builder.iface_install_path(), ['a', 'b'])
         pass
     pass
-        
+
 
 if __name__ == '__main__':
     unittest.TextTestRunner().run(MiscellaneousSuite())

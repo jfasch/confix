@@ -16,7 +16,7 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 # USA
 
-import os, sys
+import os, sys, profile
 
 from libconfix.core.local_package import LocalPackage
 from libconfix.core.utils import debug
@@ -135,7 +135,8 @@ def BOIL():
 
     debug.message("boiling package ...", CONFIG.verbosity())
     try:
-        package.boil(external_nodes=external_nodes)
+        profile.runctx('package.boil(external_nodes=external_nodes)', {'package':package, 'external_nodes':external_nodes} ,{})
+##         package.boil(external_nodes=external_nodes)
     except CycleError, e:
         for l in core.helper.format_cycle_error(e):
             sys.stderr.write(l+'\n')

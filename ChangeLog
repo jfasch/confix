@@ -1,3 +1,11 @@
+2006-10-17 Joerg Faschingbauer <jfasch@salomon.at>
+
+	* plugins.c.clusterer: libtool library version is parsed from
+	  package name by default
+	* plugins.c.iface: PROVIDE_H() auto-recognizes glob characters,
+	  thus making faster matches by default
+	* Release 2.0.0pre8
+
 2006-10-16 Joerg Faschingbauer <jfasch@salomon.at>
 
 	* plugins.c.linked: add full grapoh to te linker commandline,

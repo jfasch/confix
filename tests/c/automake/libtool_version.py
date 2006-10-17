@@ -30,16 +30,19 @@ from libconfix.plugins.c.library import LibraryBuilder
 class LibtoolVersionSuite(unittest.TestSuite):
     def __init__(self):
         unittest.TestSuite.__init__(self)
-        self.addTest(LibtoolVersionTest('test'))
+        self.addTest(ExplicitLibtoolVersionTest('test'))
+        self.addTest(DefaultLibtoolVersionTest('testExactPackageVersion'))
+        self.addTest(DefaultLibtoolVersionTest('testPostfixedPackageVersion'))
+        self.addTest(DefaultLibtoolVersionTest('testUnparseablePackageVersion'))
         pass
     pass
 
-class LibtoolVersionTest(unittest.TestCase):
+class ExplicitLibtoolVersionTest(unittest.TestCase):
     def test(self):
         fs = FileSystem(path=[])
         fs.rootdirectory().add(
             name=const.CONFIX2_PKG,
-            entry=File(lines=["PACKAGE_NAME('LibtoolVersionTest')",
+            entry=File(lines=["PACKAGE_NAME('ExplicitLibtoolVersionTest')",
                               "PACKAGE_VERSION('1.2.3')"]))
         fs.rootdirectory().add(
             name=const.CONFIX2_DIR,
@@ -62,6 +65,47 @@ class LibtoolVersionTest(unittest.TestCase):
             pass
 
         self.failUnlessEqual(lib_builder.libtool_version_info(), (6,6,6))
+        pass
+    pass
+
+class DefaultLibtoolVersionTest(unittest.TestCase):
+    def make_package_and_return_libtool_library_version(self, package_version):
+        fs = FileSystem(path=[])
+        fs.rootdirectory().add(
+            name=const.CONFIX2_PKG,
+            entry=File(lines=["PACKAGE_NAME('DefaultLibtoolVersionTest')",
+                              "PACKAGE_VERSION('"+package_version+"')"]))
+        fs.rootdirectory().add(
+            name=const.CONFIX2_DIR,
+            entry=File())
+        fs.rootdirectory().add(
+            name='file.c',
+            entry=File())
+        package = LocalPackage(rootdirectory=fs.rootdirectory(),
+                               setups=[DefaultCSetup(short_libnames=False,
+                                              use_libtool=True)])
+        package.boil(external_nodes=[])
+
+        for b in package.rootbuilder().builders():
+            if isinstance(b, LibraryBuilder):
+                return b.libtool_version_info()
+                break
+            pass
+        else:
+            self.fail()
+            pass
+        pass
+    pass
+
+    def testExactPackageVersion(self):
+        self.failUnlessEqual(self.make_package_and_return_libtool_library_version('1.2.3'), (1,2,3))
+        pass
+    def testPostfixedPackageVersion(self):
+        self.failUnlessEqual(self.make_package_and_return_libtool_library_version('2.0.0pre7'), (2,0,0))
+        pass
+    def testUnparseablePackageVersion(self):
+        self.failUnlessEqual(self.make_package_and_return_libtool_library_version('unparseable'), (0,0,0))
+        self.failUnlessEqual(self.make_package_and_return_libtool_library_version('2.0'), (0,0,0))
         pass
     pass
 

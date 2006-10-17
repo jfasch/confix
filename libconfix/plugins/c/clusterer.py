@@ -16,8 +16,7 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 # USA
 
-import os
-import types
+import os, re, types
 
 from libconfix.core.builder import Builder
 from libconfix.core.setup import Setup
@@ -41,7 +40,7 @@ class CClusterer(Builder):
         self.namefinder_ = namefinder
         self.use_libtool_ = use_libtool
         self.libname_ = None
-        self.libtool_version_info_ = (0,0,0)
+        self.libtool_version_info_ = self.__make_default_libtool_version_info()
 
         self.library_ = None
         # ExecutableBuilder objects, indexed by their center builders
@@ -143,6 +142,14 @@ class CClusterer(Builder):
                 pass
             pass
         pass
+
+    RE_PACKAGE_TO_LT_VERSION = re.compile(r'^(\d+).(\d+).(\d+)')
+    
+    def __make_default_libtool_version_info(self):
+        match = self.RE_PACKAGE_TO_LT_VERSION.search(self.package().version())
+        if not match:
+            return (0,0,0)
+        return (int(match.group(1)), int(match.group(2)), int(match.group(3)))
     pass
 
 class CClustererInterfaceProxy(InterfaceProxy):
