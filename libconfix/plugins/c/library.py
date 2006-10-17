@@ -88,7 +88,7 @@ class LibraryBuilder(LinkedBuilder):
             if self.__libtool_version_info is not None:
                 mf_am.add_compound_ldflags(am_libname, '-version-info %d:%d:%d' % self.__libtool_version_info)
             elif self.__libtool_release_info is not None:
-                mf_am.add_compound_ldflags(am_libname, '-release %d:%d:%d' % self.__libtool_release_info)
+                mf_am.add_compound_ldflags(am_libname, '-release'+self.__libtool_release_info)
                 pass
             pass
         else:
