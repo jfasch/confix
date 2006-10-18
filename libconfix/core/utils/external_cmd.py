@@ -43,11 +43,11 @@ def exec_program(program, dir, args=None, env=None, path=None):
     else:
         the_env = env
         pass
-    
+
     chdirbackto = os.getcwd()
     os.chdir(os.sep.join(dir))
     try:
-        debug.trace(['exec'], 'Calling program: '+str([the_program]+the_args))
+        debug.trace(['exec'], 'Calling program: '+str([the_program]+the_args)+'; env='+str(the_env))
         rv = os.spawnve(os.P_WAIT, the_program, [the_program] + the_args, the_env)
         if rv != 0:
             raise Error("spawnve("+the_program+") returned non-null ("+str(rv)+")")

@@ -43,7 +43,7 @@ def configure(packageroot, builddir, prefix, readonly_prefixes, args=None, env=N
     if args is not None:
         argv.extend(args)
         pass
-            
+
     external_cmd.exec_program(program=os.sep.join(packageroot + ['configure']),
                               args=argv,
                               env=env,

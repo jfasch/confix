@@ -102,6 +102,7 @@ class CompositeConfigTest(unittest.TestCase):
         self.failUnless(config.print_timings() is True) # profile
         self.failUnlessEqual(config.message_prefix(), 'some-message-prefix')
         self.failUnlessEqual(config.advanced(), False) # profile
+        self.failUnlessEqual(config.configure_env()['CFLAGS'], '-some-cflags')
         pass
     pass
 

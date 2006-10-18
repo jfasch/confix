@@ -233,17 +233,10 @@ def CONFIGURE():
 
     SETTINGS()
 
-    cmdline = []
-    env = {}
-    env.update(os.environ)
-
-    configure_args = CONFIG.configure_args()
-    if configure_args is not None:
-        cmdline.extend(configure_args)
-        pass
-    configure_env = CONFIG.configure_env()
-    if configure_env is not None:
-        env.update(configure_env)
+    configure_env = {}
+    configure_env.update(os.environ)
+    if CONFIG.configure_env() is not None:
+        configure_env.update(CONFIG.configure_env())
         pass
 
     try:
@@ -265,7 +258,7 @@ def CONFIGURE():
                             prefix=CONFIG.prefix().split(os.sep),
                             readonly_prefixes=ro_pfxs,
                             args=CONFIG.configure_args(),
-                            env=CONFIG.configure_env())
+                            env=configure_env)
     except Error, e:
         raise Error("Error calling configure:", [e])
 
@@ -279,17 +272,10 @@ def MAKE():
 
     SETTINGS()
 
-    cmdline = []
-    env = {}
-    env.update(os.environ)
-
-    make_args = CONFIG.make_args()
-    if make_args is not None:
-        cmdline.extend(make_args)
-        pass
-    make_env = CONFIG.make_env()
-    if make_env is not None:
-        env.update(make_env)
+    make_env = {}
+    make_env.update(os.environ)
+    if CONFIG.make_env() is not None:
+        env.update(CONFIG.make_env())
         pass
 
     try:
@@ -299,7 +285,7 @@ def MAKE():
     
     try:
         make.make(builddir=builddir.split(os.sep),
-                  args=make_args,
+                  args=CONFIG.make_args(),
                   env=make_env)
     except Error, e:
         raise Error("Error calling make:", [e])

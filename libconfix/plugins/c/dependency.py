@@ -54,7 +54,7 @@ class Require_CInclude(Require_String):
         pass
 
     def __str__(self):
-        ret = 'plugins.c:#include<%s>' % self.string()
+        ret = '#include<%s>' % self.string()
         if len(self.found_in_):
             ret = ret + ' (from ' + str([f for f in self.found_in()]) + ')'
         return ret
@@ -93,7 +93,7 @@ class Provide_CInclude(Provide_String):
                                 match=match)
         pass
     def __str__(self):
-        return "C: "+self.string()
+        return '#include<%s>' % self.string()
 
     def can_match_classes(self): return Provide_CInclude.MATCH_CLASSES
 
