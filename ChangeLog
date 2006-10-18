@@ -1,3 +1,8 @@
+2006-10-18 Joerg Faschingbauer <jfasch@salomon.at>
+
+	* core.automake.autoconf_archive: search for archive works when
+	  performed outside of confix's world.
+
 2006-10-17 Joerg Faschingbauer <jfasch@salomon.at>
 
 	* plugins.c.clusterer: libtool library version is parsed from

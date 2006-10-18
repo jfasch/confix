@@ -19,6 +19,7 @@
 import os
 
 from libconfix.core.utils.error import Error
+from libconfix.core.utils import external_cmd
 
 def find_archive_root(argv0):
     dir = os.path.dirname(argv0)
@@ -44,7 +45,6 @@ def find_archive_root(argv0):
     # ... and then the installed case. this is a pretty big hack, but
     # it ought to work as long as people don't go around messing with
     # the relative locations of installation dirs.
-
     if dir.endswith('bin'):
         prefixdir = os.path.dirname(dir)
         retdir = os.path.join(prefixdir, 'share', 'confix', 'autoconf-archive')
@@ -52,6 +52,12 @@ def find_archive_root(argv0):
             raise Error('"'+retdir+'" is not a directory '
                         '(searching the autoconf macro archive the installed way)')
         return retdir
+
+    # we seem to be running completely outside confix's world.
+    confix2_py = external_cmd.search_program(program='confix2.py', path=None)
+    if confix2_py is None:
+        raise Error('Autoconf macro archive not found (no confix2.py in $PATH)')
+    return find_archive_root(argv0=confix2_py)
 
     raise Error('Autoconf macro archive not found (installation error?)')
 
