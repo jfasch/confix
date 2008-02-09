@@ -1,1 +1,4 @@
-* 
+* Checks:
+
+  * BuildInfo_Configure_in must not anymore be used from neither core
+    nor plugins.c. Search for files that contain the word "automake".
