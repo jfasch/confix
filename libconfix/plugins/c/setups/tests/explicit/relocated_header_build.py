@@ -22,7 +22,7 @@ from libconfix.core.filesys.filesys import FileSystem
 from libconfix.core.filesys.directory import Directory
 from libconfix.core.machinery.local_package import LocalPackage
 from libconfix.core.hierarchy.explicit_setup import ExplicitDirectorySetup
-from libconfix.core.automake import \
+from libconfix.plugins.automake import \
      bootstrap, \
      configure, \
      make

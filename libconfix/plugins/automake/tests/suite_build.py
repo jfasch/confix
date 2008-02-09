@@ -16,6 +16,7 @@
 # USA
 
 from kde_hack import KDEHackTestSuiteBuild
+from autoconf_archive import AutoConfArchiveSuite
 
 import unittest
 
@@ -23,6 +24,7 @@ class AutomakeBuildSuite(unittest.TestSuite):
     def __init__(self):
         unittest.TestSuite.__init__(self)
         self.addTest(KDEHackTestSuiteBuild())
+        self.addTest(AutoConfArchiveSuite())
         pass
     pass
 

@@ -21,8 +21,12 @@ from buildinfo import BuildInfo_CLibrary_NativeLocal, BuildInfo_CLibrary_NativeI
 from libconfix.core.machinery.setup import Setup
 from libconfix.core.machinery.builder import Builder
 from libconfix.core.machinery import readonly_prefixes
-from libconfix.core.automake import helper_automake
-from libconfix.core.automake.configure_ac import Configure_ac
+
+# jjj remove this >>>
+from libconfix.plugins.automake import helper_automake
+from libconfix.plugins.automake.configure_ac import Configure_ac
+# jjj <<<
+
 from libconfix.core.utils.paragraph import Paragraph
 
 class LibraryDependenciesFinderSetup(Setup):

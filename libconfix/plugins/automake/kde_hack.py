@@ -20,7 +20,7 @@ import os
 import sys
 import re
 
-from libconfix.core.automake.auxdir import AutoconfAuxDirBuilder
+from libconfix.plugins.automake.auxdir import AutoconfAuxDirBuilder
 from libconfix.core.machinery.setup import Setup
 from libconfix.core.machinery.builder import Builder
 from libconfix.core.utils import helper

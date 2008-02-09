@@ -20,7 +20,7 @@ import os
 import sys
 import unittest
 
-from libconfix.core.automake import bootstrap, configure, make
+from libconfix.plugins.automake import bootstrap, configure, make
 from libconfix.core.filesys.directory import Directory
 from libconfix.core.filesys.filesys import FileSystem
 from libconfix.core.hierarchy.default_setup import DefaultDirectorySetup

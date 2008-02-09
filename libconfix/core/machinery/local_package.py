@@ -26,12 +26,15 @@ from require import Require
 from resolve_error import NotResolved
 import readonly_prefixes
 
+# jjj remove this >>>
+from libconfix.plugins.automake import repo_automake
+from libconfix.plugins.automake.auxdir import AutoconfAuxDirBuilder
+from libconfix.plugins.automake.configure_ac import Configure_ac 
+from libconfix.plugins.automake.acinclude_m4 import ACInclude_m4 
+# jjj <<<
+
 from libconfix.core.digraph import algorithm
 from libconfix.core.digraph import toposort
-from libconfix.core.automake import repo_automake
-from libconfix.core.automake.auxdir import AutoconfAuxDirBuilder
-from libconfix.core.automake.configure_ac import Configure_ac 
-from libconfix.core.automake.acinclude_m4 import ACInclude_m4 
 from libconfix.core.digraph.digraph import DirectedGraph
 from libconfix.core.filesys.directory import Directory
 from libconfix.core.filesys.file import File, FileState

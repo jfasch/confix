@@ -19,8 +19,11 @@
 import types
 
 from libconfix.core.utils.paragraph import Paragraph, OrderedParagraphSet
-from libconfix.core.automake import helper_automake
-from libconfix.core.automake.configure_ac import Configure_ac
+
+# jjj remove this >>>
+from libconfix.plugins.automake import helper_automake
+from libconfix.plugins.automake.configure_ac import Configure_ac
+# jjj <<<
 
 from linked import LinkedBuilder
 from buildinfo import BuildInfo_CLibrary_NativeLocal

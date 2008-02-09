@@ -17,7 +17,9 @@
 # USA
 
 from libconfix.core.utils.paragraph import Paragraph
-from libconfix.core.automake.configure_ac import Configure_ac
+
+# jjj remove this:
+from libconfix.plugins.automake.configure_ac import Configure_ac
 
 from compiled import CompiledCBuilder
 from buildinfo import BuildInfo_CXXFLAGS

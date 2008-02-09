@@ -1,6 +1,23 @@
+* Objects to relieve from automake stuff
+
+  * libconfix/core/machinery/builder.py
+  * libconfix/core/hierarchy/dirbuilder.py
+  * libconfix/core/machinery/local_package.py
+  * libconfix/plugins/c/linked.py
+  * libconfix/plugins/c/c.py
+  * libconfix/plugins/c/library.py
+  * libconfix/plugins/c/cxx.py
+  * libconfix/plugins/c/lex.py
+  * libconfix/plugins/c/yacc.py
+  * libconfix/plugins/c/interix.py
+  * libconfix/plugins/c/library_dependencies.py
+
+* Remove libconfix/core/automake completely.
+
 * Checks:
 
   * BuildInfo_Configure_in must not anymore be used from neither core
     nor plugins.c. Search for files that contain the word "automake".
 
-* Remove libconfix/core/automake completely.
+  * jjj as always
+

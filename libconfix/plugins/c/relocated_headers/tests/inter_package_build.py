@@ -20,9 +20,9 @@ import inter_package
 from libconfix.core.filesys.filesys import FileSystem
 from libconfix.core.filesys.directory import Directory
 from libconfix.core.machinery.local_package import LocalPackage
-from libconfix.core.automake import bootstrap, configure, make, helper_automake
-from libconfix.core.automake.repo_automake import AutomakePackageRepository
 from libconfix.core.hierarchy.default_setup import DefaultDirectorySetup
+from libconfix.plugins.automake import bootstrap, configure, make, helper_automake
+from libconfix.plugins.automake.repo_automake import AutomakePackageRepository
 
 from libconfix.plugins.c.setups.default_setup import DefaultCSetup
 

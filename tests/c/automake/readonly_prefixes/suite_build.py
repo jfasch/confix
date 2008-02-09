@@ -20,8 +20,8 @@ import os
 import sys
 import unittest
 
-from libconfix.core.automake import bootstrap, configure, make
-from libconfix.core.automake.repo_automake import AutomakeCascadedPackageRepository
+from libconfix.plugins.automake import bootstrap, configure, make
+from libconfix.plugins.automake.repo_automake import AutomakeCascadedPackageRepository
 from libconfix.core.filesys.directory import Directory
 from libconfix.core.filesys.file import File
 from libconfix.core.filesys.filesys import FileSystem

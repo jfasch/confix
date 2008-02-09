@@ -21,10 +21,13 @@ import types
 
 from libconfix.core.utils.error import Error
 from libconfix.core.utils.paragraph import Paragraph
-from libconfix.core.automake.configure_ac import Configure_ac
-from libconfix.core.automake.buildinfo import \
+
+# jjj remove this >>> 
+from libconfix.plugins.automake.configure_ac import Configure_ac
+from libconfix.plugins.automake.buildinfo import \
      BuildInfo_Configure_in, \
      BuildInfo_ACInclude_m4
+# jjj remove this <<<
 
 from libconfix.core.iface.proxy import InterfaceProxy
 

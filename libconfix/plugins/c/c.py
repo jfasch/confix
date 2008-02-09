@@ -19,7 +19,9 @@
 from compiled import CompiledCBuilder
 
 from libconfix.core.utils.paragraph import Paragraph, OrderedParagraphSet
-from libconfix.core.automake.configure_ac import Configure_ac
+
+# jjj remove this
+from libconfix.plugins.automake.configure_ac import Configure_ac
 
 class CBuilder(CompiledCBuilder):
     def __init__(self, file):

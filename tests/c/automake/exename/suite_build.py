@@ -20,7 +20,7 @@ from libconfix.core.filesys.file import File
 from libconfix.core.filesys.directory import Directory
 from libconfix.core.utils import const
 from libconfix.core.machinery.local_package import LocalPackage
-from libconfix.core.automake import bootstrap, configure, make
+from libconfix.plugins.automake import bootstrap, configure, make
 from libconfix.testutils.persistent import PersistentTestCase
 
 from libconfix.plugins.c.setups.default_setup import DefaultCSetup

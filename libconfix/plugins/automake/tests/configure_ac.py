@@ -16,7 +16,7 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 # USA
 
-from libconfix.core.automake.configure_ac import Configure_ac
+from libconfix.plugins.automake.configure_ac import Configure_ac
 
 import unittest, re
 

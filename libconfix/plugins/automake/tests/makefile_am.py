@@ -16,9 +16,9 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 # USA
 
-from libconfix.core.automake.makefile_am import Makefile_am
-from libconfix.core.utils.error import Error
+from libconfix.plugins.automake.makefile_am import Makefile_am
 from libconfix.testutils import makefileparser
+from libconfix.core.utils.error import Error
 
 import unittest
 

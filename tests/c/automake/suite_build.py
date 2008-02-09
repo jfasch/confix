@@ -19,7 +19,6 @@
 from simple_build import SimpleBuildSuite
 from intra_package_build import IntraPackageBuildSuite
 from inter_package_build import InterPackageBuildSuite
-from autoconf_archive import AutoConfArchiveSuite
 from readonly_prefixes.suite_build import ReadonlyPrefixesBuildSuite
 from interix_link import InterixLinkSuite
 from exename.suite_build import ExecutableNameBuildSuite
@@ -32,7 +31,6 @@ class AutomakeCSuiteBuild(unittest.TestSuite):
         self.addTest(SimpleBuildSuite())
         self.addTest(IntraPackageBuildSuite())
         self.addTest(InterPackageBuildSuite())
-        self.addTest(AutoConfArchiveSuite())
         self.addTest(ReadonlyPrefixesBuildSuite())
         self.addTest(InterixLinkSuite())
         self.addTest(ExecutableNameBuildSuite())

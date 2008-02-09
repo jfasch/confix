@@ -18,8 +18,11 @@
 
 import os
 
-from libconfix.core.automake.file_installer import FileInstaller
-from libconfix.core.automake.makefile_am import Makefile_am
+# jjj remove this >>> 
+from libconfix.plugins.automake.file_installer import FileInstaller
+from libconfix.plugins.automake.makefile_am import Makefile_am
+# jjj remove this <<<
+
 from libconfix.core.digraph import toposort
 from libconfix.core.filesys.vfs_directory import VFSDirectory
 from libconfix.core.filesys.file import File

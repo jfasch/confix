@@ -20,11 +20,13 @@ from libconfix.plugins.c.buildinfo import \
      BuildInfo_CXXFLAGS, \
      BuildInfo_CLibrary_External
 
-from libconfix.core.automake.buildinfo import \
+# jjj remove this >>> 
+from libconfix.plugins.automake.buildinfo import \
      BuildInfo_ACInclude_m4, \
      BuildInfo_Configure_in
-from libconfix.core.automake.configure_ac import Configure_ac
-from libconfix.core.automake import helper_automake
+from libconfix.plugins.automake.configure_ac import Configure_ac
+from libconfix.plugins.automake import helper_automake
+# jjj <<<
 
 from libconfix.core.machinery.builder import Builder
 from libconfix.core.machinery.buildinfoset import BuildInformationSet

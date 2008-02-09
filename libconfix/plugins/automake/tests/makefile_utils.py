@@ -17,11 +17,13 @@
 # USA
 
 
+from libconfix.plugins.automake.rule import Rule
+from libconfix.plugins.automake.list import List
+from libconfix.plugins.automake.include import Include
+from libconfix.plugins.automake.white import White
+
 from libconfix.core.utils.error import Error
-from libconfix.core.automake.rule import Rule
-from libconfix.core.automake.list import List
-from libconfix.core.automake.include import Include
-from libconfix.core.automake.white import White
+
 from libconfix.testutils import makefileparser
 
 import unittest
