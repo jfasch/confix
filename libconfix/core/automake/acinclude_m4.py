@@ -21,6 +21,9 @@ from libconfix.core.utils import const
 
 class ACInclude_m4:
 
+    """ Straightforward encapsulation of acinclude.m4, containing
+    "paragraphs". """
+
     def __init__(self):
         self.paragraphs_ = ParagraphSet()
         pass
@@ -32,10 +35,6 @@ class ACInclude_m4:
         self.paragraphs_ += paragraphset
         
     def lines(self):
-
-        """ Write the contents to the file acinclude.m4 in the current
-        working directory. """
-
         lines = []
         lines.append('# DO NOT EDIT! This file was automatically generated')
         lines.append('# by Confix version '+const.CONFIX_VERSION)
