@@ -21,3 +21,178 @@
 
   * jjj as always
 
+* InterfaceProxy objects
+
+  * Confix2_dir_ExplicitInterface
+    * Used by
+      * Confix2_dir_ExplicitInterface(Confix2_dir_Contributor)
+    * Methods
+      * DIRECTORY
+
+  * CommonDirectoryInterface_Confix2_dir.DirectoryBuilderInterfaceProxy
+    * Used by
+      * CommonDirectoryInterface_Confix2_dir(Confix2_dir_Contributor)
+    * Methods
+      * CURRENT_BUILDER
+      * CURRENT_DIRECTORY
+      * ADD_DIRECTORY
+      * IGNORE_ENTRIES
+      * IGNORE_FILE
+      * FIND_ENTRY
+      * GET_ENTRIES
+      * RESCAN_CURRENT_DIRECTORY
+      * ADD_EXTRA_DIST
+      * MAKEFILE_AM
+      * ADD_BUILDER
+      * SET_FILE_PROPERTIES
+      * SET_FILE_PROPERTY
+      
+  * FileBuilderInterfaceProxy
+    * Used by
+      * FileBuilder
+    * Methods
+      * SET_FILE_PROPERTIES
+      * SET_FILE_PROPERTY
+
+  * BuilderInterfaceProxy
+    * Used by
+      * Builder
+    * Methods
+      * PARENTBUILDER: function
+      * PACKAGE: function
+      * PROVIDE: add provide object (blah type must be imported)
+      * REQUIRE: add require object (blah type must be imported)
+      * PROVIDE_SYMBOL
+        * match: one of
+          * EXACT_MATCH: Provide_String.EXACT_MATCH
+          * PREFIX_MATCH: Provide_String.PREFIX_MATCH
+          * GLOB_MATCH: Provide_String.GLOB_MATCH
+          * AUTO_MATCH: Provide_String.AUTO_MATCH
+      * REQUIRE_SYMBOL
+        * urgency: one of
+          * URGENCY_IGNORE: Require.URGENCY_ERROR
+          * URGENCY_WARN: Require.URGENCY_WARN
+          * URGENCY_ERROR: Require.URGENCY_ERROR
+      * PROVIDE_CALLABLE
+      * REQUIRE_CALLABLE
+        * urgency: see REQUIRE_SYMBOL
+      * BUILDINFORMATION: add BuildInformation object of any type
+      * CONFIGURE_AC: blah
+        * order: one of
+          * AC_BOILERPLATE
+          * AC_OPTIONS
+          * AC_PROGRAMS
+          * AC_LIBRARIES
+          * AC_HEADERS
+          * AC_TYPEDEFS_AND_STRUCTURES
+          * AC_FUNCTIONS
+          * AC_OUTPUT
+        * flags: set of
+          * LOCAL
+          * PROPAGATE
+          (None means both)
+        * ACINCLUDE_M4: blah
+          * flags: see CONFIGURE_AC        
+
+  * PackageInterfaceProxy
+    * Used by:
+      * LocalPackage (not a Builder, to be viewed separately)
+    * Methods:
+      * PACKAGE_NAME
+      * PACKAGE_VERSION
+      * ADD_SETUP
+      * SETUPS
+
+  * HeaderBuilderInterfaceProxy
+    * Used by:
+      * HeaderBuilder
+    * Methods:
+      * INSTALLPATH
+
+  * PKG_CONFIG_LIBRARY
+    * Used by:
+      * PkgConfigInterface_Confix2_dir(Confix2_dir_Contributor)
+    * Methods:
+      * PKG_CONFIG_LIBRARY
+
+  * CompiledCBuilderInterfaceProxy
+    * Used by:
+      * CompiledCBuilder
+    * Methods:
+      * EXENAME
+
+  * INSTALLDIR_H
+    * Used by:
+      * ExplicitInstaller_Confix2_dir(Confix2_dir_Contributor)
+    * Methods:
+      * INSTALLDIR_H: talks to ExplicitInstaller object (unique per
+        directory) which sets it into every HeaderBuilder of the
+        directory.
+
+  * RelocatorInterfaceProxy
+    * Used by:
+      * Relocator_Confix2_dir(Confix2_dir_Contributor)
+    * Methods:
+      * RELOCATE_HEADER
+
+  * CClustererInterfaceProxy
+    * Used by:
+      * CClusterer_Confix2_dir(Confix2_dir_Contributor)
+    * Methods:
+      * LIBNAME
+      * LIBTOOL_LIBRARY_VERSION
+
+  * (C) ExplicitInterfaceProxy
+    * Used by:
+      * ExplicitInterface_Confix2_dir(Confix2_dir_Contributor) (which
+        is in turn used by ExplicitInterfaceSetup)
+    * Methods:
+      * H
+      * C
+      * CXX
+      * LIBRARY
+      * EXECUTABLE
+        * what: one of
+          * EXECUTABLE_BIN
+          * EXECUTABLE_CHECK
+          * EXECUTABLE_NOINST
+
+  * EXTERNAL_LIBRARY
+    * Used by:
+      * CommonInterface_Confix2_dir(Confix2_dir_Contributor)
+    * Methods:
+      * EXTERNAL_LIBRARY
+  * REQUIRE_H
+    * Used by:
+      * CommonInterface_Confix2_dir(Confix2_dir_Contributor)
+    * Methods:
+      * REQUIRE_H
+  * PROVIDE_H
+    * Used by:
+      * CommonInterface_Confix2_dir(Confix2_dir_Contributor)
+    * Methods:
+      * PROVIDE_H
+  * TESTS_ENVIRONMENT
+    * Used by:
+      * CommonInterface_Confix2_dir(Confix2_dir_Contributor)
+    * Methods:
+      * TESTS_ENVIRONMENT
+
+  * MakeCallerInterfaceProxy
+    * Used by:
+      * _MakeInterface_Confix2_dir(Confix2_dir_Contributor)
+    * Methods:
+      * CALL_MAKE_AND_RESCAN
+      * CALL_MAKE_AND_RESCAN_SYNC
+      
+  * ADD_PLAINFILE
+    * Used by:
+      * ADD_PLAINFILE_Confix2_dir(Confix2_dir_Contributor)
+    * Methods:
+      * ADD_PLAINFILE
+
+  * ADD_SCRIPT
+    * Used by:
+      * ScriptInterface_Confix2_dir(Confix2_dir_Contributor)
+    * Methods:
+      * ADD_SCRIPT
