@@ -21,6 +21,7 @@ from dirsetup import BasicDirectorySetupSuite
 from explicit_iface import ExplicitInterfaceInMemorySuite
 from ignored_entries import IgnoredEntriesSuite
 from pseudo_handwritten import PseudoHandwrittenSuite
+from common_iface_suite import CommonDirectoryInterfaceSuite
 
 class HierarchyInMemorySuite(unittest.TestSuite):
     def __init__(self):
@@ -29,6 +30,7 @@ class HierarchyInMemorySuite(unittest.TestSuite):
         self.addTest(ExplicitInterfaceInMemorySuite())
         self.addTest(IgnoredEntriesSuite())
         self.addTest(PseudoHandwrittenSuite())
+        self.addTest(CommonDirectoryInterfaceSuite())
         pass
     pass
 

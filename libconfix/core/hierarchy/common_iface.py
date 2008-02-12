@@ -21,6 +21,7 @@ from libconfix.core.machinery.builder import Builder
 from libconfix.core.hierarchy.confix2_dir_contributor import Confix2_dir_Contributor
 from libconfix.core.iface.proxy import InterfaceProxy
 from libconfix.core.utils.error import Error
+from libconfix.core.filesys.directory import Directory
 from libconfix.core.filesys import scan
 
 class CommonDirectoryInterface_Confix2_dir(Confix2_dir_Contributor):

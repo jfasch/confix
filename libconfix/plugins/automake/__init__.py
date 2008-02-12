@@ -16,6 +16,5 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 # USA
 
-""" Autotools related core functionalty. These things are used by the
-core; however, the goal is to move them a bit more away and make them
-plugin-like."""
+""" An output plugin that writes automake build instructions for all
+known builders."""

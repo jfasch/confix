@@ -1,5 +1,4 @@
-# Copyright (C) 2002-2006 Salomon Automation
-# Copyright (C) 2006 Joerg Faschingbauer
+# Copyright (C) 2008 Joerg Faschingbauer
 
 # This library is free software; you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as
@@ -16,4 +15,20 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 # USA
 
-from machinery.require_string import Require_String
+from libconfix.core.machinery.builder import Builder
+
+class Makefile_am_Builder(Builder):
+
+    """ Write Makefile.am for fellow builders."""
+    
+    def __init__(self):
+        Builder.__init__(self)
+        pass
+
+    def output(self):
+        for b in self.parentbuilder().builders():
+            if type(b) is Builder:
+                
+            
+            pass
+        pass

@@ -1,20 +1,26 @@
-* Objects to relieve from automake stuff
+* TODO
 
-  * libconfix/core/machinery/builder.py
-  * libconfix/core/hierarchy/dirbuilder.py
-  * libconfix/core/machinery/local_package.py
-  * libconfix/plugins/c/linked.py
-  * libconfix/plugins/c/c.py
-  * libconfix/plugins/c/library.py
-  * libconfix/plugins/c/cxx.py
-  * libconfix/plugins/c/lex.py
-  * libconfix/plugins/c/yacc.py
-  * libconfix/plugins/c/interix.py
-  * libconfix/plugins/c/library_dependencies.py
+  * Objects to relieve from automake stuff
 
-* Remove libconfix/core/automake completely.
+    * libconfix/core/machinery/builder.py
+    * libconfix/core/hierarchy/dirbuilder.py
+    * libconfix/core/machinery/local_package.py
+    * libconfix/plugins/c/linked.py
+    * libconfix/plugins/c/c.py
+    * libconfix/plugins/c/library.py
+    * libconfix/plugins/c/cxx.py
+    * libconfix/plugins/c/lex.py
+    * libconfix/plugins/c/yacc.py
+    * libconfix/plugins/c/interix.py
+    * libconfix/plugins/c/library_dependencies.py
 
-* Checks:
+  * For *all* tests: instead of explicitly setting up the test with a
+    fine grained setup constellation, use the composite setups from
+    libconfix.setups.
+
+  * Document what we have in the below list.
+
+* Checks before finish:
 
   * BuildInfo_Configure_in must not anymore be used from neither core
     nor plugins.c. Search for files that contain the word "automake".
@@ -24,22 +30,26 @@
 * InterfaceProxy objects
 
   * Confix2_dir_ExplicitInterface
+    * Files
+      * core/hierarchy/explicit_iface.py
     * Used by
       * Confix2_dir_ExplicitInterface(Confix2_dir_Contributor)
     * Methods
       * DIRECTORY
 
   * CommonDirectoryInterface_Confix2_dir.DirectoryBuilderInterfaceProxy
+    * Files
+      * core/hierarchy/common_iface.py
     * Used by
       * CommonDirectoryInterface_Confix2_dir(Confix2_dir_Contributor)
     * Methods
-      * CURRENT_BUILDER
-      * CURRENT_DIRECTORY
-      * ADD_DIRECTORY
-      * IGNORE_ENTRIES
-      * IGNORE_FILE
-      * FIND_ENTRY
-      * GET_ENTRIES
+      * CURRENT_BUILDER: return current directory-builder; tested
+      * CURRENT_DIRECTORY: tested
+      * ADD_DIRECTORY(name): adds an empty directory with name; tested
+      * IGNORE_ENTRIES: tested
+      * IGNORE_FILE: tested
+      * FIND_ENTRY: tested
+      * GET_ENTRIES: tested
       * RESCAN_CURRENT_DIRECTORY
       * ADD_EXTRA_DIST
       * MAKEFILE_AM
@@ -48,6 +58,8 @@
       * SET_FILE_PROPERTY
       
   * FileBuilderInterfaceProxy
+    * Files
+      * core/machinery/filebuilder.py
     * Used by
       * FileBuilder
     * Methods
@@ -55,6 +67,8 @@
       * SET_FILE_PROPERTY
 
   * BuilderInterfaceProxy
+    * Files
+      * core/machinery/builder.py
     * Used by
       * Builder
     * Methods
@@ -95,6 +109,8 @@
           * flags: see CONFIGURE_AC        
 
   * PackageInterfaceProxy
+    * Files
+      * core/machinery/local_package.py
     * Used by:
       * LocalPackage (not a Builder, to be viewed separately)
     * Methods:
@@ -104,24 +120,32 @@
       * SETUPS
 
   * HeaderBuilderInterfaceProxy
+    * Files
+      * plugins/c/h.py
     * Used by:
       * HeaderBuilder
     * Methods:
       * INSTALLPATH
 
   * PKG_CONFIG_LIBRARY
+    * Files
+      * plugins/c/pkg_config/setup.py
     * Used by:
       * PkgConfigInterface_Confix2_dir(Confix2_dir_Contributor)
     * Methods:
       * PKG_CONFIG_LIBRARY
 
   * CompiledCBuilderInterfaceProxy
+    * Files
+      * plugins/c/compiled.py
     * Used by:
       * CompiledCBuilder
     * Methods:
       * EXENAME
 
   * INSTALLDIR_H
+    * Files
+      * plugins/c/explicit_install.py
     * Used by:
       * ExplicitInstaller_Confix2_dir(Confix2_dir_Contributor)
     * Methods:
@@ -130,12 +154,16 @@
         directory.
 
   * RelocatorInterfaceProxy
+    * Files
+      * plugins/c/relocated_headers/iface.py
     * Used by:
       * Relocator_Confix2_dir(Confix2_dir_Contributor)
     * Methods:
       * RELOCATE_HEADER
 
   * CClustererInterfaceProxy
+    * Files
+      * plugins/c/clusterer.py
     * Used by:
       * CClusterer_Confix2_dir(Confix2_dir_Contributor)
     * Methods:
@@ -143,6 +171,8 @@
       * LIBTOOL_LIBRARY_VERSION
 
   * (C) ExplicitInterfaceProxy
+    * Files
+      * plugins/c/explicit_iface.py
     * Used by:
       * ExplicitInterface_Confix2_dir(Confix2_dir_Contributor) (which
         is in turn used by ExplicitInterfaceSetup)
@@ -158,27 +188,37 @@
           * EXECUTABLE_NOINST
 
   * EXTERNAL_LIBRARY
+    * Files
+      * plugins/c/common_iface.py
     * Used by:
       * CommonInterface_Confix2_dir(Confix2_dir_Contributor)
     * Methods:
       * EXTERNAL_LIBRARY
   * REQUIRE_H
+    * Files
+      * plugins/c/common_iface.py
     * Used by:
       * CommonInterface_Confix2_dir(Confix2_dir_Contributor)
     * Methods:
       * REQUIRE_H
   * PROVIDE_H
+    * Files
+      * plugins/c/common_iface.py
     * Used by:
       * CommonInterface_Confix2_dir(Confix2_dir_Contributor)
     * Methods:
       * PROVIDE_H
   * TESTS_ENVIRONMENT
+    * Files
+      * plugins/c/common_iface.py
     * Used by:
       * CommonInterface_Confix2_dir(Confix2_dir_Contributor)
     * Methods:
       * TESTS_ENVIRONMENT
 
   * MakeCallerInterfaceProxy
+    * Files
+      * plugins/make/setup.py
     * Used by:
       * _MakeInterface_Confix2_dir(Confix2_dir_Contributor)
     * Methods:
@@ -186,12 +226,16 @@
       * CALL_MAKE_AND_RESCAN_SYNC
       
   * ADD_PLAINFILE
+    * Files
+      * plugins/plainfile/iface.py
     * Used by:
       * ADD_PLAINFILE_Confix2_dir(Confix2_dir_Contributor)
     * Methods:
       * ADD_PLAINFILE
 
   * ADD_SCRIPT
+    * Files
+      * plugins/script/setup.py
     * Used by:
       * ScriptInterface_Confix2_dir(Confix2_dir_Contributor)
     * Methods:
