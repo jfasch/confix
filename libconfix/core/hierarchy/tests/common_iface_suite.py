@@ -35,6 +35,11 @@ class CommonDirectoryInterfaceSuite(unittest.TestSuite):
         self.addTest(FIND_ENTRY_Test('test'))
         self.addTest(GET_ENTRIES_Test('test'))
         self.addTest(RESCAN_CURRENT_DIRECTORY_Test('test'))
+        self.addTest(ADD_EXTRA_DIST_Test('test'))
+        self.addTest(MAKEFILE_AM_Test('test'))
+        self.addTest(ADD_BUILDER_Test('test'))
+        self.addTest(SET_FILE_PROPERTIES_Test('test'))
+        self.addTest(SET_FILE_PROPERTY_Test('test'))
         pass
     pass
 
@@ -155,19 +160,147 @@ class GET_ENTRIES_Test(unittest.TestCase):
 
 class RESCAN_CURRENT_DIRECTORY_Test(PersistentTestCase):
     def test(self):
-        fs = FileSystem(path=[])
+        fs = FileSystem(path=self.rootpath())
         fs.rootdirectory().add(
             name=const.CONFIX2_PKG,
             entry=File(lines=["PACKAGE_NAME('"+self.__class__.__name__+"')",
                               "PACKAGE_VERSION('1.2.3')"]))
+        fs.rootdirectory().add(
+            name=const.CONFIX2_DIR,
+            entry=File(lines=["from libconfix.core.filesys.file import File",
+                              "file('file', 'w')",
+                              "RESCAN_CURRENT_DIRECTORY()",
+                              "if FIND_ENTRY('file') is not None:",
+                              "    CURRENT_DIRECTORY().add(name='ok', entry=File())"]))
 
-        self.fail()
+        fs.sync()
 
         package = LocalPackage(rootdirectory=fs.rootdirectory(),
                                setups=[ExplicitSetup(use_libtool=True)])
         package.boil(external_nodes=[])
 
         self.failUnless(package.rootdirectory().get('ok'))
+        pass
+    pass
+        
+class ADD_EXTRA_DIST_Test(PersistentTestCase):
+    def test(self):
+        fs = FileSystem(path=[])
+        fs.rootdirectory().add(
+            name=const.CONFIX2_PKG,
+            entry=File(lines=["PACKAGE_NAME('"+self.__class__.__name__+"')",
+                              "PACKAGE_VERSION('1.2.3')"]))
+        fs.rootdirectory().add(
+            name=const.CONFIX2_DIR,
+            entry=File(lines=["ADD_EXTRA_DIST(filename='file')"]))
+        fs.rootdirectory().add(
+            name='file',
+            entry=File())
+
+        package = LocalPackage(rootdirectory=fs.rootdirectory(),
+                               setups=[ExplicitSetup(use_libtool=True)])
+        package.boil(external_nodes=[])
+
+        makefile_am = package.rootbuilder().makefile_am()
+        self.failUnless('file' in makefile_am.extra_dist())
+        pass
+    pass
+        
+class MAKEFILE_AM_Test(PersistentTestCase):
+    def test(self):
+        fs = FileSystem(path=[])
+        fs.rootdirectory().add(
+            name=const.CONFIX2_PKG,
+            entry=File(lines=["PACKAGE_NAME('"+self.__class__.__name__+"')",
+                              "PACKAGE_VERSION('1.2.3')"]))
+        token = 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
+        fs.rootdirectory().add(
+            name=const.CONFIX2_DIR,
+            entry=File(lines=["MAKEFILE_AM(line='"+token+"')"]))
+
+        package = LocalPackage(rootdirectory=fs.rootdirectory(),
+                               setups=[ExplicitSetup(use_libtool=True)])
+        package.boil(external_nodes=[])
+
+        makefile_am = package.rootbuilder().makefile_am()
+        self.failUnless(token in makefile_am.lines())
+        pass
+    pass
+        
+class ADD_BUILDER_Test(PersistentTestCase):
+    def test(self):
+        fs = FileSystem(path=[])
+        fs.rootdirectory().add(
+            name=const.CONFIX2_PKG,
+            entry=File(lines=["PACKAGE_NAME('"+self.__class__.__name__+"')",
+                              "PACKAGE_VERSION('1.2.3')"]))
+        fs.rootdirectory().add(
+            name=const.CONFIX2_DIR,
+            entry=File(lines=["from libconfix.core.machinery.builder import Builder",
+                              "class MyBuilder(Builder):",
+                              "    def locally_unique_id(self): return 'my_builder_id'",
+                              "ADD_BUILDER(builder=MyBuilder())"]))
+
+        package = LocalPackage(rootdirectory=fs.rootdirectory(),
+                               setups=[ExplicitSetup(use_libtool=True)])
+        package.boil(external_nodes=[])
+
+        for b in package.rootbuilder().builders():
+            if b.locally_unique_id() == 'my_builder_id':
+                break
+            pass
+        else:
+            self.fail()
+            pass
+        pass
+    pass
+        
+class SET_FILE_PROPERTIES_Test(PersistentTestCase):
+    def test(self):
+        fs = FileSystem(path=[])
+        fs.rootdirectory().add(
+            name=const.CONFIX2_PKG,
+            entry=File(lines=["PACKAGE_NAME('"+self.__class__.__name__+"')",
+                              "PACKAGE_VERSION('1.2.3')"]))
+        fs.rootdirectory().add(
+            name=const.CONFIX2_DIR,
+            entry=File(lines=["SET_FILE_PROPERTIES(filename='file', properties={'a': 1, 'b': 2})"]))
+        fs.rootdirectory().add(
+            name='file',
+            entry=File())
+
+        package = LocalPackage(rootdirectory=fs.rootdirectory(),
+                               setups=[ExplicitSetup(use_libtool=True)])
+        package.boil(external_nodes=[])
+
+        f = fs.rootdirectory().get('file')
+        self.failIf(f is None)
+        self.failUnless(f.get_property('a') == 1)
+        self.failUnless(f.get_property('b') == 2)
+        pass
+    pass
+        
+class SET_FILE_PROPERTY_Test(PersistentTestCase):
+    def test(self):
+        fs = FileSystem(path=[])
+        fs.rootdirectory().add(
+            name=const.CONFIX2_PKG,
+            entry=File(lines=["PACKAGE_NAME('"+self.__class__.__name__+"')",
+                              "PACKAGE_VERSION('1.2.3')"]))
+        fs.rootdirectory().add(
+            name=const.CONFIX2_DIR,
+            entry=File(lines=["SET_FILE_PROPERTY(filename='file', name='a', value=1)"]))
+        fs.rootdirectory().add(
+            name='file',
+            entry=File())
+
+        package = LocalPackage(rootdirectory=fs.rootdirectory(),
+                               setups=[ExplicitSetup(use_libtool=True)])
+        package.boil(external_nodes=[])
+
+        f = fs.rootdirectory().get('file')
+        self.failIf(f is None)
+        self.failUnless(f.get_property('a') == 1)
         pass
     pass
         

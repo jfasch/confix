@@ -18,7 +18,9 @@
     fine grained setup constellation, use the composite setups from
     libconfix.setups.
 
-  * Document what we have in the below list.
+  * DirectoryBuilder: weg mit makefile_am()
+
+  * Document what we have in the list below.
 
 * Checks before finish:
 
@@ -50,12 +52,12 @@
       * IGNORE_FILE: tested
       * FIND_ENTRY: tested
       * GET_ENTRIES: tested
-      * RESCAN_CURRENT_DIRECTORY
-      * ADD_EXTRA_DIST
-      * MAKEFILE_AM
-      * ADD_BUILDER
-      * SET_FILE_PROPERTIES
-      * SET_FILE_PROPERTY
+      * RESCAN_CURRENT_DIRECTORY: tested
+      * ADD_EXTRA_DIST: tested
+      * MAKEFILE_AM: tested
+      * ADD_BUILDER: tested
+      * SET_FILE_PROPERTIES: tested
+      * SET_FILE_PROPERTY: tested
       
   * FileBuilderInterfaceProxy
     * Files
