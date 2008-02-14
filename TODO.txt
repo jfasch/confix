@@ -31,33 +31,45 @@
 
 * InterfaceProxy objects
 
-  * Confix2_dir_ExplicitInterface
-    * Files
-      * core/hierarchy/explicit_iface.py
-    * Used by
-      * Confix2_dir_ExplicitInterface(Confix2_dir_Contributor)
-    * Methods
-      * DIRECTORY
+  Make one dedicated object of each method/function. This gives us the
+  possibility to provie documentation/typing for each.
 
-  * CommonDirectoryInterface_Confix2_dir.DirectoryBuilderInterfaceProxy
-    * Files
-      * core/hierarchy/common_iface.py
-    * Used by
-      * CommonDirectoryInterface_Confix2_dir(Confix2_dir_Contributor)
-    * Methods
-      * CURRENT_BUILDER: return current directory-builder; tested
-      * CURRENT_DIRECTORY: tested
-      * ADD_DIRECTORY(name): adds an empty directory with name; tested
-      * IGNORE_ENTRIES: tested
-      * IGNORE_FILE: tested
-      * FIND_ENTRY: tested
-      * GET_ENTRIES: tested
-      * RESCAN_CURRENT_DIRECTORY: tested
-      * ADD_EXTRA_DIST: tested
-      * MAKEFILE_AM: tested
-      * ADD_BUILDER: tested
-      * SET_FILE_PROPERTIES: tested
-      * SET_FILE_PROPERTY: tested
+  * Confix2.dir Interface
+
+    Make three setup objects for the backend-neutral part:
+    - Common
+    - Explicit
+    - Implicit
+
+    The rest (those that don't fit in one of the above) are probably
+    future automake plugin candidates.
+
+    * Confix2_dir_ExplicitInterface
+      * Files
+        * core/hierarchy/explicit_iface.py
+      * Used by
+        * Confix2_dir_ExplicitInterface(Confix2_dir_Contributor)
+      * Methods
+        * DIRECTORY
+    * CommonDirectoryInterface_Confix2_dir.DirectoryBuilderInterfaceProxy
+      * Files
+        * core/hierarchy/common_iface.py
+      * Used by
+        * CommonDirectoryInterface_Confix2_dir(Confix2_dir_Contributor)
+      * Methods
+        * CURRENT_BUILDER: return current directory-builder; tested
+        * CURRENT_DIRECTORY: tested
+        * ADD_DIRECTORY(name): adds an empty directory with name; tested
+        * IGNORE_ENTRIES: tested
+        * IGNORE_FILE: tested
+        * FIND_ENTRY: tested
+        * GET_ENTRIES: tested
+        * RESCAN_CURRENT_DIRECTORY: tested
+        * ADD_EXTRA_DIST: tested
+        * MAKEFILE_AM: tested
+        * ADD_BUILDER: tested
+        * SET_FILE_PROPERTIES: tested
+        * SET_FILE_PROPERTY: tested
       
   * FileBuilderInterfaceProxy
     * Files
