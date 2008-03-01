@@ -16,7 +16,7 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 # USA
 
-jjj factor this out into sutomake
+jjj factor this out into automake
 
 from base import CBaseBuilder
 from dependency import Provide_CInclude
