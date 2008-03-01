@@ -16,6 +16,8 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 # USA
 
+jjj factor this out into sutomake
+
 from base import CBaseBuilder
 from dependency import Provide_CInclude
 from buildinfo import BuildInfo_CIncludePath_NativeLocal
@@ -143,7 +145,7 @@ class HeaderBuilder(CBaseBuilder):
         if outer_name is None or self.file().name() != outer_name:
             ret.add_internal_provide(Provide_CInclude(filename=self.file().name()))
             pass
-        
+
         return ret
 
     def buildinfos(self):

@@ -11,10 +11,15 @@
         use. will be hard.
     * libconfix/core/machinery/local_package.py
       * repo_automake.dir_for_automake()
-
-      * jjj hier weitermachen
-      
     * libconfix/plugins/c/linked.py
+      * use_libtool is crap! this has to go into the backend plugin,
+        together with get_linkline() and __do_deep_linking().
+    * libconfix/plugins/c/h.py
+      * FileInstaller crap: using the file installer from
+        DirectoryBuilder
+
+jjj hier weiter
+        
     * libconfix/plugins/c/c.py
     * libconfix/plugins/c/library.py
     * libconfix/plugins/c/cxx.py
@@ -23,13 +28,9 @@
     * libconfix/plugins/c/interix.py
     * libconfix/plugins/c/library_dependencies.py
 
-  * For *all* tests: instead of explicitly setting up the test with a
-    fine grained setup constellation, use the composite setups from
-    libconfix.setups.
-
   * DirectoryBuilder: remove makefile_am()
 
-  * Document what we have in the list below.
+  * Document the InterfaceProxy object that we have in the list below.
 
   * Repo files need to be installed piggy backed on the backend build
     tool. Will need a dedicated repo builder that carries the
@@ -37,6 +38,17 @@
 
     Better yet: the repo builder is *responsible* for writing the repo
     - this way we keep that out of the core as well.
+
+  * clean up automake plugin directories; move most parts into
+    subdirectories.
+
+  * For *all* tests: instead of explicitly setting up the test with a
+    fine grained setup constellation, use the composite setups from
+    libconfix.setups.
+
+  * From plugins.c.tests, move all that only test automake stuff into
+    plugins.automake.tests. those that use automake to build C stuff
+    can stay, though.
 
 * Checks before finish:
 
