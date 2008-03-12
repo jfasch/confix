@@ -1,4 +1,4 @@
-# Copyright (C) 2006 Joerg Faschingbauer
+# Copyright (C) 2006-2008 Joerg Faschingbauer
 
 # This library is free software; you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as
@@ -51,7 +51,7 @@ class HeaderInstallPath(unittest.TestCase):
                                setups=[DefaultCSetup(use_libtool=False, short_libnames=False)])
         package.boil(external_nodes=[])
         file_h_builder = package.rootbuilder().find_entry_builder(['file.h'])
-        self.failUnlessEqual(file_h_builder.visible_in_directory(), ['a', 'b'])
+        self.failUnlessEqual(file_h_builder.public_visibility(), ['a', 'b'])
         pass
 
     def test_ambig1(self):

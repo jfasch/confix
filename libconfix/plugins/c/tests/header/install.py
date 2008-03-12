@@ -1,5 +1,5 @@
 # Copyright (C) 2002-2006 Salomon Automation
-# Copyright (C) 2006 Joerg Faschingbauer
+# Copyright (C) 2006-2008 Joerg Faschingbauer
 
 # This library is free software; you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as
@@ -69,7 +69,7 @@ class FilePropertyOnly(unittest.TestCase):
         self.failIf(file_h_builder is None)
         self.failUnless(isinstance(file_h_builder, HeaderBuilder))
 
-        self.failUnlessEqual(file_h_builder.visible_in_directory(), ['xxx'])
+        self.failUnlessEqual(file_h_builder.public_visibility(), ['xxx'])
         pass
     pass
 
@@ -94,7 +94,7 @@ class IfaceOnly(unittest.TestCase):
         self.failIf(file_h_builder is None)
         self.failUnless(isinstance(file_h_builder, HeaderBuilder))
 
-        self.failUnlessEqual(file_h_builder.visible_in_directory(), ['xxx'])
+        self.failUnlessEqual(file_h_builder.public_visibility(), ['xxx'])
         pass
     pass
 
@@ -120,7 +120,7 @@ class Namespace(unittest.TestCase):
         self.failIf(file_h_builder is None)
         self.failUnless(isinstance(file_h_builder, HeaderBuilder))
         
-        self.failUnlessEqual(file_h_builder.visible_in_directory(), ['A'])
+        self.failUnlessEqual(file_h_builder.public_visibility(), ['A'])
         pass
 
     def testNested(self):
@@ -146,7 +146,7 @@ class Namespace(unittest.TestCase):
         self.failIf(file_h_builder is None)
         self.failUnless(isinstance(file_h_builder, HeaderBuilder))
 
-        self.failUnlessEqual(file_h_builder.visible_in_directory(), ['A', 'B'])
+        self.failUnlessEqual(file_h_builder.public_visibility(), ['A', 'B'])
         pass
 
     def testGlobal(self):
@@ -169,7 +169,7 @@ class Namespace(unittest.TestCase):
         self.failIf(file_h_builder is None)
         self.failUnless(isinstance(file_h_builder, HeaderBuilder))
 
-        self.failUnlessEqual(file_h_builder.visible_in_directory(), [])
+        self.failUnlessEqual(file_h_builder.public_visibility(), [])
         pass
 
     def testAmbiguousFlat(self):
@@ -245,7 +245,7 @@ class Namespace(unittest.TestCase):
         self.failIf(file_h_builder is None)
         self.failUnless(isinstance(file_h_builder, HeaderBuilder))
 
-        self.failUnlessEqual(file_h_builder.visible_in_directory(), ['xxx'])
+        self.failUnlessEqual(file_h_builder.public_visibility(), ['xxx'])
         pass
     pass
 
@@ -304,7 +304,7 @@ class InstallPriorities(unittest.TestCase):
         self.failIf(file_h_builder is None)
         self.failUnless(isinstance(file_h_builder, HeaderBuilder))
 
-        self.failUnlessEqual(file_h_builder.visible_in_directory(), ['install','from','dir','iface'])
+        self.failUnlessEqual(file_h_builder.public_visibility(), ['install','from','dir','iface'])
         pass
     pass
 

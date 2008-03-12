@@ -1,5 +1,5 @@
 # Copyright (C) 2002-2006 Salomon Automation
-# Copyright (C) 2006 Joerg Faschingbauer
+# Copyright (C) 2006-2008 Joerg Faschingbauer
 
 # This library is free software; you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as
@@ -25,6 +25,8 @@ from libconfix.plugins.script.setup import ScriptSetup
 from libconfix.plugins.idl.setup import IDLSetup
 from libconfix.plugins.make.setup import MakeSetup
 
+from libconfix.plugins.automake.setup import AutomakeSetup
+
 class ConfixSetup(CompositeSetup):
     def __init__(self,
                  use_libtool,
@@ -36,7 +38,8 @@ class ConfixSetup(CompositeSetup):
              ScriptSetup(),
              IDLSetup(),
              PlainFileInterfaceSetup(),
-             MakeSetup()])
+             MakeSetup(),
+             AutomakeSetup()])
         pass
 
     pass

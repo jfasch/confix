@@ -1,4 +1,4 @@
-# Copyright (C) 2007 Joerg Faschingbauer
+# Copyright (C) 2007-2008 Joerg Faschingbauer
 
 # This library is free software; you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as
@@ -21,11 +21,14 @@ from libconfix.core.hierarchy.explicit_setup import ExplicitDirectorySetup
 from libconfix.plugins.c.setups.explicit_setup import ExplicitCSetup
 from libconfix.plugins.c.library_dependencies import LibraryDependenciesFinderSetup
 
+from libconfix.plugins.automake.setup import AutomakeSetup
+
 class ExplicitSetup(CompositeSetup):
     def __init__(self,
                  use_libtool):
         setups = [ExplicitDirectorySetup(),
-                  ExplicitCSetup(use_libtool=use_libtool)
+                  ExplicitCSetup(use_libtool=use_libtool),
+                  AutomakeSetup(),
                   ]
         if not use_libtool:
             setups.append(LibraryDependenciesFinderSetup())
