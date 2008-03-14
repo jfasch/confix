@@ -122,41 +122,49 @@ class CompiledCBuilder(CBaseBuilder):
             pass
         pass
 
-    def output(self):
-        CBaseBuilder.output(self)
-
+    def get_includepath(self):
+        ret = []
+        
         # native includes of the same package come first
         if len(self.__native_local_include_dirs) > 0:
             for d in self.__native_local_include_dirs:
-                self.parentbuilder().makefile_am().add_includepath('-I'+'/'.join(['$(top_srcdir)']+d))
+                ret.append('-I'+'/'.join(['$(top_srcdir)']+d))
                 pass
             pass
         if self.__have_locally_installed_includes:
-            self.parentbuilder().makefile_am().add_includepath('-I'+'/'.join(['$(top_builddir)', const.LOCAL_INCLUDE_DIR]))
+            ret.append('-I'+'/'.join(['$(top_builddir)', const.LOCAL_INCLUDE_DIR]))
             pass
         # native includes of other packages (i.e., native installed
         # includes) come next.
         if self.__buildinfo_includepath_native_installed:
-            self.parentbuilder().makefile_am().add_includepath(
-                '-I$(includedir)')
-            self.parentbuilder().makefile_am().add_includepath(
-                '$('+readonly_prefixes.incpath_var+')')
+            ret.append('-I$(includedir)')
+            ret.append('$('+readonly_prefixes.incpath_var+')')
             pass
         # external includes.
-        for p in self.__external_include_path:
-            for item in p:
-                self.parentbuilder().makefile_am().add_includepath(item)
-                pass
-            pass
-        # commandline macros
-        for macro, value in self.__cmdlinemacros.iteritems():
-            self.parentbuilder().makefile_am().add_cmdlinemacro(macro, value)
-            pass
-        # cflags
-        for cflag in self.__cflags:
-            self.parentbuilder().makefile_am().add_am_cflags(cflag)
-            pass
-        pass
+        ret.extend(self.__external_include_path)
+
+        return ret
+
+    def get_cmdlinemacros(self):
+        """
+        Compiler commandline macros (usually passed to the compiler
+        like -Dname=value, or -Dname) are tuples of the form (name,
+        value). Both are strings, and value can be None if -Dname is
+        desired.
+
+        Returns an iterable of (name, value) tuples.
+        """
+        return self.__cmdlinemacros.iteritems()
+
+    def get_cflags(self):
+        """
+        Flags for every C-like compilation (which can be C, C++, or
+        even Lex and Yacc).
+
+        Returns a list of strings that are passes to the compiler
+        literally.
+        """
+        return self.__cflags
 
     def iface_pieces(self):
         return CBaseBuilder.iface_pieces(self) + [CompiledCBuilderInterfaceProxy(object=self)]

@@ -16,12 +16,12 @@
 # USA
 
 from libconfix.plugins.c.h import HeaderBuilder
-
+from libconfix.plugins.automake.configure_ac import Configure_ac
 from libconfix.core.machinery.builder import Builder
 
-class HeaderOutputBuilder(Builder):
+class COutputBuilder(Builder):
     """
-    Generate output for all of our HeaderBuilder neighbors.
+    Generate output for all of the builders of the C plugin.
     """
     
     def __init__(self):
@@ -38,12 +38,18 @@ class HeaderOutputBuilder(Builder):
         super(HeaderOutputBuilder, self).output()
         for b in self.parentbuilder().builders():
             if isinstance(b, HeaderBuilder):
-                self.__do_output(b)
-                pass
+                self.__do_header(b)
+                continue
+            if isinstance(b, CBuilder):
+                self.__do_c(b)
+                continue
+            if isinstance(b, CXXBuilder):
+                self.__do_cxx(b)
+                continue
             pass
         pass
 
-    def __do_output(self, b):
+    def __do_header(self, b):
         public_visibility = b.public_visibility()
         local_visibility = b.local_visibility()
 
@@ -56,5 +62,28 @@ class HeaderOutputBuilder(Builder):
                 dir=local_visibility[1])
             pass
         pass
+
+    def __do_compiled(self, b):
+        for p in b.get_includepath():
+            self.parentbuilder().makefile_am().add_includepath(p)
+            pass
+        for name, value in b.get_cmdlinemacros():
+            self.parentbuilder().makefile_am().add_cmdlinemacro(name, value)
+            pass
+        for f in b.get_cflags():
+            self.parentbuilder().makefile_am().add_am_cflags(f)
+            pass
+        pass
+
+    def __do_c(self, b):
+        self.__do_compiled(b)
+        self.package().configure_ac().add_paragraph(
+            paragraph=Paragraph(['AC_PROG_CC']),
+            order=Configure_ac.PROGRAMS)
+        pass
+
+    def __do_cxx(self, b):
+        self.__do_compiled(b)
         
+
     pass

@@ -28,6 +28,9 @@
     * libconfix/plugins/c/interix.py
     * libconfix/plugins/c/library_dependencies.py
 
+    * libconfix/plugins/c/compiled.py
+      get_includepath() still returns automake specific crap
+
   * Unify the various setup classes
     * move libconfix/frontends/confix2/confix_setup.py to
       libconfix/setups/implicit_setup.py
@@ -39,11 +42,9 @@
       * ... whatnot ...
       * and, above all, AutomakeSetup
 
-  * DirectoryBuilder: remove makefile_am()
-
   * Document the InterfaceProxy object that we have in the list below.
 
-  * Repo files need to be installed piggy backed on the backend build
+  * Repo files need to be installed piggy-backed on the backend build
     tool. Will need a dedicated repo builder that carries the
     information that is used by the backend build tool plugin.
 

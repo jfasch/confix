@@ -18,21 +18,9 @@
 
 from compiled import CompiledCBuilder
 
-from libconfix.core.utils.paragraph import Paragraph, OrderedParagraphSet
-
-# jjj remove this
-from libconfix.plugins.automake.configure_ac import Configure_ac
-
 class CBuilder(CompiledCBuilder):
     def __init__(self, file):
         CompiledCBuilder.__init__(self, file=file)
-        pass
-
-    def output(self):
-        CompiledCBuilder.output(self)
-        self.package().configure_ac().add_paragraph(
-            paragraph=Paragraph(['AC_PROG_CC']),
-            order=Configure_ac.PROGRAMS)
         pass
     
     pass
