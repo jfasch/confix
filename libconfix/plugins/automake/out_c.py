@@ -15,9 +15,14 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 # USA
 
-from libconfix.plugins.c.h import HeaderBuilder
-from libconfix.plugins.automake.configure_ac import Configure_ac
+from configure_ac import Configure_ac
+import readonly_prefixes
+
+from libconfix.core.utils.paragraph import Paragraph
 from libconfix.core.machinery.builder import Builder
+from libconfix.plugins.c.h import HeaderBuilder
+from libconfix.plugins.c.c import CBuilder
+from libconfix.plugins.c.cxx import CXXBuilder
 
 class COutputBuilder(Builder):
     """
@@ -35,7 +40,7 @@ class COutputBuilder(Builder):
         return str(self.__class__)
 
     def output(self):
-        super(HeaderOutputBuilder, self).output()
+        super(COutputBuilder, self).output()
         for b in self.parentbuilder().builders():
             if isinstance(b, HeaderBuilder):
                 self.__do_header(b)
@@ -64,14 +69,31 @@ class COutputBuilder(Builder):
         pass
 
     def __do_compiled(self, b):
-        for p in b.get_includepath():
-            self.parentbuilder().makefile_am().add_includepath(p)
-            pass
-        for name, value in b.get_cmdlinemacros():
+        for name, value in b.cmdlinemacros().iteritems():
             self.parentbuilder().makefile_am().add_cmdlinemacro(name, value)
             pass
-        for f in b.get_cflags():
+        for f in b.cflags():
             self.parentbuilder().makefile_am().add_am_cflags(f)
+            pass
+
+        # native includes of the same package come first
+        for d in b.native_local_include_dirs():
+            self.parentbuilder().makefile_am().add_includepath('-I'+'/'.join(['$(top_srcdir)']+d))
+            pass
+        # if files have been locally installed, we have to add
+        # $(top_builddir)/confix_include to the include path.
+        if b.have_locally_installed_includes():
+            self.parentbuilder().makefile_am().add_includepath('-I'+'/'.join(['$(top_builddir)', const.LOCAL_INCLUDE_DIR]))
+            pass
+        # native includes of other packages (i.e., native installed
+        # includes) come next.
+        if b.native_installed_seen():
+            self.parentbuilder().makefile_am().add_includepath('-I$(includedir)')
+            self.parentbuilder().makefile_am().add_includepath('$('+readonly_prefixes.incpath_var+')')
+            pass
+        # external includes.
+        for p in b.external_include_path():
+            self.parentbuilder().makefile_am().add_includepath(p)
             pass
         pass
 
@@ -84,6 +106,12 @@ class COutputBuilder(Builder):
 
     def __do_cxx(self, b):
         self.__do_compiled(b)
-        
+        self.package().configure_ac().add_paragraph(
+            paragraph=Paragraph(['AC_PROG_CXX']),
+            order=Configure_ac.PROGRAMS)
+        for f in b.cxxflags():
+            self.parentbuilder().makefile_am().add_am_cxxflags(f)
+            pass
+        pass
 
     pass

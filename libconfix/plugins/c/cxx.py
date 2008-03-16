@@ -16,11 +16,6 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 # USA
 
-from libconfix.core.utils.paragraph import Paragraph
-
-# jjj remove this:
-from libconfix.plugins.automake.configure_ac import Configure_ac
-
 from compiled import CompiledCBuilder
 from buildinfo import BuildInfo_CXXFLAGS
 
@@ -45,16 +40,6 @@ class CXXBuilder(CompiledCBuilder):
                     self.__cxxflags.extend(bi.cxxflags())
                     continue
                 pass
-            pass
-        pass
-
-    def output(self):
-        CompiledCBuilder.output(self)
-        self.package().configure_ac().add_paragraph(
-            paragraph=Paragraph(['AC_PROG_CXX']),
-            order=Configure_ac.PROGRAMS)
-        for cxxflag in self.__cxxflags:
-            self.parentbuilder().makefile_am().add_am_cxxflags(cxxflag)
             pass
         pass
 

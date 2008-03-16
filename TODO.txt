@@ -17,9 +17,6 @@
     * libconfix/plugins/c/h.py
       * FileInstaller crap: using the file installer from
         DirectoryBuilder
-
-        jjj
-
     * libconfix/plugins/c/c.py
     * libconfix/plugins/c/library.py
     * libconfix/plugins/c/cxx.py
@@ -27,9 +24,6 @@
     * libconfix/plugins/c/yacc.py
     * libconfix/plugins/c/interix.py
     * libconfix/plugins/c/library_dependencies.py
-
-    * libconfix/plugins/c/compiled.py
-      get_includepath() still returns automake specific crap
 
   * Unify the various setup classes
     * move libconfix/frontends/confix2/confix_setup.py to

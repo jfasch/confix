@@ -24,9 +24,9 @@ from edgefinder import EdgeFinder
 from filebuilder import FileBuilder
 from require import Require
 from resolve_error import NotResolved
-import readonly_prefixes
 
 # jjj remove this >>>
+from libconfix.plugins.automake import readonly_prefixes
 from libconfix.plugins.automake import repo_automake
 from libconfix.plugins.automake.auxdir import AutoconfAuxDirBuilder
 from libconfix.plugins.automake.configure_ac import Configure_ac 

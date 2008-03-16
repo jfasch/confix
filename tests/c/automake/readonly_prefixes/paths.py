@@ -18,7 +18,7 @@
 from source import source_tree
 
 from libconfix.core.machinery.local_package import LocalPackage
-from libconfix.plugins.c.setups.default_setup import DefaultCSetup
+from libconfix.frontends.confix2.confix_setup import ConfixSetup
 
 import unittest
 
@@ -35,11 +35,11 @@ class PathsInMemoryTest(unittest.TestCase):
         lo_dir = source.get('lo')
         hi_dir = source.get('hi')
 
-        lo_pkg = LocalPackage(rootdirectory=lo_dir, setups=[DefaultCSetup(short_libnames=False, use_libtool=False)])
+        lo_pkg = LocalPackage(rootdirectory=lo_dir, setups=[ConfixSetup(short_libnames=False, use_libtool=False)])
         lo_pkg.boil(external_nodes=[])
         lo_pkg_inst = lo_pkg.install()
 
-        hi_pkg = LocalPackage(rootdirectory=hi_dir, setups=[DefaultCSetup(short_libnames=False, use_libtool=False)])
+        hi_pkg = LocalPackage(rootdirectory=hi_dir, setups=[ConfixSetup(short_libnames=False, use_libtool=False)])
         hi_pkg.boil(external_nodes=lo_pkg_inst.nodes())
         hi_pkg.output()
 

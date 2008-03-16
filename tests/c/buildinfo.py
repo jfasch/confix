@@ -18,7 +18,7 @@
 
 import unittest
 
-from libconfix.plugins.c.setups.default_setup import DefaultCSetup
+from libconfix.frontends.confix2.confix_setup import ConfixSetup
 
 from libconfix.core.filesys.directory import Directory
 from libconfix.core.filesys.file import File
@@ -74,8 +74,7 @@ class BasicBuildInfoTest(unittest.TestCase):
             entry=File(lines=["// CONFIX:REQUIRE_SYMBOL('lo', URGENCY_ERROR)"]))
 
         package = LocalPackage(rootdirectory=fs.rootdirectory(),
-                               setups=[DefaultDirectorySetup(),
-                                       DefaultCSetup(use_libtool=False, short_libnames=False)])
+                               setups=[ConfixSetup(use_libtool=False, short_libnames=False)])
         package.boil(external_nodes=[])
         package.output()
 
@@ -174,8 +173,7 @@ class UniqueFlags_n_MacrosTest(unittest.TestCase):
             entry=File())
 
         package = LocalPackage(rootdirectory=fs.rootdirectory(),
-                               setups=[DefaultDirectorySetup(),
-                                       DefaultCSetup(use_libtool=False, short_libnames=False)])
+                               setups=[ConfixSetup(use_libtool=False, short_libnames=False)])
         package.boil(external_nodes=[])
 
         hi_file1_cc_builder = package.rootbuilder().find_entry_builder(['hi', 'file1.cc'])

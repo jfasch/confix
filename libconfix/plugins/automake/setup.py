@@ -17,11 +17,11 @@
 
 from libconfix.core.machinery.setup import Setup
 
-from out_h import HeaderOutputBuilder
+from out_c import COutputBuilder
 
 class AutomakeSetup(Setup):
     def initial_builders(self):
         ret = super(AutomakeSetup, self).initial_builders()
-        ret.append(HeaderOutputBuilder())
+        ret.append(COutputBuilder())
         return ret
     pass

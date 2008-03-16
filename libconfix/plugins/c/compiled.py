@@ -17,7 +17,6 @@
 # USA
 
 from libconfix.core.iface.proxy import InterfaceProxy
-from libconfix.core.machinery import readonly_prefixes
 from libconfix.core.utils import const
 import libconfix.core.utils.helper
 
@@ -71,16 +70,47 @@ class CompiledCBuilder(CBaseBuilder):
         return self.__is_main
 
     def cmdlinemacros(self):
+        """
+        Compiler commandline macros (usually passed to the compiler
+        like -Dname=value, or -Dname) are tuples of the form (name,
+        value). Both are strings, and value can be None if -Dname is
+        desired.
+
+        Returns an dictionary {name: value}, where value can be None.
+        """
         return self.__cmdlinemacros
+    
     def cflags(self):
+        """
+        Flags for every C-like compilation (which can be C, C++, or
+        even Lex and Yacc).
+
+        Returns a list of strings that are passed to the compiler
+        literally.
+        """
         return self.__cflags
+
     def external_include_path(self):
+        """
+        Include paths from external packages; list of strings.
+        """
         return self.__external_include_path
 
     def native_local_include_dirs(self):
+        """
+        List of package-local directories that have to put on the
+        compiler command line, as include path. In good old tradition,
+        this is a list of lists of strings.
+        """
         return self.__native_local_include_dirs
 
-    def buildinfo_includepath_native_installed(self):
+    def have_locally_installed_includes(self):
+        """
+        Are there locally installed headers?
+        """
+        return self.__have_locally_installed_includes
+
+    def native_installed_seen(self):
         return self.__buildinfo_includepath_native_installed
 
     def relate(self, node, digraph, topolist):
@@ -121,50 +151,6 @@ class CompiledCBuilder(CBaseBuilder):
                 pass
             pass
         pass
-
-    def get_includepath(self):
-        ret = []
-        
-        # native includes of the same package come first
-        if len(self.__native_local_include_dirs) > 0:
-            for d in self.__native_local_include_dirs:
-                ret.append('-I'+'/'.join(['$(top_srcdir)']+d))
-                pass
-            pass
-        if self.__have_locally_installed_includes:
-            ret.append('-I'+'/'.join(['$(top_builddir)', const.LOCAL_INCLUDE_DIR]))
-            pass
-        # native includes of other packages (i.e., native installed
-        # includes) come next.
-        if self.__buildinfo_includepath_native_installed:
-            ret.append('-I$(includedir)')
-            ret.append('$('+readonly_prefixes.incpath_var+')')
-            pass
-        # external includes.
-        ret.extend(self.__external_include_path)
-
-        return ret
-
-    def get_cmdlinemacros(self):
-        """
-        Compiler commandline macros (usually passed to the compiler
-        like -Dname=value, or -Dname) are tuples of the form (name,
-        value). Both are strings, and value can be None if -Dname is
-        desired.
-
-        Returns an iterable of (name, value) tuples.
-        """
-        return self.__cmdlinemacros.iteritems()
-
-    def get_cflags(self):
-        """
-        Flags for every C-like compilation (which can be C, C++, or
-        even Lex and Yacc).
-
-        Returns a list of strings that are passes to the compiler
-        literally.
-        """
-        return self.__cflags
 
     def iface_pieces(self):
         return CBaseBuilder.iface_pieces(self) + [CompiledCBuilderInterfaceProxy(object=self)]
