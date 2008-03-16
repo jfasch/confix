@@ -1,5 +1,5 @@
 # Copyright (C) 2002-2006 Salomon Automation
-# Copyright (C) 2006 Joerg Faschingbauer
+# Copyright (C) 2006-2008 Joerg Faschingbauer
 
 # This library is free software; you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as
@@ -22,7 +22,7 @@ from libconfix.core.filesys.file import File
 from libconfix.core.hierarchy.default_setup import DefaultDirectorySetup
 from libconfix.core.machinery.local_package import LocalPackage
 
-from libconfix.plugins.c.setups.default_setup import DefaultCSetup
+from libconfix.frontends.confix2.confix_setup import ConfixSetup
 
 from libconfix.testutils import dirhier
 
@@ -49,9 +49,7 @@ class CTest(unittest.TestCase):
 
         package = LocalPackage(
             rootdirectory=fs.rootdirectory(),
-            setups=[DefaultDirectorySetup(),
-                    DefaultCSetup(short_libnames=False,
-                                  use_libtool=False)])
+            setups=[ConfixSetup(short_libnames=False, use_libtool=False)])
         package.boil(external_nodes=[])
         package.output()
 
