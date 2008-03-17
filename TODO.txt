@@ -14,16 +14,12 @@
     * libconfix/plugins/c/linked.py
       * use_libtool is crap! this has to go into the backend plugin,
         together with get_linkline() and __do_deep_linking().
-    * libconfix/plugins/c/h.py
-      * FileInstaller crap: using the file installer from
-        DirectoryBuilder
-    * libconfix/plugins/c/c.py
     * libconfix/plugins/c/library.py
-    * libconfix/plugins/c/cxx.py
-    * libconfix/plugins/c/lex.py
-    * libconfix/plugins/c/yacc.py
     * libconfix/plugins/c/interix.py
     * libconfix/plugins/c/library_dependencies.py
+
+  * libconfix/plugins/c/h.py: external include path is
+    automake-specific. has something to do with backend-tags or so.
 
   * Unify the various setup classes
     * move libconfix/frontends/confix2/confix_setup.py to

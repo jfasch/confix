@@ -22,8 +22,7 @@ from libconfix.core.utils import const
 from libconfix.core.machinery.local_package import LocalPackage
 
 from libconfix.plugins.automake import bootstrap, configure, make
-from libconfix.plugins.make.setup import MakeSetup
-from libconfix.plugins.c.setups.default_setup import DefaultCSetup
+from libconfix.frontends.confix2.confix_setup import ConfixSetup
 
 from libconfix.testutils.persistent import PersistentTestCase
 
@@ -68,8 +67,7 @@ class GeneratedPackageTest(PersistentTestCase):
         fs.sync()
         
         package = LocalPackage(rootdirectory=source,
-                               setups=[MakeSetup(),
-                                       DefaultCSetup(short_libnames=False, use_libtool=False)])
+                               setups=[ConfixSetup(short_libnames=False, use_libtool=False)])
         package.boil(external_nodes=[])
         package.output()
         

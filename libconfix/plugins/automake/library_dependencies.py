@@ -15,19 +15,16 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 # USA
 
-from executable import ExecutableBuilder
-from buildinfo import BuildInfo_CLibrary_NativeLocal, BuildInfo_CLibrary_NativeInstalled
+from libconfix.plugins.c.executable import ExecutableBuilder
+from libconfix.plugins.c.buildinfo import BuildInfo_CLibrary_NativeLocal, BuildInfo_CLibrary_NativeInstalled
 
 from libconfix.core.machinery.setup import Setup
 from libconfix.core.machinery.builder import Builder
-
-# jjj remove this >>>
-from libconfix.plugins.automake import readonly_prefixes
-from libconfix.plugins.automake import helper_automake
-from libconfix.plugins.automake.configure_ac import Configure_ac
-# jjj <<<
-
 from libconfix.core.utils.paragraph import Paragraph
+
+import readonly_prefixes
+import helper_automake
+from configure_ac import Configure_ac
 
 class LibraryDependenciesFinderSetup(Setup):
     def initial_builders(self):

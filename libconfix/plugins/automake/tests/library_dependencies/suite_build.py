@@ -17,14 +17,14 @@
 
 from dirstructure import DirectoryStructure
 
+from libconfix.plugins.automake import bootstrap, configure, make
+from libconfix.plugins.automake.repo_automake import AutomakePackageRepository
+from libconfix.plugins.automake.library_dependencies import LibraryDependenciesFinderSetup
+
 from libconfix.core.machinery.local_package import LocalPackage
-from libconfix.core.hierarchy.setup import DirectorySetup
-from libconfix.core.automake import bootstrap, configure, make
-from libconfix.core.automake.repo_automake import AutomakePackageRepository
 from libconfix.core.filesys import scan
 
-from libconfix.plugins.c.setup import DefaultCSetup
-from libconfix.plugins.c.setup import LibraryDependenciesFinderSetup
+from libconfix.frontends.confix2.confix_setup import ConfixSetup
 
 from libconfix.testutils.persistent import PersistentTestCase
 from libconfix.testutils import makefileparser
@@ -46,8 +46,7 @@ class LibraryDependenciesBuildTest(PersistentTestCase):
 
         # bootstrap&&configure&&build&&install packages in order
         first_local_package = LocalPackage(rootdirectory=dirstructure.first_source(),
-                                           setups=[DefaultCSetup(short_libnames=False,
-                                                                 use_libtool=False)])
+                                           setups=[ConfixSetup(short_libnames=False, use_libtool=False)])
         first_local_package.boil(external_nodes=[])
         first_local_package.output()
         dirstructure.sync()
@@ -67,8 +66,7 @@ class LibraryDependenciesBuildTest(PersistentTestCase):
 
 
         second_local_package = LocalPackage(rootdirectory=dirstructure.second_source(),
-                                            setups=[DefaultCSetup(short_libnames=False,
-                                                                  use_libtool=False)])
+                                            setups=[ConfixSetup(short_libnames=False, use_libtool=False)])
         second_local_package.boil(external_nodes=AutomakePackageRepository(prefix=dirstructure.first_install().abspath()).nodes())
         second_local_package.output()
         dirstructure.sync()
@@ -88,9 +86,7 @@ class LibraryDependenciesBuildTest(PersistentTestCase):
 
 
         third_local_package = LocalPackage(rootdirectory=dirstructure.third_source(),
-                                           setups=[DirectorySetup(),
-                                                   DefaultCSetup(short_libnames=False,
-                                                                 use_libtool=False),
+                                           setups=[ConfixSetup(short_libnames=False, use_libtool=False),
                                                    LibraryDependenciesFinderSetup()])
         third_local_package.boil(external_nodes=AutomakePackageRepository(prefix=dirstructure.first_install().abspath()).nodes() +\
                                  AutomakePackageRepository(prefix=dirstructure.second_install().abspath()).nodes())

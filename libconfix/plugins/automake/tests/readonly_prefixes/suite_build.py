@@ -25,12 +25,9 @@ from libconfix.plugins.automake.repo_automake import AutomakeCascadedPackageRepo
 from libconfix.core.filesys.directory import Directory
 from libconfix.core.filesys.file import File
 from libconfix.core.filesys.filesys import FileSystem
-from libconfix.core.hierarchy.default_setup import DefaultDirectorySetup
 from libconfix.core.machinery.local_package import LocalPackage
 from libconfix.core.utils import const
-
-from libconfix.plugins.c.setups.default_setup import DefaultCSetup
-
+from libconfix.frontends.confix2.confix_setup import ConfixSetup
 from libconfix.testutils.persistent import PersistentTestCase
 
 class ReadonlyPrefixesBuildSuite(unittest.TestSuite):
@@ -85,8 +82,7 @@ class ReadonlyPrefixesBuildBase(PersistentTestCase):
                               'void lo() {}']))
 
         lo_package = LocalPackage(rootdirectory=lo_fs.rootdirectory(),
-                                  setups=[DefaultCSetup(short_libnames=False,
-                                                 use_libtool=self.use_libtool())])
+                                  setups=[ConfixSetup(short_libnames=False, use_libtool=self.use_libtool())])
         lo_package.boil(external_nodes=[])
         lo_package.output()
         lo_fs.sync()
@@ -169,9 +165,7 @@ class ReadonlyPrefixesBuildBase(PersistentTestCase):
                               '}']))
 
         hi_package = LocalPackage(rootdirectory=hi_fs.rootdirectory(),
-                                  setups=[DefaultDirectorySetup(),
-                                          DefaultCSetup(short_libnames=False,
-                                                 use_libtool=self.use_libtool())])
+                                  setups=[ConfixSetup(short_libnames=False, use_libtool=self.use_libtool())])
         hi_package.boil(external_nodes=repo.nodes())
         hi_package.output()
         hi_fs.sync()

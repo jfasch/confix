@@ -110,7 +110,7 @@ class CompiledCBuilder(CBaseBuilder):
         """
         return self.__have_locally_installed_includes
 
-    def native_installed_seen(self):
+    def using_native_installed(self):
         return self.__buildinfo_includepath_native_installed
 
     def relate(self, node, digraph, topolist):

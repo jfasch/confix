@@ -21,14 +21,11 @@ import unittest
 from libconfix.core.filesys.directory import Directory
 from libconfix.core.filesys.file import File
 from libconfix.core.filesys.filesys import FileSystem
-from libconfix.core.hierarchy.default_setup import DefaultDirectorySetup
 from libconfix.core.machinery.local_package import LocalPackage
 from libconfix.core.utils import const
-
-from libconfix.plugins.c.setups.default_setup import DefaultCSetup
 from libconfix.plugins.c.executable import ExecutableBuilder
 from libconfix.plugins.c.library import LibraryBuilder
-
+from libconfix.frontends.confix2.confix_setup import ConfixSetup
 from libconfix.testutils import dirhier
 
 class ExecutableSuite(unittest.TestSuite):
@@ -82,8 +79,7 @@ class ExecutableBase(unittest.TestCase):
         exe.add(name='something.c', entry=File())
         
         self.package_ = LocalPackage(rootdirectory=self.fs_.rootdirectory(),
-                                     setups=[DefaultDirectorySetup(),
-                                             DefaultCSetup(short_libnames=False, use_libtool=self.use_libtool())])
+                                     setups=[ConfixSetup(short_libnames=False, use_libtool=self.use_libtool())])
         self.package_.boil(external_nodes=[])
         self.package_.output()
 
@@ -163,7 +159,7 @@ class CheckAndNoinstProgram(unittest.TestCase):
         fs.rootdirectory().add(name='_proggy.c',
                                entry=File(lines=['int main(void) { return 0; }']))
         package = LocalPackage(rootdirectory=fs.rootdirectory(),
-                               setups=[DefaultCSetup(short_libnames=False, use_libtool=False)])
+                               setups=[ConfixSetup(short_libnames=False, use_libtool=False)])
         package.boil(external_nodes=[])
         package.output()
 
@@ -209,7 +205,7 @@ class LDADD(unittest.TestCase):
 
     def test_libtool(self):
         package = LocalPackage(rootdirectory=self.fs_.rootdirectory(),
-                               setups=[DefaultDirectorySetup(), DefaultCSetup(use_libtool=True, short_libnames=False)])
+                               setups=[ConfixSetup(use_libtool=True, short_libnames=False)])
         package.boil(external_nodes=[])
         package.output()
 
@@ -219,7 +215,7 @@ class LDADD(unittest.TestCase):
 
     def test_no_libtool(self):
         package = LocalPackage(rootdirectory=self.fs_.rootdirectory(),
-                               setups=[DefaultDirectorySetup(), DefaultCSetup(use_libtool=False, short_libnames=False)])
+                               setups=[ConfixSetup(use_libtool=False, short_libnames=False)])
         package.boil(external_nodes=[])
         package.output()
 

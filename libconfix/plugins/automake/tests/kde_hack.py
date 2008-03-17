@@ -16,8 +16,9 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 # USA
 
-import sys
-import unittest
+from libconfix.plugins.automake.kde_hack import KDEHackSetup
+from libconfix.plugins.automake.auxdir import AutoconfAuxDirBuilder
+from libconfix.plugins.automake import bootstrap, configure, make
 
 from libconfix.core.utils import const
 from libconfix.core.filesys.filesys import FileSystem
@@ -25,10 +26,10 @@ from libconfix.core.filesys.file import File
 from libconfix.core.filesys.directory import Directory
 from libconfix.core.machinery.local_package import LocalPackage
 from libconfix.core.hierarchy.default_setup import DefaultDirectorySetup
-from libconfix.core.automake.kde_hack import KDEHackSetup
-from libconfix.core.automake.auxdir import AutoconfAuxDirBuilder
-from libconfix.core.automake import bootstrap, configure, make
 from libconfix.testutils.persistent import PersistentTestCase
+
+import sys
+import unittest
 
 class KDEHackTestSuiteBuild(unittest.TestSuite):
     def __init__(self):

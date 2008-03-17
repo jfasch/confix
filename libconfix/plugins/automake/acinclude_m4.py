@@ -38,6 +38,6 @@ class ACInclude_m4:
         lines = []
         lines.append('# DO NOT EDIT! This file was automatically generated')
         lines.append('# by Confix version '+const.CONFIX_VERSION)
-        lines.extend(self.paragraphs_.lines_for_acinclude_m4())
+        lines.extend(self.paragraphs_.lines())
         return lines
         

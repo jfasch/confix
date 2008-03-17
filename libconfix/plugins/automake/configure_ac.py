@@ -157,7 +157,7 @@ class Configure_ac:
 
         # serialize our paragraphs, and output the lines.
 
-        lines.extend(self.ordered_paragraphs_.lines_for_configure_ac())
+        lines.extend(self.ordered_paragraphs_.lines())
 
         # and, finally
 

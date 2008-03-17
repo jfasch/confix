@@ -19,10 +19,13 @@ from configure_ac import Configure_ac
 import readonly_prefixes
 
 from libconfix.core.utils.paragraph import Paragraph
+from libconfix.core.utils import const
 from libconfix.core.machinery.builder import Builder
 from libconfix.plugins.c.h import HeaderBuilder
 from libconfix.plugins.c.c import CBuilder
 from libconfix.plugins.c.cxx import CXXBuilder
+from libconfix.plugins.c.lex import LexBuilder
+from libconfix.plugins.c.yacc import YaccBuilder
 
 class COutputBuilder(Builder):
     """
@@ -50,6 +53,12 @@ class COutputBuilder(Builder):
                 continue
             if isinstance(b, CXXBuilder):
                 self.__do_cxx(b)
+                continue
+            if isinstance(b, LexBuilder):
+                self.__do_lex(b)
+                continue
+            if isinstance(b, YaccBuilder):
+                self.__do_yacc(b)
                 continue
             pass
         pass
@@ -87,7 +96,7 @@ class COutputBuilder(Builder):
             pass
         # native includes of other packages (i.e., native installed
         # includes) come next.
-        if b.native_installed_seen():
+        if b.using_native_installed():
             self.parentbuilder().makefile_am().add_includepath('-I$(includedir)')
             self.parentbuilder().makefile_am().add_includepath('$('+readonly_prefixes.incpath_var+')')
             pass
@@ -113,5 +122,59 @@ class COutputBuilder(Builder):
             self.parentbuilder().makefile_am().add_am_cxxflags(f)
             pass
         pass
+
+    def __do_lex(self, b):
+        self.__do_compiled(b)
+        self.package().configure_ac().add_paragraph(
+            paragraph=Paragraph(['AC_PROG_LEX']),
+            order=Configure_ac.PROGRAMS)
+        root, ext = os.path.splitext(b.file().name())
+        if ext == '.l':
+            self.package().configure_ac().add_paragraph(
+                paragraph=Paragraph(['AC_PROG_CC']),
+                order=Configure_ac.PROGRAMS)
+            self.parentbuilder().makefile_am().add_built_sources(root + '.c')
+        elif ext == '.ll':
+            self.package().configure_ac().add_paragraph(
+                paragraph=Paragraph(['AC_PROG_CXX']),
+                order=Configure_ac.PROGRAMS)
+            self.parentbuilder().makefile_am().add_built_sources(root + '.cc')
+            # argh: when using "%option c++" in the lex source file,
+            # flex generates lex.yy.cc, which automake doesn't seem to
+            # be aware of. force it to generate the file automake is
+            # aware of. this is not supposed to work with other lexers
+            # however. but, as the documentation states, it is better
+            # to not use the C++ feature of lex since it is inherently
+            # non-portable anyway.
+            self.parentbuilder().makefile_am().add_am_lflags('-olex.yy.c')
+        else:
+            assert 0
+            pass
+        pass
+
+    def __do_yacc(self, b):
+        self.__do_compiled(b)
+        self.package().configure_ac().add_paragraph(
+            paragraph=Paragraph(['AC_PROG_YACC']),
+            order=Configure_ac.PROGRAMS)
+        root, ext = os.path.splitext(self.file().name())
+        if ext == '.y':
+            self.package().configure_ac().add_paragraph(
+                paragraph=Paragraph(['AC_PROG_CC']),
+                order=Configure_ac.PROGRAMS)
+            self.parentbuilder().makefile_am().add_built_sources(root + '.c')
+        elif ext == '.yy':
+            self.package().configure_ac().add_paragraph(
+                paragraph=Paragraph(['AC_PROG_CXX']),
+                order=Configure_ac.PROGRAMS)
+            self.parentbuilder().makefile_am().add_built_sources(root + '.cc')
+            # force Yacc to output files named y.tab.h
+            self.parentbuilder().makefile_am().add_am_yflags('-d');
+        else:
+            assert 0
+            pass
+        pass
+        
+        
 
     pass

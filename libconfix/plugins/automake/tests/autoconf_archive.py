@@ -16,16 +16,17 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 # USA
 
-import sys
-import unittest
+from libconfix.plugins.automake import bootstrap
 
-from libconfix.core.automake import bootstrap
 from libconfix.core.filesys.file import File
 from libconfix.core.filesys.filesys import FileSystem
 from libconfix.core.machinery.local_package import LocalPackage
 from libconfix.core.utils import const
 
 from libconfix.testutils.persistent import PersistentTestCase
+
+import sys
+import unittest
 
 class AutoConfArchiveSuite(unittest.TestSuite):
     def __init__(self):

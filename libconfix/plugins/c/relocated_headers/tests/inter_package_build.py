@@ -20,12 +20,9 @@ import inter_package
 from libconfix.core.filesys.filesys import FileSystem
 from libconfix.core.filesys.directory import Directory
 from libconfix.core.machinery.local_package import LocalPackage
-from libconfix.core.hierarchy.default_setup import DefaultDirectorySetup
 from libconfix.plugins.automake import bootstrap, configure, make, helper_automake
 from libconfix.plugins.automake.repo_automake import AutomakePackageRepository
-
-from libconfix.plugins.c.setups.default_setup import DefaultCSetup
-
+from libconfix.frontends.confix2.confix_setup import ConfixSetup
 from libconfix.testutils.persistent import PersistentTestCase
 
 import unittest
@@ -82,7 +79,7 @@ class InterPackageBuildTest(PersistentTestCase):
         
         common_package = LocalPackage(
             rootdirectory=common_source,
-            setups=[DefaultCSetup(short_libnames=self.short_libnames(), use_libtool=self.use_libtool())])
+            setups=[ConfixSetup(short_libnames=self.short_libnames(), use_libtool=self.use_libtool())])
         common_package.boil(external_nodes=[])
         common_package.output()
         fs.sync()                                      
@@ -103,8 +100,7 @@ class InterPackageBuildTest(PersistentTestCase):
 
         lo_package = LocalPackage(
             rootdirectory=lo_source,
-            setups=[DefaultCSetup(short_libnames=self.short_libnames(), use_libtool=self.use_libtool()),
-                    DefaultDirectorySetup()])
+            setups=[ConfixSetup(short_libnames=self.short_libnames(), use_libtool=self.use_libtool())])
         lo_package.boil(external_nodes=AutomakePackageRepository(prefix=install.abspath()).nodes())
         lo_package.output()
         fs.sync()
@@ -126,7 +122,7 @@ class InterPackageBuildTest(PersistentTestCase):
 
         hi_package = LocalPackage(
             rootdirectory=hi_source,
-            setups=[DefaultDirectorySetup()])
+            setups=[ConfixSetup(short_libnames=self.short_libnames(), use_libtool=self.use_libtool())])
         hi_package.boil(external_nodes=AutomakePackageRepository(prefix=install.abspath()).nodes())
         hi_package.output()
         fs.sync()

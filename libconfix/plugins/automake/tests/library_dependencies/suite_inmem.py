@@ -17,14 +17,14 @@
 
 from dirstructure import DirectoryStructure
 
+from libconfix.plugins.automake.library_dependencies import LibraryDependenciesFinderSetup
+
 from libconfix.core.machinery.local_package import LocalPackage
-from libconfix.core.hierarchy.default_setup import DefaultDirectorySetup
 
 from libconfix.testutils import makefileparser
 from libconfix.testutils.persistent import PersistentTestCase
 
-from libconfix.plugins.c.setups.default_setup import DefaultCSetup
-from libconfix.plugins.c.library_dependencies import LibraryDependenciesFinderSetup
+from libconfix.frontends.confix2.confix_setup import ConfixSetup
 
 import unittest
 
@@ -43,21 +43,17 @@ class LibraryDependenciesInMemoryTest(PersistentTestCase):
         # anything - just boil and install)
 
         first_local_package = LocalPackage(rootdirectory=dirstructure.first_source(),
-                                           setups=[DefaultCSetup(short_libnames=False,
-                                                                 use_libtool=False)])
+                                           setups=[ConfixSetup(short_libnames=False, use_libtool=False)])
         first_local_package.boil(external_nodes=[])
         first_installed_package = first_local_package.install()
         
         second_local_package = LocalPackage(rootdirectory=dirstructure.second_source(),
-                                            setups=[DefaultCSetup(short_libnames=False,
-                                                                  use_libtool=False)])
+                                            setups=[ConfixSetup(short_libnames=False, use_libtool=False)])
         second_local_package.boil(external_nodes=first_installed_package.nodes())
         second_installed_package = second_local_package.install()
 
         third_local_package = LocalPackage(rootdirectory=dirstructure.third_source(),
-                                           setups=[DefaultDirectorySetup(),
-                                                   DefaultCSetup(short_libnames=False,
-                                                                 use_libtool=False),
+                                           setups=[ConfixSetup(short_libnames=False, use_libtool=False),
                                                    LibraryDependenciesFinderSetup()])
         third_local_package.boil(external_nodes=first_installed_package.nodes()+second_installed_package.nodes())
         third_local_package.output()

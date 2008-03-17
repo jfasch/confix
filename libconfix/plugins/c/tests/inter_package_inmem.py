@@ -1,5 +1,5 @@
 # Copyright (C) 2002-2006 Salomon Automation
-# Copyright (C) 2006 Joerg Faschingbauer
+# Copyright (C) 2006-2008 Joerg Faschingbauer
 
 # This library is free software; you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as
@@ -82,7 +82,7 @@ class InterPackageRelate(unittest.TestCase):
 
         # hi.c includes lo.h, so it must have a BuildInfo for
         # installed header files, but none for local header files.
-        self.failUnless(hi_c_builder.buildinfo_includepath_native_installed() > 0)
+        self.failUnless(hi_c_builder.using_native_installed() > 0)
         self.failUnless(len(hi_c_builder.native_local_include_dirs()) == 0)
         self.failUnless(len(libhi_builder.buildinfo_direct_dependent_native_libs()) == 1)
         self.failUnless(len(libhi_builder.buildinfo_topo_dependent_native_libs()) == 1)

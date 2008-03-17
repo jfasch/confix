@@ -21,6 +21,15 @@ from configure_ac import ConfigureACSuite
 from output import AutomakeOutputSuite
 from iface import InterfaceSuite
 from file_installer_suite import FileInstallerSuite
+from c import CSuite
+from exe import ExecutableSuite
+from library_dependencies.suite_inmem import LibraryDependenciesInMemorySuite
+from exename.suite_inmem import ExecutableNameInMemorySuite
+import readonly_prefixes.suite_inmem
+from external_library import ExternalLibraryInMemorySuite
+from libtool_version import LibtoolVersionSuite
+from libtool_linking import LibtoolLinkingSuite
+from buildinfo import BuildInfoSuite
 
 import unittest
 
@@ -34,6 +43,15 @@ class AutomakeInMemorySuite(unittest.TestSuite):
         self.addTest(AutomakeOutputSuite())
         self.addTest(InterfaceSuite())
         self.addTest(FileInstallerSuite())
+        self.addTest(CSuite())
+        self.addTest(ExecutableSuite())
+        self.addTest(LibraryDependenciesInMemorySuite())
+        self.addTest(ExecutableNameInMemorySuite())
+        self.addTest(readonly_prefixes.suite_inmem.InMemorySuite())
+        self.addTest(ExternalLibraryInMemorySuite())
+        self.addTest(LibtoolVersionSuite())
+        self.addTest(LibtoolLinkingSuite())
+        self.addTest(BuildInfoSuite())
         pass
 
     pass

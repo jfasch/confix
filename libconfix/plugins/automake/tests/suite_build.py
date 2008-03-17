@@ -15,16 +15,26 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 # USA
 
+from simple_build import SimpleBuildSuite
 from kde_hack import KDEHackTestSuiteBuild
 from autoconf_archive import AutoConfArchiveSuite
+from library_dependencies.suite_build import LibraryDependenciesBuildSuite
+from exename.suite_build import ExecutableNameBuildSuite
+from readonly_prefixes.suite_build import ReadonlyPrefixesBuildSuite
+from interix_link import InterixLinkSuite
 
 import unittest
 
 class AutomakeBuildSuite(unittest.TestSuite):
     def __init__(self):
         unittest.TestSuite.__init__(self)
+        self.addTest(SimpleBuildSuite())
         self.addTest(KDEHackTestSuiteBuild())
         self.addTest(AutoConfArchiveSuite())
+        self.addTest(LibraryDependenciesBuildSuite())
+        self.addTest(ExecutableNameBuildSuite())
+        self.addTest(ReadonlyPrefixesBuildSuite())
+        self.addTest(InterixLinkSuite())
         pass
     pass
 
