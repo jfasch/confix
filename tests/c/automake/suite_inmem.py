@@ -16,28 +16,12 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 # USA
 
-from c import CSuite
-from exe import ExecutableSuite
-from libtool_version import LibtoolVersionSuite
-from libtool_linking import LibtoolLinkingSuite
-from external_library import ExternalLibraryInMemorySuite
-from library_dependencies.suite_inmem import LibraryDependenciesInMemorySuite
-from exename.suite_inmem import ExecutableNameInMemorySuite
-import readonly_prefixes.suite_inmem
 
 import unittest
 
 class AutomakeCSuiteInMemory(unittest.TestSuite):
     def __init__(self):
         unittest.TestSuite.__init__(self)
-        self.addTest(CSuite())
-        self.addTest(LibtoolVersionSuite())
-        self.addTest(LibtoolLinkingSuite())
-        self.addTest(ExecutableSuite())
-        self.addTest(ExternalLibraryInMemorySuite())
-        self.addTest(LibraryDependenciesInMemorySuite())
-        self.addTest(ExecutableNameInMemorySuite())
-        self.addTest(readonly_prefixes.suite_inmem.InMemorySuite())
         pass
     pass
 
