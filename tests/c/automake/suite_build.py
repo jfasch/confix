@@ -16,24 +16,14 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 # USA
 
-from simple_build import SimpleBuildSuite
-from intra_package_build import IntraPackageBuildSuite
-from inter_package_build import InterPackageBuildSuite
-from readonly_prefixes.suite_build import ReadonlyPrefixesBuildSuite
 from interix_link import InterixLinkSuite
-from exename.suite_build import ExecutableNameBuildSuite
 
 import unittest
 
 class AutomakeCSuiteBuild(unittest.TestSuite):
     def __init__(self):
         unittest.TestSuite.__init__(self)
-        self.addTest(SimpleBuildSuite())
-        self.addTest(IntraPackageBuildSuite())
-        self.addTest(InterPackageBuildSuite())
-        self.addTest(ReadonlyPrefixesBuildSuite())
         self.addTest(InterixLinkSuite())
-        self.addTest(ExecutableNameBuildSuite())
         pass
     pass
 
