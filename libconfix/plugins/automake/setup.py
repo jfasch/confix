@@ -15,13 +15,19 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 # USA
 
+from out_c import COutputBuilder
+from interix import InterixMacroDefiner
+
 from libconfix.core.machinery.setup import Setup
 
-from out_c import COutputBuilder
-
 class AutomakeSetup(Setup):
+    def __init__(self, use_libtool):
+        Setup.__init__(self)
+        self.__use_libtool = use_libtool
+        pass
+        
     def initial_builders(self):
-        ret = super(AutomakeSetup, self).initial_builders()
-        ret.append(COutputBuilder())
-        return ret
+        return super(AutomakeSetup, self).initial_builders() + [COutputBuilder(use_libtool=self.__use_libtool),
+                                                                InterixMacroDefiner()]
+
     pass

@@ -1,5 +1,5 @@
 # Copyright (C) 2002-2006 Salomon Automation
-# Copyright (C) 2006-2007 Joerg Faschingbauer
+# Copyright (C) 2006-2008 Joerg Faschingbauer
 
 # This library is free software; you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as
@@ -16,16 +16,6 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 # USA
 
-import os
-import profile
-import re
-import types
-
-from libconfix.core.iface.proxy import InterfaceProxy
-from libconfix.core.machinery.builder import Builder
-from libconfix.core.machinery.setup import Setup
-from libconfix.core.hierarchy.confix2_dir_contributor import Confix2_dir_Contributor
-
 from base import CBaseBuilder
 from compiled import CompiledCBuilder
 from executable import ExecutableBuilder
@@ -34,11 +24,18 @@ from library import LibraryBuilder
 from namefinder import ShortNameFinder, LongNameFinder
 import helper
 
+from libconfix.core.iface.proxy import InterfaceProxy
+from libconfix.core.machinery.builder import Builder
+from libconfix.core.machinery.setup import Setup
+from libconfix.core.hierarchy.confix2_dir_contributor import Confix2_dir_Contributor
+
+import os
+import types
+
 class CClusterer(Builder):
-    def __init__(self, namefinder, use_libtool):
+    def __init__(self, namefinder):
         Builder.__init__(self)
         self.__namefinder = namefinder
-        self.__use_libtool = use_libtool
         self.__libname = None
         self.__libtool_version_info = None
 
@@ -121,7 +118,6 @@ class CClusterer(Builder):
                 exe = ExecutableBuilder(
                     center=b,
                     exename=exename,
-                    use_libtool=self.__use_libtool,
                     what=what)
                 self.parentbuilder().add_builder(exe)
                 self.__executables[b] = exe
@@ -150,7 +146,6 @@ class CClusterer(Builder):
                 
                 self.__library = LibraryBuilder(
                     basename=libname,
-                    use_libtool=self.__use_libtool,
                     libtool_version_info=self.__libtool_version_info,
                     libtool_release_info=self.package().version())
                 self.parentbuilder().add_builder(self.__library)
@@ -208,21 +203,18 @@ class CClusterer_Confix2_dir(Confix2_dir_Contributor):
     pass
 
 class CClustererSetup(Setup):
-    def __init__(self, use_libtool, short_libnames):
+    def __init__(self, short_libnames):
         Setup.__init__(self)
         if short_libnames == True:
             self.__namefinder = ShortNameFinder()
         else:
             self.__namefinder = LongNameFinder()
             pass
-        self.__use_libtool = use_libtool
         pass
         
     def initial_builders(self):
         ret = super(CClustererSetup, self).initial_builders()
-        clusterer = CClusterer(
-            namefinder=self.__namefinder,
-            use_libtool=self.__use_libtool)
+        clusterer = CClusterer(namefinder=self.__namefinder)
         ret.extend([
             clusterer,
             CClusterer_Confix2_dir(clusterer=clusterer)])

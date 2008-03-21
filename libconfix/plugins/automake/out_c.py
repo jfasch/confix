@@ -17,6 +17,7 @@
 
 from configure_ac import Configure_ac
 import readonly_prefixes
+import helper
 
 from libconfix.core.utils.paragraph import Paragraph
 from libconfix.core.utils import const
@@ -26,14 +27,19 @@ from libconfix.plugins.c.c import CBuilder
 from libconfix.plugins.c.cxx import CXXBuilder
 from libconfix.plugins.c.lex import LexBuilder
 from libconfix.plugins.c.yacc import YaccBuilder
+from libconfix.plugins.c.library import LibraryBuilder
+from libconfix.plugins.c.executable import ExecutableBuilder
+
+import sys
 
 class COutputBuilder(Builder):
     """
-    Generate output for all of the builders of the C plugin.
+    Generates output for all of the builders of the C plugin.
     """
     
-    def __init__(self):
+    def __init__(self, use_libtool):
         Builder.__init__(self)
+        self.__use_libtool = use_libtool
         pass
 
     def locally_unique_id(self):
@@ -45,6 +51,7 @@ class COutputBuilder(Builder):
     def output(self):
         super(COutputBuilder, self).output()
         for b in self.parentbuilder().builders():
+            # compiled entities
             if isinstance(b, HeaderBuilder):
                 self.__do_header(b)
                 continue
@@ -59,6 +66,11 @@ class COutputBuilder(Builder):
                 continue
             if isinstance(b, YaccBuilder):
                 self.__do_yacc(b)
+                continue
+
+            # linked entities
+            if isinstance(b, LibraryBuilder):
+                self.__do_library(b)
                 continue
             pass
         pass
@@ -174,7 +186,157 @@ class COutputBuilder(Builder):
             assert 0
             pass
         pass
+
+    def __do_linked(self, b):
+        if self.__use_libtool:
+            self.package().configure_ac().add_paragraph(
+                paragraph=Paragraph(['AC_LIBTOOL_DLOPEN',
+                                     'AC_LIBTOOL_WIN32_DLL',
+                                     'AC_PROG_LIBTOOL']),
+                order=Configure_ac.PROGRAMS)
+            pass
+        pass
+
+    def __do_library(self, b):
+        self.__do_linked(b)
+
+        if self.__use_libtool:
+            filelibname = 'lib'+b.basename()+'.la'
+        else:
+            filelibname = 'lib'+b.basename()+'.a'
+            pass
+        automakelibname = helper.automake_name(filelibname)
+
+        mf_am = self.parentbuilder().makefile_am()
+
+        if self.__use_libtool:
+            mf_am.add_ltlibrary(filelibname)
+            if b.libtool_version_info() is not None:
+                mf_am.add_compound_ldflags(automakelibname, '-version-info %d:%d:%d' % b.libtool_version_info())
+            elif b.libtool_release_info() is not None:
+                mf_am.add_compound_ldflags(automakelibname, '-release '+self.libtool_release_info())
+                pass
+            pass
+        else:
+            self.package().configure_ac().add_paragraph(
+                paragraph=Paragraph(['AC_PROG_RANLIB']),
+                order=Configure_ac.PROGRAMS)
+            mf_am.add_library(filelibname)
+            pass
+
+        for m in b.members():
+            mf_am.add_compound_sources(automakelibname, m.file().name())
+            pass
+
+        if self.__use_libtool:
+            for fragment in self.__linked_get_linkline(b):
+                mf_am.add_compound_libadd(
+                    compound_name=automakelibname,
+                    lib=fragment)
+                pass
+            pass
+        pass
+
+    def __do_executable(self, b):
+        self.__do_linked(b)
+
+        mf_am = self.parentbuilder().makefile_am()
+
+        if b.what() == ExecutableBuilder.BIN:
+            mf_am.add_bin_program(b.exename())
+        elif b.what() == ExecutableBuilder.CHECK:
+            mf_am.add_check_program(b.exename())
+        elif b.what() == ExecutableBuilder.NOINST:
+            mf_am.add_noinst_program(b.exename())
+        else: assert 0
+
+        automakeexename = helper.automake_name(b.exename())
+
+        for m in b.members():
+            mf_am.add_compound_sources(automakeexename, m.file().name())
+            pass
+
+        for fragment in self.__linked_get_linkline(b):
+            mf_am.add_compound_ldadd(
+                compound_name=automakeexename,
+                lib=fragment)
+            pass
+        pass
+
+    def __linked_get_linkline(self, b):
+        """
+        Returns a list of strings, like ['-L/blah -L/bloh/blah
+        -lonelibrary -lanotherone']
+        """
+        native_paths = []
+        native_libraries = []
+        external_linkline = []
+        using_installed_library = False
+
+        if self.__linked_do_deep_linking():
+            native_libs_to_use = b.buildinfo_topo_dependent_native_libs()
+        else:
+            native_libs_to_use = b.buildinfo_direct_dependent_native_libs()
+            pass
+
+        for bi in native_libs_to_use:
+            if isinstance(bi, BuildInfo_CLibrary_NativeLocal):
+                native_paths.append('-L'+'/'.join(['$(top_builddir)']+bi.dir()))
+                native_libraries.append('-l'+bi.name())
+                continue
+            if isinstance(bi, BuildInfo_CLibrary_NativeInstalled):
+                using_installed_library = True
+                native_libraries.append('-l'+bi.name())
+                continue
+            assert 0
+            pass
+
+        if using_installed_library:
+            native_paths.append('-L$(libdir)')
+            native_paths.append('$('+readonly_prefixes.libpath_var+')')
+            pass
+
+        # in either case (libtool or not), we have to link all
+        # external libraries. we cannot decide whether they are built
+        # with libtool or not, so we cannot rely on libtool making our
+        # toposort. (note both are lists of lists...)
+        for elem in b.external_libpath() + b.external_libraries():
+            external_linkline.extend(elem)
+            pass
+            
+        return native_paths + native_libraries + external_linkline
         
-        
+    def __linked_do_deep_linking(self):
+        """
+        Returns a boolean value indicating if deep linking is desired
+        or not. 'Deep linking' means that the whole dependency graph
+        is reflected on the command line, in a topologically sorted
+        way. As opposed to flat linking (or how one calls it), where
+        only the direct dependent libraries are mentioned.
+        """
+        if self.__use_libtool:
+            if not sys.platform.startswith('interix'):
+                # when linking anything with libtool, we don't need to
+                # specify the whole topologically sorted list of
+                # dependencies - libtool does that by itself (*). We
+                # only specify the direct dependencies.
+
+                # (*) It is still unclear to me what the Libtool
+                # policy is. I suspect it relies on the fact that the
+                # native linker permits unresolved references (GNU ld
+                # is happy with them, at the very least).
+                return False
+            else:
+                # on Interix, Parity
+                # (http://sourceforge.net/projects/parity) does things
+                # in a way that the Windows native linker is
+                # invoked. That guy likes things rather explicit, and
+                # is very particular about unresolved references:
+                return True
+            pass
+        else:
+            # not using libtool; doing a dumb static link.
+            return True
+        pass
 
     pass

@@ -19,7 +19,7 @@
 import types
 
 from element import MakefileElement
-import helper_automake
+import helper
 
 class Rule(MakefileElement):
     def __init__(self, targets, prerequisites=[], commands=[]):
@@ -56,10 +56,10 @@ class Rule(MakefileElement):
                 if type(c) is types.StringType:
                     commandlist.append('\t'+c)
                 elif (type(c) is types.ListType) or (type(c) is types.TupleType):
-                    commandlist.extend(['\t'+l for l in helper_automake.format_word_list(c)])
+                    commandlist.extend(['\t'+l for l in helper.format_word_list(c)])
                 else: assert 0
                 pass
             pass
         
-        return helper_automake.format_word_list(targ_prereqlist) + commandlist
+        return helper.format_word_list(targ_prereqlist) + commandlist
     pass

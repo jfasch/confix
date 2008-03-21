@@ -1,5 +1,5 @@
 # Copyright (C) 2002-2006 Salomon Automation
-# Copyright (C) 2006 Joerg Faschingbauer
+# Copyright (C) 2006-2008 Joerg Faschingbauer
 
 # This library is free software; you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as
@@ -16,22 +16,14 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 # USA
 
-import types
-
-from libconfix.core.utils.paragraph import Paragraph, OrderedParagraphSet
-
-# jjj remove this >>>
-from libconfix.plugins.automake import helper_automake
-from libconfix.plugins.automake.configure_ac import Configure_ac
-# jjj <<<
-
 from linked import LinkedBuilder
 from buildinfo import BuildInfo_CLibrary_NativeLocal
+
+import types
 
 class LibraryBuilder(LinkedBuilder):
     def __init__(self,
                  basename,
-                 use_libtool,
                  libtool_version_info,
                  libtool_release_info):
 
@@ -45,7 +37,7 @@ class LibraryBuilder(LinkedBuilder):
         assert libtool_release_info is None or \
                type(libtool_release_info) is types.StringType
         
-        LinkedBuilder.__init__(self, use_libtool=use_libtool)
+        LinkedBuilder.__init__(self)
 
         self.__basename = basename
         self.__libtool_version_info = libtool_version_info
@@ -71,16 +63,6 @@ class LibraryBuilder(LinkedBuilder):
     def basename(self):
         return self.__basename
 
-    def libname(self):
-        if self.use_libtool():
-            return 'lib'+self.__basename+'.la'
-        else:
-            return 'lib'+self.__basename+'.a'
-        pass
-
-    def am_compound_name(self):
-        return helper_automake.automake_name(self.libname())
-
     def enlarge(self):
         super(LibraryBuilder, self).enlarge()
         if self.__buildinfo_added:
@@ -91,43 +73,12 @@ class LibraryBuilder(LinkedBuilder):
             name=self.__basename))
         pass
 
+    # jjj
     def libtool_version_info(self):
         return self.__libtool_version_info
 
+    # jjj
     def libtool_release_info(self):
         return self.__libtool_release_info
-
-    def output(self):
-        LinkedBuilder.output(self)
-
-        mf_am = self.parentbuilder().makefile_am()
-
-        if self.use_libtool():
-            mf_am.add_ltlibrary(self.libname())
-            if self.__libtool_version_info is not None:
-                mf_am.add_compound_ldflags(self.am_compound_name(), '-version-info %d:%d:%d' % self.__libtool_version_info)
-            elif self.__libtool_release_info is not None:
-                mf_am.add_compound_ldflags(self.am_compound_name(), '-release '+self.__libtool_release_info)
-                pass
-            pass
-        else:
-            self.package().configure_ac().add_paragraph(
-                paragraph=Paragraph(['AC_PROG_RANLIB']),
-                order=Configure_ac.PROGRAMS)
-            mf_am.add_library(self.libname())
-            pass
-        
-        for m in self.members():
-            mf_am.add_compound_sources(self.am_compound_name(), m.file().name())
-            pass
-
-        if self.use_libtool():
-            for fragment in LinkedBuilder.get_linkline(self):
-                mf_am.add_compound_libadd(
-                    compound_name=self.am_compound_name(),
-                    lib=fragment)
-                pass
-            pass
-        pass
 
     pass

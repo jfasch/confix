@@ -14,12 +14,19 @@
     * libconfix/plugins/c/linked.py
       * use_libtool is crap! this has to go into the backend plugin,
         together with get_linkline() and __do_deep_linking().
-    * libconfix/plugins/c/library.py
-    * libconfix/plugins/c/interix.py
     * libconfix/plugins/c/library_dependencies.py
+    * libconfix/plugins/c/library.py
+      * libtool_version_info, libtool_release_info
 
-  * libconfix/plugins/c/h.py: external include path is
-    automake-specific. has something to do with backend-tags or so.
+  * Move libconfix/core/utils/paragraph.py to automake
+
+  * Automake specific build info. Need to pass such build info
+    together with a "backend tag" or something.
+  
+    * libconfix/plugins/c/h.py: external include path is
+      backend-specific.
+    * libconfix/plugins/c/linked.py: BuildInfo_CLibrary_External is
+      backend-specific.
 
   * Unify the various setup classes
     * move libconfix/frontends/confix2/confix_setup.py to

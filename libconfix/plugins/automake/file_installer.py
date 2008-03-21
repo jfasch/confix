@@ -22,7 +22,7 @@ from libconfix.core.utils.error import Error
 from libconfix.core.utils.paragraph import Paragraph
 from libconfix.core.utils import const
 
-import helper_automake
+import helper
 from rule import Rule
 
 ## class FileInstallerFactory:
@@ -180,7 +180,7 @@ class FileInstaller:
         self.automake_install_datafiles_(makefile_am=makefile_am)
         self.automake_install_prefixfiles_(makefile_am=makefile_am)
         self.automake_install_private_headers_(makefile_am=makefile_am)
-##         buildmod.makefile_am().add_lines(helper_automake.format_rule(
+##         buildmod.makefile_am().add_lines(helper.format_rule(
 ##             targets=[FileInstaller.TARGET_INSTALL_PUBLIC]))
 
 ##         if self.use_bulk_install_:
@@ -214,14 +214,14 @@ class FileInstaller:
 ##                 public_install_commands = []
 ##                 pass
             
-##             buildmod.makefile_am().add_lines(helper_automake.format_rule(
+##             buildmod.makefile_am().add_lines(helper.format_rule(
 ##                 targets=[FileInstaller.TARGET_INSTALL_LOCAL],
 ##                 commands=local_install_commands))
-##             buildmod.makefile_am().add_lines(helper_automake.format_rule(
+##             buildmod.makefile_am().add_lines(helper.format_rule(
 ##                 targets=[FileInstaller.TARGET_CLEAN_LOCAL],
 ##                 commands=local_clean_commands))
 
-##             buildmod.makefile_am().add_lines(helper_automake.format_rule(
+##             buildmod.makefile_am().add_lines(helper.format_rule(
 ##                 targets=[FileInstaller.TARGET_INSTALL_PUBLIC],
 ##                 commands=public_install_commands))
 ##             pass
@@ -342,7 +342,7 @@ class FileInstaller:
 ##             for filename in filelist:
 ##                 makefile_am.add_line('')
 ##                 targetfile = os.path.join(targetdir, filename)
-##                 makefile_am.add_lines(helper_automake.format_rule(
+##                 makefile_am.add_lines(helper.format_rule(
 ##                     targets=[targetfile],
 ##                     prerequisites=[filename],
 ##                     commands=['-@$(mkinstalldirs) '+targetdir,
@@ -353,13 +353,13 @@ class FileInstaller:
 
 ##                 clean_target = targetfile+'-clean'
 ##                 clean_targets.append(clean_target)
-##                 buildmod.makefile_am().add_lines(helper_automake.format_rule(
+##                 buildmod.makefile_am().add_lines(helper.format_rule(
 ##                     targets=[clean_target],
 ##                     prerequisites=[],
 ##                     commands=['@rm -f '+targetfile]
 ##                     ))
 ##                 pass
-##             buildmod.makefile_am().add_lines(helper_automake.format_rule(
+##             buildmod.makefile_am().add_lines(helper.format_rule(
 ##                 targets=['.PHONY'],
 ##                 prerequisites=clean_targets,
 ##                 commands=[]
@@ -367,10 +367,10 @@ class FileInstaller:
 ##             pass
 
 ##         buildmod.makefile_am().add_line('')
-##         buildmod.makefile_am().add_lines(helper_automake.format_rule(
+##         buildmod.makefile_am().add_lines(helper.format_rule(
 ##             targets=[FileInstaller.TARGET_INSTALL_LOCAL],
 ##             prerequisites=install_targets))
-##         buildmod.makefile_am().add_lines(helper_automake.format_rule(
+##         buildmod.makefile_am().add_lines(helper.format_rule(
 ##             targets=[FileInstaller.TARGET_CLEAN_LOCAL],
 ##             prerequisites=clean_targets))
 ##         pass
@@ -448,7 +448,7 @@ class FileInstaller:
     re_subst = re.compile('(^[_\d]|\W)')
     def __compute_install_dirname(self, title, dir):
         str = title+'_'+''.join(dir)
-        return helper_automake.automake_name(FileInstaller.re_subst.sub('', str))
+        return helper.automake_name(FileInstaller.re_subst.sub('', str))
 
     # jjjj
 ##     def add_to_file2dirdict_(self, file2dirdict, filetype_errmsg, filename, dir):

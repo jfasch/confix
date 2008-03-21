@@ -17,7 +17,7 @@
 # USA
 
 from element import MakefileElement
-import helper_automake
+import helper
 from backslash import BACKSLASH_MITIGATOR
 
 class Set(MakefileElement):
@@ -50,5 +50,5 @@ class Set(MakefileElement):
         if self.mitigate_:
             wordlist.append('$(CONFIX_BACKSLASH_MITIGATOR)')
             pass
-        return helper_automake.format_word_list(wordlist)
+        return helper.format_word_list(wordlist)
     pass

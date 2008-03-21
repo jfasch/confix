@@ -23,7 +23,7 @@ from libconfix.core.machinery.builder import Builder
 from libconfix.core.utils.paragraph import Paragraph
 
 import readonly_prefixes
-import helper_automake
+import helper
 from configure_ac import Configure_ac
 
 class LibraryDependenciesFinderSetup(Setup):
@@ -137,9 +137,9 @@ class LibraryDependenciesFinder(Builder):
         pass
 
     def local_substname(self, dir, name):
-        return helper_automake.automake_name('localdeplib_'+'_'.join(dir)+'_'+name)
+        return helper.automake_name('localdeplib_'+'_'.join(dir)+'_'+name)
     def installed_substname(self, name):
-        return helper_automake.automake_name('installeddeplib_'+name)
+        return helper.automake_name('installeddeplib_'+name)
     pass
 
 m4_installed_libsearch_func = """

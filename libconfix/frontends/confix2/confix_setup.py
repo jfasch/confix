@@ -33,12 +33,12 @@ class ConfixSetup(CompositeSetup):
         CompositeSetup.__init__(
             self,
             [DefaultDirectorySetup(),
-             DefaultCSetup(short_libnames=short_libnames, use_libtool=use_libtool),
+             DefaultCSetup(short_libnames=short_libnames),
              ScriptSetup(),
              IDLSetup(),
              PlainFileInterfaceSetup(),
              MakeSetup(),
-             AutomakeSetup()])
+             AutomakeSetup(use_libtool=use_libtool)])
         pass
 
     pass

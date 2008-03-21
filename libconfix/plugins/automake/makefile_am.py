@@ -16,15 +16,15 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 # USA
 
-import types
-
-from libconfix.core.utils import helper, const
-from libconfix.core.utils.error import Error
-
 from rule import Rule
 from list import List
 from set import Set
-import helper_automake
+import helper
+
+from libconfix.core.utils import const
+from libconfix.core.utils.error import Error
+
+import types
 
 class Makefile_am(object):
 
@@ -535,7 +535,7 @@ class CompoundListManager:
         self.extension_ = extension
         pass
     def add(self, compound_name, member):
-        canonic_name = helper_automake.automake_name(compound_name)
+        canonic_name = helper.automake_name(compound_name)
         compound_list = self.compounds_.get(canonic_name)
         if compound_list is None:
             compound_list = CompoundList(self.unique_)
@@ -547,7 +547,7 @@ class CompoundListManager:
             raise Error('Cannot add member "'+member+'" to "'+compound_name+'_'+self.extension_+'"', [e])
         pass
     def list(self, compound_name):
-        canonic_name = helper_automake.automake_name(compound_name)
+        canonic_name = helper.automake_name(compound_name)
         list = self.compounds_.get(canonic_name)
         if list:
             return list.list()

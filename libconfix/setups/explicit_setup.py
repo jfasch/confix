@@ -29,12 +29,12 @@ from libconfix.plugins.automake.setup import AutomakeSetup
 class ExplicitSetup(CompositeSetup):
     def __init__(self, use_libtool):
         setups = [ExplicitDirectorySetup(),
-                  ExplicitCSetup(use_libtool=use_libtool),
+                  ExplicitCSetup(),
                   ScriptSetup(),
                   IDLSetup(),
                   PlainFileInterfaceSetup(),
                   MakeSetup(),
-                  AutomakeSetup(),
+                  AutomakeSetup(use_libtool=use_libtool),
                   ]
         if not use_libtool:
             setups.append(LibraryDependenciesFinderSetup())

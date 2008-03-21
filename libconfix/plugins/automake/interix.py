@@ -16,23 +16,13 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 # USA
 
-# jjj remove this 
-from libconfix.plugins.automake import helper_automake
+import helper
 
 from libconfix.core.machinery.builder import Builder
-from libconfix.core.machinery.setup import Setup
-
-class InterixSetup(Setup):
-    def initial_builders(self):
-        ret = super(InterixSetup, self).initial_builders()
-        ret.append(InterixMacroDefiner())
-        return ret
-    pass
 
 class InterixMacroDefiner(Builder):
     def __init__(self):
         Builder.__init__(self)
-        # tell everyone who's interested
         pass
 
     def shortname(self):
@@ -54,7 +44,7 @@ class InterixMacroDefiner(Builder):
         pass
 
     def __macroname(self):
-        return '_COMPILING_'+helper_automake.automake_name('_'.join(
+        return '_COMPILING_'+helper.automake_name('_'.join(
             [self.package().name()]+\
             self.parentbuilder().directory().relpath(self.package().rootdirectory())))
     pass
