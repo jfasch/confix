@@ -36,9 +36,6 @@ class ExplicitSetup(CompositeSetup):
                   MakeSetup(),
                   AutomakeSetup(use_libtool=use_libtool),
                   ]
-        if not use_libtool:
-            setups.append(LibraryDependenciesFinderSetup())
-            pass
         CompositeSetup.__init__(self, setups)
         pass
     pass

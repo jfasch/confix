@@ -27,9 +27,13 @@ import helper
 from configure_ac import Configure_ac
 
 class LibraryDependenciesFinderSetup(Setup):
+    def __init__(self, use_libtool):
+        Setup.__init__(self)
+        self.__use_libtool = use_libtool
+        pass
     def initial_builders(self):
         ret = super(LibraryDependenciesFinderSetup, self).initial_builders()
-        ret.append(ExecutableWatcher())
+        ret.append(ExecutableWatcher(use_libtool=self.__use_libtool))
         return ret
     pass
         
@@ -39,8 +43,9 @@ class ExecutableWatcher(Builder):
     ExecutableBuilder. If I see one that doesn't use libtool, create a
     LibraryDependenciesFinder for him."""
     
-    def __init__(self):
+    def __init__(self, use_libtool):
         Builder.__init__(self)
+        self.__use_libtool = use_libtool
         self.__seen_executable_builders = set()
         pass
 
@@ -61,7 +66,7 @@ class ExecutableWatcher(Builder):
                 # already handling that one.
                 continue
             self.__seen_executable_builders.add(b)
-            if not b.use_libtool():
+            if not self.__use_libtool:
                 self.parentbuilder().add_builder(LibraryDependenciesFinder(exe_builder=b))
                 pass
             pass

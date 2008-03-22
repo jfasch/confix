@@ -16,16 +16,17 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 # USA
 
-import unittest
+from libconfix.plugins.c.library import LibraryBuilder
+from libconfix.plugins.c.buildinfo import BuildInfo_CLibrary_NativeInstalled
 
 from libconfix.core.filesys.file import File
 from libconfix.core.machinery.local_package import LocalPackage
 
-from libconfix.plugins.c.setups.default_setup import DefaultCSetup
-from libconfix.plugins.c.library import LibraryBuilder
-from libconfix.plugins.c.buildinfo import BuildInfo_CLibrary_NativeInstalled
+from libconfix.frontends.confix2.confix_setup import ConfixSetup
 
 from libconfix.testutils import dirhier
+
+import unittest
 
 class InterPackageInMemorySuite(unittest.TestSuite):
 
@@ -46,7 +47,7 @@ class InterPackageRelate(unittest.TestCase):
         lofs.rootdirectory().add(name='lo.h', entry=File())
         lofs.rootdirectory().add(name='lo.c', entry=File())
         local_lopkg = LocalPackage(rootdirectory=lofs.rootdirectory(),
-                                   setups=[DefaultCSetup(short_libnames=False, use_libtool=False)])
+                                   setups=[ConfixSetup(short_libnames=False, use_libtool=False)])
         local_lopkg.boil(external_nodes=[])
         installed_lopkg = local_lopkg.install()
 
@@ -54,7 +55,7 @@ class InterPackageRelate(unittest.TestCase):
         hifs.rootdirectory().add(name='hi.c',
                                  entry=File(lines=['#include <lo.h>']))
         local_hipkg = LocalPackage(rootdirectory=hifs.rootdirectory(),
-                                   setups=[DefaultCSetup(short_libnames=False, use_libtool=False)])
+                                   setups=[ConfixSetup(short_libnames=False, use_libtool=False)])
         local_hipkg.boil(external_nodes=installed_lopkg.nodes())
 
         lo_h_builder = local_lopkg.rootbuilder().find_entry_builder(['lo.h'])

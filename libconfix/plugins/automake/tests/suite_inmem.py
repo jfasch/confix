@@ -30,6 +30,7 @@ from external_library import ExternalLibraryInMemorySuite
 from libtool_version import LibtoolVersionSuite
 from libtool_linking import LibtoolLinkingSuite
 from buildinfo import BuildInfoSuite
+from libconfix.plugins.automake.pkg_config.tests.suite_inmem import PkgConfigInMemorySuite
 
 import unittest
 
@@ -52,6 +53,7 @@ class AutomakeInMemorySuite(unittest.TestSuite):
         self.addTest(LibtoolVersionSuite())
         self.addTest(LibtoolLinkingSuite())
         self.addTest(BuildInfoSuite())
+        self.addTest(PkgConfigInMemorySuite())
         pass
 
     pass

@@ -1,5 +1,5 @@
 # Copyright (C) 2002-2006 Salomon Automation
-# Copyright (C) 2006-2007 Joerg Faschingbauer
+# Copyright (C) 2006-2008 Joerg Faschingbauer
 
 # This library is free software; you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as
@@ -32,11 +32,9 @@ import os
 
 class ExplicitInterfaceProxy(InterfaceProxy):
 
-    def __init__(self, object, use_libtool):
+    def __init__(self, object):
         InterfaceProxy.__init__(self, object=object)
 
-        self.__use_libtool = use_libtool
-        
         self.add_global('H', getattr(self, 'H'))
         self.add_global('C', getattr(self, 'C'))
         self.add_global('CXX', getattr(self, 'CXX'))
@@ -88,7 +86,6 @@ class ExplicitInterfaceProxy(InterfaceProxy):
                 path=self.object().directory().relpath(from_dir=self.object().package().rootdirectory()))
             pass
         library = LibraryBuilder(basename=the_basename,
-                                 use_libtool=self.__use_libtool,
                                  libtool_version_info=libtool_version_info,
                                  libtool_release_info=self.object().package().version())
         for m in members:
@@ -108,8 +105,7 @@ class ExplicitInterfaceProxy(InterfaceProxy):
             pass
         executable = ExecutableBuilder(center=center,
                                        exename=the_exename,
-                                       what=what,
-                                       use_libtool=self.__use_libtool)
+                                       what=what)
         for m in members:
             executable.add_member(m)
             pass

@@ -1,4 +1,4 @@
-# Copyright (C) 2007 Joerg Faschingbauer
+# Copyright (C) 2007-2008 Joerg Faschingbauer
 
 # This library is free software; you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as
@@ -50,7 +50,7 @@ class ExecutableInMemoryTest(unittest.TestCase):
             entry=File())
 
         package = LocalPackage(rootdirectory=fs.rootdirectory(),
-                               setups=[ExplicitCSetup(use_libtool=False)])
+                               setups=[ExplicitCSetup()])
         package.boil(external_nodes=[])
 
         found_exe_builder = None
@@ -78,7 +78,7 @@ class ExecutableInMemoryTest(unittest.TestCase):
             entry=File())
 
         package = LocalPackage(rootdirectory=fs.rootdirectory(),
-                               setups=[ExplicitCSetup(use_libtool=False)])
+                               setups=[ExplicitCSetup()])
         package.boil(external_nodes=[])
 
         found_exe_builder = None

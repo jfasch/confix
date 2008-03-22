@@ -85,8 +85,7 @@ class LibraryBase(unittest.TestCase):
 
         # we ought to be building a library here
         self.failUnlessEqual(self.lolib_builder_.basename(), 'blah_lo')
-        self.failUnlessEqual(self.lolib_builder_.libname(), self.libname())
-        self.failUnless(self.lolib_builder_.libname() in mf_am.dir_primary(dir='lib', primary=self.primary()))
+        self.failUnless(self.libname() in mf_am.dir_primary(dir='lib', primary=self.primary()))
 
         # lo.{h,c} are the sources
 

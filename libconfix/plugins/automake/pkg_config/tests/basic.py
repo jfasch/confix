@@ -15,8 +15,7 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 # USA
 
-from libconfix.plugins.c.pkg_config.setup import PkgConfigSetup
-from libconfix.plugins.c.setups.default_setup import DefaultCSetup
+from libconfix.plugins.automake.pkg_config.setup import PkgConfigSetup
 
 from libconfix.core.filesys.directory import Directory
 from libconfix.core.filesys.file import File

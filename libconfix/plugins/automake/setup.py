@@ -15,19 +15,19 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 # USA
 
-from out_c import COutputBuilder
-from interix import InterixMacroDefiner
+from out_c import COutputSetup
+from library_dependencies import LibraryDependenciesFinderSetup
+from interix import InterixSetup
 
-from libconfix.core.machinery.setup import Setup
+from libconfix.core.machinery.setup import CompositeSetup
 
-class AutomakeSetup(Setup):
+class AutomakeSetup(CompositeSetup):
     def __init__(self, use_libtool):
-        Setup.__init__(self)
-        self.__use_libtool = use_libtool
+        CompositeSetup.__init__(
+            self,
+            [COutputSetup(use_libtool=use_libtool),
+             LibraryDependenciesFinderSetup(use_libtool=use_libtool),
+             InterixSetup()])
         pass
         
-    def initial_builders(self):
-        return super(AutomakeSetup, self).initial_builders() + [COutputBuilder(use_libtool=self.__use_libtool),
-                                                                InterixMacroDefiner()]
-
     pass

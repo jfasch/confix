@@ -1,5 +1,5 @@
 # Copyright (C) 2002-2006 Salomon Automation
-# Copyright (C) 2006-2007 Joerg Faschingbauer
+# Copyright (C) 2006-2008 Joerg Faschingbauer
 
 # This library is free software; you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as
@@ -19,12 +19,13 @@
 import helper
 
 from libconfix.core.machinery.builder import Builder
+from libconfix.core.machinery.setup import Setup
+
+class InterixSetup(Setup):
+    def initial_builders(self):
+        return super(InterixSetup, self).initial_builders() + [InterixMacroDefiner()]
 
 class InterixMacroDefiner(Builder):
-    def __init__(self):
-        Builder.__init__(self)
-        pass
-
     def shortname(self):
         return 'C.InterixMacroDefiner'
 

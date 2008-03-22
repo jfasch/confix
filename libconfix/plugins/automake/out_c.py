@@ -19,9 +19,6 @@ from configure_ac import Configure_ac
 import readonly_prefixes
 import helper
 
-from libconfix.core.utils.paragraph import Paragraph
-from libconfix.core.utils import const
-from libconfix.core.machinery.builder import Builder
 from libconfix.plugins.c.h import HeaderBuilder
 from libconfix.plugins.c.c import CBuilder
 from libconfix.plugins.c.cxx import CXXBuilder
@@ -29,8 +26,26 @@ from libconfix.plugins.c.lex import LexBuilder
 from libconfix.plugins.c.yacc import YaccBuilder
 from libconfix.plugins.c.library import LibraryBuilder
 from libconfix.plugins.c.executable import ExecutableBuilder
+from libconfix.plugins.c.buildinfo import \
+     BuildInfo_CLibrary_NativeLocal, \
+     BuildInfo_CLibrary_NativeInstalled, \
+     BuildInfo_CLibrary_External
+
+from libconfix.core.utils.paragraph import Paragraph
+from libconfix.core.utils import const
+from libconfix.core.machinery.builder import Builder
+from libconfix.core.machinery.setup import Setup
 
 import sys
+
+class COutputSetup(Setup):
+    def __init__(self, use_libtool):
+        Setup.__init__(self)
+        self.__use_libtool = use_libtool
+        pass
+    def initial_builders(self):
+        return super(COutputSetup, self).initial_builders() + [COutputBuilder(use_libtool=self.__use_libtool)]
+    pass
 
 class COutputBuilder(Builder):
     """
@@ -71,6 +86,9 @@ class COutputBuilder(Builder):
             # linked entities
             if isinstance(b, LibraryBuilder):
                 self.__do_library(b)
+                continue
+            if isinstance(b, ExecutableBuilder):
+                self.__do_executable(b)
                 continue
             pass
         pass
@@ -214,7 +232,7 @@ class COutputBuilder(Builder):
             if b.libtool_version_info() is not None:
                 mf_am.add_compound_ldflags(automakelibname, '-version-info %d:%d:%d' % b.libtool_version_info())
             elif b.libtool_release_info() is not None:
-                mf_am.add_compound_ldflags(automakelibname, '-release '+self.libtool_release_info())
+                mf_am.add_compound_ldflags(automakelibname, '-release '+b.libtool_release_info())
                 pass
             pass
         else:

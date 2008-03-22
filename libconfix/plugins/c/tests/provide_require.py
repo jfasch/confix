@@ -1,5 +1,5 @@
 # Copyright (C) 2002-2006 Salomon Automation
-# Copyright (C) 2006 Joerg Faschingbauer
+# Copyright (C) 2006-2008 Joerg Faschingbauer
 
 # This library is free software; you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as
@@ -77,7 +77,7 @@ class Provide_CInclude_and_Require_CInclude(unittest.TestCase):
                               "PROVIDE_H(filename='fileblah', match=AUTO_MATCH)"]))
 
         package = LocalPackage(rootdirectory=fs.rootdirectory(),
-                               setups=[DefaultCSetup(use_libtool=False, short_libnames=False)])
+                               setups=[DefaultCSetup(short_libnames=False)])
         package.boil(external_nodes=[])
 
         found = 0

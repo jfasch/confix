@@ -1,4 +1,4 @@
-# Copyright (C) 2007 Joerg Faschingbauer
+# Copyright (C) 2007-2008 Joerg Faschingbauer
 
 # This library is free software; you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as
@@ -21,23 +21,13 @@ from libconfix.core.hierarchy.confix2_dir_contributor import Confix2_dir_Contrib
 from libconfix.plugins.c.explicit_iface import ExplicitInterfaceProxy
 
 class ExplicitInterface_Confix2_dir(Confix2_dir_Contributor):
-    def __init__(self, use_libtool):
-        Confix2_dir_Contributor.__init__(self)
-        self.__use_libtool = use_libtool
-        pass
     def get_iface_proxies(self):
-        return [ExplicitInterfaceProxy(object=self.parentbuilder(), use_libtool=self.__use_libtool)]
+        return [ExplicitInterfaceProxy(object=self.parentbuilder())]
     def locally_unique_id(self):
         return str(self.__class__)
     pass
 
 class ExplicitInterfaceSetup(Setup):
-    def __init__(self, use_libtool):
-        Setup.__init__(self)
-        self.__use_libtool = use_libtool
-        pass
     def initial_builders(self):
-        ret = super(ExplicitInterfaceSetup, self).initial_builders()
-        ret.append(ExplicitInterface_Confix2_dir(use_libtool=self.__use_libtool))
-        return ret
+        return super(ExplicitInterfaceSetup, self).initial_builders() + [ExplicitInterface_Confix2_dir()]
     pass

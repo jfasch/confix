@@ -36,7 +36,6 @@ from clusterer.suite_inmem import ClustererInMemorySuite
 
 from libconfix.plugins.c.setups.tests.suite_inmem import SetupsInMemorySuite
 from libconfix.plugins.c.relocated_headers.tests.suite_inmem import RelocatedHeadersInMemorySuite
-from libconfix.plugins.c.pkg_config.tests.suite_inmem import PkgConfigInMemorySuite
 
 import unittest
 
@@ -54,7 +53,6 @@ class CInMemoryTestSuite(unittest.TestSuite):
         self.addTest(SetupsInMemorySuite())
         self.addTest(RelocatedHeadersInMemorySuite())
         self.addTest(HeaderInMemorySuite())
-        self.addTest(PkgConfigInMemorySuite())
         self.addTest(RegressionsInMemorySuite())
         self.addTest(ConditionalLocalInstallInMemorySuite())
         self.addTest(Confix2_dir_Suite())

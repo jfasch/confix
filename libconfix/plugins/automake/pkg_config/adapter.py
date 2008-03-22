@@ -20,13 +20,11 @@ from libconfix.plugins.c.buildinfo import \
      BuildInfo_CXXFLAGS, \
      BuildInfo_CLibrary_External
 
-# jjj remove this >>> 
 from libconfix.plugins.automake.buildinfo import \
      BuildInfo_ACInclude_m4, \
      BuildInfo_Configure_in
 from libconfix.plugins.automake.configure_ac import Configure_ac
-from libconfix.plugins.automake import helper_automake
-# jjj <<<
+from libconfix.plugins.automake import helper
 
 from libconfix.core.machinery.builder import Builder
 from libconfix.core.machinery.buildinfoset import BuildInformationSet
@@ -47,7 +45,7 @@ class PkgConfigLibraryAdapter(Builder):
         ret = BuildInformationSet()
         ret.merge(super(PkgConfigLibraryAdapter, self).buildinfos())
 
-        package_shell_name = helper_automake.automake_name(self.__packagename)
+        package_shell_name = helper.automake_name(self.__packagename)
 
         ret.add(BuildInfo_ACInclude_m4(
             lines=[pkg_config_check]))
