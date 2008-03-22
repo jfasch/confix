@@ -74,6 +74,8 @@ class LibtoolInMemoryTest(unittest.TestCase):
             name='file.c',
             entry=File())
 
+        was testet der scheiss test uberhaupt?!
+
         package = LocalPackage(rootdirectory=rootdir,
                                setups=[ExplicitCSetup(use_libtool=True)])
         package.boil(external_nodes=[])
