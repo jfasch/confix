@@ -25,8 +25,6 @@ from libconfix.setups.explicit_setup import ExplicitSetup
 
 import unittest
 
-move this test to the automake plugin
-
 class LibtoolInMemorySuite(unittest.TestSuite):
     def __init__(self):
         unittest.TestSuite.__init__(self)
