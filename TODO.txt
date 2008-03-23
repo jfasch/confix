@@ -11,10 +11,6 @@
         use. will be hard.
     * libconfix/core/machinery/local_package.py
       * repo_automake.dir_for_automake()
-    * libconfix/plugins/c/linked.py
-      * use_libtool is crap! this has to go into the backend plugin,
-        together with get_linkline() and __do_deep_linking().
-    * libconfix/plugins/c/library_dependencies.py
     * libconfix/plugins/c/library.py
       * libtool_version_info, libtool_release_info
 
@@ -50,14 +46,6 @@
 
   * clean up automake plugin directories; move most parts into
     subdirectories.
-
-  * For *all* tests: instead of explicitly setting up the test with a
-    fine grained setup constellation, use the composite setups from
-    libconfix.setups.
-
-  * From plugins.c.tests, move all that only test automake stuff into
-    plugins.automake.tests. those that use automake to build C stuff
-    can stay, though.
 
 * Checks before finish:
 
