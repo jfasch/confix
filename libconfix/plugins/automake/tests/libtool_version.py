@@ -1,5 +1,5 @@
 # Copyright (C) 2002-2006 Salomon Automation
-# Copyright (C) 2006 Joerg Faschingbauer
+# Copyright (C) 2006-2008 Joerg Faschingbauer
 
 # This library is free software; you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as
@@ -16,7 +16,8 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 # USA
 
-import unittest
+from libconfix.plugins.c.library import LibraryBuilder
+from libconfix.plugins.c.setups.default_setup import DefaultCSetup
 
 from libconfix.core.filesys.directory import Directory
 from libconfix.core.filesys.file import File
@@ -24,8 +25,9 @@ from libconfix.core.filesys.filesys import FileSystem
 from libconfix.core.machinery.local_package import LocalPackage
 from libconfix.core.utils import const
 
-from libconfix.plugins.c.library import LibraryBuilder
-from libconfix.plugins.c.setups.default_setup import DefaultCSetup
+from libconfix.frontends.confix2.confix_setup import ConfixSetup
+
+import unittest
 
 class LibtoolVersionSuite(unittest.TestSuite):
     def __init__(self):
@@ -51,8 +53,7 @@ class ExplicitLibtoolVersionTest(unittest.TestCase):
             name='file.c',
             entry=File())
         package = LocalPackage(rootdirectory=fs.rootdirectory(),
-                               setups=[DefaultCSetup(short_libnames=False,
-                                              use_libtool=True)])
+                               setups=[ConfixSetup(short_libnames=False, use_libtool=True)])
         package.boil(external_nodes=[])
 
         for b in package.rootbuilder().builders():
@@ -82,8 +83,7 @@ class DefaultLibtoolVersionTest(unittest.TestCase):
             name='file.c',
             entry=File())
         package = LocalPackage(rootdirectory=fs.rootdirectory(),
-                               setups=[DefaultCSetup(short_libnames=False,
-                                              use_libtool=True)])
+                               setups=[ConfixSetup(short_libnames=False, use_libtool=True)])
         package.boil(external_nodes=[])
 
         for b in package.rootbuilder().builders():

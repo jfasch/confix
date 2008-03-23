@@ -15,13 +15,12 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 # USA
 
-from libconfix.plugins.c.setups.default_setup import DefaultCSetup
 from libconfix.plugins.c.h import HeaderBuilder
-
 from libconfix.core.filesys.filesys import FileSystem
 from libconfix.core.filesys.file import File
 from libconfix.core.utils import const
 from libconfix.core.machinery.local_package import LocalPackage
+from libconfix.frontends.confix2.confix_setup import ConfixSetup
 
 import unittest
 
@@ -48,7 +47,7 @@ class HeaderInstallPath(unittest.TestCase):
             name='file.h',
             entry=File(lines=["// CONFIX:INSTALLPATH('a/b')"]))
         package = LocalPackage(rootdirectory=fs.rootdirectory(),
-                               setups=[DefaultCSetup(use_libtool=False, short_libnames=False)])
+                               setups=[ConfixSetup(use_libtool=False, short_libnames=False)])
         package.boil(external_nodes=[])
         file_h_builder = package.rootbuilder().find_entry_builder(['file.h'])
         self.failUnlessEqual(file_h_builder.public_visibility(), ['a', 'b'])
@@ -71,7 +70,7 @@ class HeaderInstallPath(unittest.TestCase):
         file.set_property('INSTALLPATH_CINCLUDE', ['x'])
 
         package = LocalPackage(rootdirectory=fs.rootdirectory(),
-                               setups=[DefaultCSetup(use_libtool=False, short_libnames=False)])
+                               setups=[ConfixSetup(use_libtool=False, short_libnames=False)])
         self.failUnlessRaises(HeaderBuilder.AmbiguousVisibility, package.boil, external_nodes=[])
         
         pass
@@ -93,7 +92,7 @@ class HeaderInstallPath(unittest.TestCase):
         file.set_property('INSTALLPATH_CINCLUDE', ['x'])
 
         package = LocalPackage(rootdirectory=fs.rootdirectory(),
-                               setups=[DefaultCSetup(use_libtool=False, short_libnames=False)])
+                               setups=[ConfixSetup(use_libtool=False, short_libnames=False)])
         self.failUnlessRaises(HeaderBuilder.AmbiguousVisibility, package.boil, external_nodes=[])
         
         pass

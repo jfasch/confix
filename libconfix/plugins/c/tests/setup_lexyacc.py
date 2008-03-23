@@ -16,15 +16,14 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 # USA
 
+from libconfix.plugins.c.lex import LexBuilder
+from libconfix.plugins.c.library import LibraryBuilder
+from libconfix.plugins.c.yacc import YaccBuilder
 from libconfix.core.filesys.file import File
 from libconfix.core.filesys.filesys import FileSystem
 from libconfix.core.machinery.local_package import LocalPackage
 from libconfix.core.utils import const
-
-from libconfix.plugins.c.lex import LexBuilder
-from libconfix.plugins.c.library import LibraryBuilder
-from libconfix.plugins.c.setups.default_setup import DefaultCSetup
-from libconfix.plugins.c.yacc import YaccBuilder
+from libconfix.frontends.confix2.confix_setup import ConfixSetup
 
 import unittest
 
@@ -59,7 +58,7 @@ class LexYaccSetupTest(unittest.TestCase):
             entry=File())
 
         package = LocalPackage(rootdirectory=fs.rootdirectory(),
-                               setups=[DefaultCSetup(use_libtool=False, short_libnames=False)])
+                               setups=[ConfixSetup(use_libtool=False, short_libnames=False)])
         package.boil(external_nodes=[])
         package.output()
 

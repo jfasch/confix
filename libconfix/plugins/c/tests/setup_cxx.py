@@ -16,18 +16,16 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 # USA
 
-from libconfix.core.filesys.directory import Directory
-from libconfix.core.filesys.file import File
-from libconfix.core.filesys.filesys import FileSystem
-from libconfix.core.hierarchy.default_setup import DefaultDirectorySetup
-from libconfix.core.machinery.local_package import LocalPackage
-from libconfix.core.utils import const
-
-from libconfix.plugins.c.setups.default_setup import DefaultCSetup
 from libconfix.plugins.c.library import LibraryBuilder
 from libconfix.plugins.c.executable import ExecutableBuilder
 from libconfix.plugins.c.cxx import CXXBuilder
 from libconfix.plugins.c.h import HeaderBuilder
+from libconfix.core.filesys.directory import Directory
+from libconfix.core.filesys.file import File
+from libconfix.core.filesys.filesys import FileSystem
+from libconfix.core.machinery.local_package import LocalPackage
+from libconfix.core.utils import const
+from libconfix.frontends.confix2.confix_setup import ConfixSetup
 
 import unittest
 
@@ -74,9 +72,7 @@ class BasicCXXSetup(unittest.TestCase):
             entry=File(lines=['void main() {}']))
         
         package = LocalPackage(rootdirectory=fs.rootdirectory(),
-                               setups=[DefaultDirectorySetup(),
-                                       DefaultCSetup(use_libtool=False,
-                                                     short_libnames=False)])
+                               setups=[ConfixSetup(use_libtool=False, short_libnames=False)])
         package.boil(external_nodes=[])
         package.output()
 
@@ -138,7 +134,7 @@ class HeadersOnlyMakeNoLibrary(unittest.TestCase):
             entry=File())
 
         package = LocalPackage(rootdirectory=fs.rootdirectory(),
-                               setups=[DefaultCSetup(use_libtool=False, short_libnames=False)])
+                               setups=[ConfixSetup(use_libtool=False, short_libnames=False)])
         package.boil(external_nodes=[])
 
         for b in package.rootbuilder().builders():

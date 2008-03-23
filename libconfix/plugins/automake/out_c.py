@@ -37,6 +37,7 @@ from libconfix.core.machinery.builder import Builder
 from libconfix.core.machinery.setup import Setup
 
 import sys
+import os
 
 class COutputSetup(Setup):
     def __init__(self, use_libtool):
@@ -132,7 +133,9 @@ class COutputBuilder(Builder):
             pass
         # external includes.
         for p in b.external_include_path():
-            self.parentbuilder().makefile_am().add_includepath(p)
+            for item in p:
+                self.parentbuilder().makefile_am().add_includepath(item)
+                pass
             pass
         pass
 
@@ -187,7 +190,7 @@ class COutputBuilder(Builder):
         self.package().configure_ac().add_paragraph(
             paragraph=Paragraph(['AC_PROG_YACC']),
             order=Configure_ac.PROGRAMS)
-        root, ext = os.path.splitext(self.file().name())
+        root, ext = os.path.splitext(b.file().name())
         if ext == '.y':
             self.package().configure_ac().add_paragraph(
                 paragraph=Paragraph(['AC_PROG_CC']),

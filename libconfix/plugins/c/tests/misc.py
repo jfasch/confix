@@ -1,5 +1,5 @@
 # Copyright (C) 2002-2006 Salomon Automation
-# Copyright (C) 2006 Joerg Faschingbauer
+# Copyright (C) 2006-2008 Joerg Faschingbauer
 
 # This library is free software; you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as
@@ -18,13 +18,12 @@
 
 import unittest
 
+from libconfix.plugins.c.setups.default_setup import DefaultCSetup
 from libconfix.core.filesys.file import File
 from libconfix.core.filesys.filesys import FileSystem
 from libconfix.core.machinery.local_package import LocalPackage
-from libconfix.core.hierarchy.default_setup import DefaultDirectorySetup
 from libconfix.core.utils import const
-
-from libconfix.plugins.c.setups.default_setup import DefaultCSetup
+from libconfix.frontends.confix2.confix_setup import ConfixSetup
 
 class MiscellaneousSuite(unittest.TestSuite):
     def __init__(self):
@@ -54,8 +53,7 @@ class IgnoredEntriesTest(unittest.TestCase):
             entry=File())
 
         package = LocalPackage(rootdirectory=fs.rootdirectory(),
-                               setups=[DefaultCSetup(use_libtool=False, short_libnames=False),
-                                       DefaultDirectorySetup()])
+                               setups=[ConfixSetup(use_libtool=False, short_libnames=False)])
         package.boil(external_nodes=[])
 
         self.failIf(package.rootbuilder().find_entry_builder(['x.cc']) is not None)
@@ -84,7 +82,7 @@ class NoInternalRequiresTest(unittest.TestCase):
             entry=File())
 
         package = LocalPackage(rootdirectory=fs.rootdirectory(),
-                               setups=[DefaultCSetup(use_libtool=False, short_libnames=False)])
+                               setups=[ConfixSetup(use_libtool=False, short_libnames=False)])
         package.boil(external_nodes=[])
         self.failIf(len(package.rootbuilder().requires()) != 0)
         pass

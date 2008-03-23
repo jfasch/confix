@@ -19,7 +19,6 @@ from dirstructure import DirectoryStructure
 
 from libconfix.plugins.automake import bootstrap, configure, make
 from libconfix.plugins.automake.repo_automake import AutomakePackageRepository
-from libconfix.plugins.automake.library_dependencies import LibraryDependenciesFinderSetup
 
 from libconfix.core.machinery.local_package import LocalPackage
 from libconfix.core.filesys import scan
@@ -86,8 +85,7 @@ class LibraryDependenciesBuildTest(PersistentTestCase):
 
 
         third_local_package = LocalPackage(rootdirectory=dirstructure.third_source(),
-                                           setups=[ConfixSetup(short_libnames=False, use_libtool=False),
-                                                   LibraryDependenciesFinderSetup()])
+                                           setups=[ConfixSetup(short_libnames=False, use_libtool=False)])
         third_local_package.boil(external_nodes=AutomakePackageRepository(prefix=dirstructure.first_install().abspath()).nodes() +\
                                  AutomakePackageRepository(prefix=dirstructure.second_install().abspath()).nodes())
         third_local_package.output()

@@ -1,4 +1,4 @@
-# Copyright (C) 2006 Joerg Faschingbauer
+# Copyright (C) 2006-2008 Joerg Faschingbauer
 
 # This library is free software; you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as
@@ -15,19 +15,18 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 # USA
 
+from libconfix.plugins.c.executable import ExecutableBuilder
+from libconfix.plugins.c.clusterer import CClusterer
+from libconfix.plugins.c.c import CBuilder
+from libconfix.plugins.c.library import LibraryBuilder
+from libconfix.plugins.c.namefinder import LongNameFinder
 from libconfix.core.filesys.filesys import FileSystem
 from libconfix.core.filesys.file import File
 from libconfix.core.utils import const
 from libconfix.core.machinery.local_package import LocalPackage
 from libconfix.core.machinery.builder import Builder
 from libconfix.core.machinery.provide_symbol import Provide_Symbol
-
-from libconfix.plugins.c.setups.default_setup import DefaultCSetup
-from libconfix.plugins.c.executable import ExecutableBuilder
-from libconfix.plugins.c.clusterer import CClusterer
-from libconfix.plugins.c.c import CBuilder
-from libconfix.plugins.c.library import LibraryBuilder
-from libconfix.plugins.c.namefinder import LongNameFinder
+from libconfix.frontends.confix2.confix_setup import ConfixSetup
 
 import unittest
 
@@ -78,8 +77,7 @@ class MarkedMainAfterwardsTest(unittest.TestCase):
             entry=File(lines=['// CONFIX:EXENAME("main2")']))
         
         package = LocalPackage(rootdirectory=fs.rootdirectory(),
-                               setups=[DefaultCSetup(short_libnames=False,
-                                                     use_libtool=False)])
+                               setups=[ConfixSetup(short_libnames=False, use_libtool=False)])
 
         package.boil(external_nodes=[])
 
@@ -133,7 +131,7 @@ class MarkedMainAfterwardsTest(unittest.TestCase):
                                setups=[])
         package.rootbuilder().add_builder(CBuilder(file=main1_c))
         package.rootbuilder().add_builder(CBuilder(file=main2_c))
-        package.rootbuilder().add_builder(CClusterer(namefinder=LongNameFinder(), use_libtool=False))
+        package.rootbuilder().add_builder(CClusterer(namefinder=LongNameFinder()))
 
         # this is our special kind of builder. he does the whole
         # checking work.

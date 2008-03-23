@@ -1,5 +1,5 @@
 # Copyright (C) 2002-2006 Salomon Automation
-# Copyright (C) 2006 Joerg Faschingbauer
+# Copyright (C) 2006-2008 Joerg Faschingbauer
 
 # This library is free software; you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as
@@ -18,17 +18,15 @@
 
 import unittest
 
-from libconfix.core.filesys.file import File
-from libconfix.core.machinery.filebuilder import FileBuilder
-from libconfix.core.machinery.local_package import LocalPackage
-
 from libconfix.plugins.c.c import CBuilder
 from libconfix.plugins.c.executable import ExecutableBuilder
 from libconfix.plugins.c.h import HeaderBuilder
 from libconfix.plugins.c.library import LibraryBuilder
-from libconfix.plugins.c.setups.default_setup import DefaultCSetup
-
+from libconfix.core.filesys.file import File
+from libconfix.core.machinery.filebuilder import FileBuilder
+from libconfix.core.machinery.local_package import LocalPackage
 from libconfix.testutils import dirhier
+from libconfix.frontends.confix2.confix_setup import ConfixSetup
 
 class ExecutableSetupSuite(unittest.TestSuite):
     def __init__(self):
@@ -63,8 +61,7 @@ class ExecutableSetupTest(unittest.TestCase):
             entry=File(lines=['// CONFIX:EXENAME("main2")']))
         
         package = LocalPackage(rootdirectory=fs.rootdirectory(),
-                               setups=[DefaultCSetup(short_libnames=False,
-                                                     use_libtool=False)])
+                               setups=[ConfixSetup(short_libnames=False, use_libtool=False)])
         package.boil(external_nodes=[])
 
         file_h_builder = None

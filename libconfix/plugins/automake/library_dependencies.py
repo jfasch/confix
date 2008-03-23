@@ -113,12 +113,12 @@ class LibraryDependenciesFinder(Builder):
         # write Makefile.am stuff: blah_DEPENDENCIES
         for lib_buildinfo in local_libs:
             self.parentbuilder().makefile_am().add_compound_dependencies(
-                compound_name=self.__exe_builder.am_compound_name(),
+                compound_name=helper.automake_name(self.__exe_builder.exename()),
                 dependency='$(top_builddir)/'+'/'.join(lib_buildinfo.dir())+'/lib'+lib_buildinfo.name()+'.a')
             pass
         for lib_buildinfo in installed_libs:
             self.parentbuilder().makefile_am().add_compound_dependencies(
-                compound_name=self.__exe_builder.am_compound_name(),
+                compound_name=helper.automake_name(self.__exe_builder.exename()),
                 dependency='@'+self.installed_substname(lib_buildinfo.name())+'@')
             pass
 

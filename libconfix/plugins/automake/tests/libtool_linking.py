@@ -16,7 +16,7 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 # USA
 
-import unittest
+from libconfix.plugins.c.setups.default_setup import DefaultCSetup
 
 from libconfix.core.filesys.directory import Directory
 from libconfix.core.filesys.file import File
@@ -25,7 +25,9 @@ from libconfix.core.hierarchy.default_setup import DefaultDirectorySetup
 from libconfix.core.machinery.local_package import LocalPackage
 from libconfix.core.utils import const
 
-from libconfix.plugins.c.setups.default_setup import DefaultCSetup
+from libconfix.frontends.confix2.confix_setup import ConfixSetup
+
+import unittest
 
 class LibtoolLinkingSuite(unittest.TestSuite):
     def __init__(self):
@@ -102,8 +104,7 @@ class LibtoolLinklineSeeThroughHeaders(unittest.TestCase):
                               'int main() {}']))
 
         package = LocalPackage(rootdirectory=fs.rootdirectory(),
-                               setups=[DefaultCSetup(use_libtool=True, short_libnames=False),
-                                       DefaultDirectorySetup()])
+                               setups=[ConfixSetup(use_libtool=True, short_libnames=False)])
         package.boil(external_nodes=[])
         package.output()
 

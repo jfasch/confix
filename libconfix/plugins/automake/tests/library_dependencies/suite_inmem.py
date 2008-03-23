@@ -53,8 +53,7 @@ class LibraryDependenciesInMemoryTest(PersistentTestCase):
         second_installed_package = second_local_package.install()
 
         third_local_package = LocalPackage(rootdirectory=dirstructure.third_source(),
-                                           setups=[ConfixSetup(short_libnames=False, use_libtool=False),
-                                                   LibraryDependenciesFinderSetup()])
+                                           setups=[ConfixSetup(short_libnames=False, use_libtool=False)])
         third_local_package.boil(external_nodes=first_installed_package.nodes()+second_installed_package.nodes())
         third_local_package.output()
         
