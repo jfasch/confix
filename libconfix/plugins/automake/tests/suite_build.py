@@ -18,10 +18,10 @@
 from simple_build import SimpleBuildSuite
 from kde_hack import KDEHackTestSuiteBuild
 from autoconf_archive import AutoConfArchiveSuite
-from library_dependencies.suite_build import LibraryDependenciesBuildSuite
 from exename.suite_build import ExecutableNameBuildSuite
 from readonly_prefixes.suite_build import ReadonlyPrefixesBuildSuite
 from interix_link import InterixLinkSuite
+from libconfix.plugins.automake.c.tests.suite_build import AutomakeCBuildSuite
 
 import unittest
 
@@ -31,10 +31,10 @@ class AutomakeBuildSuite(unittest.TestSuite):
         self.addTest(SimpleBuildSuite())
         self.addTest(KDEHackTestSuiteBuild())
         self.addTest(AutoConfArchiveSuite())
-        self.addTest(LibraryDependenciesBuildSuite())
         self.addTest(ExecutableNameBuildSuite())
         self.addTest(ReadonlyPrefixesBuildSuite())
         self.addTest(InterixLinkSuite())
+        self.addTest(AutomakeCBuildSuite())
         pass
     pass
 

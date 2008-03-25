@@ -16,7 +16,7 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 # USA
 
-import helper
+from libconfix.plugins.automake import helper
 
 from libconfix.core.machinery.builder import Builder
 from libconfix.core.machinery.setup import Setup

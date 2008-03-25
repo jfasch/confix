@@ -15,15 +15,18 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 # USA
 
-from c.setup import CSetup
+from out_c import COutputSetup
+from library_dependencies import LibraryDependenciesFinderSetup
+from interix import InterixSetup
 
 from libconfix.core.machinery.setup import CompositeSetup
 
-class AutomakeSetup(CompositeSetup):
+class CSetup(CompositeSetup):
     def __init__(self, use_libtool):
         CompositeSetup.__init__(
             self,
-            setups=[CSetup(use_libtool=use_libtool)])
+            setups=[COutputSetup(use_libtool=use_libtool),
+                    LibraryDependenciesFinderSetup(use_libtool=use_libtool),
+                    InterixSetup()])
         pass
-        
     pass

@@ -15,15 +15,17 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 # USA
 
-from c.setup import CSetup
+from library_dependencies.suite_build import LibraryDependenciesBuildSuite
 
-from libconfix.core.machinery.setup import CompositeSetup
+import unittest
 
-class AutomakeSetup(CompositeSetup):
-    def __init__(self, use_libtool):
-        CompositeSetup.__init__(
-            self,
-            setups=[CSetup(use_libtool=use_libtool)])
+class AutomakeCBuildSuite(unittest.TestSuite):
+    def __init__(self):
+        unittest.TestSuite.__init__(self)
+        self.addTest(LibraryDependenciesBuildSuite())
         pass
-        
+    pass
+
+if __name__ == '__main__':
+    unittest.TextTestRunner().run(AutomakeCBuildSuite())
     pass

@@ -15,15 +15,3 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 # USA
 
-from c.setup import CSetup
-
-from libconfix.core.machinery.setup import CompositeSetup
-
-class AutomakeSetup(CompositeSetup):
-    def __init__(self, use_libtool):
-        CompositeSetup.__init__(
-            self,
-            setups=[CSetup(use_libtool=use_libtool)])
-        pass
-        
-    pass

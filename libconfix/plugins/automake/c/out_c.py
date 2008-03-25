@@ -15,9 +15,9 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 # USA
 
-from configure_ac import Configure_ac
-import readonly_prefixes
-import helper
+from libconfix.plugins.automake.configure_ac import Configure_ac
+from libconfix.plugins.automake import readonly_prefixes
+from libconfix.plugins.automake import helper
 
 from libconfix.plugins.c.h import HeaderBuilder
 from libconfix.plugins.c.c import CBuilder

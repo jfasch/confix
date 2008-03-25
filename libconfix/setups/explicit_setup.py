@@ -19,7 +19,6 @@ from libconfix.core.machinery.setup import CompositeSetup
 
 from libconfix.core.hierarchy.explicit_setup import ExplicitDirectorySetup
 from libconfix.plugins.c.setups.explicit_setup import ExplicitCSetup
-from libconfix.plugins.automake.library_dependencies import LibraryDependenciesFinderSetup
 from libconfix.plugins.plainfile.setup import PlainFileInterfaceSetup
 from libconfix.plugins.script.setup import ScriptSetup
 from libconfix.plugins.idl.setup import IDLSetup

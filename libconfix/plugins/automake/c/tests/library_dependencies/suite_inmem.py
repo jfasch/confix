@@ -17,7 +17,7 @@
 
 from dirstructure import DirectoryStructure
 
-from libconfix.plugins.automake.library_dependencies import LibraryDependenciesFinderSetup
+from libconfix.plugins.automake.c.library_dependencies import LibraryDependenciesFinderSetup
 
 from libconfix.core.machinery.local_package import LocalPackage
 

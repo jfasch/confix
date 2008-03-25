@@ -23,7 +23,6 @@ from iface import InterfaceSuite
 from file_installer_suite import FileInstallerSuite
 from c import CSuite
 from exe import ExecutableSuite
-from library_dependencies.suite_inmem import LibraryDependenciesInMemorySuite
 from exename.suite_inmem import ExecutableNameInMemorySuite
 import readonly_prefixes.suite_inmem
 from external_library import ExternalLibraryInMemorySuite
@@ -31,6 +30,7 @@ from libtool_version import LibtoolVersionSuite
 from libtool_linking import LibtoolLinkingSuite
 from buildinfo import BuildInfoSuite
 from libconfix.plugins.automake.pkg_config.tests.suite_inmem import PkgConfigInMemorySuite
+from libconfix.plugins.automake.c.tests.suite_inmem import AutomakeCInMemorySuite
 
 import unittest
 
@@ -46,7 +46,6 @@ class AutomakeInMemorySuite(unittest.TestSuite):
         self.addTest(FileInstallerSuite())
         self.addTest(CSuite())
         self.addTest(ExecutableSuite())
-        self.addTest(LibraryDependenciesInMemorySuite())
         self.addTest(ExecutableNameInMemorySuite())
         self.addTest(readonly_prefixes.suite_inmem.InMemorySuite())
         self.addTest(ExternalLibraryInMemorySuite())
@@ -54,6 +53,7 @@ class AutomakeInMemorySuite(unittest.TestSuite):
         self.addTest(LibtoolLinkingSuite())
         self.addTest(BuildInfoSuite())
         self.addTest(PkgConfigInMemorySuite())
+        self.addTest(AutomakeCInMemorySuite())
         pass
 
     pass
