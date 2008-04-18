@@ -49,6 +49,9 @@ class FileBuilderInterfaceProxy(InterfaceProxy):
             raise Error("SET_FILE_PROPERTIES(): 'properties' parameter must be a dictionary")
         for name, value in properties.iteritems():
             self.object().file().set_property(name=name, value=value)
+            # we have modified a property, which at least *might* have
+            # influence on the graph
+            self.object().force_enlarge()
             pass
         pass
 
@@ -56,5 +59,8 @@ class FileBuilderInterfaceProxy(InterfaceProxy):
         if type(name) is not types.StringType:
             raise Error("SET_FILE_PROPERTY(): 'name' must be a string")
         self.object().file().set_property(name, value)
+        # we have modified a property, which at least *might* have
+        # influence on the graph
+        self.object().force_enlarge()
         pass
     

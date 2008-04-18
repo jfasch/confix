@@ -34,20 +34,14 @@ class ExplicitInstaller(Builder):
     Confix2.dir.
     """
 
-    def __init__(self):
+    def __init__(self, installdir):
         Builder.__init__(self)
-        self.__installdir = None
+        self.__installdir = installdir
         self.__seen_header_builders = set()
         pass
 
     def locally_unique_id(self):
         return str(self.__class__.__name__)
-
-    def set_installdir(self, path):
-        if self.__installdir is not None:
-            raise Error('Header install directory has already been set to '+'/'.join(self.__installdir))
-        self.__installdir = path
-        pass
 
     def enlarge(self):
         super(ExplicitInstaller, self).enlarge()
@@ -59,14 +53,17 @@ class ExplicitInstaller(Builder):
             if b in self.__seen_header_builders:
                 continue
             b.set_external_install_path(self.__installdir)
+            self.__seen_header_builders.add(b)
+            # we just have modified dependency information, so another
+            # round must be made.
+            self.force_enlarge()
             pass
         pass
 
 class ExplicitInstaller_Confix2_dir(Confix2_dir_Contributor):
     class INSTALLDIR_H(InterfaceProxy):
-        def __init__(self, object):
-            assert isinstance(object, ExplicitInstaller)
-            InterfaceProxy.__init__(self, object=object)
+        def __init__(self, dirbuilder):
+            InterfaceProxy.__init__(self, object=dirbuilder)
             self.add_global('INSTALLDIR_H', getattr(self, 'INSTALLDIR_H'))
             pass
         def INSTALLDIR_H(self, dir):
@@ -75,24 +72,16 @@ class ExplicitInstaller_Confix2_dir(Confix2_dir_Contributor):
             except Error, e:
                 raise Error('INSTALLDIR_H(): dir argument must either '
                             'be a string or a list of path components', [e])
-            self.object().set_installdir(the_dir)
+            self.object().add_builder(ExplicitInstaller(installdir=the_dir))
             pass
         pass
-    def __init__(self, explicit_installer):
-        Confix2_dir_Contributor.__init__(self)
-        self.__explicit_installer = explicit_installer
-        pass
     def get_iface_proxies(self):
-        return [self.INSTALLDIR_H(object=self.__explicit_installer)]
+        return [self.INSTALLDIR_H(dirbuilder=self.parentbuilder())]
     def locally_unique_id(self):
         return str(self.__class__)
     pass
 
 class ExplicitInstallerSetup(Setup):
     def initial_builders(self):
-        ret = super(ExplicitInstallerSetup, self).initial_builders()
-        installer = ExplicitInstaller()
-        ret.extend([
-            installer,            ExplicitInstaller_Confix2_dir(explicit_installer=installer)])
-        return ret
+        return super(ExplicitInstallerSetup, self).initial_builders() + [ExplicitInstaller_Confix2_dir()]
     pass

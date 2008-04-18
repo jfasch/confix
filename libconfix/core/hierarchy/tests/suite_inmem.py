@@ -1,4 +1,4 @@
-# Copyright (C) 2007 Joerg Faschingbauer
+# Copyright (C) 2008 Joerg Faschingbauer
 
 # This library is free software; you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as
@@ -15,17 +15,19 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 # USA
 
-import unittest
-
+from eval_order import IfaceEvaluationOrderSuite
 from dirsetup import BasicDirectorySetupSuite
 from explicit_iface import ExplicitInterfaceInMemorySuite
 from ignored_entries import IgnoredEntriesSuite
 from pseudo_handwritten import PseudoHandwrittenSuite
 from common_iface_suite import CommonDirectoryInterfaceSuite
 
+import unittest
+
 class HierarchyInMemorySuite(unittest.TestSuite):
     def __init__(self):
         unittest.TestSuite.__init__(self)
+        self.addTest(IfaceEvaluationOrderSuite())
         self.addTest(BasicDirectorySetupSuite())
         self.addTest(ExplicitInterfaceInMemorySuite())
         self.addTest(IgnoredEntriesSuite())

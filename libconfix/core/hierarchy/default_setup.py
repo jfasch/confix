@@ -18,11 +18,14 @@
 
 from common_iface import CommonDirectoryInterface_Confix2_dir
 from subdir_recognizer import SubdirectoryRecognizer
+from confix2_dir_creator import Confix2_dir_Creator
 
 from libconfix.core.machinery.setup import Setup
 
 class DefaultDirectorySetup(Setup):
     def initial_builders(self):
         return super(DefaultDirectorySetup, self).initial_builders() + \
-               [SubdirectoryRecognizer(), CommonDirectoryInterface_Confix2_dir()]
+               [SubdirectoryRecognizer(),
+                CommonDirectoryInterface_Confix2_dir(),
+                Confix2_dir_Creator()]
     pass

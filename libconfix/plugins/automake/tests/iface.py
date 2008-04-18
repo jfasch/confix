@@ -19,9 +19,9 @@
 from libconfix.core.filesys.directory import Directory
 from libconfix.core.filesys.file import File
 from libconfix.core.filesys.filesys import FileSystem
-from libconfix.core.hierarchy.default_setup import DefaultDirectorySetup
 from libconfix.core.machinery.local_package import LocalPackage
 from libconfix.core.utils import const
+from libconfix.frontends.confix2.confix_setup import ConfixSetup
 
 import unittest
 
@@ -29,17 +29,18 @@ class InterfaceSuite(unittest.TestSuite):
     def __init__(self):
         unittest.TestSuite.__init__(self)
         self.addTest(CONFIGURE_AC_ACINCLUDE_M4('test_local'))
-        self.addTest(CONFIGURE_AC_ACINCLUDE_M4('test_propagate'))
-        self.addTest(CONFIGURE_AC_ACINCLUDE_M4('test_defaults'))
+        print self
+##         self.addTest(CONFIGURE_AC_ACINCLUDE_M4('test_propagate'))
+##         self.addTest(CONFIGURE_AC_ACINCLUDE_M4('test_defaults'))
         pass
     pass
 
 class CONFIGURE_AC_ACINCLUDE_M4(unittest.TestCase):
     def test_local(self):
 
-        """ We pass flags=[LOCAL] explicitly, to both ACINCLUDE_M4()
-        and CONFIGURE_AC(), and check if both go into acinclude.m4 and
-        configure.ac. """
+        # We pass flags=[LOCAL] explicitly, to both ACINCLUDE_M4() and
+        # CONFIGURE_AC(), and check if both go into acinclude.m4 and
+        # configure.ac.
         
         fs = FileSystem(path=[])
         fs.rootdirectory().add(
@@ -54,7 +55,7 @@ class CONFIGURE_AC_ACINCLUDE_M4(unittest.TestCase):
                               "ACINCLUDE_M4(lines=['the_token_for_acinclude_m4'],",
                               "             flags=[LOCAL])"]))
         package = LocalPackage(rootdirectory=fs.rootdirectory(),
-                               setups=[])
+                               setups=[ConfixSetup(use_libtool=False, short_libnames=False)])
         package.boil(external_nodes=[])
         package.output()
 
@@ -113,7 +114,7 @@ class CONFIGURE_AC_ACINCLUDE_M4(unittest.TestCase):
             entry=File(lines=['REQUIRE_SYMBOL("lo", URGENCY_ERROR)']))
 
         package = LocalPackage(rootdirectory=fs.rootdirectory(),
-                               setups=[DefaultDirectorySetup()])
+                               setups=[ConfixSetup(use_libtool=False, short_libnames=False)])
         package.boil(external_nodes=[])
         package.output()
 
@@ -168,7 +169,7 @@ class CONFIGURE_AC_ACINCLUDE_M4(unittest.TestCase):
             entry=File(lines=['REQUIRE_SYMBOL("lo", URGENCY_ERROR)']))
 
         package = LocalPackage(rootdirectory=fs.rootdirectory(),
-                               setups=[DefaultDirectorySetup()])
+                               setups=[ConfixSetup(use_libtool=False, short_libnames=False)])
         package.boil(external_nodes=[])
         package.output()
 

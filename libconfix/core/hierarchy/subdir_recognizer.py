@@ -17,7 +17,6 @@
 # USA
 
 from dirbuilder import DirectoryBuilder
-from confix2_dir import Confix2_dir
 
 from libconfix.core.machinery.builder import Builder
 from libconfix.core.filesys.vfs_directory import VFSDirectory
@@ -64,15 +63,8 @@ class SubdirectoryRecognizer(Builder):
                 errors.append(Error(os.sep.join(confix2_dir_file.relpath(self.package().rootdirectory()))+' is not a file'))
                 continue
 
-            try:
-                self.__recognized_directories.add(entry)
-                dirbuilder = DirectoryBuilder(directory=entry)
-                dirbuilder.add_builder(Confix2_dir(file=confix2_dir_file))
-                self.parentbuilder().add_builder(dirbuilder)
-            except Error, e:
-                errors.append(Error('Error creating directory builder for '+\
-                                    os.sep.join(self.parentbuilder().directory().relpath(self.package().rootdirectory())), [e]))
-                pass
+            self.parentbuilder().add_builder(DirectoryBuilder(directory=entry))
+            self.__recognized_directories.add(entry)
             pass
         if len(errors):
             raise Error('There were errors in directory '+\

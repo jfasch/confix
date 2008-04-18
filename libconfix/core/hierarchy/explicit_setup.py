@@ -17,11 +17,14 @@
 
 from explicit_iface import Confix2_dir_ExplicitInterface
 from common_iface import CommonDirectoryInterface_Confix2_dir
+from confix2_dir_creator import Confix2_dir_Creator
 
 from libconfix.core.machinery.setup import Setup
 
 class ExplicitDirectorySetup(Setup):
     def initial_builders(self):
         return super(ExplicitDirectorySetup, self).initial_builders() + \
-               [Confix2_dir_ExplicitInterface(), CommonDirectoryInterface_Confix2_dir()]
+               [Confix2_dir_ExplicitInterface(),
+                CommonDirectoryInterface_Confix2_dir(),
+                Confix2_dir_Creator()]
     pass

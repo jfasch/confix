@@ -44,7 +44,6 @@ from libconfix.core.utils import const
 from libconfix.core.utils.error import Error
 from libconfix.core.iface.proxy import InterfaceProxy
 from libconfix.core.iface.executor import InterfaceExecutor
-from libconfix.core.hierarchy.confix2_dir import Confix2_dir
 from libconfix.core.hierarchy.dirbuilder import DirectoryBuilder
 
 import os
@@ -84,21 +83,8 @@ class LocalPackage(Package):
         if self.__version is None:
             raise Error(const.CONFIX2_PKG+': package version has not been set')
 
-        try:
-            # create our root builder, but only if we have a
-            # Confix2.dir file. (hmm: I don't believe that we should
-            # absolutely insist in having Confix2.dir - the mere fact
-            # that this is the root directory of the package should
-            # suffice.)
-            confix2_dir_file = rootdirectory.get(const.CONFIX2_DIR)
-            if confix2_dir_file is None:
-                raise Error(const.CONFIX2_DIR+' missing in '+os.sep.join(rootdirectory.abspath()))
-            if not isinstance(confix2_dir_file, VFSFile):
-                raise Error(os.sep.join(confix2_dir_file.abspath())+' is not a file')
-            self.__rootbuilder = DirectoryBuilder(directory=rootdirectory)
-            self.__rootbuilder.add_builder(Confix2_dir(file=confix2_dir_file))
-        except Error, e:
-            raise Error('Cannot initialize package in '+'/'.join(rootdirectory.abspath()), [e])
+        # create our root builder
+        self.__rootbuilder = DirectoryBuilder(directory=rootdirectory)
 
         # setup our autoconf auxiliary directory. this a regular
         # builder by itself, but plays a special role for us because

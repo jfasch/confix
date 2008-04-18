@@ -1,4 +1,4 @@
-# Copyright (C) 2007 Joerg Faschingbauer
+# Copyright (C) 2007-2008 Joerg Faschingbauer
 
 # This library is free software; you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as
@@ -16,7 +16,6 @@
 # USA
 
 from dirbuilder import DirectoryBuilder
-from confix2_dir import Confix2_dir
 from confix2_dir_contributor import Confix2_dir_Contributor
 
 from libconfix.core.iface.proxy import InterfaceProxy
@@ -54,19 +53,10 @@ class Confix2_dir_ExplicitInterface(Confix2_dir_Contributor):
             raise Error('DIRECTORY(): could not find directory '+str(path))
         dirbuilder = DirectoryBuilder(directory=directory)
 
-        # initialize directory builder from the package's
-        # setup. if we have a Confix2.dir file, then tell him
-        # about the interface the setup wants it to have, and add
-        # him to the directory builder. finally, add the directory
-        # builder to his future parent.
-
-        confix2_dir_builder = None
-        confix2_dir_file = directory.get(const.CONFIX2_DIR)
-        if confix2_dir_file is not None:
-            dirbuilder.add_builder(Confix2_dir(file=confix2_dir_file))
-            pass
-
         self.__retained_builders.append(dirbuilder)
+
+        # the machinery didn't see the new builder yet, so we have to
+        # force another round.
         self.force_enlarge()
         return dirbuilder
 

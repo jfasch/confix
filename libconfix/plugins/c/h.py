@@ -56,7 +56,6 @@ class HeaderBuilder(CBaseBuilder):
 
         self.__namespace_install_path = None
         self.__namespace_error = None
-        self.__property_install_path = None
         self.__iface_install_path = None
         self.__external_install_path = None
 
@@ -77,9 +76,6 @@ class HeaderBuilder(CBaseBuilder):
         # self.__iface_install_path.
         super(HeaderBuilder, self).initialize(package)
 
-        if self.file() is not None:
-            self.__property_install_path = self.file().get_property(HeaderBuilder.PROPERTY_INSTALLPATH)
-            pass
         try:        
             self.__namespace_install_path = namespace.find_unique_namespace(self.file().lines())
         except Error, e:
@@ -88,33 +84,39 @@ class HeaderBuilder(CBaseBuilder):
         pass
 
     def set_iface_install_path(self, path):
+        self.force_enlarge()
         self.__iface_install_path = path
         pass
 
     def set_external_install_path(self, path):
         assert type(path) in (list, tuple)
+        self.force_enlarge()
         self.__external_install_path = path
         pass
 
     def public_visibility(self):
         ret = None
         set_by = None
+
         if self.__external_install_path is not None:
             if set_by is not None:
                 raise self.AmbiguousVisibility(header_builder=self, cur='explicit setting', prev=set_by)
             ret = self.__external_install_path
             set_by = "explicit setting"
             pass
+
         if self.__iface_install_path is not None:
             if set_by is not None:
                 raise self.AmbiguousVisibility(header_builder=self, cur='file interface invocation', prev=set_by)
             ret = self.__iface_install_path
             set_by = 'file interface invocation'
             pass
-        if self.__property_install_path is not None:
+
+        property_install_path = self.file().get_property(HeaderBuilder.PROPERTY_INSTALLPATH)
+        if property_install_path is not None:
             if set_by is not None:
                 raise self.AmbiguousVisibility(header_builder=self, cur='file property', prev=set_by)
-            ret = self.__property_install_path
+            ret = property_install_path
             set_by = 'file property'
             pass
 

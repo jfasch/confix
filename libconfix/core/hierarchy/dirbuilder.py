@@ -153,7 +153,6 @@ class DirectoryBuilder(EntryBuilder, LocalNode):
         Add one builder to my managees. Check for its uniqueness.
         Initialize it if I am already initialized myself.
         """
-
         b.set_parentbuilder(self)
         unique_id = b.locally_unique_id()
         existing_builder = self.__builders.get(unique_id)

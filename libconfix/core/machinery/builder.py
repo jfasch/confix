@@ -226,26 +226,28 @@ class BuilderInterfaceProxy(InterfaceProxy):
         self.add_global('REQUIRE', getattr(self, 'REQUIRE'))
         self.add_global('PROVIDE_SYMBOL', getattr(self, 'PROVIDE_SYMBOL'))
         self.add_global('REQUIRE_SYMBOL', getattr(self, 'REQUIRE_SYMBOL'))
-        self.add_global('PROVIDE_CALLABLE', getattr(self, 'PROVIDE_CALLABLE'))
-        self.add_global('REQUIRE_CALLABLE', getattr(self, 'REQUIRE_CALLABLE'))
+# jjj
+##         self.add_global('PROVIDE_CALLABLE', getattr(self, 'PROVIDE_CALLABLE'))
+##         self.add_global('REQUIRE_CALLABLE', getattr(self, 'REQUIRE_CALLABLE'))
 
         # BUILDINFORMATION
         self.add_global('BUILDINFORMATION', getattr(self, 'BUILDINFORMATION'))
 
-        # CONFIGURE_AC, ACINCLUDE_M4, and associated flag values
-        self.add_global('LOCAL', BuilderInterfaceProxy.AC_BUILDINFO_TRANSPORT_LOCAL)
-        self.add_global('PROPAGATE', BuilderInterfaceProxy.AC_BUILDINFO_TRANSPORT_PROPAGATE)
-        self.add_global('AC_BOILERPLATE', Configure_ac.BOILERPLATE)
-        self.add_global('AC_OPTIONS', Configure_ac.OPTIONS)
-        self.add_global('AC_PROGRAMS', Configure_ac.PROGRAMS)
-        self.add_global('AC_LIBRARIES', Configure_ac.LIBRARIES)
-        self.add_global('AC_HEADERS', Configure_ac.HEADERS)
-        self.add_global('AC_TYPEDEFS_AND_STRUCTURES', Configure_ac.TYPEDEFS_AND_STRUCTURES)
-        self.add_global('AC_FUNCTIONS', Configure_ac.FUNCTIONS)
-        self.add_global('AC_OUTPUT', Configure_ac.OUTPUT)
+# jjj
+##         # CONFIGURE_AC, ACINCLUDE_M4, and associated flag values
+##         self.add_global('LOCAL', BuilderInterfaceProxy.AC_BUILDINFO_TRANSPORT_LOCAL)
+##         self.add_global('PROPAGATE', BuilderInterfaceProxy.AC_BUILDINFO_TRANSPORT_PROPAGATE)
+##         self.add_global('AC_BOILERPLATE', Configure_ac.BOILERPLATE)
+##         self.add_global('AC_OPTIONS', Configure_ac.OPTIONS)
+##         self.add_global('AC_PROGRAMS', Configure_ac.PROGRAMS)
+##         self.add_global('AC_LIBRARIES', Configure_ac.LIBRARIES)
+##         self.add_global('AC_HEADERS', Configure_ac.HEADERS)
+##         self.add_global('AC_TYPEDEFS_AND_STRUCTURES', Configure_ac.TYPEDEFS_AND_STRUCTURES)
+##         self.add_global('AC_FUNCTIONS', Configure_ac.FUNCTIONS)
+##         self.add_global('AC_OUTPUT', Configure_ac.OUTPUT)
 
-        self.add_global('CONFIGURE_AC', getattr(self, 'CONFIGURE_AC'))
-        self.add_global('ACINCLUDE_M4', getattr(self, 'ACINCLUDE_M4'))        
+##         self.add_global('CONFIGURE_AC', getattr(self, 'CONFIGURE_AC'))
+##         self.add_global('ACINCLUDE_M4', getattr(self, 'ACINCLUDE_M4'))        
         
         pass
 
@@ -285,52 +287,54 @@ class BuilderInterfaceProxy(InterfaceProxy):
             urgency=urgency))
         pass
 
-    def PROVIDE_CALLABLE(self, name):
-        if not name or len(name) == 0:
-            raise Error('PROVIDE_CALLABLE(): need a non-zero name parameter')
-        self.object().add_provide(Provide_Callable(exename=name))
-        pass
+# jjj
+##     def PROVIDE_CALLABLE(self, name):
+##         if not name or len(name) == 0:
+##             raise Error('PROVIDE_CALLABLE(): need a non-zero name parameter')
+##         self.object().add_provide(Provide_Callable(exename=name))
+##         pass
 
-    def REQUIRE_CALLABLE(self, name, urgency=Require.URGENCY_IGNORE):
-        if not name or len(name)==0:
-            raise Error('REQUIRE_CALLABLE(): need a non-zero name parameter')
-        if not urgency in [Require.URGENCY_IGNORE, Require.URGENCY_WARN, Require.URGENCY_ERROR]:
-            raise Error('REQUIRE_SYMBOL(): urgency must be one of URGENCY_IGNORE, URGENCY_WARN, URGENCY_ERROR')
-        self.object().add_require(Require_Callable(
-            exename=name,
-            found_in=[str(self.object())],
-            urgency=urgency))
-        pass
+##     def REQUIRE_CALLABLE(self, name, urgency=Require.URGENCY_IGNORE):
+##         if not name or len(name)==0:
+##             raise Error('REQUIRE_CALLABLE(): need a non-zero name parameter')
+##         if not urgency in [Require.URGENCY_IGNORE, Require.URGENCY_WARN, Require.URGENCY_ERROR]:
+##             raise Error('REQUIRE_SYMBOL(): urgency must be one of URGENCY_IGNORE, URGENCY_WARN, URGENCY_ERROR')
+##         self.object().add_require(Require_Callable(
+##             exename=name,
+##             found_in=[str(self.object())],
+##             urgency=urgency))
+##         pass
 
     def BUILDINFORMATION(self, buildinfo):
         self.object().add_buildinfo(buildinfo)
         pass
 
-    AC_BUILDINFO_TRANSPORT_LOCAL = 0
-    AC_BUILDINFO_TRANSPORT_PROPAGATE = 1
-    def CONFIGURE_AC(self, lines, order, flags=None):
-        if type(order) not in [types.IntType or types.LongType]:
-            raise Error('CONFIGURE_AC(): "order" parameter must be an integer')
-        if flags is None or BuilderInterfaceProxy.AC_BUILDINFO_TRANSPORT_LOCAL in flags:
-            self.object().package().configure_ac().add_paragraph(
-                paragraph=Paragraph(lines=lines),
-                order=order)
-            pass
-        if flags is None or BuilderInterfaceProxy.AC_BUILDINFO_TRANSPORT_PROPAGATE in flags:
-            self.object().add_buildinfo(BuildInfo_Configure_in(
-                lines=lines,
-                order=order))
-            pass
-        pass
+# jjj
+##     AC_BUILDINFO_TRANSPORT_LOCAL = 0
+##     AC_BUILDINFO_TRANSPORT_PROPAGATE = 1
+##     def CONFIGURE_AC(self, lines, order, flags=None):
+##         if type(order) not in [types.IntType or types.LongType]:
+##             raise Error('CONFIGURE_AC(): "order" parameter must be an integer')
+##         if flags is None or BuilderInterfaceProxy.AC_BUILDINFO_TRANSPORT_LOCAL in flags:
+##             self.object().package().configure_ac().add_paragraph(
+##                 paragraph=Paragraph(lines=lines),
+##                 order=order)
+##             pass
+##         if flags is None or BuilderInterfaceProxy.AC_BUILDINFO_TRANSPORT_PROPAGATE in flags:
+##             self.object().add_buildinfo(BuildInfo_Configure_in(
+##                 lines=lines,
+##                 order=order))
+##             pass
+##         pass
 
-    def ACINCLUDE_M4(self, lines, flags=None):
-        if flags is None or BuilderInterfaceProxy.AC_BUILDINFO_TRANSPORT_LOCAL in flags:
-            self.object().package().acinclude_m4().add_paragraph(
-                paragraph=Paragraph(lines=lines))
-            pass
-        if flags is None or BuilderInterfaceProxy.AC_BUILDINFO_TRANSPORT_PROPAGATE in flags:
-            self.object().add_buildinfo(BuildInfo_ACInclude_m4(
-                lines=lines))
-            pass
-        pass
+##     def ACINCLUDE_M4(self, lines, flags=None):
+##         if flags is None or BuilderInterfaceProxy.AC_BUILDINFO_TRANSPORT_LOCAL in flags:
+##             self.object().package().acinclude_m4().add_paragraph(
+##                 paragraph=Paragraph(lines=lines))
+##             pass
+##         if flags is None or BuilderInterfaceProxy.AC_BUILDINFO_TRANSPORT_PROPAGATE in flags:
+##             self.object().add_buildinfo(BuildInfo_ACInclude_m4(
+##                 lines=lines))
+##             pass
+##         pass
     pass

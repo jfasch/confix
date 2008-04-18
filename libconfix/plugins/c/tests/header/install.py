@@ -376,20 +376,20 @@ class BadNamespaceGoodINSTALLDIR_H(unittest.TestCase):
     Explicit INSTALLDIR_H() covers bad namespace.
     """
     def test(self):
-        rootdirectory = Directory()
-        rootdirectory.add(
+        fs = FileSystem(path=["don't", 'care'])
+        fs.rootdirectory().add(
             name=const.CONFIX2_PKG,
             entry=File(lines=["PACKAGE_NAME('"+self.__class__.__name__+"')",
                               "PACKAGE_VERSION('1.2.3')"]))
-        rootdirectory.add(
+        fs.rootdirectory().add(
             name=const.CONFIX2_DIR,
             entry=File(lines=['INSTALLDIR_H("")']))
-        rootdirectory.add(
+        fs.rootdirectory().add(
             name='file.h',
             entry=File(lines=['namespace X {',
                               '}']))
 
-        package = LocalPackage(rootdirectory=rootdirectory,
+        package = LocalPackage(rootdirectory=fs.rootdirectory(),
                                setups=[ConfixSetup(use_libtool=False, short_libnames=False)])
         package.boil(external_nodes=[])
         pass
