@@ -29,9 +29,8 @@ class InterfaceSuite(unittest.TestSuite):
     def __init__(self):
         unittest.TestSuite.__init__(self)
         self.addTest(CONFIGURE_AC_ACINCLUDE_M4('test_local'))
-        print self
-##         self.addTest(CONFIGURE_AC_ACINCLUDE_M4('test_propagate'))
-##         self.addTest(CONFIGURE_AC_ACINCLUDE_M4('test_defaults'))
+        self.addTest(CONFIGURE_AC_ACINCLUDE_M4('test_propagate'))
+        self.addTest(CONFIGURE_AC_ACINCLUDE_M4('test_defaults'))
         pass
     pass
 

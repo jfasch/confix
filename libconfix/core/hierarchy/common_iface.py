@@ -1,4 +1,4 @@
-# Copyright (C) 2007 Joerg Faschingbauer
+# Copyright (C) 2007-2008 Joerg Faschingbauer
 
 # This library is free software; you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as
@@ -15,14 +15,14 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 # USA
 
-import types
-
 from libconfix.core.machinery.builder import Builder
 from libconfix.core.hierarchy.confix2_dir_contributor import Confix2_dir_Contributor
 from libconfix.core.iface.proxy import InterfaceProxy
 from libconfix.core.utils.error import Error
 from libconfix.core.filesys.directory import Directory
 from libconfix.core.filesys import scan
+
+import types
 
 class CommonDirectoryInterface_Confix2_dir(Confix2_dir_Contributor):
 

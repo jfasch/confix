@@ -141,6 +141,7 @@ class Builder(object):
         chain; else, it won't see the package being set.
         """
         assert not self.is_initialized(), self
+        assert package, self
         self.__package = package
         pass
     

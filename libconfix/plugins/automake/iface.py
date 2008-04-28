@@ -16,7 +16,9 @@
 # USA
 
 from configure_ac import Configure_ac
+from buildinfo import BuildInfo_Configure_in, BuildInfo_ACInclude_m4
 
+from libconfix.core.utils.paragraph import Paragraph
 from libconfix.core.hierarchy.confix2_dir_contributor import Confix2_dir_Contributor
 from libconfix.core.machinery.setup import Setup
 from libconfix.core.iface.proxy import InterfaceProxy
@@ -34,7 +36,7 @@ class AutomakeInterface_Confix2_dir(Confix2_dir_Contributor):
     def locally_unique_id(self):
         return str(self.__class__)
     def initialize(self, package):
-        super(AutomakeInterface_Confix2_dir, self).initialize(self.package)
+        super(AutomakeInterface_Confix2_dir, self).initialize(package)
         pass
     pass
 
@@ -64,7 +66,6 @@ class AutomakeInterfaceProxy(InterfaceProxy):
         if type(order) not in [types.IntType or types.LongType]:
             raise Error('CONFIGURE_AC(): "order" parameter must be an integer')
         if flags is None or self.AC_BUILDINFO_TRANSPORT_LOCAL in flags:
-            print 'CONFIGURE_AC '+str(self.object())+' '+str(self.object().package())
             self.object().package().configure_ac().add_paragraph(
                 paragraph=Paragraph(lines=lines),
                 order=order)

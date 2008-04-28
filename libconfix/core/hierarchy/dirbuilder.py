@@ -90,7 +90,7 @@ class DirectoryBuilder(EntryBuilder, LocalNode):
         """
         Recursively initialize self and the children.
         """
-
+        assert package, self
         # first of all, ask the package for my initial builders. I
         # have to do this before initializing anything - else, if I
         # initialize myself too early, then adding a builder will
@@ -109,7 +109,7 @@ class DirectoryBuilder(EntryBuilder, LocalNode):
             b.initialize(package=self.package())
             # verify that initialize() has reached the Builder base
             # class
-            assert b.is_initialized()
+            assert b.is_initialized(), b
             pass
         pass
 
