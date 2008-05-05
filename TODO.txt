@@ -47,6 +47,9 @@
   * clean up automake plugin directories; move most parts into
     subdirectories.
 
+  * restructure the C plugin: differentiate between base, explicit,
+    automatic
+
 * Checks before finish:
 
   * BuildInfo_Configure_in must not anymore be used from neither core
