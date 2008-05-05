@@ -1,5 +1,17 @@
 * TODO
 
+  * IGNORE_ENTRIES, IGNORE_FILE: write tests for these and implement
+    them accordingly (each of them must respect builders that are
+    registered at a central authority in the directory).
+
+    * c.creator
+    * idl.creator
+    * plainfile.creator
+    * do we still need libconfix/core/hierarchy/confix2_dir_creator.py?
+
+  * restructure the C plugin: differentiate between base, explicit,
+    automatic
+
   * Objects to relieve from automake stuff
 
     * libconfix/core/machinery/builder.py
@@ -46,9 +58,6 @@
 
   * clean up automake plugin directories; move most parts into
     subdirectories.
-
-  * restructure the C plugin: differentiate between base, explicit,
-    automatic
 
 * Checks before finish:
 

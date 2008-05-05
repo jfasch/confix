@@ -1,5 +1,5 @@
 # Copyright (C) 2002-2006 Salomon Automation
-# Copyright (C) 2006-2007 Joerg Faschingbauer
+# Copyright (C) 2006-2008 Joerg Faschingbauer
 
 # This library is free software; you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as
@@ -38,7 +38,7 @@ class Creator(Builder):
         return 'C.Creator'
 
     def locally_unique_id(self):
-        # I am supposed to the only one of my kind among all the
+        # I am supposed to be the only one of my kind among all the
         # builders in a directory, so my class suffices as a unique
         # id.
         return str(self.__class__)
