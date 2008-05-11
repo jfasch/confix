@@ -64,7 +64,6 @@ class CommonDirectoryInterface_Confix2_dir(Confix2_dir_Contributor):
             self.object().add_ignored_entries(names)
             pass
         def IGNORE_FILE(self, name):
-            # for backward compatibility with confix 1.5
             if type(name) is not types.StringType:
                 raise Error('IGNORE_FILE() expects a string')
             self.object().add_ignored_entries([name])
