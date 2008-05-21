@@ -276,6 +276,7 @@ class LocalPackage(Package):
                 # this is a new builder; repeat
                 return None
             if prev_enlarge_count < b.force_enlarge_count():
+                print 'LocalPackage.__do_enlarge(): force: '+str(b)
                 # b forced repetition; repeat
                 return None
             pass

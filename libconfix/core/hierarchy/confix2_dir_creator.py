@@ -34,7 +34,7 @@ class Confix2_dir_Creator(Builder):
     def enlarge(self):
         if self.__seen:
             return
-        for name, entry in self.parentbuilder().entries():
+        for name, entry in self.parentbuilder().directory().entries():
             if name == const.CONFIX2_DIR:
                 if not isinstance(entry, VFSFile):
                     raise Error('/'.join(self.parentbuilder().directory().relpath(from_dir=self.package().rootdirectory()))+

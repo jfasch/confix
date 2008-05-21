@@ -38,8 +38,6 @@ class CommonDirectoryInterface_Confix2_dir(Confix2_dir_Contributor):
             self.add_global('CURRENT_BUILDER', getattr(self, 'CURRENT_BUILDER'))
             self.add_global('CURRENT_DIRECTORY', getattr(self, 'CURRENT_DIRECTORY'))
             self.add_global('ADD_DIRECTORY', getattr(self, 'ADD_DIRECTORY'))
-            self.add_global('IGNORE_ENTRIES', getattr(self, 'IGNORE_ENTRIES'))
-            self.add_global('IGNORE_FILE', getattr(self, 'IGNORE_FILE'))
             self.add_global('FIND_ENTRY', getattr(self, 'FIND_ENTRY'))
             self.add_global('GET_ENTRIES', getattr(self, 'GET_ENTRIES'))
             self.add_global('RESCAN_CURRENT_DIRECTORY', getattr(self, 'RESCAN_CURRENT_DIRECTORY'))
@@ -58,16 +56,6 @@ class CommonDirectoryInterface_Confix2_dir(Confix2_dir_Contributor):
             return self.object().directory().add(
                 name=name,
                 entry=Directory())
-        def IGNORE_ENTRIES(self, names):
-            if type(names) not in [types.ListType, types.TupleType]:
-                raise Error('IGNORE_ENTRIES() expects a list')
-            self.object().add_ignored_entries(names)
-            pass
-        def IGNORE_FILE(self, name):
-            if type(name) is not types.StringType:
-                raise Error('IGNORE_FILE() expects a string')
-            self.object().add_ignored_entries([name])
-            pass
         def FIND_ENTRY(self, name):
             for ename, entry in self.object().entries():
                 if ename == name:

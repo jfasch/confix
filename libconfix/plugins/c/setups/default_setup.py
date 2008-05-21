@@ -19,7 +19,7 @@
 from common_iface_setup import CommonInterfaceSetup
 
 from libconfix.plugins.c.clusterer import CClustererSetup
-from libconfix.plugins.c.creator import CreatorSetup
+from libconfix.plugins.c.creator import CCreatorSetup
 from libconfix.plugins.c.explicit_install import ExplicitInstallerSetup
 from libconfix.plugins.c.relocated_headers.setup import RelocatedHeadersSetup
 
@@ -27,7 +27,7 @@ from libconfix.core.machinery.setup import CompositeSetup
 
 def make_core_setups(short_libnames):
     return [CClustererSetup(short_libnames=short_libnames),
-            CreatorSetup(),
+            CCreatorSetup(),
             CommonInterfaceSetup(),
             RelocatedHeadersSetup(),
             ]

@@ -19,11 +19,13 @@
 import unittest
 
 from basic import BasicIDLSuiteInMemory
+from creator import CreatorSuite
 
 class IDLSuiteInMemory(unittest.TestSuite):
     def __init__(self):
         unittest.TestSuite.__init__(self)
         self.addTest(BasicIDLSuiteInMemory())
+        self.addTest(CreatorSuite())
         pass
     pass
 

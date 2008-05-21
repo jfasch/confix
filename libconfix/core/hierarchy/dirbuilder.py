@@ -64,9 +64,6 @@ class DirectoryBuilder(EntryBuilder, LocalNode):
         # maps from the locally unique builder IDs to the builders
         # themselves.
         self.__builders = {}
-        
-        # names of files and directories that are to be ignored
-        self.__ignored_entries = set()
 
         # the (contents of the) Makefile.am we will be writing on
         # output()
@@ -132,19 +129,6 @@ class DirectoryBuilder(EntryBuilder, LocalNode):
     def file_installer(self):
         return self.__file_installer
 
-    def add_ignored_entries(self, names):
-        self.__ignored_entries |= set(names)
-        pass
-
-    def entries(self):
-        ret = []
-        for name, entry in self.directory().entries():
-            if name not in self.__ignored_entries:
-                ret.append((name, entry))
-                pass
-            pass
-        return ret
-
     def builders(self):
         return self.__builders.values()
 
@@ -180,7 +164,7 @@ class DirectoryBuilder(EntryBuilder, LocalNode):
 
     def remove_builder(self, b):
         unique_id = b.locally_unique_id()
-        assert self.__builders.has_key(unique_id)
+        assert self.__builders.has_key(unique_id), unique_id
         del self.__builders[unique_id]
         b.set_parentbuilder(None)
         pass

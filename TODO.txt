@@ -4,13 +4,25 @@
     them accordingly (each of them must respect builders that are
     registered at a central authority in the directory).
 
-    * c.creator
-    * idl.creator
     * plainfile.creator
     * do we still need libconfix/core/hierarchy/confix2_dir_creator.py?
 
+    * make libconfix/core/hierarchy/subdir_recognizer.py a Creator,
+      honoring the IGNORE_* family of interface functions.
+
+    * optimize CCreator's enlarge() method (seen_builders should
+      contain all files that have ever been considered)
+
   * restructure the C plugin: differentiate between base, explicit,
-    automatic
+    automatic. possibly collapse related files into one, bigger file.
+
+  * move core.hierarchy.* to core.machinery. possibly collapse related
+    files into one, bigger file.
+
+  * move frontends.confix2.confix_setup to setups.implicit_setup (or
+    so)
+
+  * remove DirectoryBuilder.add_builders()
 
   * Objects to relieve from automake stuff
 

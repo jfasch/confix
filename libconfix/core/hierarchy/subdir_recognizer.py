@@ -51,7 +51,7 @@ class SubdirectoryRecognizer(Builder):
         Builder.enlarge(self)
 
         errors = []
-        for name, entry in self.parentbuilder().entries():
+        for name, entry in self.parentbuilder().directory().entries():
             if not isinstance(entry, VFSDirectory):
                 continue
             if entry in self.__recognized_directories:

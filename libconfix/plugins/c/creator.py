@@ -19,7 +19,7 @@
 import os
 
 from libconfix.core.filesys.vfs_file import VFSFile
-from libconfix.core.machinery.builder import Builder
+from libconfix.core.machinery.creator import Creator
 from libconfix.core.machinery.setup import Setup
 
 from c import CBuilder
@@ -28,14 +28,14 @@ from h import HeaderBuilder
 from lex import LexBuilder
 from yacc import YaccBuilder
 
-class Creator(Builder):
+class CCreator(Creator):
     def __init__(self):
-        Builder.__init__(self)
+        Creator.__init__(self)
         self.__handled_entries = set()
         pass
 
     def shortname(self):
-        return 'C.Creator'
+        return 'CCreator'
 
     def locally_unique_id(self):
         # I am supposed to be the only one of my kind among all the
@@ -44,8 +44,8 @@ class Creator(Builder):
         return str(self.__class__)
     
     def enlarge(self):
-        super(Creator, self).enlarge()
-        for name, entry in self.parentbuilder().entries():
+        super(CCreator, self).enlarge()
+        for name, entry in self.parentbuilder().directory().entries():
             if not isinstance(entry, VFSFile):
                 continue
             if name in self.__handled_entries:
@@ -54,7 +54,7 @@ class Creator(Builder):
             if builder is None:
                 continue
             self.__handled_entries.add(name)
-            self.parentbuilder().add_builder(builder)
+            Creator.add_candidate_builder(self, name, builder)
             pass
         pass
     pass
@@ -73,9 +73,9 @@ def do_create_builder(name, entry):
         return YaccBuilder(file=entry)
     return None
 
-class CreatorSetup(Setup):
+class CCreatorSetup(Setup):
     def initial_builders(self):
-        ret = super(CreatorSetup, self).initial_builders()
-        ret.append(Creator())
+        ret = super(CCreatorSetup, self).initial_builders()
+        ret.append(CCreator())
         return ret
     pass

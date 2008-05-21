@@ -33,6 +33,7 @@ from setup_exe import ExecutableSetupSuite
 from setup_lexyacc import LexYaccSetupSuite
 from setup_library import LibrarySetupSuite
 from clusterer.suite_inmem import ClustererInMemorySuite
+from creator import CreatorSuite
 
 from libconfix.plugins.c.setups.tests.suite_inmem import SetupsInMemorySuite
 from libconfix.plugins.c.relocated_headers.tests.suite_inmem import RelocatedHeadersInMemorySuite
@@ -62,6 +63,7 @@ class CInMemoryTestSuite(unittest.TestSuite):
         self.addTest(LexYaccSetupSuite())
         self.addTest(LibrarySetupSuite())
         self.addTest(ClustererInMemorySuite())
+        self.addTest(CreatorSuite())
         pass
     pass
 

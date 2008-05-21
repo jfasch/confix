@@ -18,11 +18,11 @@
 
 from libconfix.core.machinery.setup import Setup
 
-from creator import Creator
+from creator import IDLCreator
 
 class IDLSetup(Setup):
     def initial_builders(self):
         ret = super(IDLSetup, self).initial_builders()
-        ret.append(Creator())
+        ret.append(IDLCreator())
         return ret
     pass
