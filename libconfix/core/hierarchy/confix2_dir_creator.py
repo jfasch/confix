@@ -18,13 +18,13 @@
 from confix2_dir import Confix2_dir
 
 from libconfix.core.filesys.vfs_file import VFSFile
-from libconfix.core.machinery.builder import Builder
+from libconfix.core.machinery.creator import Creator
 from libconfix.core.utils import const
 from libconfix.core.utils.error import Error
 
-class Confix2_dir_Creator(Builder):
+class Confix2_dir_Creator(Creator):
     def __init__(self):
-        Builder.__init__(self)
+        Creator.__init__(self)
         self.__seen = False
         pass
     def locally_unique_id(self):
@@ -32,6 +32,8 @@ class Confix2_dir_Creator(Builder):
         # class is sufficient.
         return str(self.__class__)
     def enlarge(self):
+        super(Confix2_dir_Creator, self).enlarge()
+        
         if self.__seen:
             return
         for name, entry in self.parentbuilder().directory().entries():
@@ -40,7 +42,7 @@ class Confix2_dir_Creator(Builder):
                     raise Error('/'.join(self.parentbuilder().directory().relpath(from_dir=self.package().rootdirectory()))+
                                 ': '+name+' is not a file')
                 self.__seen = True
-                self.parentbuilder().add_builder(Confix2_dir(file=entry))
+                Creator.add_candidate_builder(self, name, Confix2_dir(file=entry))
                 pass
             pass
         pass

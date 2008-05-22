@@ -18,7 +18,7 @@
 
 from dirbuilder import DirectoryBuilder
 
-from libconfix.core.machinery.builder import Builder
+from libconfix.core.machinery.creator import Creator
 from libconfix.core.filesys.vfs_directory import VFSDirectory
 from libconfix.core.filesys.vfs_file import VFSFile
 from libconfix.core.utils import const
@@ -26,9 +26,9 @@ from libconfix.core.utils.error import Error
 
 import os
 
-class SubdirectoryRecognizer(Builder):
+class SubdirectoryRecognizer(Creator):
     def __init__(self):
-        Builder.__init__(self)
+        Creator.__init__(self)
         # remember directories that we already saw.
         self.__recognized_directories = set()
         pass
@@ -48,7 +48,7 @@ class SubdirectoryRecognizer(Builder):
         objects around them and add them to the parentbuilder.
         """
         
-        Builder.enlarge(self)
+        Creator.enlarge(self)
 
         errors = []
         for name, entry in self.parentbuilder().directory().entries():
@@ -63,7 +63,7 @@ class SubdirectoryRecognizer(Builder):
                 errors.append(Error(os.sep.join(confix2_dir_file.relpath(self.package().rootdirectory()))+' is not a file'))
                 continue
 
-            self.parentbuilder().add_builder(DirectoryBuilder(directory=entry))
+            Creator.add_candidate_builder(self, name, DirectoryBuilder(directory=entry))
             self.__recognized_directories.add(entry)
             pass
         if len(errors):

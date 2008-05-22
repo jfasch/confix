@@ -1,16 +1,5 @@
 * TODO
 
-  * IGNORE_ENTRIES, IGNORE_FILE: write tests for these and implement
-    them accordingly (each of them must respect builders that are
-    registered at a central authority in the directory).
-
-    * plainfile.creator
-    * do we still need libconfix/core/hierarchy/confix2_dir_creator.py?
-    * make libconfix/core/hierarchy/subdir_recognizer.py a Creator,
-      honoring the IGNORE_* family of interface functions.
-    * optimize CCreator's enlarge() method (seen_builders should
-      contain all files that have ever been considered)
-
   * restructure the C plugin: differentiate between base, explicit,
     automatic. possibly collapse related files into one, bigger file.
 
