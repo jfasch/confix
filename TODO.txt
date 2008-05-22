@@ -1,16 +1,5 @@
 * TODO
 
-  * restructure the C plugin: differentiate between base, explicit,
-    automatic. possibly collapse related files into one, bigger file.
-
-  * move core.hierarchy.* to core.machinery. possibly collapse related
-    files into one, bigger file.
-
-  * move frontends.confix2.confix_setup to setups.implicit_setup (or
-    so)
-
-  * remove DirectoryBuilder.add_builders()
-
   * Objects to relieve from automake stuff
 
     * libconfix/core/machinery/builder.py
@@ -29,15 +18,20 @@
 
   * Move libconfix/core/utils/paragraph.py to automake
 
+  * restructure the C plugin: differentiate between base, explicit,
+    automatic. possibly collapse related files into one, bigger file.
+
+  * move core.hierarchy.* to core.machinery. possibly collapse related
+    files into one, bigger file.
+
   * Automake specific build info. Need to pass such build info
     together with a "backend tag" or something.
   
-    * libconfix/plugins/c/h.py: external include path is
-      backend-specific.
     * libconfix/plugins/c/linked.py: BuildInfo_CLibrary_External is
       backend-specific.
 
   * Unify the various setup classes
+    * write a small utility that prints the setup object hierarchies
     * move libconfix/frontends/confix2/confix_setup.py to
       libconfix/setups/implicit_setup.py
     * rename libconfix/plugins/c/setups/default_setup.py to
