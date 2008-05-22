@@ -54,13 +54,6 @@
   * clean up automake plugin directories; move most parts into
     subdirectories.
 
-* Checks before finish:
-
-  * BuildInfo_Configure_in must not anymore be used from neither core
-    nor plugins.c. Search for files that contain the word "automake".
-
-  * jjj as always
-
 * InterfaceProxy objects
 
   Make one dedicated object of each method/function. This gives us the
@@ -286,3 +279,10 @@
       * ScriptInterface_Confix2_dir(Confix2_dir_Contributor)
     * Methods:
       * ADD_SCRIPT
+
+* Checks before finish:
+
+  * BuildInfo_Configure_in must not anymore be used from neither core
+    nor plugins.c. Search for files that contain the word "automake".
+
+  * jjj as always
