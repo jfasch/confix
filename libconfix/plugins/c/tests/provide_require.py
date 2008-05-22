@@ -23,6 +23,7 @@ from libconfix.core.filesys.filesys import FileSystem
 from libconfix.core.machinery.local_package import LocalPackage
 from libconfix.core.machinery.require import Require
 from libconfix.core.utils import const
+from libconfix.setups.explicit_setup import ExplicitSetup
 
 from libconfix.plugins.c.dependency import \
      Require_CInclude, \
@@ -77,7 +78,7 @@ class Provide_CInclude_and_Require_CInclude(unittest.TestCase):
                               "PROVIDE_H(filename='fileblah', match=AUTO_MATCH)"]))
 
         package = LocalPackage(rootdirectory=fs.rootdirectory(),
-                               setups=[DefaultCSetup(short_libnames=False)])
+                               setups=[ExplicitSetup(use_libtool=False)])
         package.boil(external_nodes=[])
 
         found = 0

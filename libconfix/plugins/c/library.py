@@ -74,6 +74,16 @@ class LibraryBuilder(LinkedBuilder):
         pass
 
     # jjj
+    def set_libtool_version_info(self, version_info):
+        self.__libtool_version_info = version_info
+        pass
+
+    # jjj
+    def set_libname(self, name):
+        self.__basename = name
+        pass
+
+    # jjj
     def libtool_version_info(self):
         return self.__libtool_version_info
 

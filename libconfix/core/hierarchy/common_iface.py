@@ -57,13 +57,13 @@ class CommonDirectoryInterface_Confix2_dir(Confix2_dir_Contributor):
                 name=name,
                 entry=Directory())
         def FIND_ENTRY(self, name):
-            for ename, entry in self.object().entries():
+            for ename, entry in self.object().directory().entries():
                 if ename == name:
                     return entry
                 pass
             return None
         def GET_ENTRIES(self):
-            return self.object().entries()
+            return self.object().directory().entries()
         def RESCAN_CURRENT_DIRECTORY(self):
             scan.rescan_dir(self.object().directory())
             pass

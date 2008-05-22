@@ -113,7 +113,7 @@ class ExplicitInterfaceProxy(InterfaceProxy):
         return executable
     
     def __find_file(self, filename):
-        for name, entry in self.object().entries():
+        for name, entry in self.object().directory().entries():
             if name == filename:
                 return entry
             pass

@@ -57,7 +57,7 @@ class LibraryBase(unittest.TestCase):
         
         self.package_ = LocalPackage(
             rootdirectory=self.fs_.rootdirectory(),
-            setups=[ConfixSetup(short_libnames=False, # there is already a test for it, elsewhere
+            setups=[ConfixSetup(short_libnames=False,
                                 use_libtool=self.use_libtool())])
         self.package_.boil(external_nodes=[])
         self.package_.output()

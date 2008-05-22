@@ -55,10 +55,16 @@ class CClusterer(Builder):
 
     def set_libname(self, name):
         self.__libname = name
+        if self.__library is not None:
+            self.__library.set_libname(name)
+            pass
         pass
 
     def set_libtool_version_info(self, version_tuple):
         self.__libtool_version_info = version_tuple
+        if self.__library is not None:
+            self.__library.set_libtool_version_info(version_tuple)
+            pass
         pass
 
     def enlarge(self):

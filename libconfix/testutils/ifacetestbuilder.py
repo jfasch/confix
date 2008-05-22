@@ -45,7 +45,7 @@ class FileInterfaceTestCreator(Builder):
 
     def enlarge(self):
         super(FileInterfaceTestCreator, self).enlarge()
-        for name, entry in self.parentbuilder().entries():
+        for name, entry in self.parentbuilder().directory().entries():
             if not isinstance(entry, VFSFile):
                 continue
             if entry in self.handled_entries_:

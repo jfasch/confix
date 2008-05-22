@@ -6,10 +6,8 @@
 
     * plainfile.creator
     * do we still need libconfix/core/hierarchy/confix2_dir_creator.py?
-
     * make libconfix/core/hierarchy/subdir_recognizer.py a Creator,
       honoring the IGNORE_* family of interface functions.
-
     * optimize CCreator's enlarge() method (seen_builders should
       contain all files that have ever been considered)
 
@@ -36,7 +34,9 @@
     * libconfix/core/machinery/local_package.py
       * repo_automake.dir_for_automake()
     * libconfix/plugins/c/library.py
-      * libtool_version_info, libtool_release_info
+      * libtool_version_info, libtool_release_info. Move these to
+        plugind.automake.c; probably have to create a separate
+        'implicit_setup' module or something.
 
   * Move libconfix/core/utils/paragraph.py to automake
 
