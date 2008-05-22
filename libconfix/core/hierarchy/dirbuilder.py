@@ -1,5 +1,5 @@
 # Copyright (C) 2002-2006 Salomon Automation
-# Copyright (C) 2006 Joerg Faschingbauer
+# Copyright (C) 2006-2008 Joerg Faschingbauer
 
 # This library is free software; you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as
@@ -93,7 +93,9 @@ class DirectoryBuilder(EntryBuilder, LocalNode):
         # initialize myself too early, then adding a builder will
         # trigger initializing it, and I will end up trying to
         # initialize it twice (which is letal)
-        self.add_builders(package.get_initial_builders())
+        for b in package.get_initial_builders():
+            self.add_builder(b)
+            pass
         
         # now's the time
         super(DirectoryBuilder, self).initialize(package=package)
@@ -153,12 +155,6 @@ class DirectoryBuilder(EntryBuilder, LocalNode):
                 b.initialize(package=self.package())
                 assert b.is_initialized(), b
                 pass
-            pass
-        pass
-
-    def add_builders(self, builderlist):
-        for b in builderlist:
-            self.add_builder(b)
             pass
         pass
 

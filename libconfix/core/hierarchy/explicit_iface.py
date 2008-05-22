@@ -68,9 +68,9 @@ class Confix2_dir_ExplicitInterface(Confix2_dir_Contributor):
 
     def enlarge(self):
         super(Confix2_dir_Contributor, self).enlarge()
-        if len(self.__retained_builders):
-            self.parentbuilder().add_builders(self.__retained_builders)
-            self.__retained_builders = []
+        for b in self.__retained_builders:
+            self.parentbuilder().add_builder(b)
             pass
+        self.__retained_builders = []
         pass        
     pass
