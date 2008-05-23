@@ -45,7 +45,35 @@ class COutputSetup(Setup):
         self.__use_libtool = use_libtool
         pass
     def initial_builders(self):
-        return super(COutputSetup, self).initial_builders() + [COutputBuilder(use_libtool=self.__use_libtool)]
+        return super(COutputSetup, self).initial_builders() + \
+               [COutputBuilder(use_libtool=self.__use_libtool),
+                HeaderOutputBuilder(),
+                ]
+    pass
+
+class HeaderOutputBuilder(Builder):
+    def locally_unique_id(self):
+        return str(self.__class__)
+        pass
+    def output(self):
+        super(HeaderOutputBuilder, self).output()
+        for b in self.parentbuilder().builders():
+            if not isinstance(b, HeaderBuilder):
+                continue
+
+            public_visibility = b.public_visibility()
+            local_visibility = b.local_visibility()
+
+            self.parentbuilder().file_installer().add_public_header(filename=b.file().name(), dir=public_visibility)
+
+            assert local_visibility[0] in (HeaderBuilder.LOCAL_INSTALL, HeaderBuilder.DIRECT_INCLUDE)
+            if local_visibility[0] == HeaderBuilder.LOCAL_INSTALL:
+                self.parentbuilder().file_installer().add_private_header(
+                    filename=b.file().name(),
+                    dir=local_visibility[1])
+                pass
+            pass
+        pass
     pass
 
 class COutputBuilder(Builder):
@@ -68,9 +96,6 @@ class COutputBuilder(Builder):
         super(COutputBuilder, self).output()
         for b in self.parentbuilder().builders():
             # compiled entities
-            if isinstance(b, HeaderBuilder):
-                self.__do_header(b)
-                continue
             if isinstance(b, CBuilder):
                 self.__do_c(b)
                 continue
@@ -91,20 +116,6 @@ class COutputBuilder(Builder):
             if isinstance(b, ExecutableBuilder):
                 self.__do_executable(b)
                 continue
-            pass
-        pass
-
-    def __do_header(self, b):
-        public_visibility = b.public_visibility()
-        local_visibility = b.local_visibility()
-
-        self.parentbuilder().file_installer().add_public_header(filename=b.file().name(), dir=public_visibility)
-
-        assert local_visibility[0] in (HeaderBuilder.LOCAL_INSTALL, HeaderBuilder.DIRECT_INCLUDE)
-        if local_visibility[0] == HeaderBuilder.LOCAL_INSTALL:
-            self.parentbuilder().file_installer().add_private_header(
-                filename=b.file().name(),
-                dir=local_visibility[1])
             pass
         pass
 

@@ -2,6 +2,8 @@
 
   * Objects to relieve from automake stuff
 
+    * libconfix/plugins/c/linked.py: BuildInfo_CLibrary_External is
+      backend-specific.
     * libconfix/core/machinery/builder.py
       * BuildInfo_Configure_in
       * BuildInfo_ACInclude_m4      
@@ -23,13 +25,7 @@
 
   * move core.hierarchy.* to core.machinery. possibly collapse related
     files into one, bigger file.
-
-  * Automake specific build info. Need to pass such build info
-    together with a "backend tag" or something.
   
-    * libconfix/plugins/c/linked.py: BuildInfo_CLibrary_External is
-      backend-specific.
-
   * Unify the various setup classes
     * write a small utility that prints the setup object hierarchies
     * move libconfix/frontends/confix2/confix_setup.py to
