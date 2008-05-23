@@ -1,3 +1,6 @@
+out_c.py, heading for a separate library/linked output builder that
+takes care of external path issues.
+
 * TODO
 
   * Objects to relieve from automake stuff
