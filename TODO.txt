@@ -1,5 +1,10 @@
-out_c.py, heading for a separate library/linked output builder that
-takes care of external path issues.
+* tos
+
+  * out_c.py, heading for a separate library/linked output builder
+    that takes care of external path issues.
+
+  * optimize for a few cycles: remove adding duplicates to
+    configure.ac etc.
 
 * TODO
 
