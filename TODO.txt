@@ -3,9 +3,6 @@
   * out_c.py, heading for a separate library/linked output builder
     that takes care of external path issues.
 
-  * optimize for a few cycles: remove adding duplicates to
-    configure.ac etc.
-
 * TODO
 
   * Objects to relieve from automake stuff
@@ -28,8 +25,10 @@
 
   * Move libconfix/core/utils/paragraph.py to automake
 
-  * restructure the C plugin: differentiate between base, explicit,
-    automatic. possibly collapse related files into one, bigger file.
+  * restructure the C plugin
+    * differentiate between base, explicit, automatic.
+    * possibly collapse related files into one, bigger file.
+    * move automake tests to the automake plugin.
 
   * move core.hierarchy.* to core.machinery. possibly collapse related
     files into one, bigger file.
