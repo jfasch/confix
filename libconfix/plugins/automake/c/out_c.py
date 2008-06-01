@@ -32,7 +32,7 @@ from libconfix.plugins.c.buildinfo import \
      BuildInfo_CLibrary_NativeLocal, \
      BuildInfo_CLibrary_NativeInstalled, \
      BuildInfo_CLibrary_External
-
+from libconfix.core.digraph import algorithm
 from libconfix.core.utils.paragraph import Paragraph
 from libconfix.core.utils import const
 from libconfix.core.machinery.builder import Builder
@@ -56,7 +56,6 @@ class COutputSetup(Setup):
                 LexOutputBuilder(),
                 YaccOutputBuilder(),
                 
-                LinkedOutputBuilder(use_libtool=self.__use_libtool),
                 LibraryOutputBuilder(use_libtool=self.__use_libtool),
                 ExecutableOutputBuilder(use_libtool=self.__use_libtool)
                 ]
@@ -237,8 +236,7 @@ class LinkedOutputBuilder(Builder):
         Builder.__init__(self)
         self.__use_libtool = use_libtool
         pass
-    def locally_unique_id(self):
-        return str(self.__class__)
+
     def output(self):
         super(LinkedOutputBuilder, self).output()
         for b in self.parentbuilder().builders():
@@ -254,12 +252,135 @@ class LinkedOutputBuilder(Builder):
                 pass
             pass
         pass
+
+    def relate(self, node, digraph, topolist):
+        Builder.relate(self, node, digraph, topolist)
+
+        self.__buildinfo_direct_dependent_native_libs = []
+        self.__buildinfo_topo_dependent_native_libs = []
+        self.__external_libpath = []
+        self.__have_external_libpath = set()
+        self.__external_libraries = []
+
+        # of the native (confix-built) libraries we remember both the
+        # next successors that have a library (for libtool, which does
+        # topological sorting by itself) and the toposorted list (if
+        # we do not use libtool).
+
+        # we do not know if an external library was built with
+        # libtool, so we have to pass the full topolist in either
+        # case.
+
+        nodes_with_library = algorithm.nearest_property(digraph=digraph, entrypoint=node, property=self.HaveLibraryProperty())
+        for n in nodes_with_library:
+            for bi in n.buildinfos():
+                if isinstance(bi, BuildInfo_CLibrary_NativeLocal):
+                    self.__buildinfo_direct_dependent_native_libs.append(bi)
+                    continue
+                if isinstance(bi, BuildInfo_CLibrary_NativeInstalled):
+                    self.__buildinfo_direct_dependent_native_libs.append(bi)
+                    continue
+                pass
+            pass
+        
+        for n in topolist:
+            for bi in n.buildinfos():
+                if isinstance(bi, BuildInfo_CLibrary_NativeLocal):
+                    self.__buildinfo_topo_dependent_native_libs.insert(0, bi)
+                    continue
+                if isinstance(bi, BuildInfo_CLibrary_NativeInstalled):
+                    self.__buildinfo_topo_dependent_native_libs.insert(0, bi)
+                    continue
+                if isinstance(bi, BuildInfo_CLibrary_External):
+                    key = '.'.join(bi.libpath())
+                    if not key in self.__have_external_libpath:
+                        self.__have_external_libpath.add(key)
+                        self.__external_libpath.insert(0, bi.libpath())
+                        pass
+                    self.__external_libraries.insert(0, bi.libs())
+                    continue
+                pass
+            pass
+        pass
+
+    def use_libtool(self):
+        """
+        For derived classes.
+        """
+        return self.__use_libtool
+
+    def get_linkline(self):
+        """
+        For derived classes. Returns the link line, as a list of
+        strings, like ['-L/blah -L/bloh/blah -lonelibrary
+        -lanotherone']
+        """
+        native_paths = []
+        native_libraries = []
+        external_linkline = []
+        using_installed_library = False
+
+        if _linked_do_deep_linking(use_libtool=self.__use_libtool):
+            native_libs_to_use = self.__buildinfo_topo_dependent_native_libs
+        else:
+            native_libs_to_use = self.__buildinfo_direct_dependent_native_libs
+            pass
+
+        for bi in native_libs_to_use:
+            if isinstance(bi, BuildInfo_CLibrary_NativeLocal):
+                native_paths.append('-L'+'/'.join(['$(top_builddir)']+bi.dir()))
+                native_libraries.append('-l'+bi.name())
+                continue
+            if isinstance(bi, BuildInfo_CLibrary_NativeInstalled):
+                using_installed_library = True
+                native_libraries.append('-l'+bi.name())
+                continue
+            assert 0, 'missed some relevant build info type'
+            pass
+
+        if using_installed_library:
+            native_paths.append('-L$(libdir)')
+            native_paths.append('$('+readonly_prefixes.libpath_var+')')
+            pass
+
+        # in either case (libtool or not), we have to link all
+        # external libraries. we cannot decide whether they are built
+        # with libtool or not, so we cannot rely on libtool making our
+        # toposort. (note both are lists of lists...)
+        for elem in self.__external_libpath + self.__external_libraries:
+            external_linkline.extend(elem)
+            pass
+
+        return native_paths + native_libraries + external_linkline
+
+    def test_buildinfo_direct_dependent_native_libs(self):
+        """ For unit tests only. """
+        return self.__buildinfo_direct_dependent_native_libs
+    def test_buildinfo_topo_dependent_native_libs(self):
+        """ For unit tests only. """
+        return self.__buildinfo_topo_dependent_native_libs
+    def test_external_libpath(self):
+        """ For unit tests only. """
+        return self.__external_libpath
+    def test_external_libraries(self):
+        """ For unit tests only. """
+        return self.__external_libraries
+
+    class HaveLibraryProperty:
+        def have(self, node):
+            for bi in node.buildinfos():
+                if isinstance(bi, BuildInfo_CLibrary_NativeLocal) or \
+                   isinstance(bi, BuildInfo_CLibrary_NativeInstalled) or \
+                   isinstance(bi, BuildInfo_CLibrary_External):
+                    return True
+                pass
+            return False
+        pass
     pass
 
-class LibraryOutputBuilder(Builder):
+class LibraryOutputBuilder(LinkedOutputBuilder):
     def __init__(self, use_libtool):
-        Builder.__init__(self)
-        self.__use_libtool = use_libtool
+        LinkedOutputBuilder.__init__(self, use_libtool=use_libtool)
         pass
     def locally_unique_id(self):
         return str(self.__class__)
@@ -269,7 +390,7 @@ class LibraryOutputBuilder(Builder):
             if not isinstance(b, LibraryBuilder):
                 continue
 
-            if self.__use_libtool:
+            if self.use_libtool():
                 filelibname = 'lib'+b.basename()+'.la'
             else:
                 filelibname = 'lib'+b.basename()+'.a'
@@ -278,7 +399,7 @@ class LibraryOutputBuilder(Builder):
 
             mf_am = self.parentbuilder().makefile_am()
 
-            if self.__use_libtool:
+            if self.use_libtool():
                 mf_am.add_ltlibrary(filelibname)
                 if b.libtool_version_info() is not None:
                     mf_am.add_compound_ldflags(automakelibname, '-version-info %d:%d:%d' % b.libtool_version_info())
@@ -297,8 +418,8 @@ class LibraryOutputBuilder(Builder):
                 mf_am.add_compound_sources(automakelibname, m.file().name())
                 pass
 
-            if self.__use_libtool:
-                for fragment in _linked_get_linkline(builder=b, use_libtool=self.__use_libtool):
+            if self.use_libtool():
+                for fragment in self.get_linkline():
                     mf_am.add_compound_libadd(
                         compound_name=automakelibname,
                         lib=fragment)
@@ -308,10 +429,9 @@ class LibraryOutputBuilder(Builder):
         pass
     pass
 
-class ExecutableOutputBuilder(Builder):
+class ExecutableOutputBuilder(LinkedOutputBuilder):
     def __init__(self, use_libtool):
-        Builder.__init__(self)
-        self.__use_libtool = use_libtool
+        LinkedOutputBuilder.__init__(self, use_libtool=use_libtool)
         pass
     def locally_unique_id(self):
         return str(self.__class__)
@@ -337,7 +457,7 @@ class ExecutableOutputBuilder(Builder):
                 mf_am.add_compound_sources(automakeexename, m.file().name())
                 pass
 
-            for fragment in _linked_get_linkline(builder=b, use_libtool=self.__use_libtool):
+            for fragment in self.get_linkline():
                 mf_am.add_compound_ldadd(
                     compound_name=automakeexename,
                     lib=fragment)
@@ -346,48 +466,50 @@ class ExecutableOutputBuilder(Builder):
         pass
     pass
 
-def _linked_get_linkline(builder, use_libtool):
-    """
-    Returns a list of strings, like ['-L/blah -L/bloh/blah
-    -lonelibrary -lanotherone']
-    """
-    native_paths = []
-    native_libraries = []
-    external_linkline = []
-    using_installed_library = False
+# jjj
 
-    if _linked_do_deep_linking(use_libtool=use_libtool):
-        native_libs_to_use = builder.buildinfo_topo_dependent_native_libs()
-    else:
-        native_libs_to_use = builder.buildinfo_direct_dependent_native_libs()
-        pass
+## def _linked_get_linkline(builder, use_libtool):
+##     """
+##     Returns a list of strings, like ['-L/blah -L/bloh/blah
+##     -lonelibrary -lanotherone']
+##     """
+##     native_paths = []
+##     native_libraries = []
+##     external_linkline = []
+##     using_installed_library = False
 
-    for bi in native_libs_to_use:
-        if isinstance(bi, BuildInfo_CLibrary_NativeLocal):
-            native_paths.append('-L'+'/'.join(['$(top_builddir)']+bi.dir()))
-            native_libraries.append('-l'+bi.name())
-            continue
-        if isinstance(bi, BuildInfo_CLibrary_NativeInstalled):
-            using_installed_library = True
-            native_libraries.append('-l'+bi.name())
-            continue
-        assert 0
-        pass
+##     if _linked_do_deep_linking(use_libtool=use_libtool):
+##         native_libs_to_use = builder.buildinfo_topo_dependent_native_libs()
+##     else:
+##         native_libs_to_use = builder.buildinfo_direct_dependent_native_libs()
+##         pass
 
-    if using_installed_library:
-        native_paths.append('-L$(libdir)')
-        native_paths.append('$('+readonly_prefixes.libpath_var+')')
-        pass
+##     for bi in native_libs_to_use:
+##         if isinstance(bi, BuildInfo_CLibrary_NativeLocal):
+##             native_paths.append('-L'+'/'.join(['$(top_builddir)']+bi.dir()))
+##             native_libraries.append('-l'+bi.name())
+##             continue
+##         if isinstance(bi, BuildInfo_CLibrary_NativeInstalled):
+##             using_installed_library = True
+##             native_libraries.append('-l'+bi.name())
+##             continue
+##         assert 0
+##         pass
 
-    # in either case (libtool or not), we have to link all external
-    # libraries. we cannot decide whether they are built with libtool
-    # or not, so we cannot rely on libtool making our toposort. (note
-    # both are lists of lists...)
-    for elem in builder.external_libpath() + builder.external_libraries():
-        external_linkline.extend(elem)
-        pass
+##     if using_installed_library:
+##         native_paths.append('-L$(libdir)')
+##         native_paths.append('$('+readonly_prefixes.libpath_var+')')
+##         pass
 
-    return native_paths + native_libraries + external_linkline
+##     # in either case (libtool or not), we have to link all external
+##     # libraries. we cannot decide whether they are built with libtool
+##     # or not, so we cannot rely on libtool making our toposort. (note
+##     # both are lists of lists...)
+##     for elem in builder.external_libpath() + builder.external_libraries():
+##         external_linkline.extend(elem)
+##         pass
+
+##     return native_paths + native_libraries + external_linkline
 
 def _linked_do_deep_linking(use_libtool):
     """
