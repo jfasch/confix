@@ -432,51 +432,6 @@ class ExecutableOutputBuilder(LinkedOutputBuilder):
         pass
     pass
 
-# jjj
-
-## def _linked_get_linkline(builder, use_libtool):
-##     """
-##     Returns a list of strings, like ['-L/blah -L/bloh/blah
-##     -lonelibrary -lanotherone']
-##     """
-##     native_paths = []
-##     native_libraries = []
-##     external_linkline = []
-##     using_installed_library = False
-
-##     if _linked_do_deep_linking(use_libtool=use_libtool):
-##         native_libs_to_use = builder.buildinfo_topo_dependent_native_libs()
-##     else:
-##         native_libs_to_use = builder.buildinfo_direct_dependent_native_libs()
-##         pass
-
-##     for bi in native_libs_to_use:
-##         if isinstance(bi, BuildInfo_CLibrary_NativeLocal):
-##             native_paths.append('-L'+'/'.join(['$(top_builddir)']+bi.dir()))
-##             native_libraries.append('-l'+bi.name())
-##             continue
-##         if isinstance(bi, BuildInfo_CLibrary_NativeInstalled):
-##             using_installed_library = True
-##             native_libraries.append('-l'+bi.name())
-##             continue
-##         assert 0
-##         pass
-
-##     if using_installed_library:
-##         native_paths.append('-L$(libdir)')
-##         native_paths.append('$('+readonly_prefixes.libpath_var+')')
-##         pass
-
-##     # in either case (libtool or not), we have to link all external
-##     # libraries. we cannot decide whether they are built with libtool
-##     # or not, so we cannot rely on libtool making our toposort. (note
-##     # both are lists of lists...)
-##     for elem in builder.external_libpath() + builder.external_libraries():
-##         external_linkline.extend(elem)
-##         pass
-
-##     return native_paths + native_libraries + external_linkline
-
 def _linked_do_deep_linking(use_libtool):
     """
     Returns a boolean value indicating if deep linking is desired or
