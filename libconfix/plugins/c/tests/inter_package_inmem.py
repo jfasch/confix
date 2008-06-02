@@ -85,15 +85,15 @@ class InterPackageRelate(unittest.TestCase):
         # installed header files, but none for local header files.
         self.failUnless(hi_c_builder.using_native_installed() > 0)
         self.failUnless(len(hi_c_builder.native_local_include_dirs()) == 0)
-        self.failUnless(len(libhi_builder.buildinfo_direct_dependent_native_libs()) == 1)
-        self.failUnless(len(libhi_builder.buildinfo_topo_dependent_native_libs()) == 1)
-        self.failUnless(isinstance(libhi_builder.buildinfo_direct_dependent_native_libs()[0],
+        self.failUnless(len(libhi_builder.direct_libraries()) == 1)
+        self.failUnless(len(libhi_builder.topo_libraries()) == 1)
+        self.failUnless(isinstance(libhi_builder.direct_libraries()[0],
                                    BuildInfo_CLibrary_NativeInstalled))
-        self.failUnless(isinstance(libhi_builder.buildinfo_topo_dependent_native_libs()[0],
+        self.failUnless(isinstance(libhi_builder.topo_libraries()[0],
                                    BuildInfo_CLibrary_NativeInstalled))
-        self.failUnless(libhi_builder.buildinfo_topo_dependent_native_libs()[0] is \
-                        libhi_builder.buildinfo_direct_dependent_native_libs()[0])                        
-        self.failUnless(libhi_builder.buildinfo_direct_dependent_native_libs()[0].name() == 'lo')
+        self.failUnless(libhi_builder.topo_libraries()[0] is \
+                        libhi_builder.direct_libraries()[0])                        
+        self.failUnless(libhi_builder.direct_libraries()[0].name() == 'lo')
         pass
     pass
 

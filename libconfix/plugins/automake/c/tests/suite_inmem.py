@@ -16,7 +16,6 @@
 # USA
 
 from library_dependencies.suite_inmem import LibraryDependenciesInMemorySuite
-from relate.suite_inmem import RelateSuite
 
 import unittest
 
@@ -24,7 +23,6 @@ class AutomakeCInMemorySuite(unittest.TestSuite):
     def __init__(self):
         unittest.TestSuite.__init__(self)
         self.addTest(LibraryDependenciesInMemorySuite())
-        self.addTest(RelateSuite())
         pass
 
     pass

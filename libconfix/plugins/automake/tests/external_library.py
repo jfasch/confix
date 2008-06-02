@@ -16,8 +16,7 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 # USA
 
-from libconfix.plugins.c.library import LibraryBuilder
-from libconfix.plugins.c.setups.default_setup import DefaultCSetup
+from libconfix.plugins.automake.c.out_c import LibraryOutputBuilder
 
 from libconfix.core.filesys.directory import Directory
 from libconfix.core.filesys.file import File
@@ -93,8 +92,8 @@ class ExternalLibraryTest(unittest.TestCase):
         self.failIf(hi_c_builder is None)
 
         for b in hidir_builder.builders():
-            if isinstance(b, LibraryBuilder):
-                hi_lib_builder = b
+            if isinstance(b, LibraryOutputBuilder):
+                hi_lib_output_builder = b
                 break
             pass
         else:
@@ -106,12 +105,12 @@ class ExternalLibraryTest(unittest.TestCase):
         self.failUnless('some_cflag' in hi_c_builder.cflags())
         self.failUnless(hi_c_builder.cmdlinemacros().get('key') is not None)
 
-        self.failUnless(hi_lib_builder.external_libpath()[0] == \
+        self.failUnless(hi_lib_output_builder.external_libpath()[0] == \
                         ['-L/the/first/library/path/of/lo', '-L/the/second/library/path/of/lo'])
-        self.failUnless(hi_lib_builder.external_libpath()[1] == \
+        self.failUnless(hi_lib_output_builder.external_libpath()[1] == \
                         ['-L/the/first/library/path/of/lolo', '-L/the/second/library/path/of/lolo'])
-        self.failUnlessEqual(hi_lib_builder.external_libraries()[0], ['-llo'])
-        self.failUnlessEqual(hi_lib_builder.external_libraries()[1], ['-llolo'])
+        self.failUnlessEqual(hi_lib_output_builder.external_libraries()[0], ['-llo'])
+        self.failUnlessEqual(hi_lib_output_builder.external_libraries()[1], ['-llolo'])
 
         self.failUnless('-llolo' in hidir_builder.makefile_am().compound_libadd('libExternalLibraryTest_hi_la'))
         pass

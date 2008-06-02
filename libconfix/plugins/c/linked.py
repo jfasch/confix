@@ -18,11 +18,22 @@
 
 from libconfix.core.machinery.builder import Builder
 from libconfix.core.machinery.filebuilder import FileBuilder
+from libconfix.core.digraph import algorithm
+
+from libconfix.plugins.c.buildinfo import \
+     BuildInfo_CLibrary_NativeLocal, \
+     BuildInfo_CLibrary_NativeInstalled
 
 class LinkedBuilder(Builder):
     def __init__(self):
         Builder.__init__(self)
         self.__members = set()
+        # toplogically sorted list of build infos for all libraries
+        # that we depend on.
+        self.__buildinfo_topo_dependent_native_libs = []
+        # build information for the libraries that we directly depend
+        # on.
+        self.__buildinfo_direct_dependent_native_libs = []
         pass
 
     def members(self):
@@ -35,6 +46,60 @@ class LinkedBuilder(Builder):
 
     def remove_member(self, b):
         self.__members.remove(b)
+        pass
+
+    def direct_libraries(self):
+        """
+        List of BuildInfo_CLibrary_NativeLocal and
+        BuildInfo_CLibrary_NativeInstalled objects that describe the
+        libraries that we directly depend upon.
+        """
+        return self.__buildinfo_direct_dependent_native_libs
+    def topo_libraries(self):
+        """
+        List of BuildInfo_CLibrary_NativeLocal and
+        BuildInfo_CLibrary_NativeInstalled objects that describe the
+        libraries that we depend upon, topologically sorted.
+        """
+        return self.__buildinfo_topo_dependent_native_libs
+
+    def relate(self, node, digraph, topolist):
+        """
+        Builder method. As a service (we do not do anthing meaningful
+        with the information ourselves), we remember both the
+        topologically sorted list of the libraries that we depend on,
+        as well as the libraries that we directly depend on.
+        """
+        Builder.relate(self, node, digraph, topolist)
+
+        self.__buildinfo_topo_dependent_native_libs = []
+        self.__buildinfo_direct_dependent_native_libs = []
+
+        nodes_with_library = algorithm.nearest_property(digraph=digraph, entrypoint=node, property=self.HaveLibraryProperty())
+        for n in nodes_with_library:
+            for bi in n.buildinfos():
+                if isinstance(bi, (BuildInfo_CLibrary_NativeLocal, BuildInfo_CLibrary_NativeInstalled)):
+                    self.__buildinfo_direct_dependent_native_libs.append(bi)
+                    pass
+                pass
+            pass
+        
+        for n in topolist:
+            for bi in n.buildinfos():
+                if isinstance(bi, (BuildInfo_CLibrary_NativeLocal, BuildInfo_CLibrary_NativeInstalled)):
+                    self.__buildinfo_topo_dependent_native_libs.insert(0, bi)
+                    pass
+                pass
+            pass
+        pass
+
+    class HaveLibraryProperty:
+        def have(self, node):
+            for bi in node.buildinfos():
+                if isinstance(bi, (BuildInfo_CLibrary_NativeLocal, BuildInfo_CLibrary_NativeInstalled)):
+                    return True
+                pass
+            return False
         pass
 
     pass

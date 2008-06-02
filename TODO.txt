@@ -32,7 +32,15 @@
     * libconfix/plugins/c/library.py
       * set_libtool_version_info and related crap must be moved to the
         automake plugin
-
+    * libconfix/plugins/c/compiled.py
+      * cmdlinemacros(), cflags(): state explicitly that they are
+        backend neutral. provide a second set in the backend that
+        carries backend specific info, passed in by EXTERNAL_LIBRARY()
+        (in the automake case).
+      * external_include_path(): backend specific.
+    * libconfix/plugins/c/cxx.py
+      * cxxflags(), just as cflags() above.
+    
   * Move libconfix/core/utils/paragraph.py to automake
 
   * restructure the C plugin

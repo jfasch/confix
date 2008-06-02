@@ -29,11 +29,15 @@ class LibraryBuilder(LinkedBuilder):
 
         # libtool version information; to be passed to libtool
         # -version-info <current>:<revision>:<age>
+
+        # jjj get rid of that since it is automaek specific.
         assert libtool_version_info is None or \
                type(libtool_version_info) in [types.ListType, types.TupleType] and len(libtool_version_info) == 3
 
         # libtool release information; to be passed as -release
         # <package-version>
+
+        # jjj get rid of that since it is automaek specific.
         assert libtool_release_info is None or \
                type(libtool_release_info) is types.StringType
         

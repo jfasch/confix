@@ -96,7 +96,7 @@ class LibraryDependenciesFinder(Builder):
         # below.
         local_libs = []
         installed_libs = []
-        for lib_buildinfo in self.__exe_builder.buildinfo_topo_dependent_native_libs():
+        for lib_buildinfo in self.__exe_builder.topo_libraries():
             if isinstance(lib_buildinfo, BuildInfo_CLibrary_NativeLocal):
                 local_libs.append(lib_buildinfo)
                 continue

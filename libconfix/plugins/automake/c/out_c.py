@@ -32,7 +32,6 @@ from libconfix.plugins.c.buildinfo import \
      BuildInfo_CLibrary_NativeLocal, \
      BuildInfo_CLibrary_NativeInstalled, \
      BuildInfo_CLibrary_External
-from libconfix.core.digraph import algorithm
 from libconfix.core.utils.paragraph import Paragraph
 from libconfix.core.utils import const
 from libconfix.core.machinery.builder import Builder
@@ -232,9 +231,40 @@ class YaccOutputBuilder(Builder):
     pass
 
 class LinkedOutputBuilder(Builder):
+    """
+    In addition to what LibraryBuilder objects provide, gather
+    information that is automake specific, and which is then used by
+    derived classes like LibraryOutputBuilder and
+    ExecutableOutputBuilder.
+    """    
     def __init__(self, use_libtool):
         Builder.__init__(self)
         self.__use_libtool = use_libtool
+        pass
+
+    def relate(self, node, digraph, topolist):
+        """
+        Builder method. Gather the automake specific build
+        information, such as BuildInfo_CLibrary_External.
+        """
+        Builder.relate(self, node, digraph, topolist)
+
+        self.__external_libpath = []
+        self.__have_external_libpath = set()
+        self.__external_libraries = []
+
+        for n in topolist:
+            for bi in n.buildinfos():
+                if isinstance(bi, BuildInfo_CLibrary_External):
+                    key = '.'.join(bi.libpath())
+                    if not key in self.__have_external_libpath:
+                        self.__have_external_libpath.add(key)
+                        self.__external_libpath.insert(0, bi.libpath())
+                        pass
+                    self.__external_libraries.insert(0, bi.libs())
+                    continue
+                pass
+            pass
         pass
 
     def output(self):
@@ -253,77 +283,29 @@ class LinkedOutputBuilder(Builder):
             pass
         pass
 
-    def relate(self, node, digraph, topolist):
-        Builder.relate(self, node, digraph, topolist)
-
-        self.__buildinfo_direct_dependent_native_libs = []
-        self.__buildinfo_topo_dependent_native_libs = []
-        self.__external_libpath = []
-        self.__have_external_libpath = set()
-        self.__external_libraries = []
-
-        # of the native (confix-built) libraries we remember both the
-        # next successors that have a library (for libtool, which does
-        # topological sorting by itself) and the toposorted list (if
-        # we do not use libtool).
-
-        # we do not know if an external library was built with
-        # libtool, so we have to pass the full topolist in either
-        # case.
-
-        nodes_with_library = algorithm.nearest_property(digraph=digraph, entrypoint=node, property=self.HaveLibraryProperty())
-        for n in nodes_with_library:
-            for bi in n.buildinfos():
-                if isinstance(bi, BuildInfo_CLibrary_NativeLocal):
-                    self.__buildinfo_direct_dependent_native_libs.append(bi)
-                    continue
-                if isinstance(bi, BuildInfo_CLibrary_NativeInstalled):
-                    self.__buildinfo_direct_dependent_native_libs.append(bi)
-                    continue
-                pass
-            pass
-        
-        for n in topolist:
-            for bi in n.buildinfos():
-                if isinstance(bi, BuildInfo_CLibrary_NativeLocal):
-                    self.__buildinfo_topo_dependent_native_libs.insert(0, bi)
-                    continue
-                if isinstance(bi, BuildInfo_CLibrary_NativeInstalled):
-                    self.__buildinfo_topo_dependent_native_libs.insert(0, bi)
-                    continue
-                if isinstance(bi, BuildInfo_CLibrary_External):
-                    key = '.'.join(bi.libpath())
-                    if not key in self.__have_external_libpath:
-                        self.__have_external_libpath.add(key)
-                        self.__external_libpath.insert(0, bi.libpath())
-                        pass
-                    self.__external_libraries.insert(0, bi.libs())
-                    continue
-                pass
-            pass
-        pass
-
     def use_libtool(self):
         """
         For derived classes.
         """
         return self.__use_libtool
 
-    def get_linkline(self):
+    def get_linkline(self, linked_builder):
         """
-        For derived classes. Returns the link line, as a list of
-        strings, like ['-L/blah -L/bloh/blah -lonelibrary
+        For derived classes. Returns the link line for linked_builder,
+        as a list of strings, like ['-L/blah -L/bloh/blah -lonelibrary
         -lanotherone']
         """
+        assert isinstance(linked_builder, LinkedBuilder)
+        
         native_paths = []
         native_libraries = []
         external_linkline = []
         using_installed_library = False
 
         if _linked_do_deep_linking(use_libtool=self.__use_libtool):
-            native_libs_to_use = self.__buildinfo_topo_dependent_native_libs
+            native_libs_to_use = linked_builder.topo_libraries()
         else:
-            native_libs_to_use = self.__buildinfo_direct_dependent_native_libs
+            native_libs_to_use = linked_builder.direct_libraries()
             pass
 
         for bi in native_libs_to_use:
@@ -353,29 +335,13 @@ class LinkedOutputBuilder(Builder):
 
         return native_paths + native_libraries + external_linkline
 
-    def test_buildinfo_direct_dependent_native_libs(self):
-        """ For unit tests only. """
-        return self.__buildinfo_direct_dependent_native_libs
-    def test_buildinfo_topo_dependent_native_libs(self):
-        """ For unit tests only. """
-        return self.__buildinfo_topo_dependent_native_libs
-    def test_external_libpath(self):
+    def external_libpath(self):
         """ For unit tests only. """
         return self.__external_libpath
-    def test_external_libraries(self):
+    def external_libraries(self):
         """ For unit tests only. """
         return self.__external_libraries
 
-    class HaveLibraryProperty:
-        def have(self, node):
-            for bi in node.buildinfos():
-                if isinstance(bi, BuildInfo_CLibrary_NativeLocal) or \
-                   isinstance(bi, BuildInfo_CLibrary_NativeInstalled) or \
-                   isinstance(bi, BuildInfo_CLibrary_External):
-                    return True
-                pass
-            return False
-        pass
     pass
 
 class LibraryOutputBuilder(LinkedOutputBuilder):
@@ -419,7 +385,7 @@ class LibraryOutputBuilder(LinkedOutputBuilder):
                 pass
 
             if self.use_libtool():
-                for fragment in self.get_linkline():
+                for fragment in self.get_linkline(linked_builder=b):
                     mf_am.add_compound_libadd(
                         compound_name=automakelibname,
                         lib=fragment)
@@ -457,7 +423,7 @@ class ExecutableOutputBuilder(LinkedOutputBuilder):
                 mf_am.add_compound_sources(automakeexename, m.file().name())
                 pass
 
-            for fragment in self.get_linkline():
+            for fragment in self.get_linkline(linked_builder=b):
                 mf_am.add_compound_ldadd(
                     compound_name=automakeexename,
                     lib=fragment)
