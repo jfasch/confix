@@ -18,6 +18,7 @@
 
 from libconfix.plugins.automake import bootstrap
 
+from libconfix.setups.explicit_setup import ExplicitSetup
 from libconfix.core.filesys.file import File
 from libconfix.core.filesys.filesys import FileSystem
 from libconfix.core.machinery.local_package import LocalPackage
@@ -52,7 +53,7 @@ class AutoConfArchiveTest(PersistentTestCase):
             name=const.CONFIX2_DIR,
             entry=File(lines=["CONFIGURE_AC(lines=['AC_CXX_NAMESPACES'],",
                               "             order=AC_PROGRAMS)"]))
-        package = LocalPackage(rootdirectory=fs.rootdirectory(), setups=[])
+        package = LocalPackage(rootdirectory=fs.rootdirectory(), setups=[ExplicitSetup(use_libtool=False)])
         package.boil(external_nodes=[])
         package.output()
         fs.sync()

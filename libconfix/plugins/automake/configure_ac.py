@@ -85,6 +85,8 @@ class Configure_ac:
     def set_unique_file_in_srcdir(self, filename):
         self.unique_file_in_srcdir_ = filename
         pass
+    def unique_file_in_srcdir(self):
+        return self.unique_file_in_srcdir_
 
     def ac_config_aux_dir(self): return self.ac_config_aux_dir_
     def set_ac_config_aux_dir(self, dirname):

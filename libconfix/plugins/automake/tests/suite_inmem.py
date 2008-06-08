@@ -29,6 +29,8 @@ from external_library import ExternalLibraryInMemorySuite
 from libtool_version import LibtoolVersionSuite
 from libtool_linking import LibtoolLinkingSuite
 from buildinfo import BuildInfoSuite
+from ac_config_srcdir_suite import AC_CONFIG_SRCDIR_Suite
+
 from libconfix.plugins.automake.pkg_config.tests.suite_inmem import PkgConfigInMemorySuite
 from libconfix.plugins.automake.c.tests.suite_inmem import AutomakeCInMemorySuite
 
@@ -54,6 +56,7 @@ class AutomakeInMemorySuite(unittest.TestSuite):
         self.addTest(BuildInfoSuite())
         self.addTest(PkgConfigInMemorySuite())
         self.addTest(AutomakeCInMemorySuite())
+        self.addTest(AC_CONFIG_SRCDIR_Suite())
         pass
 
     pass

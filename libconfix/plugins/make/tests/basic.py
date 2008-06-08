@@ -15,7 +15,7 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 # USA
 
-from libconfix.plugins.make.setup import MakeSetup
+from libconfix.setups.explicit_setup import ExplicitSetup
 
 from libconfix.testutils.persistent import PersistentTestCase
 from libconfix.core.filesys.filesys import FileSystem
@@ -52,7 +52,7 @@ class CALL_MAKE_AND_RESCAN_Test(PersistentTestCase):
 
         fs.sync() # the make program needs something to hold on to
         package = LocalPackage(rootdirectory=fs.rootdirectory(),
-                               setups=[MakeSetup()])
+                               setups=[ExplicitSetup(use_libtool=False)])
 
         package.boil(external_nodes=[])
 
@@ -89,10 +89,7 @@ class CALL_MAKE_AND_RESCAN_SYNC_Test(PersistentTestCase):
 
         fs.sync() # the make program needs something to hold on to
         package = LocalPackage(rootdirectory=fs.rootdirectory(),
-                               setups=[MakeSetup(),
-                                       # we are using FIND_ENTRY and
-                                       # SET_FILE_PROPERTY
-                                       DefaultDirectorySetup()])
+                               setups=[ExplicitSetup(use_libtool=False)])
 
         package.boil(external_nodes=[])
 
