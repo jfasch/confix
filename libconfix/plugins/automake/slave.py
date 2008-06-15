@@ -15,20 +15,8 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 # USA
 
-from library_dependencies.suite_inmem import LibraryDependenciesInMemorySuite
-from external_library import ExternalLibraryInMemorySuite
-
-import unittest
-
-class AutomakeCInMemorySuite(unittest.TestSuite):
-    def __init__(self):
-        unittest.TestSuite.__init__(self)
-        self.addTest(ExternalLibraryInMemorySuite())
-        self.addTest(LibraryDependenciesInMemorySuite())
+class AutomakeSlave(Builder):
+    def automake_output(self, makefile_am, file_installer, configure_ac, acinclude_m4):
+        assert False, "abstract"
         pass
-
-    pass
-
-if __name__ == '__main__':
-    unittest.TextTestRunner().run(AutomakeCInMemorySuite())
     pass

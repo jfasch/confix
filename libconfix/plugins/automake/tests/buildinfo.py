@@ -175,55 +175,36 @@ class UniqueFlags_n_MacrosTest(unittest.TestCase):
         package = LocalPackage(rootdirectory=fs.rootdirectory(),
                                setups=[ConfixSetup(use_libtool=False, short_libnames=False)])
         package.boil(external_nodes=[])
-
-        hi_file1_cc_builder = package.rootbuilder().find_entry_builder(['hi', 'file1.cc'])
-        hi_file2_cc_builder = package.rootbuilder().find_entry_builder(['hi', 'file1.cc'])
-        
-        # see if each cxx file builder has a unique set of flags.
-
-        for builder in [hi_file1_cc_builder, hi_file2_cc_builder]:
-            unique_cflags = set()
-            for f in builder.cflags():
-                self.failIf(f in unique_cflags)
-                unique_cflags.add(f)
-                pass
-            self.failUnless('cflags_token' in unique_cflags)
-            unique_cxxflags = set()
-            for f in builder.cxxflags():
-                self.failIf(f in unique_cxxflags)
-                unique_cxxflags.add(f)
-                pass
-            self.failUnless('cxxflags_token' in unique_cxxflags)
-            cmdlinemacros = {}
-            for macro, value in builder.cmdlinemacros().iteritems():
-                self.failIf(macro in cmdlinemacros)
-                cmdlinemacros[macro] = value
-                pass
-            self.failUnless(cmdlinemacros['key'] == 'value')
-            pass
-        
-        # so each of hi's two cxx builders has it unique copy of lo's
-        # build information. see if we manage to sort out duplicates
-        # on the way into hi's Makefile.am.
-
         package.output()
 
-        hi_builder = package.rootbuilder().find_entry_builder(['hi'])
+        hi_dirbuilder = package.rootbuilder().find_entry_builder(['hi'])
+        self.failIf(hi_dirbuilder is None)
+
+        # see if lo's build information (cflags, cxxflags,
+        # cmdlinemacros) made it into hi's build.
+
+        self.failUnless('cflags_token' in hi_dirbuilder.makefile_am().am_cflags())
+        self.failUnless('cxxflags_token' in hi_dirbuilder.makefile_am().am_cxxflags())
+        self.failUnless(hi_dirbuilder.makefile_am().cmdlinemacros().has_key('key'))
+        self.failUnless(hi_dirbuilder.makefile_am().cmdlinemacros()['key'] == 'value')
+        
+        # hi's build should not contain duplicates of either of lo's
+        # build information.
 
         unique_cflags = set()
-        for f in hi_builder.makefile_am().am_cflags():
+        for f in hi_dirbuilder.makefile_am().am_cflags():
             self.failIf(f in unique_cflags)
             unique_cflags.add(f)
             pass
 
         unique_cxxflags = set()
-        for f in hi_builder.makefile_am().am_cxxflags():
+        for f in hi_dirbuilder.makefile_am().am_cxxflags():
             self.failIf(f in unique_cxxflags)
             unique_cxxflags.add(f)
             pass
 
         cmdlinemacros = {}
-        for macro, value in hi_builder.makefile_am().cmdlinemacros().iteritems():
+        for macro, value in hi_dirbuilder.makefile_am().cmdlinemacros().iteritems():
             self.failIf(macro in cmdlinemacros)
             cmdlinemacros[macro] = value
             pass

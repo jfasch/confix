@@ -42,7 +42,7 @@ class CXXBuilder(CompiledCBuilder):
                 pass
             pass
         pass
-
+    
     def __init_buildinfo(self):
         self.__cxxflags = []
         pass

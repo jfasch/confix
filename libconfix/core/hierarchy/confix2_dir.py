@@ -34,22 +34,6 @@ class Confix2_dir(FileBuilder):
     def shortname(self):
         return 'Hierarchy.Confix2_dir'
 
-    # jjj
-##     def initialize(self, package):
-##         super(Confix2_dir, self).initialize(package)
-##         ifaces = self.parentbuilder().iface_pieces()[:]
-##         for b in self.parentbuilder().builders():
-##             if not isinstance(b, Confix2_dir_Contributor):
-##                 continue
-##             ifaces.extend(b.get_iface_proxies())
-##             pass
-##         try:
-##             InterfaceExecutor(iface_pieces=ifaces).execute_file(file=self.file())
-##         except Error, e:
-##             raise Error('Could not execute file "'+\
-##                         os.sep.join(self.file().relpath(self.package().rootdirectory()))+'"', [e])
-##         pass
-
     def enlarge(self):
         super(Confix2_dir, self).enlarge()
         if self.__executed:

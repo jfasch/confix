@@ -41,8 +41,6 @@ class CommonDirectoryInterface_Confix2_dir(Confix2_dir_Contributor):
             self.add_global('FIND_ENTRY', getattr(self, 'FIND_ENTRY'))
             self.add_global('GET_ENTRIES', getattr(self, 'GET_ENTRIES'))
             self.add_global('RESCAN_CURRENT_DIRECTORY', getattr(self, 'RESCAN_CURRENT_DIRECTORY'))
-            self.add_global('ADD_EXTRA_DIST', getattr(self, 'ADD_EXTRA_DIST'))
-            self.add_global('MAKEFILE_AM', getattr(self, 'MAKEFILE_AM'))
             self.add_global('ADD_BUILDER', getattr(self, 'ADD_BUILDER'))
             self.add_global('SET_FILE_PROPERTIES', getattr(self, 'SET_FILE_PROPERTIES'))
             self.add_global('SET_FILE_PROPERTY', getattr(self, 'SET_FILE_PROPERTY'))
@@ -66,12 +64,6 @@ class CommonDirectoryInterface_Confix2_dir(Confix2_dir_Contributor):
             return self.object().directory().entries()
         def RESCAN_CURRENT_DIRECTORY(self):
             scan.rescan_dir(self.object().directory())
-            pass
-        def ADD_EXTRA_DIST(self, filename):
-            self.object().makefile_am().add_extra_dist(filename)
-            pass
-        def MAKEFILE_AM(self, line):
-            self.object().makefile_am().add_line(line)
             pass
 
         def ADD_BUILDER(self, builder):

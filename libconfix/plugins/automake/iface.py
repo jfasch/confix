@@ -57,6 +57,8 @@ class AutomakeInterfaceProxy(InterfaceProxy):
 
         self.add_global('CONFIGURE_AC', getattr(self, 'CONFIGURE_AC'))
         self.add_global('ACINCLUDE_M4', getattr(self, 'ACINCLUDE_M4'))
+        self.add_global('ADD_EXTRA_DIST', getattr(self, 'ADD_EXTRA_DIST'))
+        self.add_global('MAKEFILE_AM', getattr(self, 'MAKEFILE_AM'))
 
         pass
 
@@ -86,6 +88,14 @@ class AutomakeInterfaceProxy(InterfaceProxy):
             self.object().add_buildinfo(BuildInfo_ACInclude_m4(
                 lines=lines))
             pass
+        pass
+
+    def ADD_EXTRA_DIST(self, filename):
+        self.object().parentbuilder().makefile_am().add_extra_dist(filename)
+        pass
+
+    def MAKEFILE_AM(self, line):
+        self.object().parentbuilder().makefile_am().add_line(line)
         pass
         
     pass

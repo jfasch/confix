@@ -30,61 +30,61 @@ from dependency import \
      Require_CInclude
 
 from buildinfo import \
-    BuildInfo_CIncludePath_External, \
     BuildInfo_CFLAGS, \
     BuildInfo_CXXFLAGS, \
-    BuildInfo_CommandlineMacros, \
-    BuildInfo_CLibrary_External
+    BuildInfo_CommandlineMacros
 
-class EXTERNAL_LIBRARY(InterfaceProxy):
-    def __init__(self, object):
-        InterfaceProxy.__init__(self, object)
-        self.add_global('EXTERNAL_LIBRARY', getattr(self, 'EXTERNAL_LIBRARY'))
-        pass
-    def EXTERNAL_LIBRARY(
-        self,
-        incpath=[],
-        cflags=[],
-        cxxflags=[],
-        cmdlinemacros={},
-        libpath=[],
-        libs=[]):
+# jjj
 
-        if type(incpath) is not types.ListType:
-            raise Error("EXTERNAL_LIBRARY(): 'incpath' argument must be a list")
-        if type(cflags) is not types.ListType:
-            raise Error("EXTERNAL_LIBRARY(): 'cflags' argument must be a list")
-        if type(cxxflags) is not types.ListType:
-            raise Error("EXTERNAL_LIBRARY(): 'cxxflags' argument must be a list")
-        if type(cmdlinemacros) is not types.DictionaryType:
-            raise Error("EXTERNAL_LIBRARY(): 'cmdlinemacros' argument must be a dictionary")
-        if type(libpath) is not types.ListType:
-            raise Error("EXTERNAL_LIBRARY(): 'libpath' argument must be a list")
-        if type(libs) is not types.ListType:
-            raise Error("EXTERNAL_LIBRARY(): 'libs' argument must be a list")
+## class EXTERNAL_LIBRARY(InterfaceProxy):
+##     def __init__(self, object):
+##         InterfaceProxy.__init__(self, object)
+##         self.add_global('EXTERNAL_LIBRARY', getattr(self, 'EXTERNAL_LIBRARY'))
+##         pass
+##     def EXTERNAL_LIBRARY(
+##         self,
+##         incpath=[],
+##         cflags=[],
+##         cxxflags=[],
+##         cmdlinemacros={},
+##         libpath=[],
+##         libs=[]):
 
-        if len(incpath) > 0:
-            self.object().add_buildinfo(
-                BuildInfo_CIncludePath_External(incpath=incpath))
-            pass
-        if len(cflags) > 0:
-            self.object().add_buildinfo(
-                BuildInfo_CFLAGS(cflags=cflags))
-            pass
-        if len(cxxflags) > 0:
-            self.object().add_buildinfo(
-                BuildInfo_CXXFLAGS(cxxflags=cxxflags))
-            pass
-        if len(cmdlinemacros) > 0:
-            self.object().add_buildinfo(
-                BuildInfo_CommandlineMacros(macros=cmdlinemacros))
-            pass
-        if len(libpath) > 0 or len(libs) > 0:
-            self.object().add_buildinfo(
-                BuildInfo_CLibrary_External(libpath=libpath, libs=libs))
-            pass
-        pass
-    pass
+##         if type(incpath) is not types.ListType:
+##             raise Error("EXTERNAL_LIBRARY(): 'incpath' argument must be a list")
+##         if type(cflags) is not types.ListType:
+##             raise Error("EXTERNAL_LIBRARY(): 'cflags' argument must be a list")
+##         if type(cxxflags) is not types.ListType:
+##             raise Error("EXTERNAL_LIBRARY(): 'cxxflags' argument must be a list")
+##         if type(cmdlinemacros) is not types.DictionaryType:
+##             raise Error("EXTERNAL_LIBRARY(): 'cmdlinemacros' argument must be a dictionary")
+##         if type(libpath) is not types.ListType:
+##             raise Error("EXTERNAL_LIBRARY(): 'libpath' argument must be a list")
+##         if type(libs) is not types.ListType:
+##             raise Error("EXTERNAL_LIBRARY(): 'libs' argument must be a list")
+
+##         if len(incpath) > 0:
+##             self.object().add_buildinfo(
+##                 BuildInfo_CIncludePath_External(incpath=incpath))
+##             pass
+##         if len(cflags) > 0:
+##             self.object().add_buildinfo(
+##                 BuildInfo_CFLAGS(cflags=cflags))
+##             pass
+##         if len(cxxflags) > 0:
+##             self.object().add_buildinfo(
+##                 BuildInfo_CXXFLAGS(cxxflags=cxxflags))
+##             pass
+##         if len(cmdlinemacros) > 0:
+##             self.object().add_buildinfo(
+##                 BuildInfo_CommandlineMacros(macros=cmdlinemacros))
+##             pass
+##         if len(libpath) > 0 or len(libs) > 0:
+##             self.object().add_buildinfo(
+##                 BuildInfo_CLibrary_External(libpath=libpath, libs=libs))
+##             pass
+##         pass
+##     pass
     
 class REQUIRE_H(InterfaceProxy):
     def __init__(self, object):

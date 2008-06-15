@@ -19,15 +19,13 @@ from libconfix.core.machinery.setup import Setup
 from libconfix.core.hierarchy.confix2_dir_contributor import Confix2_dir_Contributor
 
 from libconfix.plugins.c.common_iface import \
-     EXTERNAL_LIBRARY, \
      REQUIRE_H, \
      PROVIDE_H, \
      TESTS_ENVIRONMENT
 
 class CommonInterface_Confix2_dir(Confix2_dir_Contributor):
     def get_iface_proxies(self):
-        return [EXTERNAL_LIBRARY(object=self),
-                REQUIRE_H(object=self),
+        return [REQUIRE_H(object=self),
                 PROVIDE_H(object=self),
                 TESTS_ENVIRONMENT(object=self.parentbuilder())]
     def locally_unique_id(self):

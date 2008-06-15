@@ -25,7 +25,6 @@ from c import CSuite
 from exe import ExecutableSuite
 from exename.suite_inmem import ExecutableNameInMemorySuite
 import readonly_prefixes.suite_inmem
-from external_library import ExternalLibraryInMemorySuite
 from libtool_version import LibtoolVersionSuite
 from libtool_linking import LibtoolLinkingSuite
 from buildinfo import BuildInfoSuite
@@ -50,7 +49,6 @@ class AutomakeInMemorySuite(unittest.TestSuite):
         self.addTest(ExecutableSuite())
         self.addTest(ExecutableNameInMemorySuite())
         self.addTest(readonly_prefixes.suite_inmem.InMemorySuite())
-        self.addTest(ExternalLibraryInMemorySuite())
         self.addTest(LibtoolVersionSuite())
         self.addTest(LibtoolLinkingSuite())
         self.addTest(BuildInfoSuite())

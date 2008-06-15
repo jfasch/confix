@@ -15,6 +15,12 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 # USA
 
+from external_library import \
+     BuildInfo_IncludePath_External_AM, \
+     BuildInfo_CFLAGS_AM, \
+     BuildInfo_CXXFLAGS_AM, \
+     BuildInfo_CommandlineMacros_AM, \
+     BuildInfo_Library_External_AM
 from libconfix.plugins.automake.configure_ac import Configure_ac
 from libconfix.plugins.automake import readonly_prefixes
 from libconfix.plugins.automake import helper
@@ -30,8 +36,7 @@ from libconfix.plugins.c.library import LibraryBuilder
 from libconfix.plugins.c.executable import ExecutableBuilder
 from libconfix.plugins.c.buildinfo import \
      BuildInfo_CLibrary_NativeLocal, \
-     BuildInfo_CLibrary_NativeInstalled, \
-     BuildInfo_CLibrary_External
+     BuildInfo_CLibrary_NativeInstalled
 from libconfix.core.utils.paragraph import Paragraph
 from libconfix.core.utils import const
 from libconfix.core.machinery.builder import Builder
@@ -85,13 +90,77 @@ class HeaderOutputBuilder(Builder):
     pass
 
 class CompiledOutputBuilder(Builder):
+    def __init__(self):
+        Builder.__init__(self)
+
+        self.__external_cflags = []
+        self.__external_cmdlinemacros = {}
+
+        # include path for external modules. this is a list of lists,
+        # of the form
+
+        # [['-I/dir1'],
+        #  ['-I/this/dir/include', '-I/that/dir/include']]
+
+        # each list has been distributed to us by one module, and we
+        # must not change the order inside the individual lists - they
+        # may be significant, and the distributing modules surely
+        # don't expect us to mess with the order.
+
+        # the complete list is accompanied with a set which serves us
+        # to sort out duplicates from the beginning.
+        
+        self.__have_external_incpath = set()
+        self.__external_incpath = []
+        pass
+
     def locally_unique_id(self):
         return str(self.__class__)
+
+    def relate(self, node, digraph, topolist):
+        super(CompiledOutputBuilder, self).relate(node, digraph, topolist)
+
+        # reset all we gathered during the last round.
+        self.__have_external_incpath = set()
+        self.__external_incpath = []
+        self.__external_cflags = []
+        self.__external_cmdlinemacros = {}
+
+        for n in topolist:
+            for bi in n.buildinfos():
+                if isinstance(bi, BuildInfo_IncludePath_External_AM):
+                    incpath = bi.incpath()
+                    key = '.'.join(incpath)
+                    if not key in self.__have_external_incpath:
+                        self.__external_incpath.insert(0, incpath)
+                        self.__have_external_incpath.add(key)
+                        pass
+                    continue
+                if isinstance(bi, BuildInfo_CFLAGS_AM):
+                    self.__external_cflags.extend(bi.cflags())
+                    continue
+                if isinstance(bi, BuildInfo_CommandlineMacros_AM):
+                    for (k, v) in bi.macros().iteritems():
+                        existing_value = self.__external_cmdlinemacros.get(k)
+                        if existing_value is not None and existing_value != v:
+                            raise Error(os.sep.join(self.file().relpath())+': '
+                                        'conflicting values for macro "'+key+'": '
+                                        '"'+existing_value+'"/"'+value+'"')
+                        self.__external_cmdlinemacros[k] = v
+                        pass
+                    continue
+                pass
+            pass
+        pass
+
     def output(self):
         super(CompiledOutputBuilder, self).output()
         for b in self.parentbuilder().builders():
             if not isinstance(b, CompiledCBuilder):
                 continue
+
+            # first, do the core confix things. then, add the
+            # automake/external include paths, macros, and whatnot.
 
             for name, value in b.cmdlinemacros().iteritems():
                 self.parentbuilder().makefile_am().add_cmdlinemacro(name, value)
@@ -109,14 +178,21 @@ class CompiledOutputBuilder(Builder):
             if b.have_locally_installed_includes():
                 self.parentbuilder().makefile_am().add_includepath('-I'+'/'.join(['$(top_builddir)', const.LOCAL_INCLUDE_DIR]))
                 pass
-            # native includes of other packages (i.e., native installed
-            # includes) come next.
+            # native includes of other packages (i.e., native
+            # installed includes) come next.
             if b.using_native_installed():
                 self.parentbuilder().makefile_am().add_includepath('-I$(includedir)')
                 self.parentbuilder().makefile_am().add_includepath('$('+readonly_prefixes.incpath_var+')')
                 pass
-            # external includes.
-            for p in b.external_include_path():
+
+
+            for name, value in self.__external_cmdlinemacros.iteritems():
+                self.parentbuilder().makefile_am().add_cmdlinemacro(name, value)
+                pass
+            for f in self.__external_cflags:
+                self.parentbuilder().makefile_am().add_am_cflags(f)
+                pass
+            for p in self.__external_incpath:
                 for item in p:
                     self.parentbuilder().makefile_am().add_includepath(item)
                     pass
@@ -125,7 +201,7 @@ class CompiledOutputBuilder(Builder):
         pass
     pass
 
-class COutputBuilder(Builder):
+class COutputBuilder(CompiledOutputBuilder):
     def locally_unique_id(self):
         return str(self.__class__)
     def output(self):
@@ -141,9 +217,27 @@ class COutputBuilder(Builder):
         pass
     pass
 
-class CXXOutputBuilder(Builder):
+class CXXOutputBuilder(CompiledOutputBuilder):
+    def __init__(self):
+        CompiledOutputBuilder.__init__(self)
+        self.__external_cxxflags = []
+        pass
+    
     def locally_unique_id(self):
         return str(self.__class__)
+    
+    def relate(self, node, digraph, topolist):
+        super(CXXOutputBuilder, self).relate(node, digraph, topolist)
+        self.__external_cxxflags = []
+        for n in topolist:
+            for bi in n.buildinfos():
+                if isinstance(bi, BuildInfo_CXXFLAGS_AM):
+                    self.__external_cxxflags.extend(bi.cxxflags())
+                    continue
+                pass
+            pass
+        pass
+
     def output(self):
         super(CXXOutputBuilder, self).output()
         for b in self.parentbuilder().builders():
@@ -153,14 +247,14 @@ class CXXOutputBuilder(Builder):
             self.package().configure_ac().add_paragraph(
                 paragraph=Paragraph(['AC_PROG_CXX']),
                 order=Configure_ac.PROGRAMS)
-            for f in b.cxxflags():
+            for f in b.cxxflags() + self.__external_cxxflags:
                 self.parentbuilder().makefile_am().add_am_cxxflags(f)
                 pass
             pass
         pass
     pass
 
-class LexOutputBuilder(Builder):
+class LexOutputBuilder(CompiledOutputBuilder):
     def locally_unique_id(self):
         return str(self.__class__)
     def output(self):
@@ -198,7 +292,7 @@ class LexOutputBuilder(Builder):
         pass
     pass
 
-class YaccOutputBuilder(Builder):
+class YaccOutputBuilder(CompiledOutputBuilder):
     def locally_unique_id(self):
         return str(self.__class__)
     def output(self):
@@ -255,7 +349,7 @@ class LinkedOutputBuilder(Builder):
 
         for n in topolist:
             for bi in n.buildinfos():
-                if isinstance(bi, BuildInfo_CLibrary_External):
+                if isinstance(bi, BuildInfo_Library_External_AM):
                     key = '.'.join(bi.libpath())
                     if not key in self.__have_external_libpath:
                         self.__have_external_libpath.add(key)

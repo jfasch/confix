@@ -17,6 +17,7 @@
 
 from out_c import COutputSetup
 from library_dependencies import LibraryDependenciesFinderSetup
+from external_library import ExternalLibrarySetup
 from interix import InterixSetup
 
 from libconfix.core.machinery.setup import CompositeSetup
@@ -26,6 +27,7 @@ class CSetup(CompositeSetup):
         CompositeSetup.__init__(
             self,
             setups=[COutputSetup(use_libtool=use_libtool),
+                    ExternalLibrarySetup(),
                     LibraryDependenciesFinderSetup(use_libtool=use_libtool),
                     InterixSetup()])
         pass

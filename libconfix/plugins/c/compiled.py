@@ -24,7 +24,6 @@ from base import CBaseBuilder
 from buildinfo import \
      BuildInfo_CIncludePath_NativeLocal, \
      BuildInfo_CIncludePath_NativeInstalled, \
-     BuildInfo_CIncludePath_External, \
      BuildInfo_CommandlineMacros, \
      BuildInfo_CFLAGS
 
@@ -90,12 +89,6 @@ class CompiledCBuilder(CBaseBuilder):
         """
         return self.__cflags
 
-    def external_include_path(self):
-        """
-        Include paths from external packages; list of strings.
-        """
-        return self.__external_include_path
-
     def native_local_include_dirs(self):
         """
         List of package-local directories that have to put on the
@@ -131,14 +124,6 @@ class CompiledCBuilder(CBaseBuilder):
                     continue
                 if isinstance(bi, BuildInfo_CIncludePath_NativeInstalled):
                     self.__buildinfo_includepath_native_installed = True
-                    continue
-                if isinstance(bi, BuildInfo_CIncludePath_External):
-                    incpath = bi.incpath()
-                    key = '.'.join(incpath)
-                    if not key in self.__have_external_include_path:
-                        self.__external_include_path.insert(0, incpath)
-                        self.__have_external_include_path.add(key)
-                        pass
                     continue
                 if isinstance(bi, BuildInfo_CommandlineMacros):
                     for (k, v) in bi.macros().iteritems():
@@ -178,23 +163,6 @@ class CompiledCBuilder(CBaseBuilder):
 
         # more compiler commandline options.
         self.__cflags = []
-
-        # include path for external modules. this is a list of lists,
-        # of the form
-
-        # [['-I/dir1'],
-        #  ['-I/this/dir/include', '-I/that/dir/include']]
-
-        # each list has been distributed to us by one module, and we
-        # must not change the order inside the individual lists - they
-        # may be significant, and the distributing modules surely
-        # don't expect us to mess with the order.
-
-        # the complete list is accompanied with a set which serves us
-        # to sort out duplicates from the beginning.
-        
-        self.__external_include_path = []
-        self.__have_external_include_path = set()
 
         pass
 

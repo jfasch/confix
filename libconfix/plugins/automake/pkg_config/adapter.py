@@ -15,16 +15,12 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 # USA
 
-from libconfix.plugins.c.buildinfo import \
-     BuildInfo_CFLAGS, \
-     BuildInfo_CXXFLAGS, \
-     BuildInfo_CLibrary_External
-
 from libconfix.plugins.automake.buildinfo import \
      BuildInfo_ACInclude_m4, \
      BuildInfo_Configure_in
 from libconfix.plugins.automake.configure_ac import Configure_ac
 from libconfix.plugins.automake import helper
+from libconfix.plugins.automake.c.external_library import ExternalLibraryBuilder
 
 from libconfix.core.machinery.builder import Builder
 from libconfix.core.machinery.buildinfoset import BuildInformationSet
@@ -36,32 +32,41 @@ class PkgConfigLibraryAdapter(Builder):
     def __init__(self, packagename):
         Builder.__init__(self)
         self.__packagename = packagename
+        self.__external_library_builder_created = False
         pass
 
     def locally_unique_id(self):
         return str(self.__class__)+':'+self.__packagename
+
+    def enlarge(self):
+        super(PkgConfigLibraryAdapter, self).enlarge()
+        if self.__external_library_builder_created:
+            return
+        self.__external_library_builder_created = True
+        package_shell_name = _package_shell_name(self.__packagename)
+        self.parentbuilder().add_builder(
+            ExternalLibraryBuilder(cflags=['$('+package_shell_name+'_PKG_CONFIG_CFLAGS)'],
+                                   cxxflags=['$('+package_shell_name+'_PKG_CONFIG_CFLAGS)'],
+                                   libpath=[],
+                                   libs=['$('+package_shell_name+'_PKG_CONFIG_LIBS)']))
+        pass
         
     def buildinfos(self):
         ret = BuildInformationSet()
         ret.merge(super(PkgConfigLibraryAdapter, self).buildinfos())
 
-        package_shell_name = helper.automake_name(self.__packagename)
+        package_shell_name = _package_shell_name(self.__packagename)
 
         ret.add(BuildInfo_ACInclude_m4(
             lines=[pkg_config_check]))
         ret.add(BuildInfo_Configure_in(
             lines=['CONFIX_PKG_CONFIG_LIBRARY(['+self.__packagename+'], ['+package_shell_name+'])'],
             order=Configure_ac.LIBRARIES))
-        ret.add(BuildInfo_CFLAGS(
-            cflags=['$('+package_shell_name+'_PKG_CONFIG_CFLAGS)']))
-        ret.add(BuildInfo_CXXFLAGS(
-            cxxflags=['$('+package_shell_name+'_PKG_CONFIG_CFLAGS)']))
-        ret.add(BuildInfo_CLibrary_External(
-            libpath=[],
-            libs=['$('+package_shell_name+'_PKG_CONFIG_LIBS)']))
-
         return ret
     pass
+
+def _package_shell_name(packagename):
+    return helper.automake_name(packagename)
 
 pkg_config_check = """
 

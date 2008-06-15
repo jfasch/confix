@@ -22,18 +22,65 @@ from libconfix.core.filesys.filesys import FileSystem
 from libconfix.core.machinery.local_package import LocalPackage
 from libconfix.core.utils import const
 from libconfix.frontends.confix2.confix_setup import ConfixSetup
+from libconfix.setups.explicit_setup import ExplicitSetup
 
 import unittest
 
 class InterfaceSuite(unittest.TestSuite):
     def __init__(self):
         unittest.TestSuite.__init__(self)
+        self.addTest(MAKEFILE_AM_Test('test'))
+        self.addTest(ADD_EXTRA_DIST_Test('test'))
         self.addTest(CONFIGURE_AC_ACINCLUDE_M4('test_local'))
         self.addTest(CONFIGURE_AC_ACINCLUDE_M4('test_propagate'))
         self.addTest(CONFIGURE_AC_ACINCLUDE_M4('test_defaults'))
         pass
     pass
 
+class MAKEFILE_AM_Test(unittest.TestCase):
+    def test(self):
+        fs = FileSystem(path=[])
+        fs.rootdirectory().add(
+            name=const.CONFIX2_PKG,
+            entry=File(lines=["PACKAGE_NAME('"+self.__class__.__name__+"')",
+                              "PACKAGE_VERSION('1.2.3')"]))
+        token = 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
+        fs.rootdirectory().add(
+            name=const.CONFIX2_DIR,
+            entry=File(lines=["MAKEFILE_AM(line='"+token+"')"]))
+
+        package = LocalPackage(rootdirectory=fs.rootdirectory(),
+                               setups=[ExplicitSetup(use_libtool=True)])
+        package.boil(external_nodes=[])
+
+        makefile_am = package.rootbuilder().makefile_am()
+        self.failUnless(token in makefile_am.lines())
+        pass
+    pass
+        
+class ADD_EXTRA_DIST_Test(unittest.TestCase):
+    def test(self):
+        fs = FileSystem(path=[])
+        fs.rootdirectory().add(
+            name=const.CONFIX2_PKG,
+            entry=File(lines=["PACKAGE_NAME('"+self.__class__.__name__+"')",
+                              "PACKAGE_VERSION('1.2.3')"]))
+        fs.rootdirectory().add(
+            name=const.CONFIX2_DIR,
+            entry=File(lines=["ADD_EXTRA_DIST(filename='file')"]))
+        fs.rootdirectory().add(
+            name='file',
+            entry=File())
+
+        package = LocalPackage(rootdirectory=fs.rootdirectory(),
+                               setups=[ExplicitSetup(use_libtool=True)])
+        package.boil(external_nodes=[])
+
+        makefile_am = package.rootbuilder().makefile_am()
+        self.failUnless('file' in makefile_am.extra_dist())
+        pass
+    pass
+        
 class CONFIGURE_AC_ACINCLUDE_M4(unittest.TestCase):
     def test_local(self):
 
