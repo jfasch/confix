@@ -1,14 +1,45 @@
-* ripping out DirectoryBuilder.makefile_am()
+* STACK
 
-  * bloody order dependencies! I cannot put everything under the
-    AutomakeMaster because then Confix2.dir won't see the
-    interfaces. with the master, we will have to enlarge() first, and
-    Confix2.dir's enlarge() cannot reliably come after the
-    AutomakeMaster's.
+  * Confix2.dir interface
 
-    => rework the bloody interface stuff!!!!
+    * libconfix/core/hierarchy/tests/eval_order.py:class TestIface
 
-  * what to do with pseudo-handwritten?
+      Test to get the order dependency out. Should pass smoothly then,
+      could be removed then.
+
+    * libconfix/core/hierarchy/explicit_iface.py:class Confix2_dir_ExplicitInterface
+
+      DIRECTORY(), no problem.
+    
+    * libconfix/core/hierarchy/common_iface.py:class CommonDirectoryInterface_Confix2_dir
+
+      all interfaces for the DirectoryBuilder.
+    
+    * libconfix/core/machinery/creator.py:class CreatorSlave
+
+      IGNORE_ENTRIES(), IGNORE_FILE(). no problem expected.
+    
+    * libconfix/plugins/c/explicit_install.py:class ExplicitInstaller_Confix2_dir
+    * libconfix/plugins/c/relocated_headers/iface.py:class Relocator_Confix2_dir
+    * libconfix/plugins/c/setups/explicit_iface_setup.py:class ExplicitInterface_Confix2_dir
+    * libconfix/plugins/c/setups/common_iface_setup.py:class CommonInterface_Confix2_dir
+    * libconfix/plugins/c/clusterer.py:class CClusterer_Confix2_dir
+    * libconfix/plugins/make/setup.py:class _MakeInterface_Confix2_dir
+    * libconfix/plugins/plainfile/iface.py:class ADD_PLAINFILE_Confix2_dir
+    * libconfix/plugins/automake/c/external_library.py:class EXTERNAL_LIBRARY_Contributor
+    * libconfix/plugins/automake/pkg_config/setup.py:class PkgConfigInterface_Confix2_dir
+    * libconfix/plugins/automake/iface.py:class AutomakeInterface_Confix2_dir
+    * libconfix/plugins/script/setup.py:class ScriptInterface_Confix2_dir
+  
+  * ripping out DirectoryBuilder.makefile_am()
+
+    * bloody order dependencies! I cannot put everything under the
+      AutomakeMaster because then Confix2.dir won't see the
+      interfaces. with the master, we will have to enlarge() first,
+      and Confix2.dir's enlarge() cannot reliably come after the
+      AutomakeMaster's.
+
+      => rework the bloody interface stuff!!!!
 
 * TODO
 
