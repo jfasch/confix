@@ -1,5 +1,7 @@
 * STACK
 
+  * Confix2.dir builder asking package for interfaces
+
   * libconfix/core/machinery/tests/relate.py
 
   * Confix2.dir interface
