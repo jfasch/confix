@@ -1,5 +1,5 @@
 # Copyright (C) 2002-2006 Salomon Automation
-# Copyright (C) 2006-2007 Joerg Faschingbauer
+# Copyright (C) 2006-2008 Joerg Faschingbauer
 
 # This library is free software; you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as
@@ -16,13 +16,15 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 # USA
 
-from common_iface import CommonDirectoryInterface_Confix2_dir
+from common_iface import DirectoryBuilderInterfaceProxy
 from subdir_recognizer import SubdirectoryRecognizer
 from confix2_dir_creator import Confix2_dir_Creator
 
 from libconfix.core.machinery.setup import Setup
 
-class DefaultDirectorySetup(Setup):
+class ImplicitDirectorySetup(Setup):
+    def interfaces(self):
+        return [DirectoryBuilderInterfaceProxy()]
     def initial_builders(self):
         return super(DefaultDirectorySetup, self).initial_builders() + \
                [SubdirectoryRecognizer(),

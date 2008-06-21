@@ -1,5 +1,7 @@
 * STACK
 
+  * libconfix/core/machinery/tests/relate.py
+
   * Confix2.dir interface
 
     * libconfix/core/hierarchy/tests/eval_order.py:class TestIface

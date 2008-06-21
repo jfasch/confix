@@ -130,6 +130,18 @@ class LocalPackage(Package):
     def set_setups(self, ss):
         self.__setups = ss[:]
         pass
+
+    def get_interface(self):
+        """
+        Called by DirectoryBuilder objects that are just being
+        initialized, to get their Confix2.dir interface.
+        """
+        ret = []
+        for s in self.__setups:
+            ret.extend(s.interfaces())
+            pass
+        return ret
+
     def get_initial_builders(self):
         """
         Called by DirectoryBuilder objects that are just being

@@ -16,7 +16,6 @@
 # USA
 
 from libconfix.core.machinery.builder import Builder
-from libconfix.core.hierarchy.confix2_dir_contributor import Confix2_dir_Contributor
 from libconfix.core.iface.proxy import InterfaceProxy
 from libconfix.core.utils.error import Error
 from libconfix.core.filesys.directory import Directory
@@ -24,84 +23,76 @@ from libconfix.core.filesys import scan
 
 import types
 
-class CommonDirectoryInterface_Confix2_dir(Confix2_dir_Contributor):
+class DirectoryBuilderInterfaceProxy(InterfaceProxy):
+    def __init__(self):
+        InterfaceProxy.__init__(self)
 
-    def get_iface_proxies(self):
-        return [self.DirectoryBuilderInterfaceProxy(object=self.parentbuilder())]
-    def locally_unique_id(self):
-        return str(self.__class__)
+        self.add_global('CURRENT_BUILDER', getattr(self, 'CURRENT_BUILDER'))
+        self.add_global('CURRENT_DIRECTORY', getattr(self, 'CURRENT_DIRECTORY'))
+        self.add_global('ADD_DIRECTORY', getattr(self, 'ADD_DIRECTORY'))
+        self.add_global('FIND_ENTRY', getattr(self, 'FIND_ENTRY'))
+        self.add_global('GET_ENTRIES', getattr(self, 'GET_ENTRIES'))
+        self.add_global('RESCAN_CURRENT_DIRECTORY', getattr(self, 'RESCAN_CURRENT_DIRECTORY'))
+        self.add_global('ADD_BUILDER', getattr(self, 'ADD_BUILDER'))
+        self.add_global('SET_FILE_PROPERTIES', getattr(self, 'SET_FILE_PROPERTIES'))
+        self.add_global('SET_FILE_PROPERTY', getattr(self, 'SET_FILE_PROPERTY'))
+        pass
 
-    class DirectoryBuilderInterfaceProxy(InterfaceProxy):
-        def __init__(self, object):
-            InterfaceProxy.__init__(self, object=object)
-
-            self.add_global('CURRENT_BUILDER', getattr(self, 'CURRENT_BUILDER'))
-            self.add_global('CURRENT_DIRECTORY', getattr(self, 'CURRENT_DIRECTORY'))
-            self.add_global('ADD_DIRECTORY', getattr(self, 'ADD_DIRECTORY'))
-            self.add_global('FIND_ENTRY', getattr(self, 'FIND_ENTRY'))
-            self.add_global('GET_ENTRIES', getattr(self, 'GET_ENTRIES'))
-            self.add_global('RESCAN_CURRENT_DIRECTORY', getattr(self, 'RESCAN_CURRENT_DIRECTORY'))
-            self.add_global('ADD_BUILDER', getattr(self, 'ADD_BUILDER'))
-            self.add_global('SET_FILE_PROPERTIES', getattr(self, 'SET_FILE_PROPERTIES'))
-            self.add_global('SET_FILE_PROPERTY', getattr(self, 'SET_FILE_PROPERTY'))
+    def CURRENT_DIRECTORY(self):
+        return self.confix2_dir().parentbuilder().directory()
+    def CURRENT_BUILDER(self):
+        return self.confix2_dir().parentbuilder()
+    def ADD_DIRECTORY(self, name):
+        return self.confix2_dir().parentbuilder().directory().add(
+            name=name,
+            entry=Directory())
+    def FIND_ENTRY(self, name):
+        for ename, entry in self.confix2_dir().parentbuilder().directory().entries():
+            if ename == name:
+                return entry
             pass
+        return None
+    def GET_ENTRIES(self):
+        return self.confix2_dir().parentbuilder().directory().entries()
+    def RESCAN_CURRENT_DIRECTORY(self):
+        scan.rescan_dir(self.confix2_dir().parentbuilder().directory())
+        pass
 
-        def CURRENT_DIRECTORY(self):
-            return self.object().directory()
-        def CURRENT_BUILDER(self):
-            return self.object()
-        def ADD_DIRECTORY(self, name):
-            return self.object().directory().add(
-                name=name,
-                entry=Directory())
-        def FIND_ENTRY(self, name):
-            for ename, entry in self.object().directory().entries():
-                if ename == name:
-                    return entry
-                pass
-            return None
-        def GET_ENTRIES(self):
-            return self.object().directory().entries()
-        def RESCAN_CURRENT_DIRECTORY(self):
-            scan.rescan_dir(self.object().directory())
-            pass
+    def ADD_BUILDER(self, builder):
+        if not isinstance(builder, Builder):
+            raise Error('ADD_BUILDER(): parameter must be a Builder')
+        self.confix2_dir().parentbuilder().add_builder(builder)
+        pass
 
-        def ADD_BUILDER(self, builder):
-            if not isinstance(builder, Builder):
-                raise Error('ADD_BUILDER(): parameter must be a Builder')
-            self.object().add_builder(builder)
-            pass
-
-        def SET_FILE_PROPERTIES(self, filename, properties):
-            if type(properties) is not types.DictionaryType:
-                raise Error('SET_FILE_PROPERTIES(): properties parameter must be a dictionary')
-            file = self.object().directory().find([filename])
-            if file is None:
-                raise Error('SET_FILE_PROPERTIES(): '
-                            'file "'+filename+'" not found in directory "'+\
-                            os.sep.join(self.object().directory().relpath())+'"')
-            errors = []
-            for name, value in properties.iteritems():
-                try:
-                    file.set_property(name, value)
-                except Error, e:
-                    errors.append(e)
-                    pass
-                pass
-            if len(errors):
-                raise Error('SET_FILE_PROPERTIES('+filename+'): could not set properties', errors)
-            pass
-
-        def SET_FILE_PROPERTY(self, filename, name, value):
-            file = self.object().directory().find([filename])
-            if file is None:
-                raise Error('SET_FILE_PROPERTY(): '
-                            'file "'+filename+'" not found in directory "'+\
-                            os.sep.join(self.object().directory().relpath())+'"')
+    def SET_FILE_PROPERTIES(self, filename, properties):
+        if type(properties) is not types.DictionaryType:
+            raise Error('SET_FILE_PROPERTIES(): properties parameter must be a dictionary')
+        file = self.confix2_dir().parentbuilder().directory().find([filename])
+        if file is None:
+            raise Error('SET_FILE_PROPERTIES(): '
+                        'file "'+filename+'" not found in directory "'+\
+                        os.sep.join(self.confix2_dir().parentbuilder().directory().relpath())+'"')
+        errors = []
+        for name, value in properties.iteritems():
             try:
                 file.set_property(name, value)
             except Error, e:
-                raise Error('SET_FILE_PROPERTY('+filename+'): could not set property "'+name+'"', [e])
+                errors.append(e)
+                pass
             pass
+        if len(errors):
+            raise Error('SET_FILE_PROPERTIES('+filename+'): could not set properties', errors)
+        pass
+
+    def SET_FILE_PROPERTY(self, filename, name, value):
+        file = self.confix2_dir().parentbuilder().directory().find([filename])
+        if file is None:
+            raise Error('SET_FILE_PROPERTY(): '
+                        'file "'+filename+'" not found in directory "'+\
+                        os.sep.join(self.confix2_dir().parentbuilder().directory().relpath())+'"')
+        try:
+            file.set_property(name, value)
+        except Error, e:
+            raise Error('SET_FILE_PROPERTY('+filename+'): could not set property "'+name+'"', [e])
         pass
     pass

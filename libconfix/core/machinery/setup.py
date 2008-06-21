@@ -19,7 +19,19 @@
 class Setup(object):
     def __init__(self):
         pass
+    def interfaces(self):
+        """
+        Returns a list of InterfaceProxy objects that define the
+        methods available in Confix2.dir files.
+        """
+        assert False, 'abstract'
+        return []
     def initial_builders(self):
+        """
+        Returns a list of builders that initially populate a directory
+        builder.
+        """
+        assert False, 'abstract'
         return []
     pass
 
