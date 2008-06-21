@@ -27,10 +27,10 @@ from libconfix.core.utils import helper
 
 class ExplicitInstaller(Builder):
     """
-    Sit around and wait for user request like,
+    Sit around and wait for user requests like,
     "Ey man, tell all HeaderBuilders that come along to install their files to 'some/directory'".
 
-    User request are usually those from an interface proxy sitting in
+    User requests are usually those from an interface proxy sitting in
     Confix2.dir.
     """
 

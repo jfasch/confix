@@ -20,8 +20,18 @@
       IGNORE_ENTRIES(), IGNORE_FILE(). no problem expected.
     
     * libconfix/plugins/c/explicit_install.py:class ExplicitInstaller_Confix2_dir
+
+      INSTALLDIR_H(). no problems expected.
+    
     * libconfix/plugins/c/relocated_headers/iface.py:class Relocator_Confix2_dir
+
+      RELOCATE_HEADER(). Probably rename RelocatedHeadersSetup to
+      Explicit...
+    
     * libconfix/plugins/c/setups/explicit_iface_setup.py:class ExplicitInterface_Confix2_dir
+
+      trivial
+      
     * libconfix/plugins/c/setups/common_iface_setup.py:class CommonInterface_Confix2_dir
     * libconfix/plugins/c/clusterer.py:class CClusterer_Confix2_dir
     * libconfix/plugins/make/setup.py:class _MakeInterface_Confix2_dir
