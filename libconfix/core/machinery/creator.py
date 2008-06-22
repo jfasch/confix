@@ -16,10 +16,19 @@
 # USA
 
 from builder import Builder
+from setup import Setup
 
 from libconfix.core.iface.proxy import InterfaceProxy
 
 import types
+
+class CreatorSetup(Setup):
+    def setup(self, dirbuilder):
+        creator_slave = CreatorSlave();
+        dirbuilder.add_builder(creator_slave)
+        dirbuilder.add_interface(CreatorSlave.IgnoreEntriesInterfaceProxy(slave=creator_slave))
+        pass
+    pass
 
 class Creator(Builder):
     def __init__(self):
@@ -57,7 +66,7 @@ class Creator(Builder):
 
     pass
 
-class CreatorSlave(Confix2_dir_Contributor):
+class CreatorSlave(Builder):
     def __init__(self):
         Builder.__init__(self)
         # dictionary entry-name -> builder
@@ -95,13 +104,10 @@ class CreatorSlave(Confix2_dir_Contributor):
             pass
         pass
 
-    def get_iface_proxies(self):
-        self.__interface_retrieved = True
-        return [self.IgnoreEntresInterfaceProxy(object=self)]
-
-    class IgnoreEntresInterfaceProxy(InterfaceProxy):
-        def __init__(self, object):
-            InterfaceProxy.__init__(self, object)
+    class IgnoreEntriesInterfaceProxy(InterfaceProxy):
+        def __init__(self, slave):
+            InterfaceProxy.__init__(self)
+            self.__slave = slave
             self.add_global('IGNORE_ENTRIES', getattr(self, 'IGNORE_ENTRIES'))
             self.add_global('IGNORE_FILE', getattr(self, 'IGNORE_FILE'))
             pass
@@ -111,13 +117,13 @@ class CreatorSlave(Confix2_dir_Contributor):
             for n in names:
                 if type(n) is not str:
                     raise Error('IGNORE_ENTRIES(): all list members must be strings')
-                self.object().ignore_entry(n)
+                self.__slave.ignore_entry(n)
                 pass
             pass
         def IGNORE_FILE(self, name):
             if type(name) is not types.StringType:
                 raise Error('IGNORE_FILE() expects a string')
-            self.object().ignore_entry(name)
+            self.__slave.ignore_entry(name)
             pass
         pass
 

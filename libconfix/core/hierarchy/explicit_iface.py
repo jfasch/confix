@@ -16,11 +16,37 @@
 # USA
 
 from dirbuilder import DirectoryBuilder
-from confix2_dir_contributor import Confix2_dir_Contributor
 
 from libconfix.core.iface.proxy import InterfaceProxy
 from libconfix.core.utils.error import Error
 from libconfix.core.utils import const
+
+class ExplicitDirectoryBuilderInterfaceProxy(InterfaceProxy):
+    def __init__(self, dirbuilder):
+        InterfaceProxy.__init__(self)
+        self.__dirbuilder = dirbuilder
+        self.add_global('DIRECTORY', getattr(self, 'DIRECTORY'))
+        pass
+    
+    def DIRECTORY(self, path):
+        if type(path) not in (list, tuple):
+            raise Error('DIRECTORY('+str(path)+'): path argument must be list or tuple')
+        directory = self.parentbuilder().directory().find(path=path)
+        if directory is None:
+            raise Error('DIRECTORY(): could not find directory '+str(path))
+
+
+        jjj hier weiter
+        dirbuilder = DirectoryBuilder(directory=directory)
+
+        self.__retained_builders.append(dirbuilder)
+
+        # the machinery didn't see the new builder yet, so we have to
+        # force another round.
+        self.force_enlarge()
+        return dirbuilder
+    pass
+    
 
 class Confix2_dir_ExplicitInterface(Confix2_dir_Contributor):
 
@@ -43,9 +69,6 @@ class Confix2_dir_ExplicitInterface(Confix2_dir_Contributor):
         # enlarge()
         self.__retained_builders = []
         pass
-
-    def get_iface_proxies(self):
-        return [self.DIRECTORY(object=self)]
 
     def add_directory(self, path):
         directory = self.parentbuilder().directory().find(path=path)

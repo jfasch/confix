@@ -21,8 +21,9 @@ from libconfix.core.hierarchy.confix2_dir_contributor import Confix2_dir_Contrib
 from libconfix.plugins.c.explicit_iface import ExplicitInterfaceProxy
 
 class ExplicitInterface_Confix2_dir(Confix2_dir_Contributor):
-    def get_iface_proxies(self):
-        return [ExplicitInterfaceProxy(object=self.parentbuilder())]
+    # jjj
+##     def get_iface_proxies(self):
+##         return [ExplicitInterfaceProxy(object=self.parentbuilder())]
     def locally_unique_id(self):
         return str(self.__class__)
     pass

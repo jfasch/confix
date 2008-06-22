@@ -64,8 +64,9 @@ class _MakeInterface_Confix2_dir(Confix2_dir_Contributor):
         Confix2_dir_Contributor.__init__(self)
         self.__caller = caller
         pass
-    def get_iface_proxies(self):
-        return [self.MakeCallerInterfaceProxy(object=self.__caller)]
+    # jjj
+##     def get_iface_proxies(self):
+##         return [self.MakeCallerInterfaceProxy(object=self.__caller)]
     def locally_unique_id(self):
         return str(self.__class__)
     pass

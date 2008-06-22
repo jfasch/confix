@@ -15,7 +15,6 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 # USA
 
-from eval_order import IfaceEvaluationOrderSuite
 from dirsetup import BasicDirectorySetupSuite
 from explicit_iface import ExplicitInterfaceInMemorySuite
 from ignored_entries import IgnoredEntriesSuite
@@ -27,7 +26,6 @@ import unittest
 class HierarchyInMemorySuite(unittest.TestSuite):
     def __init__(self):
         unittest.TestSuite.__init__(self)
-        self.addTest(IfaceEvaluationOrderSuite())
         self.addTest(BasicDirectorySetupSuite())
         self.addTest(ExplicitInterfaceInMemorySuite())
         self.addTest(IgnoredEntriesSuite())

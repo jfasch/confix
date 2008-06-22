@@ -16,8 +16,6 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 # USA
 
-from confix2_dir_contributor import Confix2_dir_Contributor
-
 from libconfix.core.iface.executor import InterfaceExecutor
 from libconfix.core.iface.proxy import InterfaceProxy
 from libconfix.core.machinery.filebuilder import FileBuilder
@@ -41,8 +39,17 @@ class Confix2_dir(FileBuilder):
         self.__executed = True
 
         ifaces = []
+        # Builder.iface_pieces() is the interface that every builder
+        # has, such as PROVIDE() and friends. The builders of the C
+        # plugin make use of it when they parse their source files
+        # (you may annotate C code with Confix instructions). A
+        # directory has no such "content", but we expose its interface
+        # in the directory's own Confix2.dir file.
         ifaces.extend(self.parentbuilder().iface_pieces())
-        ifaces.extend(self.package().setup().interfaces())
+
+        # DirectoryBuilder.interface() consists of the various
+        # interfaces that the setup phase put there, for our usage.
+        ifaces.extend(self.parentbuilder().interfaces())
 
         try:
             InterfaceExecutor(iface_pieces=ifaces).execute_file(file=self.file())

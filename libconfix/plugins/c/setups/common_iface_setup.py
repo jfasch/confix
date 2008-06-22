@@ -24,10 +24,11 @@ from libconfix.plugins.c.common_iface import \
      TESTS_ENVIRONMENT
 
 class CommonInterface_Confix2_dir(Confix2_dir_Contributor):
-    def get_iface_proxies(self):
-        return [REQUIRE_H(object=self),
-                PROVIDE_H(object=self),
-                TESTS_ENVIRONMENT(object=self.parentbuilder())]
+    # jjj
+##     def get_iface_proxies(self):
+##         return [REQUIRE_H(object=self),
+##                 PROVIDE_H(object=self),
+##                 TESTS_ENVIRONMENT(object=self.parentbuilder())]
     def locally_unique_id(self):
         return str(self.__class__)
     pass

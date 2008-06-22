@@ -75,8 +75,9 @@ class ExplicitInstaller_Confix2_dir(Confix2_dir_Contributor):
             self.object().add_builder(ExplicitInstaller(installdir=the_dir))
             pass
         pass
-    def get_iface_proxies(self):
-        return [self.INSTALLDIR_H(dirbuilder=self.parentbuilder())]
+    # jjj
+##     def get_iface_proxies(self):
+##         return [self.INSTALLDIR_H(dirbuilder=self.parentbuilder())]
     def locally_unique_id(self):
         return str(self.__class__)
     pass

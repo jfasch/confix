@@ -39,8 +39,9 @@ class Relocator_Confix2_dir(Confix2_dir_Contributor):
             pass
         pass
 
-    def get_iface_proxies(self):
-        return [self.RelocatorInterfaceProxy(object=self.parentbuilder())]
+# jjj
+##     def get_iface_proxies(self):
+##         return [self.RelocatorInterfaceProxy(object=self.parentbuilder())]
 
     def locally_unique_id(self):
         return str(self.__class__)

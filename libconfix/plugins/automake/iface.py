@@ -31,8 +31,9 @@ class AutomakeInterfaceSetup(Setup):
     pass
 
 class AutomakeInterface_Confix2_dir(Confix2_dir_Contributor):
-    def get_iface_proxies(self):
-        return [AutomakeInterfaceProxy(object=self)]
+    # jjj
+##     def get_iface_proxies(self):
+##         return [AutomakeInterfaceProxy(object=self)]
     def locally_unique_id(self):
         return str(self.__class__)
     def initialize(self, package):

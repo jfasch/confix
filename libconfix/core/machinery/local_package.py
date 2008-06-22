@@ -16,7 +16,7 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 # USA
 
-from setup import Setup
+from setup import CompositeSetup
 from package import Package
 from local_node import LocalNode
 from installed_package import InstalledPackage
@@ -64,7 +64,7 @@ class LocalPackage(Package):
         self.__version = None
         self.__rootdirectory = rootdirectory
 
-        self.__setups = setups
+        self.__setup = CompositeSetup(setups=setups)
 
         self.__current_digraph = None
 
@@ -77,7 +77,7 @@ class LocalPackage(Package):
         pkgdeffile = self.__rootdirectory.find([const.CONFIX2_PKG])
         if pkgdeffile is None:
             raise Error(const.CONFIX2_PKG+' missing in '+os.sep.join(self.__rootdirectory.abspath()))
-        InterfaceExecutor(iface_pieces=[PackageInterfaceProxy(object=self)]).execute_file(pkgdeffile)
+        InterfaceExecutor(iface_pieces=[PackageInterfaceProxy(package=self)]).execute_file(pkgdeffile)
         if self.__name is None:
             raise Error(const.CONFIX2_PKG+': package name has not been set')
         if self.__version is None:
@@ -125,34 +125,11 @@ class LocalPackage(Package):
     def setup(self):
         return self.__setup
     def add_setup(self, s):
-        self.__setups.add_setup(s)
+        self.__setup.add_setup(s)
         pass
     def set_setups(self, ss):
-        self.__setups = CompositeSetup(ss)
+        self.__setup = CompositeSetup(ss)
         pass
-
-# jjj
-##     def get_interface(self):
-##         """
-##         Called by DirectoryBuilder objects that are just being
-##         initialized, to get their Confix2.dir interface.
-##         """
-##         ret = []
-##         for s in self.__setups:
-##             ret.extend(s.interfaces())
-##             pass
-##         return ret
-
-##     def get_initial_builders(self):
-##         """
-##         Called by DirectoryBuilder objects that are just being
-##         initialized, to get initial builders and interface proxies.
-##         """
-##         ret = []
-##         for s in self.__setups:
-##             ret.extend(s.initial_builders())
-##             pass
-##         return ret
 
     def configure_ac(self):
         return self.__configure_ac
@@ -451,8 +428,10 @@ class LocalPackage(Package):
     pass
 
 class PackageInterfaceProxy(InterfaceProxy):
-    def __init__(self, object):
-        InterfaceProxy.__init__(self, object=object)
+    def __init__(self, package):
+        InterfaceProxy.__init__(self)
+
+        self.__package = package
 
         self.add_global('PACKAGE_NAME', getattr(self, 'PACKAGE_NAME'))
         self.add_global('PACKAGE_VERSION', getattr(self, 'PACKAGE_VERSION'))
@@ -464,19 +443,19 @@ class PackageInterfaceProxy(InterfaceProxy):
     def PACKAGE_NAME(self, name):
         if type(name) is not types.StringType:
             raise Error('PACKAGE_NAME(): argument must be a string')
-        self.object().set_name(name)
+        self.__package.set_name(name)
         pass
 
     def PACKAGE_VERSION(self, version):
         if type(version) is not types.StringType:
             raise Error('PACKAGE_VERSION(): argument must be a string')
-        self.object().set_version(version)
+        self.__package.set_version(version)
         pass
 
     def ADD_SETUP(self, setup):
         if not isinstance(setup, Setup):
             raise Error('ADD_SETUP(): argument must be a Setup object')
-        self.object().add_setup(setup)
+        self.__package.add_setup(setup)
         pass
 
     def SETUPS(self, setups):
@@ -486,7 +465,7 @@ class PackageInterfaceProxy(InterfaceProxy):
             if not isinstance(s, Setup):
                 raise Error('SETUPS(): all list members must be Setup objects')
             pass
-        self.object().set_setups(setups)
+        self.__package.set_setups(setups)
         pass
         
     pass

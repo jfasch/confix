@@ -269,8 +269,9 @@ class EXTERNAL_LIBRARY(InterfaceProxy):
 class EXTERNAL_LIBRARY_Contributor(Confix2_dir_Contributor):
     def locally_unique_id(self):
         return str(self.__class__)
-    def get_iface_proxies(self):
-        return [EXTERNAL_LIBRARY(object=self.parentbuilder())]
+    # jjj
+##     def get_iface_proxies(self):
+##         return [EXTERNAL_LIBRARY(object=self.parentbuilder())]
     pass
 
 class ExternalLibrarySetup(Setup):

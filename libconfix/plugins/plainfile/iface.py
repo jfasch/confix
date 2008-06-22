@@ -30,8 +30,9 @@ from libconfix.core.filesys.vfs_file import VFSFile
 from builder import PlainFileBuilder
 
 class ADD_PLAINFILE_Confix2_dir(Confix2_dir_Contributor):
-    def get_iface_proxies(self):
-        return [self.ADD_PLAINFILE(object=self.parentbuilder())]
+    # jjj
+##     def get_iface_proxies(self):
+##         return [self.ADD_PLAINFILE(object=self.parentbuilder())]
     def locally_unique_id(self):
         return str(self.__class__)
 

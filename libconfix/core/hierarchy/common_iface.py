@@ -24,8 +24,10 @@ from libconfix.core.filesys import scan
 import types
 
 class DirectoryBuilderInterfaceProxy(InterfaceProxy):
-    def __init__(self):
+    def __init__(self, dirbuilder):
         InterfaceProxy.__init__(self)
+
+        self.__dirbuilder = dirbuilder
 
         self.add_global('CURRENT_BUILDER', getattr(self, 'CURRENT_BUILDER'))
         self.add_global('CURRENT_DIRECTORY', getattr(self, 'CURRENT_DIRECTORY'))
@@ -39,39 +41,39 @@ class DirectoryBuilderInterfaceProxy(InterfaceProxy):
         pass
 
     def CURRENT_DIRECTORY(self):
-        return self.confix2_dir().parentbuilder().directory()
+        return self.__dirbuilder.directory()
     def CURRENT_BUILDER(self):
-        return self.confix2_dir().parentbuilder()
+        return self.__dirbuilder
     def ADD_DIRECTORY(self, name):
-        return self.confix2_dir().parentbuilder().directory().add(
+        return self.__dirbuilder.directory().add(
             name=name,
             entry=Directory())
     def FIND_ENTRY(self, name):
-        for ename, entry in self.confix2_dir().parentbuilder().directory().entries():
+        for ename, entry in self.__dirbuilder.directory().entries():
             if ename == name:
                 return entry
             pass
         return None
     def GET_ENTRIES(self):
-        return self.confix2_dir().parentbuilder().directory().entries()
+        return self.__dirbuilder.directory().entries()
     def RESCAN_CURRENT_DIRECTORY(self):
-        scan.rescan_dir(self.confix2_dir().parentbuilder().directory())
+        scan.rescan_dir(self.__dirbuilder.directory())
         pass
 
     def ADD_BUILDER(self, builder):
         if not isinstance(builder, Builder):
             raise Error('ADD_BUILDER(): parameter must be a Builder')
-        self.confix2_dir().parentbuilder().add_builder(builder)
+        self.__dirbuilder.add_builder(builder)
         pass
 
     def SET_FILE_PROPERTIES(self, filename, properties):
         if type(properties) is not types.DictionaryType:
             raise Error('SET_FILE_PROPERTIES(): properties parameter must be a dictionary')
-        file = self.confix2_dir().parentbuilder().directory().find([filename])
+        file = self.__dirbuilder.directory().find([filename])
         if file is None:
             raise Error('SET_FILE_PROPERTIES(): '
                         'file "'+filename+'" not found in directory "'+\
-                        os.sep.join(self.confix2_dir().parentbuilder().directory().relpath())+'"')
+                        os.sep.join(self.__dirbuilder.directory().relpath())+'"')
         errors = []
         for name, value in properties.iteritems():
             try:
@@ -85,11 +87,11 @@ class DirectoryBuilderInterfaceProxy(InterfaceProxy):
         pass
 
     def SET_FILE_PROPERTY(self, filename, name, value):
-        file = self.confix2_dir().parentbuilder().directory().find([filename])
+        file = self.__dirbuilder.directory().find([filename])
         if file is None:
             raise Error('SET_FILE_PROPERTY(): '
                         'file "'+filename+'" not found in directory "'+\
-                        os.sep.join(self.confix2_dir().parentbuilder().directory().relpath())+'"')
+                        os.sep.join(self.__dirbuilder.directory().relpath())+'"')
         try:
             file.set_property(name, value)
         except Error, e:

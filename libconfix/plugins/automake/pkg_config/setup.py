@@ -1,4 +1,4 @@
-# Copyright (C) 2007 Joerg Faschingbauer
+# Copyright (C) 2007-2008 Joerg Faschingbauer
 
 # This library is free software; you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as
@@ -38,8 +38,9 @@ class PkgConfigInterface_Confix2_dir(Confix2_dir_Contributor):
             return str(self.__class__.__name__)
         pass
 
-    def get_iface_proxies(self):
-        return [self.PKG_CONFIG_LIBRARY(object=self)]
+# jjj
+##     def get_iface_proxies(self):
+##         return [self.PKG_CONFIG_LIBRARY(object=self)]
     def add_pkgconfig_library(self, packagename):
         self.parentbuilder().add_builder(PkgConfigLibraryAdapter(packagename=packagename))
         pass

@@ -1,10 +1,6 @@
 * STACK
 
-  * libconfix/core/machinery/creator.py: how do I make the interface
-    external to the creator?
-
-    A: Setup must make a CreatorSlave an initial_builder, and direct
-    the one of the interfaces() towards him.
+  * libconfix/core/hierarchy/explicit_iface.py -> jjj
 
   * Confix2.dir builder asking package for interfaces
 

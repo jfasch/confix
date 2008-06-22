@@ -202,8 +202,9 @@ class CClusterer_Confix2_dir(Confix2_dir_Contributor):
         Confix2_dir_Contributor.__init__(self)
         self.__clusterer = clusterer
         pass
-    def get_iface_proxies(self):
-        return [self.CClustererInterfaceProxy(object=self.__clusterer)]
+# jjj    
+##     def get_iface_proxies(self):
+##         return [self.CClustererInterfaceProxy(object=self.__clusterer)]
     def locally_unique_id(self):
         return str(self.__class__)
     pass

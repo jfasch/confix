@@ -50,8 +50,9 @@ class ScriptInterface_Confix2_dir(Confix2_dir_Contributor):
     def add_script(self, file):
         self.parentbuilder().add_builder(ScriptBuilder(file=file))
         pass
-    def get_iface_proxies(self):
-        return [self.ADD_SCRIPT(object=self)]
+# jjj
+##     def get_iface_proxies(self):
+##         return [self.ADD_SCRIPT(object=self)]
     def locally_unique_id(self):
         return str(self.__class__)
     pass

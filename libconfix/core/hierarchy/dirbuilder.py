@@ -65,6 +65,11 @@ class DirectoryBuilder(EntryBuilder, LocalNode):
         # themselves.
         self.__builders = {}
 
+        # a list of interface proxy objects that are added initially
+        # by the different setup objects. we only keep them for future
+        # use by any Confix2.dir objects.
+        self.__interfaces = []
+
         # the (contents of the) Makefile.am we will be writing on
         # output()
         self.__makefile_am = Makefile_am()
@@ -88,14 +93,17 @@ class DirectoryBuilder(EntryBuilder, LocalNode):
         Recursively initialize self and the children.
         """
         assert package, self
-        # first of all, ask the package for my initial builders. I
-        # have to do this before initializing anything - else, if I
-        # initialize myself too early, then adding a builder will
-        # trigger initializing it, and I will end up trying to
-        # initialize it twice (which is letal)
-        for b in package.setup().initial_builders():
-            self.add_builder(b)
-            pass
+        # first of all, ask the package to configure me. I have to do
+        # this before initializing anything - else, if I initialize
+        # myself too early, then adding a builder will trigger
+        # initializing it, and I will end up trying to initialize it
+        # twice (which is letal)
+        package.setup().setup(dirbuilder=self)
+
+# jjj
+##         for b in package.setup().initial_builders():
+##             self.add_builder(b)
+##             pass
         
         # now's the time
         super(DirectoryBuilder, self).initialize(package=package)
@@ -191,7 +199,13 @@ class DirectoryBuilder(EntryBuilder, LocalNode):
                 pass
             pass
         return None
-        
+
+    def interfaces(self):
+        return self.__interfaces
+
+    def add_interface(self, interface):
+        self.__interfaces.append(interface)
+        pass
 
     def output(self):
         EntryBuilder.output(self)

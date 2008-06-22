@@ -1,5 +1,5 @@
 # Copyright (C) 2002-2006 Salomon Automation
-# Copyright (C) 2006-2007 Joerg Faschingbauer
+# Copyright (C) 2006-2008 Joerg Faschingbauer
 
 # This library is free software; you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as
@@ -17,22 +17,9 @@
 # USA
 
 class Setup(object):
-    def __init__(self):
+    def setup(self, dirbuilder):
+        assert False, 'abstract: '+str(self)
         pass
-    def interfaces(self):
-        """
-        Returns a list of InterfaceProxy objects that define the
-        methods available in Confix2.dir files.
-        """
-        assert False, 'abstract'
-        return []
-    def initial_builders(self):
-        """
-        Returns a list of builders that initially populate a directory
-        builder.
-        """
-        assert False, 'abstract'
-        return []
     pass
 
 class CompositeSetup(Setup):
@@ -40,16 +27,12 @@ class CompositeSetup(Setup):
         Setup.__init__(self)
         self.__setups = setups
         pass
-
     def add_setup(self, s):
         self.__setups.append(s)
         pass
-
-    def initial_builders(self):
-        ret = super(CompositeSetup, self).initial_builders()
+    def setup(self, dirbuilder):
         for s in self.__setups:
-            ret.extend(s.initial_builders())
+            s.setup(dirbuilder)
             pass
-        return ret
-
+        pass
     pass
