@@ -18,7 +18,6 @@
 from builder import Builder
 
 from libconfix.core.iface.proxy import InterfaceProxy
-from libconfix.core.hierarchy.confix2_dir_contributor import Confix2_dir_Contributor
 
 import types
 

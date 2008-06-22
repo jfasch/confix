@@ -38,12 +38,16 @@ class Setup(object):
 class CompositeSetup(Setup):
     def __init__(self, setups):
         Setup.__init__(self)
-        self.setups_ = setups
+        self.__setups = setups
+        pass
+
+    def add_setup(self, s):
+        self.__setups.append(s)
         pass
 
     def initial_builders(self):
         ret = super(CompositeSetup, self).initial_builders()
-        for s in self.setups_:
+        for s in self.__setups:
             ret.extend(s.initial_builders())
             pass
         return ret

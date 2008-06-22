@@ -122,36 +122,37 @@ class LocalPackage(Package):
     def rootdirectory(self):
         return self.__rootdirectory
 
-    def setups(self):
-        return self.__setups
+    def setup(self):
+        return self.__setup
     def add_setup(self, s):
-        self.__setups.append(s)
+        self.__setups.add_setup(s)
         pass
     def set_setups(self, ss):
-        self.__setups = ss[:]
+        self.__setups = CompositeSetup(ss)
         pass
 
-    def get_interface(self):
-        """
-        Called by DirectoryBuilder objects that are just being
-        initialized, to get their Confix2.dir interface.
-        """
-        ret = []
-        for s in self.__setups:
-            ret.extend(s.interfaces())
-            pass
-        return ret
+# jjj
+##     def get_interface(self):
+##         """
+##         Called by DirectoryBuilder objects that are just being
+##         initialized, to get their Confix2.dir interface.
+##         """
+##         ret = []
+##         for s in self.__setups:
+##             ret.extend(s.interfaces())
+##             pass
+##         return ret
 
-    def get_initial_builders(self):
-        """
-        Called by DirectoryBuilder objects that are just being
-        initialized, to get initial builders and interface proxies.
-        """
-        ret = []
-        for s in self.__setups:
-            ret.extend(s.initial_builders())
-            pass
-        return ret
+##     def get_initial_builders(self):
+##         """
+##         Called by DirectoryBuilder objects that are just being
+##         initialized, to get initial builders and interface proxies.
+##         """
+##         ret = []
+##         for s in self.__setups:
+##             ret.extend(s.initial_builders())
+##             pass
+##         return ret
 
     def configure_ac(self):
         return self.__configure_ac

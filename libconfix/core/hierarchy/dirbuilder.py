@@ -93,7 +93,7 @@ class DirectoryBuilder(EntryBuilder, LocalNode):
         # initialize myself too early, then adding a builder will
         # trigger initializing it, and I will end up trying to
         # initialize it twice (which is letal)
-        for b in package.get_initial_builders():
+        for b in package.setup().initial_builders():
             self.add_builder(b)
             pass
         

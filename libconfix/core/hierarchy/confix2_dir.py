@@ -1,5 +1,5 @@
 # Copyright (C) 2002-2006 Salomon Automation
-# Copyright (C) 2006-2007 Joerg Faschingbauer
+# Copyright (C) 2006-2008 Joerg Faschingbauer
 
 # This library is free software; you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as
@@ -39,12 +39,11 @@ class Confix2_dir(FileBuilder):
         if self.__executed:
             return
         self.__executed = True
-        ifaces = self.parentbuilder().iface_pieces()[:]
-        for b in self.parentbuilder().builders():
-            if not isinstance(b, Confix2_dir_Contributor):
-                continue
-            ifaces.extend(b.get_iface_proxies())
-            pass
+
+        ifaces = []
+        ifaces.extend(self.parentbuilder().iface_pieces())
+        ifaces.extend(self.package().setup().interfaces())
+
         try:
             InterfaceExecutor(iface_pieces=ifaces).execute_file(file=self.file())
         except Error, e:

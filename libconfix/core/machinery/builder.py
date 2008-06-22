@@ -227,29 +227,10 @@ class BuilderInterfaceProxy(InterfaceProxy):
         self.add_global('REQUIRE', getattr(self, 'REQUIRE'))
         self.add_global('PROVIDE_SYMBOL', getattr(self, 'PROVIDE_SYMBOL'))
         self.add_global('REQUIRE_SYMBOL', getattr(self, 'REQUIRE_SYMBOL'))
-# jjj
-##         self.add_global('PROVIDE_CALLABLE', getattr(self, 'PROVIDE_CALLABLE'))
-##         self.add_global('REQUIRE_CALLABLE', getattr(self, 'REQUIRE_CALLABLE'))
 
         # BUILDINFORMATION
         self.add_global('BUILDINFORMATION', getattr(self, 'BUILDINFORMATION'))
 
-# jjj
-##         # CONFIGURE_AC, ACINCLUDE_M4, and associated flag values
-##         self.add_global('LOCAL', BuilderInterfaceProxy.AC_BUILDINFO_TRANSPORT_LOCAL)
-##         self.add_global('PROPAGATE', BuilderInterfaceProxy.AC_BUILDINFO_TRANSPORT_PROPAGATE)
-##         self.add_global('AC_BOILERPLATE', Configure_ac.BOILERPLATE)
-##         self.add_global('AC_OPTIONS', Configure_ac.OPTIONS)
-##         self.add_global('AC_PROGRAMS', Configure_ac.PROGRAMS)
-##         self.add_global('AC_LIBRARIES', Configure_ac.LIBRARIES)
-##         self.add_global('AC_HEADERS', Configure_ac.HEADERS)
-##         self.add_global('AC_TYPEDEFS_AND_STRUCTURES', Configure_ac.TYPEDEFS_AND_STRUCTURES)
-##         self.add_global('AC_FUNCTIONS', Configure_ac.FUNCTIONS)
-##         self.add_global('AC_OUTPUT', Configure_ac.OUTPUT)
-
-##         self.add_global('CONFIGURE_AC', getattr(self, 'CONFIGURE_AC'))
-##         self.add_global('ACINCLUDE_M4', getattr(self, 'ACINCLUDE_M4'))        
-        
         pass
 
     def PARENTBUILDER(self):
