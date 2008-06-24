@@ -16,10 +16,8 @@
 # USA
 
 from dirbuilder import DirectoryBuilder
-
 from libconfix.core.iface.proxy import InterfaceProxy
 from libconfix.core.utils.error import Error
-from libconfix.core.utils import const
 
 class ExplicitDirectoryBuilderInterfaceProxy(InterfaceProxy):
     def __init__(self, dirbuilder):
@@ -35,65 +33,7 @@ class ExplicitDirectoryBuilderInterfaceProxy(InterfaceProxy):
         if directory is None:
             raise Error('DIRECTORY(): could not find directory '+str(path))
 
-
-        jjj hier weiter
         dirbuilder = DirectoryBuilder(directory=directory)
-
-        self.__retained_builders.append(dirbuilder)
-
-        # the machinery didn't see the new builder yet, so we have to
-        # force another round.
-        self.force_enlarge()
+        self.__dirbuilder.add_builder(dirbuilder)
         return dirbuilder
-    pass
-    
-
-class Confix2_dir_ExplicitInterface(Confix2_dir_Contributor):
-
-    class DIRECTORY(InterfaceProxy):
-        def __init__(self, object):
-            InterfaceProxy.__init__(self, object)
-            self.add_global('DIRECTORY', getattr(self, 'DIRECTORY'))
-            pass
-        def DIRECTORY(self, path):
-            if type(path) not in (list, tuple):
-                raise Error('DIRECTORY('+str(path)+'): path argument must be list or tuple')
-            self.object().add_directory(path)
-            pass
-        pass
-
-    def __init__(self):
-        Confix2_dir_Contributor.__init__(self)
-        
-        # builders that are waiting to be added to our directory in
-        # enlarge()
-        self.__retained_builders = []
-        pass
-
-    def add_directory(self, path):
-        directory = self.parentbuilder().directory().find(path=path)
-        if directory is None:
-            raise Error('DIRECTORY(): could not find directory '+str(path))
-        dirbuilder = DirectoryBuilder(directory=directory)
-
-        self.__retained_builders.append(dirbuilder)
-
-        # the machinery didn't see the new builder yet, so we have to
-        # force another round.
-        self.force_enlarge()
-        return dirbuilder
-
-    def locally_unique_id(self):
-        # I am supposed to the only one of my kind among all the
-        # builders in a directory, so my class suffices as a unique
-        # id.
-        return str(self.__class__)
-
-    def enlarge(self):
-        super(Confix2_dir_Contributor, self).enlarge()
-        for b in self.__retained_builders:
-            self.parentbuilder().add_builder(b)
-            pass
-        self.__retained_builders = []
-        pass        
     pass

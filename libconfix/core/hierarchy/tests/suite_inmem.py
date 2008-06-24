@@ -27,10 +27,11 @@ class HierarchyInMemorySuite(unittest.TestSuite):
     def __init__(self):
         unittest.TestSuite.__init__(self)
         self.addTest(BasicDirectorySetupSuite())
-        self.addTest(ExplicitInterfaceInMemorySuite())
-        self.addTest(IgnoredEntriesSuite())
-        self.addTest(PseudoHandwrittenSuite())
-        self.addTest(CommonDirectoryInterfaceSuite())
+        print 'HierarchyInMemorySuite xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
+##         self.addTest(ExplicitInterfaceInMemorySuite())
+##         self.addTest(IgnoredEntriesSuite())
+##         self.addTest(PseudoHandwrittenSuite())
+##         self.addTest(CommonDirectoryInterfaceSuite())
         pass
     pass
 

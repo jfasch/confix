@@ -18,7 +18,7 @@
 
 from libconfix.core.machinery.setup import CompositeSetup
 from libconfix.core.machinery.core_setup import CoreSetup
-from libconfix.core.hierarchy.default_setup import DefaultDirectorySetup
+from libconfix.core.hierarchy.implicit_setup import ImplicitDirectorySetup
 from libconfix.plugins.c.setups.default_setup import DefaultCSetup
 from libconfix.plugins.plainfile.setup import PlainFileInterfaceSetup
 from libconfix.plugins.script.setup import ScriptSetup

@@ -16,7 +16,10 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 # USA
 
-import unittest
+from package import make_package
+
+from libconfix.plugins.plainfile.builder import PlainFileBuilder
+from libconfix.plugins.plainfile.setup import PlainFileInterfaceSetup
 
 from libconfix.core.filesys.file import File
 from libconfix.core.filesys.filesys import FileSystem
@@ -24,10 +27,7 @@ from libconfix.core.machinery.local_package import LocalPackage
 from libconfix.core.utils import const
 from libconfix.frontends.confix2.confix_setup import ConfixSetup
 
-from libconfix.plugins.plainfile.builder import PlainFileBuilder
-from libconfix.plugins.plainfile.setup import PlainFileInterfaceSetup
-
-from package import make_package
+import unittest
 
 class PlainFileSuiteInMemory(unittest.TestSuite):
     def __init__(self):

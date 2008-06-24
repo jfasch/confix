@@ -27,7 +27,6 @@ import helper
 from libconfix.core.iface.proxy import InterfaceProxy
 from libconfix.core.machinery.builder import Builder
 from libconfix.core.machinery.setup import Setup
-from libconfix.core.hierarchy.confix2_dir_contributor import Confix2_dir_Contributor
 
 import os
 import types
@@ -171,42 +170,31 @@ class CClusterer(Builder):
 
     pass
 
-class CClusterer_Confix2_dir(Confix2_dir_Contributor):
-    class CClustererInterfaceProxy(InterfaceProxy):
-        def __init__(self, object):
-            InterfaceProxy.__init__(self, object=object)
-            self.add_global('LIBNAME', getattr(self, 'LIBNAME'))
-            self.add_global('LIBTOOL_LIBRARY_VERSION', getattr(self, 'LIBTOOL_LIBRARY_VERSION'))
-            pass
-        
-        def LIBNAME(self, name):
-            if type(name) is not types.StringType:
-                raise Error("LIBNAME(): 'name' argument must be a string")
-            self.object().set_libname(name)
-            pass
-        
-        def LIBTOOL_LIBRARY_VERSION(self, version):
-            if type(version) not in [types.ListType, types.TupleType]:
-                raise Error("LIBTOOL_LIBRARY_VERSION(): 'version' argument must be a tuple")
-            if len(version) != 3:
-                raise Error("LIBTOOL_LIBRARY_VERSION(): 'version' argument must be a tuple of 3 integers")
-            for i in range(len(version)):
-                if type(version[i]) is not types.IntType:
-                    raise Error("LIBTOOL_LIBRARY_VERSION(): part "+str(i)+" of version is not an integer")
-                pass
-            self.object().set_libtool_version_info(version)
-            pass
+class CClustererInterfaceProxy(InterfaceProxy):
+    def __init__(self, clusterer):
+        InterfaceProxy.__init__(self)
+        self.__clusterer = clusterer
+        self.add_global('LIBNAME', getattr(self, 'LIBNAME'))
+        self.add_global('LIBTOOL_LIBRARY_VERSION', getattr(self, 'LIBTOOL_LIBRARY_VERSION'))
         pass
 
-    def __init__(self, clusterer):
-        Confix2_dir_Contributor.__init__(self)
-        self.__clusterer = clusterer
+    def LIBNAME(self, name):
+        if type(name) is not types.StringType:
+            raise Error("LIBNAME(): 'name' argument must be a string")
+        self.__clusterer.set_libname(name)
         pass
-# jjj    
-##     def get_iface_proxies(self):
-##         return [self.CClustererInterfaceProxy(object=self.__clusterer)]
-    def locally_unique_id(self):
-        return str(self.__class__)
+
+    def LIBTOOL_LIBRARY_VERSION(self, version):
+        if type(version) not in [types.ListType, types.TupleType]:
+            raise Error("LIBTOOL_LIBRARY_VERSION(): 'version' argument must be a tuple")
+        if len(version) != 3:
+            raise Error("LIBTOOL_LIBRARY_VERSION(): 'version' argument must be a tuple of 3 integers")
+        for i in range(len(version)):
+            if type(version[i]) is not types.IntType:
+                raise Error("LIBTOOL_LIBRARY_VERSION(): part "+str(i)+" of version is not an integer")
+            pass
+        self.__clusterer.set_libtool_version_info(version)
+        pass
     pass
 
 class CClustererSetup(Setup):
@@ -218,12 +206,10 @@ class CClustererSetup(Setup):
             self.__namefinder = LongNameFinder()
             pass
         pass
-        
-    def initial_builders(self):
-        ret = super(CClustererSetup, self).initial_builders()
+
+    def setup(slef, dirbuilder):
         clusterer = CClusterer(namefinder=self.__namefinder)
-        ret.extend([
-            clusterer,
-            CClusterer_Confix2_dir(clusterer=clusterer)])
-        return ret
+        dirbuilder.add_builder(clusterer)
+        dirbuilder.add_interface(CClustererInterfaceProxy(clusterer=clusterer))
+        pass
     pass

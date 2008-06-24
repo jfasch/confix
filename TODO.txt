@@ -1,10 +1,10 @@
 * STACK
 
-  * libconfix/core/hierarchy/explicit_iface.py -> jjj
+  * libconfix/plugins/plainfile/tests/suite_inmem.py
+
+  * libconfix/core/hierarchy/tests/suite_inmem.py
 
   * Confix2.dir builder asking package for interfaces
-
-  * libconfix/core/machinery/tests/relate.py
 
   * Confix2.dir interface
 
@@ -73,6 +73,8 @@
       Rename them to something like ...Automake... and move it to
       plugins.automake.c
 
+    * TESTS_ENVIRONMENT? Move that to automake.
+
     * libconfix/core/machinery/builder.py
       * BuildInfo_Configure_in
       * BuildInfo_ACInclude_m4      
@@ -104,6 +106,9 @@
     * differentiate between base, explicit, automatic.
     * possibly collapse related files into one, bigger file.
     * move automake tests to the automake plugin.
+    * is there still a need for the setups directory?
+    * rename DefaultCSetup to ImplicitCSetup (just like we did with
+      the Directory setup)
 
   * move core.hierarchy.* to core.machinery. possibly collapse related
     files into one, bigger file.
