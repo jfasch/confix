@@ -34,7 +34,7 @@ class ConfixSetup(CompositeSetup):
         CompositeSetup.__init__(
             self,
             [CoreSetup(),
-             DefaultDirectorySetup(),
+             ImplicitDirectorySetup(),
              DefaultCSetup(short_libnames=short_libnames),
              ScriptSetup(),
              IDLSetup(),

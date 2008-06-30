@@ -30,6 +30,19 @@ class CompositeSetup(Setup):
     def add_setup(self, s):
         self.__setups.append(s)
         pass
+    def __iter__(self):
+        for s in self.__setups:
+            if isinstance(s, CompositeSetup):
+                for s_next in s:
+                    yield s_next
+                    pass
+                pass
+            else:
+                yield s
+                pass
+            pass
+        pass
+                
     def setup(self, dirbuilder):
         for s in self.__setups:
             s.setup(dirbuilder)

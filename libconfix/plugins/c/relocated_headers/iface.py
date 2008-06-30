@@ -25,7 +25,7 @@ class RelocatorInterfaceProxy(InterfaceProxy):
     def __init__(self, dirbuilder):
         assert isinstance(dirbuilder, DirectoryBuilder)
         InterfaceProxy.__init__(self)
-        slef.__dirbuilder = dirbuilder
+        self.__dirbuilder = dirbuilder
         self.add_global('RELOCATE_HEADER', getattr(self, 'RELOCATE_HEADER'))
         pass
     def RELOCATE_HEADER(self, filename, directory):

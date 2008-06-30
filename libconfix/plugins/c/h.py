@@ -172,7 +172,7 @@ class HeaderBuilder(CBaseBuilder):
         return (self.LOCAL_INSTALL, visible_path)
 
     def iface_pieces(self):
-        return super(HeaderBuilder, self).iface_pieces() + [HeaderBuilderInterfaceProxy(object=self)]
+        return super(HeaderBuilder, self).iface_pieces() + [HeaderBuilderInterfaceProxy(builder=self)]
 
     def disable_dependency_info(self):
         """
@@ -244,12 +244,13 @@ class HeaderBuilder(CBaseBuilder):
     pass
 
 class HeaderBuilderInterfaceProxy(InterfaceProxy):
-    def __init__(self, object):
-        InterfaceProxy.__init__(self, object=object)
+    def __init__(self, builder):
+        InterfaceProxy.__init__(self)
+        self.__builder = builder
         self.add_global('INSTALLPATH', getattr(self, 'INSTALLPATH'))
         pass
     def INSTALLPATH(self, path):
-        self.object().set_iface_install_path(helper.make_path(path))
+        self.__builder.set_iface_install_path(helper.make_path(path))
         pass
     pass
 

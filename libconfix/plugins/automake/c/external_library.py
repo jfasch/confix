@@ -20,7 +20,6 @@ from libconfix.core.machinery.buildinfo import BuildInformation
 from libconfix.core.machinery.buildinfoset import BuildInformationSet
 from libconfix.core.machinery.setup import Setup
 from libconfix.core.iface.proxy import InterfaceProxy
-from libconfix.core.hierarchy.confix2_dir_contributor import Confix2_dir_Contributor
 from libconfix.core.repo.marshalling import \
      update_marshalling_data, \
      MarshalledVersionUnknownError     
@@ -230,12 +229,11 @@ class ExternalLibraryBuilder(Builder):
     pass
 
 class EXTERNAL_LIBRARY(InterfaceProxy):
-    def __init__(self,  object):
-        InterfaceProxy.__init__(self, object)
+    def __init__(self, dirbuilder):
+        InterfaceProxy.__init__(self)
+        self.__dirbuilder = dirbuilder
         self.add_global('EXTERNAL_LIBRARY', getattr(self, 'EXTERNAL_LIBRARY'))
         pass
-    def locally_unique_id(self):
-        return str(self.__class__)
     def EXTERNAL_LIBRARY(self,
                          incpath=[],
                          cflags=[],
@@ -257,24 +255,17 @@ class EXTERNAL_LIBRARY(InterfaceProxy):
         if type(libs) is not types.ListType:
             raise Error("EXTERNAL_LIBRARY(): 'libs' argument must be a list")
                          
-        self.object().add_builder(ExternalLibraryBuilder(incpath=incpath,
-                                                         cflags=cflags,
-                                                         cxxflags=cxxflags,
-                                                         cmdlinemacros=cmdlinemacros,
-                                                         libpath=libpath,
-                                                         libs=libs))
+        self.__dirbuilder.add_builder(ExternalLibraryBuilder(incpath=incpath,
+                                                             cflags=cflags,
+                                                             cxxflags=cxxflags,
+                                                             cmdlinemacros=cmdlinemacros,
+                                                             libpath=libpath,
+                                                             libs=libs))
         pass
     pass
 
-class EXTERNAL_LIBRARY_Contributor(Confix2_dir_Contributor):
-    def locally_unique_id(self):
-        return str(self.__class__)
-    # jjj
-##     def get_iface_proxies(self):
-##         return [EXTERNAL_LIBRARY(object=self.parentbuilder())]
-    pass
-
 class ExternalLibrarySetup(Setup):
-    def initial_builders(self):
-        return [EXTERNAL_LIBRARY_Contributor()]
+    def setup(self, dirbuilder):
+        dirbuilder.add_interface(EXTERNAL_LIBRARY(dirbuilder=dirbuilder))
+        pass
     pass

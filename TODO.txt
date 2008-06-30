@@ -1,5 +1,13 @@
 * STACK
 
+  * libconfix/plugins/idl/tests/suite_inmem.py
+
+  * libconfix/plugins/automake/c/tests/external_library.py
+
+  * libconfix/plugins/c/tests/suite_inmem.py
+
+  * libconfix/plugins/script/tests/suite_inmem.py
+
   * libconfix/plugins/plainfile/tests/suite_inmem.py
 
   * libconfix/core/hierarchy/tests/suite_inmem.py

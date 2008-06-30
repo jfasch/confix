@@ -20,7 +20,7 @@ from libconfix.setups.explicit_setup import ExplicitSetup
 from libconfix.testutils.persistent import PersistentTestCase
 from libconfix.core.filesys.filesys import FileSystem
 from libconfix.core.filesys.file import File
-from libconfix.core.hierarchy.default_setup import DefaultDirectorySetup
+from libconfix.core.hierarchy.implicit_setup import ImplicitDirectorySetup
 from libconfix.core.machinery.local_package import LocalPackage
 from libconfix.core.utils import const
 

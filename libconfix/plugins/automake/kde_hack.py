@@ -27,10 +27,9 @@ from libconfix.core.utils import helper
 from libconfix.core.utils.error import Error
 
 class KDEHackSetup(Setup):
-    def initial_builders(self):
-        ret = super(KDEHackSetup, self).initial_builders()
-        ret.append(AutoconfAuxDirWatcher())
-        return ret
+    def setup(self, dirbuilder):
+        dirbuilder.add_builder(AutoconfAuxDirWatcher())
+        pass
     pass
 
 class AutoconfAuxDirWatcher(Builder):

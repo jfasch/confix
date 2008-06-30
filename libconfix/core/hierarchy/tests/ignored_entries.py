@@ -37,8 +37,9 @@ class IgnoredEntriesSuite(unittest.TestSuite):
     pass
 
 class IgnoreTestSetup(Setup):
-    def initial_builders(self):
-        return super(IgnoreTestSetup, self).initial_builders() + [IgnoreTestCreator()]
+    def setup(self, dirbuilder):
+        dirbuilder.add_builder(IgnoreTestCreator())
+        pass
     pass
 
 class IgnoreTestCreator(Creator):

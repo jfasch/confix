@@ -138,7 +138,7 @@ class CompiledCBuilder(CBaseBuilder):
         pass
 
     def iface_pieces(self):
-        return CBaseBuilder.iface_pieces(self) + [CompiledCBuilderInterfaceProxy(object=self)]
+        return CBaseBuilder.iface_pieces(self) + [CompiledCBuilderInterfaceProxy(builder=self)]
 
     def __init_buildinfo(self):
         # a list of directories in the local package that have to be
@@ -175,15 +175,17 @@ class CompiledCBuilder(CBaseBuilder):
                             '"'+existing_value+'"/"'+value+'"')
             return
         self.__cmdlinemacros[key] = value
+        pass
     
     pass
 
 class CompiledCBuilderInterfaceProxy(InterfaceProxy):
-    def __init__(self, object):
-        InterfaceProxy.__init__(self, object=object)
+    def __init__(self, builder):
+        InterfaceProxy.__init__(self)
+        self.__builder = builder
         self.add_global('EXENAME', getattr(self, 'EXENAME'))
         pass
     def EXENAME(self, name):
-        self.object().set_exename(name)
+        self.__builder.set_exename(name)
         pass
     pass

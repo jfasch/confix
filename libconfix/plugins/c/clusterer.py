@@ -207,7 +207,7 @@ class CClustererSetup(Setup):
             pass
         pass
 
-    def setup(slef, dirbuilder):
+    def setup(self, dirbuilder):
         clusterer = CClusterer(namefinder=self.__namefinder)
         dirbuilder.add_builder(clusterer)
         dirbuilder.add_interface(CClustererInterfaceProxy(clusterer=clusterer))

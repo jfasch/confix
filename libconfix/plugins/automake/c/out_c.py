@@ -50,19 +50,16 @@ class COutputSetup(Setup):
         Setup.__init__(self)
         self.__use_libtool = use_libtool
         pass
-    def initial_builders(self):
-        return super(COutputSetup, self).initial_builders() + \
-               [HeaderOutputBuilder(),
-                
-                CompiledOutputBuilder(),
-                COutputBuilder(),
-                CXXOutputBuilder(),
-                LexOutputBuilder(),
-                YaccOutputBuilder(),
-                
-                LibraryOutputBuilder(use_libtool=self.__use_libtool),
-                ExecutableOutputBuilder(use_libtool=self.__use_libtool)
-                ]
+    def setup(self, dirbuilder):
+        dirbuilder.add_builder(HeaderOutputBuilder())
+        dirbuilder.add_builder(CompiledOutputBuilder())
+        dirbuilder.add_builder(COutputBuilder())
+        dirbuilder.add_builder(CXXOutputBuilder())
+        dirbuilder.add_builder(LexOutputBuilder())
+        dirbuilder.add_builder(YaccOutputBuilder())
+        dirbuilder.add_builder(LibraryOutputBuilder(use_libtool=self.__use_libtool))
+        dirbuilder.add_builder(ExecutableOutputBuilder(use_libtool=self.__use_libtool))
+        pass
     pass
 
 class HeaderOutputBuilder(Builder):

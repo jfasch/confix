@@ -31,10 +31,9 @@ class LibraryDependenciesFinderSetup(Setup):
         Setup.__init__(self)
         self.__use_libtool = use_libtool
         pass
-    def initial_builders(self):
-        ret = super(LibraryDependenciesFinderSetup, self).initial_builders()
-        ret.append(ExecutableWatcher(use_libtool=self.__use_libtool))
-        return ret
+    def setup(self, dirbuilder):
+        dirbuilder.add_builder(ExecutableWatcher(use_libtool=self.__use_libtool))
+        pass
     pass
         
 class ExecutableWatcher(Builder):

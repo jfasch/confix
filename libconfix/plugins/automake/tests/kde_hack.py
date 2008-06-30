@@ -25,7 +25,7 @@ from libconfix.core.filesys.filesys import FileSystem
 from libconfix.core.filesys.file import File
 from libconfix.core.filesys.directory import Directory
 from libconfix.core.machinery.local_package import LocalPackage
-from libconfix.core.hierarchy.default_setup import DefaultDirectorySetup
+from libconfix.core.hierarchy.implicit_setup import ImplicitDirectorySetup
 from libconfix.testutils.persistent import PersistentTestCase
 
 import sys
@@ -67,7 +67,7 @@ class KDEHackTest(PersistentTestCase):
 
         package=LocalPackage(rootdirectory=source,
                              setups=[KDEHackSetup(),
-                                     DefaultDirectorySetup()])
+                                     ImplicitDirectorySetup()])
         package.boil(external_nodes=[])
         package.output()
 

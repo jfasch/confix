@@ -16,17 +16,17 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 # USA
 
-import os
-
-from libconfix.core.filesys.vfs_file import VFSFile
-from libconfix.core.machinery.creator import Creator
-from libconfix.core.machinery.setup import Setup
-
 from c import CBuilder
 from cxx import CXXBuilder
 from h import HeaderBuilder
 from lex import LexBuilder
 from yacc import YaccBuilder
+
+from libconfix.core.filesys.vfs_file import VFSFile
+from libconfix.core.machinery.creator import Creator
+from libconfix.core.machinery.setup import Setup
+
+import os
 
 class CCreator(Creator):
     def __init__(self):
@@ -74,8 +74,7 @@ def do_create_builder(name, entry):
     return None
 
 class CCreatorSetup(Setup):
-    def initial_builders(self):
-        ret = super(CCreatorSetup, self).initial_builders()
-        ret.append(CCreator())
-        return ret
+    def setup(self, dirbuilder):
+        dirbuilder.add_builder(CCreator())
+        pass
     pass

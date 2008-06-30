@@ -20,7 +20,7 @@ import unittest
 
 from libconfix.core.filesys.directory import Directory
 from libconfix.core.filesys.file import File
-from libconfix.core.hierarchy.default_setup import DefaultDirectorySetup
+from libconfix.core.hierarchy.implicit_setup import ImplicitDirectorySetup
 from libconfix.core.machinery.local_package import LocalPackage
 from libconfix.core.utils import const
 
@@ -58,7 +58,7 @@ class AutomakeOutputTest(unittest.TestCase):
                     entry=File(lines=['REQUIRE_SYMBOL("subdir2")']))
         
         self.package_ = LocalPackage(rootdirectory=self.fs_.rootdirectory(),
-                                     setups=[DefaultDirectorySetup()])
+                                     setups=[ImplicitDirectorySetup()])
         self.package_.boil(external_nodes=[])
         self.package_.output()
 

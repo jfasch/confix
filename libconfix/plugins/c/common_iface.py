@@ -76,7 +76,7 @@ class PROVIDE_H(InterfaceProxy):
 
 class TESTS_ENVIRONMENT(InterfaceProxy):
     def __init__(self, dirbuilder):
-        assert isinstance(object, DirectoryBuilder)
+        assert isinstance(dirbuilder, DirectoryBuilder)
         InterfaceProxy.__init__(self)
         self.__dirbuilder = dirbuilder
         self.add_global('TESTS_ENVIRONMENT', getattr(self, 'TESTS_ENVIRONMENT'))

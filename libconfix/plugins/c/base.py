@@ -60,7 +60,7 @@ class CBaseBuilder(FileBuilder):
 
     def iface_pieces(self):
         return FileBuilder.iface_pieces(self) + \
-               [REQUIRE_H(object=self), PROVIDE_H(object=self)]
+               [REQUIRE_H(builder=self), PROVIDE_H(builder=self)]
     
     def __eval_iface(self):
 

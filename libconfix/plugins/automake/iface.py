@@ -19,31 +19,22 @@ from configure_ac import Configure_ac
 from buildinfo import BuildInfo_Configure_in, BuildInfo_ACInclude_m4
 
 from libconfix.core.utils.paragraph import Paragraph
-from libconfix.core.hierarchy.confix2_dir_contributor import Confix2_dir_Contributor
 from libconfix.core.machinery.setup import Setup
 from libconfix.core.iface.proxy import InterfaceProxy
 
 import types
 
 class AutomakeInterfaceSetup(Setup):
-    def initial_builders(self):
-        return super(AutomakeInterfaceSetup, self).initial_builders() + [AutomakeInterface_Confix2_dir()]
-    pass
-
-class AutomakeInterface_Confix2_dir(Confix2_dir_Contributor):
-    # jjj
-##     def get_iface_proxies(self):
-##         return [AutomakeInterfaceProxy(object=self)]
-    def locally_unique_id(self):
-        return str(self.__class__)
-    def initialize(self, package):
-        super(AutomakeInterface_Confix2_dir, self).initialize(package)
+    def setup(self, dirbuilder):
+        dirbuilder.add_interface(AutomakeInterfaceProxy(dirbuilder=dirbuilder))
         pass
     pass
 
 class AutomakeInterfaceProxy(InterfaceProxy):
-    def __init__(self, object):
-        InterfaceProxy.__init__(self, object)
+    def __init__(self, dirbuilder):
+        InterfaceProxy.__init__(self)
+
+        self.__dirbuilder = dirbuilder
 
         self.add_global('LOCAL', self.AC_BUILDINFO_TRANSPORT_LOCAL)
         self.add_global('PROPAGATE', self.AC_BUILDINFO_TRANSPORT_PROPAGATE)
@@ -69,12 +60,12 @@ class AutomakeInterfaceProxy(InterfaceProxy):
         if type(order) not in [types.IntType or types.LongType]:
             raise Error('CONFIGURE_AC(): "order" parameter must be an integer')
         if flags is None or self.AC_BUILDINFO_TRANSPORT_LOCAL in flags:
-            self.object().package().configure_ac().add_paragraph(
+            self.__dirbuilder.package().configure_ac().add_paragraph(
                 paragraph=Paragraph(lines=lines),
                 order=order)
             pass
         if flags is None or self.AC_BUILDINFO_TRANSPORT_PROPAGATE in flags:
-            self.object().add_buildinfo(BuildInfo_Configure_in(
+            self.__dirbuilder.add_buildinfo(BuildInfo_Configure_in(
                 lines=lines,
                 order=order))
             pass
@@ -82,21 +73,21 @@ class AutomakeInterfaceProxy(InterfaceProxy):
 
     def ACINCLUDE_M4(self, lines, flags=None):
         if flags is None or self.AC_BUILDINFO_TRANSPORT_LOCAL in flags:
-            self.object().package().acinclude_m4().add_paragraph(
+            self.__dirbuilder.package().acinclude_m4().add_paragraph(
                 paragraph=Paragraph(lines=lines))
             pass
         if flags is None or self.AC_BUILDINFO_TRANSPORT_PROPAGATE in flags:
-            self.object().add_buildinfo(BuildInfo_ACInclude_m4(
+            self.__dirbuilder.add_buildinfo(BuildInfo_ACInclude_m4(
                 lines=lines))
             pass
         pass
 
     def ADD_EXTRA_DIST(self, filename):
-        self.object().parentbuilder().makefile_am().add_extra_dist(filename)
+        self.__dirbuilder.makefile_am().add_extra_dist(filename)
         pass
 
     def MAKEFILE_AM(self, line):
-        self.object().parentbuilder().makefile_am().add_line(line)
+        self.__dirbuilder.makefile_am().add_line(line)
         pass
         
     pass

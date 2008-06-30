@@ -16,6 +16,7 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 # USA
 
+from setup import Setup
 from setup import CompositeSetup
 from package import Package
 from local_node import LocalNode
