@@ -18,6 +18,8 @@
 class AutomakeMaster(Builder):
     def __init__(self):
         Builder.__init__(self)
+
+        # move these out into the C setup
         self.__slaves = [
             HeaderOutputBuilder(),
             CompiledOutputBuilder(),
@@ -28,6 +30,7 @@ class AutomakeMaster(Builder):
             LibraryOutputBuilder(use_libtool=self.__use_libtool),
             ExecutableOutputBuilder(use_libtool=self.__use_libtool),
             ]
+
         self.__bursted = False
 
         # the (contents of the) Makefile.am we will be writing on
@@ -41,7 +44,7 @@ class AutomakeMaster(Builder):
         pass
 
     def enlarge(self):
-        super(AutomakeMaster, self).output()
+        super(AutomakeMaster, self).enlarge()
         if self.__bursted:
             return
         self.__bursted = True
@@ -62,7 +65,8 @@ class AutomakeMaster(Builder):
                               acinclude_m4=self.__acinclude_m4)
             pass
 
-        # 'make maintainer-clean' should remove the files we generate
+        # 'make maintainer-clean' should remove the files that we
+        # generate
         self.__makefile_am.add_maintainercleanfiles('Makefile.am')
         self.__makefile_am.add_maintainercleanfiles('Makefile.in')
 
