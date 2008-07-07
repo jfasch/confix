@@ -1,5 +1,7 @@
 * STACK
 
+  * add_builder -> append_builder -> makefile_am/master/slave (?)
+
   * ripping out DirectoryBuilder.makefile_am()
 
     * bloody order dependencies! I cannot put everything under the
