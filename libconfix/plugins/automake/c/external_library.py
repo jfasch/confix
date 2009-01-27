@@ -22,7 +22,8 @@ from libconfix.core.machinery.setup import Setup
 from libconfix.core.iface.proxy import InterfaceProxy
 from libconfix.core.repo.marshalling import \
      update_marshalling_data, \
-     MarshalledVersionUnknownError     
+     MarshalledVersionUnknownError, \
+     Marshallable
 
 import types
 
