@@ -15,6 +15,8 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 # USA
 
+import cmake_consts
+
 from libconfix.core.utils import helper
 from libconfix.core.utils.error import Error
 
@@ -479,11 +481,34 @@ class CMakeLists:
             lines.extend(_format_comment(comment))
             lines.append('ADD_CUSTOM_COMMAND(')
             lines.append('    OUTPUT '+' '.join(outputs))
-            for c in commands:
-                if len(c[1]) > 0:
-                    lines.append('    COMMAND '+c[0]+' ARGS '+' '.join(c[1]))
-                else:
-                    lines.append('    COMMAND '+c[0])
+            if True:
+                loop_command = ''
+                if len(commands):
+                    md5 = hashlib.md5()
+                    for o in outputs:
+                        md5.update(o)
+                        pass
+                    lockdirname = md5.hexdigest()
+
+                    loop_command += 'sh -c "('
+                    for c in commands:
+                        if len(c[1]) > 0:
+                            loop_command += "echo '" + ' '.join([c[0]] + c[1]) + "';"
+                        else:
+                            loop_command += "echo '" + c[0] + "';"
+                            pass
+                        pass
+                    loop_command += ')|${CMAKE_SOURCE_DIR}/'+cmake_consts.scripts_dir+'/confix-cmake-generator-lock-loop '+lockdirname+'"'
+                    lines.append('    COMMAND '+loop_command)
+                    pass
+                pass
+            else:
+                for c in commands:
+                    if len(c[1]) > 0:
+                        lines.append('    COMMAND '+c[0]+' ARGS '+' '.join(c[1]))
+                    else:
+                        lines.append('    COMMAND '+c[0])
+                        pass
                     pass
                 pass
             if len(depends):

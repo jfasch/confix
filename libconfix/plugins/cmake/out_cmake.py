@@ -15,9 +15,10 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 # USA
 
-import consts
+import cmake_consts
 from cmakelists import CMakeLists
-from modules_dir_builder import ModulesDirectoryBuilder
+from aux_dir_builders import ModulesDirectoryBuilder
+from aux_dir_builders import ScriptsDirectoryBuilder
 from buildinfo import BuildInfo_Toplevel_CMakeLists_Include
 from buildinfo import BuildInfo_Toplevel_CMakeLists_FindCall
 from buildinfo import BuildInfo_CMakeModule
@@ -50,7 +51,8 @@ class CMakeBackendOutputBuilder(Builder):
         Builder.__init__(self)
         self.__local_cmakelists = None
         self.__top_cmakelists = None
-        self.__modules_builder = None
+        self.__modules_dir_builder = None
+        self.__scripts_dir_builder = None
         self.__bursted = False
 
         # remember the dependency graph for use in output(). (we
@@ -70,7 +72,15 @@ class CMakeBackendOutputBuilder(Builder):
         Add a file @name (consisting of @lines) to the package's
         Modules directory.
         """
-        self.__modules_builder.add_module_file(name, lines)
+        self.__modules_dir_builder.add_module_file(name, lines)
+        pass
+
+    def add_scripts_file(self, name, lines):
+        """
+        Add a file @name (consisting of @lines) to the package's
+        Scripts directory.
+        """
+        self.__scripts_dir_builder.add_script_file(name, lines)
         pass
 
     def locally_unique_id(self):
@@ -104,14 +114,22 @@ class CMakeBackendOutputBuilder(Builder):
             if modules_dir is None:
                 modules_dir = cmake_dir.add(name='Modules', entry=Directory())
                 pass
+            scripts_dir = cmake_dir.get('Scripts')
+            if scripts_dir is None:
+                scripts_dir = cmake_dir.add(name='Scripts', entry=Directory())
+                pass
 
             # wrap builder hierarchy around directory hierarchy. NOTE
-            # that the modules directory builder is a backend builder.
+            # that the modules and scripts directory builders are
+            # backend builders.
             cmake_dir_builder = admin_dir_builder.add_builder(DirectoryBuilder(directory=cmake_dir))
-            self.__modules_builder = cmake_dir_builder.add_backend_builder(ModulesDirectoryBuilder(directory=modules_dir))
+            self.__modules_dir_builder = cmake_dir_builder.add_backend_builder(ModulesDirectoryBuilder(directory=modules_dir))
+            self.__scripts_dir_builder = cmake_dir_builder.add_backend_builder(ScriptsDirectoryBuilder(directory=scripts_dir))
         else:
-            self.__modules_builder = find_cmake_output_builder(self.package().rootbuilder()).__modules_builder
+            self.__modules_dir_builder = find_cmake_output_builder(self.package().rootbuilder()).__modules_dir_builder
+            self.__scripts_dir_builder = find_cmake_output_builder(self.package().rootbuilder()).__scripts_dir_builder
             pass
+
         pass
 
     def relate(self, node, digraph, topolist):
@@ -125,7 +143,7 @@ class CMakeBackendOutputBuilder(Builder):
                 self.__top_cmakelists.add_find_call(bi.find_call())
                 pass
             for bi in n.iter_buildinfos_type(BuildInfo_CMakeModule):
-                self.__modules_builder.add_module_file(bi.name(), bi.lines())
+                self.__modules_dir_builder.add_module_file(bi.name(), bi.lines())
                 pass
             pass
 
@@ -294,7 +312,7 @@ class CMakeBackendOutputBuilder(Builder):
         # there.
         top_cmakelists.add_set(
             'CMAKE_MODULE_PATH',
-            '${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/%s"' % consts.modules_dir)
+            '${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/%s"' % cmake_consts.modules_dir)
 
         # rpath wizardry
         self.__apply_rpath_settings(top_cmakelists)
