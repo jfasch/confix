@@ -493,10 +493,12 @@ class CMakeLists:
                     loop_command += 'sh -c "('
                     for c in commands:
                         if len(c[1]) > 0:
-                            loop_command += "echo '" + ' '.join([c[0]] + c[1]) + "';"
+                            esc_command = "echo '" + ' '.join([c[0]] + c[1]) + "';"
                         else:
-                            loop_command += "echo '" + c[0] + "';"
+                            esc_command = "echo '" + c[0] + "';"
                             pass
+                        esc_command = esc_command.replace('"', '\\"')
+                        loop_command += esc_command
                         pass
                     loop_command += ')|${CMAKE_SOURCE_DIR}/'+cmake_consts.scripts_dir+'/confix-cmake-generator-lock-loop '+lockdirname+'"'
                     lines.append('    COMMAND '+loop_command)
