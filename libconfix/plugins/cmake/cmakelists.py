@@ -541,11 +541,13 @@ class CMakeLists:
 
         # ADD_DEPENDENCIES()
         for (name, depends, comment) in self.__dependencies:
-            lines.extend(_format_comment(comment))
-            lines.append('ADD_DEPENDENCIES(')
-            lines.append('    '+name)
-            lines.append('    '+' '.join(depends))
-            lines.append(')')
+            if len(depends) > 0:
+                lines.extend(_format_comment(comment))
+                lines.append('ADD_DEPENDENCIES(')
+                lines.append('    '+name)
+                lines.append('    '+' '.join(depends))
+                lines.append(')')
+                pass
             pass
 
         # INSTALL(FILES ...)
