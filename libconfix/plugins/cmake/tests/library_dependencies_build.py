@@ -208,12 +208,14 @@ class LibraryDependenciesTest(PersistentTestCase):
             commands.make(builddir=hi_build.abspath(), args=['install'])
             pass
 
-        # wait a bit and then touch liblo.a. (is there a better way
-        # than sleeping?)
+        # touch liblo.a. timestamps are in seconds granularity - to
+        # compensate for this, wait a second before and after
+        # touching.
         time.sleep(1)
         lo_lib = os.sep.join(install.abspath()+['lib', 'liblo.a'])
         os.utime(lo_lib, None)
         lo_stat = os.stat(lo_lib)
+        time.sleep(1)
 
         # libmid.a is not rebuilt.
         if True:
