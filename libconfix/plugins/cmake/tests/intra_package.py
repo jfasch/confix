@@ -52,8 +52,8 @@ def make_source_tree():
                           'void lo1() {}']))
     lo.add(
         name='lo2.h',
-        entry=File(lines=['#ifndef LO1_h',
-                          '#define LO1_h',
+        entry=File(lines=['#ifndef LO2_h',
+                          '#define LO2_h',
                           'extern void lo2();',
                           '#endif']))
     lo.add(
