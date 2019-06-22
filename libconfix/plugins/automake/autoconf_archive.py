@@ -24,11 +24,11 @@ from libconfix.core.utils import helper
 
 def find_archive_root(argv0):
     try:
-        confix_root = helper.find_confix_root(argv0)
+        confix_share = helper.find_confix_share_dir(argv0)
     except Error, e:
-        raise Error('Cannot find autoconf archive: cannot find confix installation', [e])
+        raise Error('Cannot find autoconf archive', [e])
 
-    autoconf_dir = os.path.join(confix_root, 'share', 'confix', 'autoconf-archive')
+    autoconf_dir = os.path.join(confix_share, 'autoconf-archive')
     if not os.path.isdir(autoconf_dir):
         raise Error(autoconf_dir+' is not a directory (Confix installation error?)')
     return autoconf_dir

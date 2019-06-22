@@ -47,11 +47,11 @@ class AutoconfAuxDirWatcher(Builder):
             return
 
         try:
-            confix_root = helper.find_confix_root(sys.argv[0])
+            confix_share = helper.find_confix_share_dir(sys.argv[0])
         except Error, e:
             raise Error('Cannot find KDE hack support files', [e])
 
-        kde_hack_dir = os.path.join(confix_root, 'share', 'confix', 'kde-hack')
+        kde_hack_dir = os.path.join(confix_share, 'kde-hack')
         conf_change_pl = os.path.join(kde_hack_dir, 'conf.change.pl')
         config_pl = os.path.join(kde_hack_dir, 'config.pl')
         if not os.path.isfile(conf_change_pl):

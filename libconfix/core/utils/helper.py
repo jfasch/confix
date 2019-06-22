@@ -19,46 +19,68 @@
 import types
 import hashlib
 import os
+import os.path
 
-from libconfix.core.digraph.cycle import CycleError
+from libconfix.core.utils.error import Error
 
 from error import Error
 import external_cmd
 
-def find_confix_root(argv0):
-    dir = os.path.dirname(argv0)
-    
-    # accommodate for relative paths.
-    if not os.path.isabs(dir):
-        dir = os.path.normpath(os.path.join(os.getcwd(), dir))
-        pass
 
-    # first the uninstalled case. (we know programs to be either in
-    # the tests subdirectory or in the scripts subdirectory.)
-    idx = dir.find(os.path.join('confix', 'tests'))
-    if idx == -1:
-        idx = dir.find(os.path.join('confix', 'scripts'))
-        pass
+def find_confix_share_dir(argv0):
+    '''We use the `share/confix/` directory to distribute the autoconf
+    archive, and other kinds of support material. Given an argv[0], we
+    use this location to find out what could be the location of the
+    .../share/confix directory.
 
-    if idx >= 0:
-        confixroot = os.path.join(dir[0:idx], 'confix')
-        installfile = os.path.join(confixroot, 'INSTALL')
-        if not os.path.isfile(installfile):
-            raise Error('Cannot find (uninstalled) Confix root: file '+installfile+' missing')
-        return confixroot
+    Note that the algorithm used here is in no way comprehensive -
+    rather, it just guesses, and guessing might fail.
 
-    # ... and then the installed case. this is a pretty big hack, but
-    # it ought to work as long as people don't go around messing with
-    # the relative locations of installation dirs.
-    if dir.endswith('bin'):
-        return os.path.dirname(dir)
-    
-    # we seem to be running completely outside confix's world.
-    confix2_py = external_cmd.search_program(program='confix2.py', path=None)
-    if confix2_py is None:
-        raise Error('Cannot find Confix root: cannot find confix2.py in $PATH at all')
+    '''
 
-    return find_confix_root(confix2_py)
+    progdir = os.path.normpath(argv0)
+    progdir = os.path.abspath(progdir)
+    if not os.path.isdir(progdir):
+        progdir = os.path.dirname(progdir)
+
+    # first the uninstalled case. argv0 has been called from the
+    # source directory. either the path points there, or a relative
+    # path has been given. search upwards for a directory that
+    # contains AUTHORS, COPYING, MANIFEST.in and guess that this is
+    # the source root.
+    root = progdir
+    while root != '/':
+        authors_file = os.path.join(root, 'AUTHORS')
+        copying_file = os.path.join(root, 'COPYING')
+        manifest_file = os.path.join(root, 'MANIFEST.in')
+
+        # check for files, requiring that all three or none are there.
+        have_authors = os.path.exists(authors_file) and 1 or 0
+        have_copying = os.path.exists(copying_file) and 1 or 0
+        have_manifest = os.path.exists(manifest_file) and 1 or 0
+
+        all = have_authors + have_copying + have_manifest
+        if all == 0:
+            root = os.path.dirname(root)
+            continue
+        if all < 3:
+            raise Error('WTF: only a subset of {AUTHORS, COPYING, MANIFEST.in} seen in {}'.format(root))
+        
+        # more sanity checking
+        if not os.path.isfile(authors_file):
+            raise Error('{} is not a file'.format(authors_file))
+        if not os.path.isfile(copying_file):
+            raise Error('{} is not a file'.format(copying_file))
+        if not os.path.isfile(manifest_file):
+            raise Error('{} is not a file'.format(manifest_file))
+
+        return os.path.join(root, 'share', 'confix')
+
+    # the installed case.
+    root, bin = os.path.split(progdir)
+    if bin != 'bin':
+        raise Error("{} does not end with 'bin/'".format(argv0))
+    return os.path.join(root, 'share', 'confix')
 
 def format_cycle_error(error):
 
