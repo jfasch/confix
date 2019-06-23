@@ -67,12 +67,9 @@ def find_confix_share_dir(argv0):
             raise Error('WTF: only a subset of {AUTHORS, COPYING, MANIFEST.in} seen in {}'.format(root))
         
         # more sanity checking
-        if not os.path.isfile(authors_file):
-            raise Error('{} is not a file'.format(authors_file))
-        if not os.path.isfile(copying_file):
-            raise Error('{} is not a file'.format(copying_file))
-        if not os.path.isfile(manifest_file):
-            raise Error('{} is not a file'.format(manifest_file))
+        for f in (authors_file, copying_file, manifest_file):
+            if not os.path.isfile(f):
+                raise Error('{} is not a file'.format(f))
 
         return os.path.join(root, 'share', 'confix')
 
