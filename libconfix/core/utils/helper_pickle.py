@@ -19,29 +19,18 @@
 from libconfix.core.utils.error import Error, NativeError
 
 import sys
+import pickle
 
-# pickle segfaults on interix. this should be fixed in python 2.5, but
-# we leave it in for a while from now.
-mypickle = None
-if sys.platform.startswith('interix'):
-    from libconfix.core.utils import debug
-    debug.warn('using pickle instead of cPickle on interix')
-    import pickle
-    mypickle = pickle
-else:
-    import cPickle
-    mypickle = cPickle
-    pass
 
 def load_object_from_file(filename):
     try:
         file = open(filename, 'r')
-    except IOError, e:
+    except IOError as e:
         raise Error('Cannot open file '+filename+' for reading', [e])
 
     try:
-        object = mypickle.load(file)
-    except Exception, e:
+        object = pickle.load(file)
+    except Exception as e:
         raise Error('Cannot read Python object from file '+filename, [NativeError(e, sys.exc_traceback)])
 
     return object
@@ -49,26 +38,26 @@ def load_object_from_file(filename):
 def dump_object_to_file(object, filename):
     try:
         file = open(filename, 'w')
-    except IOError, e:
+    except IOError as e:
         raise Error('Cannot open file '+filename+' for writing', [e])
     try:
-        mypickle.dump(object, file)
-    except Exception, e:
+        pickle.dump(object, file)
+    except Exception as e:
         raise Error('Cannot dump Python object "'+str(object)+'" to file '+filename, [NativeError(e, sys.exc_traceback)])
     pass
 
 def load_object_from_string(string):
     try:
-        object = mypickle.loads(string)
-    except Exception, e:
+        object = pickle.loads(string)
+    except Exception as e:
         raise Error('Cannot read Python object from string', [NativeError(e, sys.exc_traceback)])
 
     return object
 
 def dump_object_to_string(object):
     try:
-        return mypickle.dumps(object)
-    except Exception, e:
+        return pickle.dumps(object)
+    except Exception as e:
         raise Error('Cannot dump Python object to string', [NativeError(e, sys.exc_traceback)])
     pass
 

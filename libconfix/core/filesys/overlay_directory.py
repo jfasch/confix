@@ -15,10 +15,10 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 # USA
 
-from vfs_directory import VFSDirectory
-from vfs_file import VFSFile
-from overlay_entry import OverlayEntry
-from overlay_file import OverlayFile
+from .vfs_directory import VFSDirectory
+from .vfs_file import VFSFile
+from .overlay_entry import OverlayEntry
+from .overlay_file import OverlayFile
 
 from libconfix.core.utils.error import Error
 

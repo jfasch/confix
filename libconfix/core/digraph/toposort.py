@@ -18,8 +18,9 @@
 
 from libconfix.core.utils.error import Error
 
-import dfs
-import cycle
+from . import dfs
+from . import cycle
+
 
 def toposort(digraph, nodes):
     ret = []
@@ -38,7 +39,7 @@ def toposort_node(digraph, node):
     v = TopoVisitor()
     try:
         dfs.dfs(digraph=digraph, node=node, visitor=v)
-    except cycle.CycleError, error:
+    except cycle.CycleError as error:
         # annotate cycle
         edgelist = []
         for tail, head in [(error.nodelist()[i], error.nodelist()[i+1]) for i in xrange(len(error.nodelist())-1)]:

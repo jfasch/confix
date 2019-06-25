@@ -55,9 +55,9 @@ class BasicTest(PersistentTestCase):
         
     def test__sync_mem2sync(self):
         fs = FileSystem(path=self.rootpath())
-        subdir = Directory(mode=0700)
+        subdir = Directory(mode=0o700)
         fs.rootdirectory().add(name='subdir', entry=subdir)
-        file = File(mode=0755)
+        file = File(mode=0o755)
         subdir.add(name='file', entry=file)
 
         self.failUnlessEqual(fs.rootdirectory().state(), DirectoryState.INMEMORY)
@@ -74,15 +74,15 @@ class BasicTest(PersistentTestCase):
         self.failUnless(os.path.isdir(os.sep.join(self.rootpath()+['subdir'])))
         self.failUnless(os.path.isfile(os.sep.join(self.rootpath()+['subdir', 'file'])))
 
-        self.failUnlessEqual(stat.S_IMODE(os.stat(os.sep.join(self.rootpath()+['subdir'])).st_mode), 0700)
-        self.failUnlessEqual(stat.S_IMODE(os.stat(os.sep.join(self.rootpath()+['subdir', 'file'])).st_mode), 0755)
+        self.failUnlessEqual(stat.S_IMODE(os.stat(os.sep.join(self.rootpath()+['subdir'])).st_mode), 0o700)
+        self.failUnlessEqual(stat.S_IMODE(os.stat(os.sep.join(self.rootpath()+['subdir', 'file'])).st_mode), 0o755)
         pass
 
     def test__sync_dirty2sync(self):
         fs = FileSystem(path=self.rootpath())
-        subdir = Directory(mode=0700)
+        subdir = Directory(mode=0o700)
         fs.rootdirectory().add(name='subdir', entry=subdir)
-        file = File(mode=0755)
+        file = File(mode=0o755)
         subdir.add(name='file', entry=file)
 
         fs.sync()
@@ -202,11 +202,11 @@ class BasicTest(PersistentTestCase):
         fs = FileSystem(path=self.rootpath())
         file_with_0755 = fs.rootdirectory().add(
             name='file_with_0755',
-            entry=File(mode=0755))
+            entry=File(mode=0o755))
         fs.sync()
 
         self.failUnless(os.path.isfile(os.sep.join(file_with_0755.abspath())))
-        self.failUnlessEqual(stat.S_IMODE(os.stat(os.sep.join(file_with_0755.abspath())).st_mode), 0755)
+        self.failUnlessEqual(stat.S_IMODE(os.stat(os.sep.join(file_with_0755.abspath())).st_mode), 0o755)
         pass
     pass
 

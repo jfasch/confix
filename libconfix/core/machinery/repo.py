@@ -179,7 +179,7 @@ class PackageFile:
                             ' (file: '+str(obj['version'])+','
                             ' current: '+str(PackageFile.VERSION)+')')
             return obj['package']
-        except Error, e:
+        except Error as e:
             raise Error('Could not read package file '+os.sep.join(self.__file.abspath()), [e])
         pass
     
@@ -190,7 +190,7 @@ class PackageFile:
                 [helper_pickle.dump_object_to_string({'version': PackageFile.VERSION,
                                                       'package': package})
                  ])
-        except Error, e:
+        except Error as e:
             raise Error('Could not write package file '+os.sep.join(self.__file.abspath()), [e])
         pass
     
@@ -282,9 +282,9 @@ class AutomakePackageRepository(CompositePackageRepository):
             if _re_repo.match(name):
                 try:
                     self.add_repo(PackageFileRepository(file=entry))
-                except Error, e:
+                except Error as e:
                     errlist.append(Error('Error reading file "'+os.sep.join(entry.abspath()), [e]))
-                except Exception, e:
+                except Exception as e:
                     errlist.append(Error('Error reading file "'+os.sep.join(entry.abspath()), [e]))
                     pass
                 pass

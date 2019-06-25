@@ -23,6 +23,7 @@ import libconfix.core.hierarchy.tests.suite_inmem as hierarchy_inmem
 
 import unittest
 
+
 suite = unittest.TestSuite()
 suite.addTest(utils_inmem.suite)
 suite.addTest(filesys_inmem.suite)

@@ -15,17 +15,18 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 # USA
 
-import dependencyset
-import depinfo
-import enlarge_force
-import iface
-import provide
-import relate
-import resolve
-import urgency_error
-import local_package
+import libconfix.core.machinery.tests.dependencyset as dependencyset
+import libconfix.core.machinery.tests.depinfo as depinfo
+import libconfix.core.machinery.tests.enlarge_force as enlarge_force
+import libconfix.core.machinery.tests.iface as iface
+import libconfix.core.machinery.tests.provide as provide
+import libconfix.core.machinery.tests.relate as relate
+import libconfix.core.machinery.tests.resolve as resolve
+import libconfix.core.machinery.tests.urgency_error as urgency_error
+import libconfix.core.machinery.tests.local_package as local_package
 
 import unittest
+
 
 suite = unittest.TestSuite()
 suite.addTest(enlarge_force.suite)

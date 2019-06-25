@@ -23,8 +23,8 @@ import os.path
 
 from libconfix.core.utils.error import Error
 
-from error import Error
-import external_cmd
+from .error import Error
+from . import external_cmd
 
 
 def find_confix_share_dir(argv0):
@@ -160,7 +160,7 @@ def write_lines_to_file(filename, lines):
         for l in lines:
             file.write(l+'\n')
         file.close()
-    except Exception, e:
+    except Exception as e:
         raise Error("Could not write "+filename+":", [e])
 
 def lines_of_file(filename):
@@ -170,7 +170,7 @@ def lines_of_file(filename):
 
     try:
         file = open(filename, 'r')
-    except IOError, e:
+    except IOError as e:
         raise Error('Could not open file \'' + filename + '\' for reading', [e])
 
     lines = [l.rstrip('\n') for l in file]
@@ -192,7 +192,7 @@ def write_lines_to_file_if_changed(filename, lines):
     if os.path.exists(filename):
         try:
             file = open(filename, 'r')
-        except IOError, e:
+        except IOError as e:
             raise Error('Could not open file \'' + filename + '\' for reading', [e])
         for l in file:
             m_file.update(l)
@@ -226,11 +226,11 @@ def copy_file_if_changed(sourcename, targetname, mode):
 def copy_file(sourcename, targetname, mode):
     try:
         sourcefile = open(sourcename, 'r')
-    except IOError, e:
+    except IOError as e:
         raise Error('Could not open file \'' + sourcename + '\' for reading', [e])
     try:
         targetfile = open(targetname, 'w')
-    except IOError, e:
+    except IOError as e:
         raise Error('Could not open file \'' + targetname + '\' for writing', [e])
     for l in sourcefile:
         targetfile.write(l)
@@ -243,7 +243,7 @@ def md5_of_file(filename):
     finger = hashlib.md5()
     try:
         file = open(filename, 'r')
-    except IOError, e:
+    except IOError as e:
         raise Error('Could not open file \'' + filename + '\' for reading', [e])
     for l in file:
         finger.update(l)

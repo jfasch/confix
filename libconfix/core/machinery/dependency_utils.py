@@ -15,11 +15,12 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 # USA
 
-from repo import Unmarshallable
-from require import Require
-from provide import Provide
+from .repo import Unmarshallable
+from .require import Require
+from .provide import Provide
 
 from libconfix.core.utils.error import Error
+
 
 class DependencySet(Unmarshallable):
     def __init__(self):

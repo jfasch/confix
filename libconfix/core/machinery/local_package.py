@@ -250,7 +250,7 @@ class LocalPackage(Package):
         for b in builders:
             try:
                 b.enlarge()
-            except Error, e:
+            except Error as e:
                 raise Error("Builder "+b.shortname()+" of "+b.parentbuilder().shortname()+" encountered an error", [e])
             pass
 

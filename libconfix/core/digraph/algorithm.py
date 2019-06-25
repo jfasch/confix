@@ -18,9 +18,9 @@
 
 from libconfix.core.utils.error import Error
 
-from digraph import DirectedGraph, Edge, EdgeSet
+from .digraph import DirectedGraph, Edge, EdgeSet
+from . import toposort
 
-import toposort
 
 def reached_from(digraph, entrypoints):
     nodes = toposort.toposort(digraph, entrypoints)

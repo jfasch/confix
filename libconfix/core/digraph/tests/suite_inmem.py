@@ -16,10 +16,11 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 # USA
 
-import algorithm
-import nearest_property
+import libconfix.core.digraph.tests.algorithm as algorithm
+import libconfix.core.digraph.tests.nearest_property as nearest_property
 
 import unittest
+
 
 suite = unittest.TestSuite()
 suite.addTest(algorithm.suite)

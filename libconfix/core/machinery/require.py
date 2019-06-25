@@ -16,14 +16,15 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
 # USA
 
-from repo import Marshallable
-from repo import MarshalledVersionUnknownError
-from repo import update_marshalling_data
+from .repo import Marshallable
+from .repo import MarshalledVersionUnknownError
+from .repo import update_marshalling_data
 
 from libconfix.core.utils.error import Error
 from libconfix.core.utils import debug
 
 import types
+
 
 class Require(Marshallable):
     def get_marshalling_data(self):

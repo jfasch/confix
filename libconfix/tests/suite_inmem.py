@@ -21,6 +21,7 @@ import libconfix.frontends.tests.suite_inmem as frontends_inmem
 
 import unittest
 
+
 suite = unittest.TestSuite()
 suite.addTest(core_inmem.suite)
 suite.addTest(plugins_inmem.suite)
